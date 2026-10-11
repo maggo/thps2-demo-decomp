@@ -7,6 +7,7 @@ All 1,646 functions match. Every change must keep it that way.
 ```bash
 python3 verify.py --exe original/SLUS_900.86 --sym original/MAIN.SYM   # must print 1646/1646
 python3 tools/check_source.py                                          # also runs in CI
+clang-format -i src/*.cpp src/*.h                                      # clang-format 23.1.3 (pip install clang-format==23.1.3)
 ```
 
 `verify.py` needs your own disc files and Psy-Q 4.6 headers (see the README). CI
@@ -17,6 +18,8 @@ executable rebuild.
 
 ## Source conventions
 
+- **Formatting** is `.clang-format` (whitespace only; CI checks it). Never
+  hand-format around it, and keep formatting changes in their own commits.
 - **Behaviour first.** The source must do what the original does. A rewrite that
   only matches by accident (wrong types, wrong control flow that happens to
   compile the same) is a bug.
