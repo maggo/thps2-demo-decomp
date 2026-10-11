@@ -4,14 +4,10 @@
  * This header is intentionally re-entrant so each flag stays at its original
  * declaration point.
  */
-#if defined(CAREERLOADSTATE_OWNER_DECLARATION) && defined(CAREERLOADSTATE_ABSOLUTE_DECLARATION)
-#error "Select only one career-load state declaration view"
-#elif defined(CAREERLOADSTATE_OWNER_DECLARATION)
-#define CAREERLOADSTATE_DECL_ATTR
-#elif defined(CAREERLOADSTATE_ABSOLUTE_DECLARATION)
+#ifdef CAREERLOADSTATE_ABSOLUTE_DECLARATION
 #define CAREERLOADSTATE_DECL_ATTR __attribute__((section(".data")))
 #else
-#error "Select the career-load state owner or absolute declaration view"
+#define CAREERLOADSTATE_DECL_ATTR
 #endif
 
 #if !defined(CAREERLOADSTATE_DECLARE_HAS_CAREER_LOADED) && \
@@ -33,4 +29,3 @@ extern int GLoadedCareerIsSaved CAREERLOADSTATE_DECL_ATTR;
 #undef CAREERLOADSTATE_DECLARE_HAS_CAREER_LOADED
 #undef CAREERLOADSTATE_DECLARE_LOADED_CAREER_IS_SAVED
 #undef CAREERLOADSTATE_ABSOLUTE_DECLARATION
-#undef CAREERLOADSTATE_OWNER_DECLARATION

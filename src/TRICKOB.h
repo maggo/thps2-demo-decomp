@@ -94,7 +94,6 @@ struct CTrickOb
 #define TRICKOB_OWNER_DECLARATIONS_TAIL_EMITTED
 
 // === Variables (gp-relative in this TU) ===
-#define TRICKOBLIST_OWNER_DECLARATION
 #include "TRICKOBLIST.h"
 #define TRICKPLAYER_OWNER_DECLARATION
 #include "TRICKPLAYER.h"

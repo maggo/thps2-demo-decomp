@@ -143,13 +143,11 @@ int CurrentWaterLevel __attribute__((section(".sdata"))) = 0x7fffffff;
 int CurrentWaterLevel2 __attribute__((section(".sdata"))) = 0x7fffffff;
 int CurrentDualShockLevel __attribute__((section(".sdata"))) = 2;
 int GameFrozen __attribute__((section(".sdata"))) = 0;
-#define CHEATPANELON_OWNER_DECLARATION
 #include "CHEATPANELON.h"
 int Cheat_PanelOn __attribute__((section(".sdata"))) = 1;
 int Cheat_L2KillsBaddies __attribute__((section(".sdata"))) = 0;
 int Cheat_LevelSelect __attribute__((section(".sdata"))) = 0;
 int Cheat_AutoTest __attribute__((section(".sdata"))) = 0;
-#define FRONTCHEATS_OWNER_DECLARATION
 #include "FRONTCHEATS.h"
 int Cheat_RestartSkip __attribute__((section(".sdata"))) = 0;
 int Cheat_GameInfo __attribute__((section(".sdata"))) = 0;
@@ -162,7 +160,6 @@ int Cheat_Fire __attribute__((section(".sdata"))) = 0;
 int PolyBufferBytesUsed __attribute__((section(".sdata"))) = 0;
 int MusicStopped __attribute__((section(".sdata"))) = 0;
 VECTOR Zero __attribute__((section(".sdata"))) = { 0, 0, 0, 0 };
-#define TOTALCCLASSUSAGE_OWNER_DECLARATION
 #include "TOTALCCLASSUSAGE.h"
 int TotalCClassUsage __attribute__((section(".sdata"))) = 0;
 int Mick_Darkness __attribute__((section(".sdata"))) = 0;

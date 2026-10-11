@@ -17,7 +17,6 @@ extern "C"
 extern int Mem_NumNew;
 extern int Mem_NumDelete;
 extern unsigned int HeapDefs[2][2];
-#define LOWMEMORY_OWNER_DECLARATION
 #include "LOWMEMORY.h"
 extern int ReturnAddress;
 extern int Used[2];

@@ -114,9 +114,7 @@ typedef char sfx_spatial_data_size_must_be_4[(sizeof(SFXVoiceSpatialData) == 4) 
 #include <LIBSPU.H>
 
 // === Variables (gp-relative in this TU) ===
-#define SFXREVERBTIMER_OWNER_DECLARATION
 #include "SFXREVERBTIMER.h"
-#define TOTALVABUSAGE_OWNER_DECLARATION
 #include "TOTALVABUSAGE.h"
 
 // === Variables (absolute in this TU) ===

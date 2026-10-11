@@ -236,7 +236,6 @@ static int OT_half __attribute__((section(".sdata"))) = 0;
 extern const char s_OTEntryOutOfRange[];
 
 /** Nonzero while the shell is rendering through its high-resolution path. */
-#define HIRESMODE_OWNER_DECLARATION
 #include "HIRESMODE.h"
 
 int HiresMode __attribute__((section(".sdata")));

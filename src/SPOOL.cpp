@@ -135,13 +135,11 @@ u32 *pTexWibPacket[2] __attribute__((section(".sdata"))) = {};
 #include "ENVIROLIST.h"
 Item *EnviroList = 0;
 int OtherEnvIndex = 0;
-#define SPOOLPOS_OWNER_DECLARATION
 #define SPOOLPOS_WITHIN_C_LINKAGE
 #include "SPOOLPOS.h"
 int SpoolPos = 0;
 static int FreePos = 0;
 AnimPacket *AnimPackets = 0;
-#define TOTALTEXTUREUSAGE_OWNER_DECLARATION
 #include "TOTALTEXTUREUSAGE.h"
 int TotalTextureUsage = 0;
 

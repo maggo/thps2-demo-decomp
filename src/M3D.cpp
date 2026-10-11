@@ -223,14 +223,12 @@ s16 M3d_OTPushback2 = 0;
 int M3d_Widescreen = 0;
 unsigned int FrameNo = 0;
 unsigned int XblanksThen = 0;
-#define M3DINITSTATE_OWNER_DECLARATION
 #define M3DINITSTATE_DECLARE_DEFAULT_LOD_DISTANCE
 #include "M3DINITSTATE.h"
 s16 M3d_DefaultLODDistance = 0x1770;
 int ForceWireFrameColor = 0;
 int GModelVideoDisplayed = 0;
 SProjectedVertex *ProjectedVertices = 0;
-#define M3DINITSTATE_OWNER_DECLARATION
 #define M3DINITSTATE_DECLARE_ROTATED_VERTICES
 #include "M3DINITSTATE.h"
 SRotatedVertex *RotatedVertices = 0;

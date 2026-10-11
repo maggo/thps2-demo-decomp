@@ -5,14 +5,10 @@
  */
 struct SRotatedVertex;
 
-#if defined(M3DINITSTATE_OWNER_DECLARATION) && defined(M3DINITSTATE_ABSOLUTE_DECLARATION)
-#error "Select only one M3DINIT state declaration view"
-#elif defined(M3DINITSTATE_OWNER_DECLARATION)
-#define M3DINITSTATE_DECL_ATTR
-#elif defined(M3DINITSTATE_ABSOLUTE_DECLARATION)
+#ifdef M3DINITSTATE_ABSOLUTE_DECLARATION
 #define M3DINITSTATE_DECL_ATTR __attribute__((section(".data")))
 #else
-#error "Select the M3DINIT state owner or absolute declaration view"
+#define M3DINITSTATE_DECL_ATTR
 #endif
 
 #if !defined(M3DINITSTATE_DECLARE_DEFAULT_LOD_DISTANCE) && \
@@ -34,4 +30,3 @@ extern SRotatedVertex *RotatedVertices M3DINITSTATE_DECL_ATTR;
 #undef M3DINITSTATE_DECLARE_ROTATED_VERTICES
 #undef M3DINITSTATE_DECL_ATTR
 #undef M3DINITSTATE_ABSOLUTE_DECLARATION
-#undef M3DINITSTATE_OWNER_DECLARATION

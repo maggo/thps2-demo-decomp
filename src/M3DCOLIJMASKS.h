@@ -4,14 +4,10 @@
  * This header is intentionally re-entrant so both declarations stay at their
  * original owner-local encounter points.
  */
-#if defined(M3DCOLIJMASKS_OWNER_DECLARATION) && defined(M3DCOLIJMASKS_ABSOLUTE_DECLARATION)
-#error "Select only one M3DCOLIJ mask declaration view"
-#elif defined(M3DCOLIJMASKS_OWNER_DECLARATION)
-#define M3DCOLIJMASKS_DECL_ATTR
-#elif defined(M3DCOLIJMASKS_ABSOLUTE_DECLARATION)
+#ifdef M3DCOLIJMASKS_ABSOLUTE_DECLARATION
 #define M3DCOLIJMASKS_DECL_ATTR __attribute__((section(".data")))
 #else
-#error "Select the M3DCOLIJ mask owner or absolute declaration view"
+#define M3DCOLIJMASKS_DECL_ATTR
 #endif
 
 #ifdef M3DCOLIJMASKS_WITHIN_C_LINKAGE
@@ -29,5 +25,4 @@ M3DCOLIJMASKS_DECL_LINKAGE unsigned int M3dColij_ZeroMask M3DCOLIJMASKS_DECL_ATT
 #undef M3DCOLIJMASKS_DECL_LINKAGE
 #undef M3DCOLIJMASKS_DECL_ATTR
 #undef M3DCOLIJMASKS_ABSOLUTE_DECLARATION
-#undef M3DCOLIJMASKS_OWNER_DECLARATION
 #undef M3DCOLIJMASKS_WITHIN_C_LINKAGE

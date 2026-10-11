@@ -5,14 +5,10 @@
  * SPOOL physically owns the active queue position in initialized small data.
  * REDBOOK retains its target-proven absolute-address import view.
  */
-#if defined(SPOOLPOS_OWNER_DECLARATION) && defined(SPOOLPOS_ABSOLUTE_DECLARATION)
-#error "Select only one SpoolPos declaration view"
-#elif defined(SPOOLPOS_OWNER_DECLARATION)
-#define SPOOLPOS_DECL_ATTR
-#elif defined(SPOOLPOS_ABSOLUTE_DECLARATION)
+#ifdef SPOOLPOS_ABSOLUTE_DECLARATION
 #define SPOOLPOS_DECL_ATTR __attribute__((section(".data")))
 #else
-#error "Select the SpoolPos owner or absolute declaration view"
+#define SPOOLPOS_DECL_ATTR
 #endif
 
 #ifdef SPOOLPOS_WITHIN_C_LINKAGE
@@ -27,7 +23,6 @@ SPOOLPOS_DECL_LINKAGE int SpoolPos SPOOLPOS_DECL_ATTR;
 #undef SPOOLPOS_DECL_LINKAGE
 #undef SPOOLPOS_DECL_ATTR
 #undef SPOOLPOS_ABSOLUTE_DECLARATION
-#undef SPOOLPOS_OWNER_DECLARATION
 #undef SPOOLPOS_WITHIN_C_LINKAGE
 
 #endif // SPOOLPOS_INC_H

@@ -60,7 +60,6 @@ char reverb_changed = 0;
 unsigned int SFX_ReverbDepthSetTimer = 0;
 
 /** Shared scratch scalar used by baddy sound playback. */
-#define SFXV_OWNER_DECLARATION
 #include "SFXV.h"
 int SFX_v = 0;
 

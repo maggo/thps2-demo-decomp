@@ -54,7 +54,6 @@ typedef char EditorCategory_size_must_be_34[(sizeof(EditorCategory) == 34) ? 1 :
 extern "C"
 {
 #ifdef EDITORPIECES_OWNER_DECLARATIONS
-#define NOTINDEMOPIECE_OWNER_DECLARATION
 #else
 #define NOTINDEMOPIECE_ABSOLUTE_DECLARATION
 #endif
