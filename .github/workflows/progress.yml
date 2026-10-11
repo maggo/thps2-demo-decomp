@@ -2,16 +2,14 @@ name: Progress report
 
 # Publishes the decomp.dev progress report.
 #
-# The report is committed at build/report.json rather than built here, because
-# this repository deliberately cannot build. Producing either the target or the
-# base objects requires the original executable, the Sony PSY-Q 4.6 SDK headers,
-# and ASPSX/PSYLINK -- none of which is redistributable, so none of which is in
-# this repository or reachable from a GitHub-hosted runner.
+# The report is committed at build/report.json rather than built here. Running
+# verify.py requires the original executable, MAIN.SYM and Psy-Q headers,
+# which are user-supplied inputs absent from a GitHub-hosted runner.
 #
 # build/report.json is generated from the project's canonical measurement gate,
 # which refuses to publish against stale or incomplete artifacts, and is
-# refreshed in the same commit as the source it describes. It validates against
-# objdiff's own report parser.
+# refreshed with the source it describes. CI checks the report's internal
+# consistency; it does not reproduce binary matching without those inputs.
 
 on:
   push:
@@ -65,6 +63,23 @@ jobs:
           summed = sum(int(u["measures"]["total_functions"]) for u in units)
           if summed != total:
               sys.exit(f"ERROR: unit functions sum to {summed}, headline says {total}")
+          summed_matched = sum(int(u["measures"]["matched_functions"]) for u in units)
+          if summed_matched != matched:
+              sys.exit("ERROR: matched unit functions disagree with the headline")
+          for field in ("total_code", "matched_code"):
+              if sum(int(u["measures"][field]) for u in units) != int(measures[field]):
+                  sys.exit(f"ERROR: unit {field} disagrees with the headline")
+          for unit in units:
+              functions = unit.get("functions", [])
+              counts = unit["measures"]
+              exact = [f for f in functions if f.get("fuzzy_match_percent") == 100.0]
+              if len(functions) != int(counts["total_functions"]) or len(exact) != int(counts["matched_functions"]):
+                  sys.exit(f"ERROR: inconsistent function counts in {unit['name']}")
+              if sum(int(f["size"]) for f in functions) != int(counts["total_code"]) or sum(int(f["size"]) for f in exact) != int(counts["matched_code"]):
+                  sys.exit(f"ERROR: inconsistent function sizes in {unit['name']}")
+          identities = [(f["name"], int(f["address"])) for u in units for f in u.get("functions", [])]
+          if len(identities) != len(set(identities)):
+              sys.exit("ERROR: duplicated function ranges in the report")
 
           print(f"{matched}/{total} functions exact "
                 f"({matched / total * 100:.6f}%) across {len(units)} units")

@@ -1,16 +1,22 @@
 # User-supplied or generated inputs
 original/
-bin/
-Sample/
-output/
+out/
 
-# The toolchain is user-supplied or downloaded, except for the one helper this
-# repository authors: verify_egcs_1_1_2.py, which checks the downloaded compiler
-# against its stock SHA-256 identities. setup_toolchain.sh and test_all_tu.sh
-# both require it, so excluding it would leave the published scripts unable to
-# run. It contains no third-party code.
+# The toolchain is user-supplied or built locally, except for what this
+# repository authors: verify_egcs_1_1_1.py (checks the built compiler against its
+# stock SHA-256 identities) and the egcs-1.1.1 build recipe (Dockerfile plus the
+# unmodified decompals/old-gcc PSX patches and smoke tests it applies).
 toolchain/*
-!toolchain/verify_egcs_1_1_2.py
+!toolchain/verify_egcs_1_1_1.py
+!toolchain/egcs-1.1.1/
+toolchain/egcs-1.1.1/*
+!toolchain/egcs-1.1.1/Dockerfile
+!toolchain/egcs-1.1.1/patches/
+toolchain/egcs-1.1.1/patches/*
+!toolchain/egcs-1.1.1/patches/*.patch
+!toolchain/egcs-1.1.1/tests/
+toolchain/egcs-1.1.1/tests/*
+!toolchain/egcs-1.1.1/tests/*.c
 
 # Archives and binary build products
 .recovery/
@@ -43,9 +49,11 @@ toolchain/*
 .env.*
 !.env.example
 
-# Python/test caches and local diagnostics
+# Python/test caches
 __pycache__/
 *.py[cod]
 .pytest_cache/
-debug_*
-match_results.txt
+
+# Stray compiler output next to the sources
+src/*.s
+src/*.o

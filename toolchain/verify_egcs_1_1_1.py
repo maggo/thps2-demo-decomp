@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Verify the unmodified, pinned EGCS 1.1.2 PSX compiler binaries.
+"""Verify the unmodified, pinned EGCS 1.1.1 PSX compiler binaries.
 
-The compiler archive installed by ``setup_toolchain.sh`` is a reproducible
-input to every canonical match.  This helper is deliberately read-only: it
-accepts only the two stock binaries from that archive and never patches or
-repairs compiler code.
+The compiler pair built by ``setup_toolchain.sh`` from
+``toolchain/egcs-1.1.1/Dockerfile`` (stock egcs-1.1.1 source, decompals PSX
+patches, linux/amd64) is a reproducible input to every canonical match.
+This helper is deliberately read-only: it accepts only the two stock
+binaries built from that recipe and never patches or repairs compiler code.
 """
 
 from __future__ import annotations
@@ -17,8 +18,8 @@ from pathlib import Path
 
 
 EXPECTED_SHA256 = {
-    "cc1": "dfd5077618c62b4e439d6efdbfec8b9a6a157d5c15a515ca50752f7f76b8e30a",
-    "cc1plus": "75d1f249a5c879ca583cbb9ad99e9e88f5b7e8d766f8a792735c6c58e80b0890",
+    "cc1": "62b1e1f685d26d23d0caa47cefcc5d02bd9faedc26e0ad1a290b9390dbd9054c",
+    "cc1plus": "558334b8f5c3f83796033fcda54a7d9e3641564b31148e05ca3e963df05b1f25",
 }
 
 
@@ -60,7 +61,7 @@ def verify_directory(compiler_dir: Path) -> tuple[tuple[str, str], ...]:
         actual = sha256_file(path)
         if actual != expected:
             raise VerificationError(
-                f"{path}: SHA-256 {actual} is not the unmodified EGCS 1.1.2 "
+                f"{path}: SHA-256 {actual} is not the unmodified EGCS 1.1.1 "
                 f"identity {expected}"
             )
         verified.append((name, actual))
@@ -79,14 +80,14 @@ def main(argv: list[str] | None = None) -> int:
         "compiler_dir",
         nargs="?",
         type=Path,
-        default=Path(__file__).resolve().parent / "gcc-2.91.66-psx",
+        default=Path(__file__).resolve().parent / "gcc-2.91.60-psx",
         help="directory containing cc1 and cc1plus",
     )
     args = parser.parse_args(argv)
 
     try:
         for name, digest in verify_directory(args.compiler_dir):
-            print(f"{name}: unmodified EGCS 1.1.2 verified ({digest})")
+            print(f"{name}: unmodified EGCS 1.1.1 verified ({digest})")
     except VerificationError as error:
         print(f"ERROR: {error}", file=sys.stderr)
         return 1

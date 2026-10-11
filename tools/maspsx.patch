@@ -1,0 +1,68 @@
+diff --git a/maspsx/__init__.py b/maspsx/__init__.py
+index 5ab6f94..f8e314e 100644
+--- a/maspsx/__init__.py
++++ b/maspsx/__init__.py
+@@ -51,7 +51,6 @@ single_reg_loads = {
+     "remu",
+     "move",
+     "negu",
+-    "nor",
+ }
+ double_reg_loads = {
+     "and",
+@@ -61,6 +60,8 @@ double_reg_loads = {
+     "xor",
+     "xori",
+     "addu",
++    "nor",  # local fix: nor reads both source registers
++    "addiu",  # local fix: ASPSX inserts the load-delay nop for `addiu rd,rs,%lo(sym)` too
+     "subu",
+     "sll",
+     "slr",
+@@ -492,6 +493,7 @@ class MaspsxProcessor:
+         self.sdata_entries: dict[str, int] = {}
+ 
+         self.comm_symbols: set[str] = set()
++        self.extern_entries: dict[str, int] = {}
+ 
+     def preprocess_lines(self) -> None:
+         in_sdata = False
+@@ -518,8 +520,9 @@ class MaspsxProcessor:
+                 in_sdata = False
+                 continue
+ 
+-            if line.startswith(".section") and line.endswith(".text"):
+-                in_sdata = False
++            if line.startswith(".section"):
++                # egcs C++ emits e.g. `.section .sdata,"aw",@progbits`
++                in_sdata = line.split()[1].split(",")[0] == ".sdata"
+                 continue
+ 
+             if line.startswith("#"):
+@@ -535,6 +538,9 @@ class MaspsxProcessor:
+ 
+             if line.startswith(".extern"):
+                 in_sdata = False
++                # local fix: `.extern sym, size` within -G is $gp-relative in ASPSX/gas too
++                if m := re.match(r"\.extern\s+([^,\s]+)\s*,\s*(\d+)", line):
++                    self.extern_entries[m.group(1)] = int(m.group(2))
+                 continue
+ 
+             if line.startswith(".comm") or line.startswith(".lcomm"):
+@@ -705,6 +711,7 @@ class MaspsxProcessor:
+ 
+                 if gp_allowed and (
+                     symbol in self.sbss_entries or symbol in self.sdata_entries
++                    or 0 < self.extern_entries.get(symbol, 0) <= self.sdata_limit
+                 ):
+                     return True
+ 
+@@ -921,6 +928,8 @@ class MaspsxProcessor:
+             return []
+ 
+         if line.startswith("."):
++            # inline asm writes `.set noreorder` with a space
++            line = re.sub(r"^\.set\s+(no)?reorder$", lambda m: f".set\t{m[1] or ''}reorder", line)
+             if is_coff_directive(line):
+                 pass
+ 
