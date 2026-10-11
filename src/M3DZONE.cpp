@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #include "M3DZONE.h"
 #include "globals.h"
 #include "PSXREGION.h"
@@ -36,7 +37,7 @@ struct SZone
     Item **Ptr[M3dZoneGridDimension][M3dZoneGridDimension];
 };
 
-typedef char M3dZone_zone_size_must_be_1632[(sizeof(SZone) == 1632) ? 1 : -1];
+PSX_LAYOUT_CHECK(M3dZone_zone_size_must_be_1632, sizeof(SZone) == 1632);
 
 #define M3DCOLIJMASKS_ABSOLUTE_DECLARATION
 #define M3DCOLIJMASKS_WITHIN_C_LINKAGE
@@ -57,7 +58,7 @@ void M3dColij_LineToItemZoned(Item **itemList, SLineInfo *lineInfo);
 int M3dColij_GetLineInfo(SLineInfo *lineInfo);
 
 /** Primary collision zone, populated when an environment is loaded. */
-SZone Zones[1] __attribute__((section(".data"))) = { { 0 } };
+SZone Zones[1] PSX_SECTION(".data") = { { 0 } };
 
 /**
  * Clear one zone's active flag and spatial collision grid.

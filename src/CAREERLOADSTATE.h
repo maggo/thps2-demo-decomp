@@ -4,8 +4,9 @@
  * This header is intentionally re-entrant so each flag stays at its original
  * declaration point.
  */
+#include "PSX.h"
 #ifdef CAREERLOADSTATE_ABSOLUTE_DECLARATION
-#define CAREERLOADSTATE_DECL_ATTR __attribute__((section(".data")))
+#define CAREERLOADSTATE_DECL_ATTR PSX_SECTION(".data")
 #else
 #define CAREERLOADSTATE_DECL_ATTR
 #endif

@@ -1,5 +1,6 @@
 #ifndef IMAGE_INC_H
 #define IMAGE_INC_H
+#include "PSX.h"
 
 /** Set the active clipping box and relink it into the panel ordering table. */
 void SetClippingBox2(int x, int y, int width, int height);
@@ -111,9 +112,9 @@ struct RotateSprite : Sprite2
     virtual ~RotateSprite() IMAGE_EMPTY_VIRTUAL void draw(int x, int y, int rot);
 };
 
-typedef char image_poly_Image_size_must_be_28[(sizeof(Image) == 28) ? 1 : -1];
-typedef char image_poly_SlicedImage2_size_must_be_60[(sizeof(SlicedImage2) == 60) ? 1 : -1];
-typedef char image_poly_Sprite2_size_must_be_60[(sizeof(Sprite2) == 60) ? 1 : -1];
-typedef char image_poly_RotateSprite_size_must_be_64[(sizeof(RotateSprite) == 64) ? 1 : -1];
+PSX_LAYOUT_CHECK(image_poly_Image_size_must_be_28, sizeof(Image) == 28);
+PSX_LAYOUT_CHECK(image_poly_SlicedImage2_size_must_be_60, sizeof(SlicedImage2) == 60);
+PSX_LAYOUT_CHECK(image_poly_Sprite2_size_must_be_60, sizeof(Sprite2) == 60);
+PSX_LAYOUT_CHECK(image_poly_RotateSprite_size_must_be_64, sizeof(RotateSprite) == 64);
 
 #endif // IMAGE_POLYMORPHIC_LAYOUT

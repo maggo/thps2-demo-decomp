@@ -3,8 +3,9 @@
  * count in small data.  This header is intentionally re-entrant so each
  * translation unit retains its original declaration order and import view.
  */
+#include "PSX.h"
 #ifdef TRIGSTATE_ABSOLUTE_DECLARATION
-#define TRIGSTATE_DECL_ATTR __attribute__((section(".data")))
+#define TRIGSTATE_DECL_ATTR PSX_SECTION(".data")
 #else
 #define TRIGSTATE_DECL_ATTR
 #endif

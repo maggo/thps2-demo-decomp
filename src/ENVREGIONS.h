@@ -1,5 +1,6 @@
 #ifndef ENVREGIONS_INC_H
 #define ENVREGIONS_INC_H
+#include "PSX.h"
 
 /*
  * SPOOL physically owns the two environment-region indices in small data.
@@ -10,7 +11,7 @@
 #ifdef ENVREGIONS_OWNER_DECLARATION
 #define ENVREGIONS_DECL_ATTR
 #else
-#define ENVREGIONS_DECL_ATTR __attribute__((section(".data")))
+#define ENVREGIONS_DECL_ATTR PSX_SECTION(".data")
 #endif
 
 #ifdef ENVREGIONS_WITHIN_C_LINKAGE

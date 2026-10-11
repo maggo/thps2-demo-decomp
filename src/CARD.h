@@ -1,5 +1,6 @@
 #ifndef CARD_H
 #define CARD_H
+#include "PSX.h"
 
 /** Kind of file stored in a THPS memory-card slot. */
 enum EFileType
@@ -25,7 +26,7 @@ struct SCardHead
 /* Psy-Q owns the directory record returned by the memory-card API. */
 #include <KERNEL.H>
 
-typedef char Card_DIRENTRY_size_must_be_40[(sizeof(DIRENTRY) == 40) ? 1 : -1];
+PSX_LAYOUT_CHECK(Card_DIRENTRY_size_must_be_40, sizeof(DIRENTRY) == 40);
 
 /** CARD-owned file classifications and directory records. */
 extern EFileType FileType[15];

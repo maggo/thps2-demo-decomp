@@ -6,6 +6,7 @@
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 // Owner-local declarations attributed to PLAYERSELECT.cpp by MAIN.SYM.
+#include "PSX.h"
 typedef unsigned char u8;
 typedef unsigned short u16;
 typedef unsigned int u32;
@@ -343,8 +344,8 @@ struct MultiPlayerScreenElement : ScreenElementList
 };
 
 
-typedef char playerselect_board_size_must_be_32[(sizeof(SBoard) == 32) ? 1 : -1];
-typedef char playerselect_light_size_must_be_52[(sizeof(SLight) == 52) ? 1 : -1];
+PSX_LAYOUT_CHECK(playerselect_board_size_must_be_32, sizeof(SBoard) == 32);
+PSX_LAYOUT_CHECK(playerselect_light_size_must_be_52, sizeof(SLight) == 52);
 typedef char playerselect_double_buffer_prefix_size_must_be_148
     [(sizeof(PlayerSelectDoubleBuffer) == 148) ? 1 : -1];
 typedef char
@@ -352,14 +353,14 @@ typedef char
                                                                                              : -1];
 typedef char playerselect_anim_directory_entry_size_must_be_36
     [(sizeof(PlayerSelectAnimDirectoryEntry) == 36) ? 1 : -1];
-typedef char playerselect_sprite_size_must_be_60[(sizeof(Sprite2) == 60) ? 1 : -1];
-typedef char playerselect_csuper_size_must_be_400[(sizeof(CSuper) == 400) ? 1 : -1];
-typedef char playerselect_hierarchy_size_must_be_132[(sizeof(hierarchyInfo) == 132) ? 1 : -1];
-typedef char playerselect_stats_size_must_be_344[(sizeof(SStats) == 344) ? 1 : -1];
+PSX_LAYOUT_CHECK(playerselect_sprite_size_must_be_60, sizeof(Sprite2) == 60);
+PSX_LAYOUT_CHECK(playerselect_csuper_size_must_be_400, sizeof(CSuper) == 400);
+PSX_LAYOUT_CHECK(playerselect_hierarchy_size_must_be_132, sizeof(hierarchyInfo) == 132);
+PSX_LAYOUT_CHECK(playerselect_stats_size_must_be_344, sizeof(SStats) == 344);
 typedef char
     playerselect_skater_element_size_must_be_2648[(sizeof(SkaterScreenElement) == 2648) ? 1 : -1];
-typedef char playerselect_screen_size_must_be_372[(sizeof(PlayerSelectScreen) == 372) ? 1 : -1];
-typedef char playerselect_font_size_must_be_80[(sizeof(Font) == 80) ? 1 : -1];
+PSX_LAYOUT_CHECK(playerselect_screen_size_must_be_372, sizeof(PlayerSelectScreen) == 372);
+PSX_LAYOUT_CHECK(playerselect_font_size_must_be_80, sizeof(Font) == 80);
 
 #include "OB.h"
 #include "CBODY.h"
@@ -410,19 +411,19 @@ extern char s_TeamChicken[];
 // === PlayerSelect-owned initialized data ===
 
 /** Projection bounds used by the front-end skater preview. */
-static SViewport CreateViewport1 __attribute__((section(".data"))) = {
+static SViewport CreateViewport1 PSX_SECTION(".data") = {
     0x200, 0xF0, 0, 0, 10, 30000, 0xD55, 0, 0, 0,
 };
 
 /** Standard and unavailable-skater lighting used by the preview models. */
-static SLight Skater_CreateLight __attribute__((section(".data"))) = {
+static SLight Skater_CreateLight PSX_SECTION(".data") = {
     { { 0, 4096, 0 }, { 0, -4096, 0 }, { 0, 0, 4096 } },
     0,
     { { 640, 2944, 320 }, { 640, 2944, 320 }, { 640, 2944, 320 } },
     0,
     { 2176, 2176, 2176 },
 };
-static SLight Skater_NotAvailableLight __attribute__((section(".data"))) = {
+static SLight Skater_NotAvailableLight PSX_SECTION(".data") = {
     { { 0, 4096, 0 }, { 0, -4096, 0 }, { 0, 0, 4096 } },
     0,
     { { 320, 1472, 160 }, { 320, 1472, 160 }, { 320, 1472, 160 } },
@@ -433,10 +434,10 @@ static SLight Skater_NotAvailableLight __attribute__((section(".data"))) = {
 extern "C"
 {
 /** Front-end selection state stored in PlayerSelect's small-data prefix. */
-int MultiPlayerListCount __attribute__((section(".sdata"))) = 0;
-int mCASTexturesSpooled __attribute__((section(".sdata"))) = 0;
+int MultiPlayerListCount PSX_SECTION(".sdata") = 0;
+int mCASTexturesSpooled PSX_SECTION(".sdata") = 0;
 /** Viewport selected for the front-end skater preview. */
-static SViewport *pViewport __attribute__((section(".sdata"))) = &CreateViewport1;
+static SViewport *pViewport PSX_SECTION(".sdata") = &CreateViewport1;
 
 /**
  * Skater-select icon placement, full-window offsets, and spool state.
@@ -445,7 +446,7 @@ static SViewport *pViewport __attribute__((section(".sdata"))) = &CreateViewport
  * represented by its proven base symbol.  Keeping these as relocatable
  * expressions preserves the original pointer data without baking addresses.
  */
-ICON_INFO mIconInfo[8] __attribute__((section(".data"))) = {
+ICON_INFO mIconInfo[8] PSX_SECTION(".data") = {
     { (char *)(s_SpartPrefixFormat + 0x1A30), -63, 14, 154, 62, 1, 0 },
     { (char *)(s_SpartPrefixFormat + 0x1A3C), -60, 14, 154, 62, 1, 0 },
     { (char *)(s_SpartPrefixFormat + 0x1A48), -48, 79, 154, 62, 1, 0 },
@@ -457,7 +458,7 @@ ICON_INFO mIconInfo[8] __attribute__((section(".data"))) = {
 };
 
 /** Selected skaters for the current multiplayer setup. */
-int MultiPlayerList[8] __attribute__((section(".data"))) = { 0 };
+int MultiPlayerList[8] PSX_SECTION(".data") = { 0 };
 }
 
 
@@ -467,7 +468,7 @@ typedef char playerselect_multiplayer_element_size_must_be_112
     [(sizeof(MultiPlayerScreenElement) == 112) ? 1 : -1];
 typedef char
     playerselect_stats_element_size_must_be_108[(sizeof(StatsScreenElement) == 108) ? 1 : -1];
-typedef char playerselect_bio_element_size_must_be_180[(sizeof(BioScreenElement) == 180) ? 1 : -1];
+PSX_LAYOUT_CHECK(playerselect_bio_element_size_must_be_180, sizeof(BioScreenElement) == 180);
 typedef char
     playerselect_career_element_size_must_be_152[(sizeof(CareerScreenElement) == 152) ? 1 : -1];
 typedef char
@@ -502,8 +503,8 @@ extern "C"
  * The explicit extent preserves the target's five trailing alignment bytes
  * before the screen-element dispatch tables.
  */
-static char s_LoadingPreFileManually[32] __attribute__((section(".rdata"), aligned(8))) =
-    "loading pre file manually\n";
+static char s_LoadingPreFileManually[32] PSX_SECTION_ALIGNED(".rdata",
+                                                             8) = "loading pre file manually\n";
 }
 }
 
@@ -522,9 +523,8 @@ struct SPlayerSelectCareerOverlay
 
 typedef char
     playerselect_character_progress_size_must_be_32[(sizeof(SCharacterProgress) == 32) ? 1 : -1];
-typedef char playerselect_career_prefix_size_must_be_456[(sizeof(SPlayerSelectCareerOverlay) == 456)
-                                                             ? 1
-                                                             : -1];
+PSX_LAYOUT_CHECK(playerselect_career_prefix_size_must_be_456,
+                 sizeof(SPlayerSelectCareerOverlay) == 456);
 
 
 // === PlayerSelect-owned font resources ===
@@ -534,12 +534,12 @@ namespace PlayerSelectAddressViewOwners
 {
 extern "C"
 {
-static char s_PlayerPre[12] __attribute__((section(".sdata"), aligned(4))) = "player.pre";
+static char s_PlayerPre[12] PSX_SECTION_ALIGNED(".sdata", 4) = "player.pre";
 }
 }
-static char PSFont2[12] __attribute__((section(".sdata"), aligned(4))) = "s2font2.fnt";
-static char PSFont1[12] __attribute__((section(".sdata"), aligned(4))) = "s2font1.fnt";
-static char PSFont3[12] __attribute__((section(".sdata"), aligned(4))) = "s2bio.fnt";
+static char PSFont2[12] PSX_SECTION_ALIGNED(".sdata", 4) = "s2font2.fnt";
+static char PSFont1[12] PSX_SECTION_ALIGNED(".sdata", 4) = "s2font1.fnt";
+static char PSFont3[12] PSX_SECTION_ALIGNED(".sdata", 4) = "s2bio.fnt";
 
 // === Absolute-addressed globals ===
 /** Incomplete view of the player-select load-character prompt. */
@@ -3160,61 +3160,56 @@ namespace PlayerSelectAddressViewOwners
 {
 extern "C"
 {
-static char s_S2bgd1Bmp[12] __attribute__((section(".sdata"), aligned(4))) = "s2bgd1.bmp";
-static char s_S2prmpt4Bmp_PlayerSelect[16] __attribute__((section(".sdata"), aligned(4))) =
-    "s2prmpt4.bmp";
-static char s_Select_PlayerSelect[8] __attribute__((section(".sdata"), aligned(4))) = "select";
-static char s_S2prmpt5Bmp[16] __attribute__((section(".sdata"), aligned(4))) = "s2prmpt5.bmp";
-static char s_ScrollBio[12] __attribute__((section(".sdata"), aligned(4))) = "scroll bio";
-static char s_S2prmpt1Bmp_PlayerSelect[16] __attribute__((section(".sdata"), aligned(4))) =
-    "s2prmpt1.bmp";
-static char s_Accept_PlayerSelect[8] __attribute__((section(".sdata"), aligned(4))) = "accept";
-static char s_S2prmpt2Bmp_PlayerSelect[16] __attribute__((section(".sdata"), aligned(4))) =
-    "s2prmpt2.bmp";
-static char s_Back_PlayerSelect[8] __attribute__((section(".sdata"), aligned(4))) = "back";
-static char s_TeamChicken[16] __attribute__((section(".sdata"), aligned(4))) = "TEAM CHICKEN";
-static char s_LoadCharacter[16] __attribute__((section(".sdata"), aligned(4))) = "LOAD CHARACTER";
-static char s_ValueFmt7d[8] __attribute__((section(".sdata"), aligned(4))) = "$%7d";
+static char s_S2bgd1Bmp[12] PSX_SECTION_ALIGNED(".sdata", 4) = "s2bgd1.bmp";
+static char s_S2prmpt4Bmp_PlayerSelect[16] PSX_SECTION_ALIGNED(".sdata", 4) = "s2prmpt4.bmp";
+static char s_Select_PlayerSelect[8] PSX_SECTION_ALIGNED(".sdata", 4) = "select";
+static char s_S2prmpt5Bmp[16] PSX_SECTION_ALIGNED(".sdata", 4) = "s2prmpt5.bmp";
+static char s_ScrollBio[12] PSX_SECTION_ALIGNED(".sdata", 4) = "scroll bio";
+static char s_S2prmpt1Bmp_PlayerSelect[16] PSX_SECTION_ALIGNED(".sdata", 4) = "s2prmpt1.bmp";
+static char s_Accept_PlayerSelect[8] PSX_SECTION_ALIGNED(".sdata", 4) = "accept";
+static char s_S2prmpt2Bmp_PlayerSelect[16] PSX_SECTION_ALIGNED(".sdata", 4) = "s2prmpt2.bmp";
+static char s_Back_PlayerSelect[8] PSX_SECTION_ALIGNED(".sdata", 4) = "back";
+static char s_TeamChicken[16] PSX_SECTION_ALIGNED(".sdata", 4) = "TEAM CHICKEN";
+static char s_LoadCharacter[16] PSX_SECTION_ALIGNED(".sdata", 4) = "LOAD CHARACTER";
+static char s_ValueFmt7d[8] PSX_SECTION_ALIGNED(".sdata", 4) = "$%7d";
 }
 }
 
-static char s_S2win4Bmp[12] __attribute__((section(".sdata"), aligned(4))) = "s2win4.bmp";
-static char s_S2medal1Bmp[16] __attribute__((section(".sdata"), aligned(4))) = "s2medal1.bmp";
-static char s_S2medal2Bmp[16] __attribute__((section(".sdata"), aligned(4))) = "s2medal2.bmp";
-static char s_S2medal3Bmp[16] __attribute__((section(".sdata"), aligned(4))) = "s2medal3.bmp";
-static char s_S2scrollBmp[16] __attribute__((section(".sdata"), aligned(4))) = "s2scroll.bmp";
-static char s_S2win3Bmp[12] __attribute__((section(".sdata"), aligned(4))) = "s2win3.bmp";
-static char s_S2arrow1Bmp_PlayerSelect[16] __attribute__((section(".sdata"), aligned(4))) =
-    "s2arrow1.bmp";
-static char s_S2arrow2Bmp_PlayerSelect[16] __attribute__((section(".sdata"), aligned(4))) =
-    "s2arrow2.bmp";
-static char s_S2win1Bmp[12] __attribute__((section(".sdata"), aligned(4))) = "s2win1.bmp";
-static char s_MemCard[12] __attribute__((section(".sdata"), aligned(4))) = "mem_card";
-static char s_S2win2Bmp[12] __attribute__((section(".sdata"), aligned(4))) = "s2win2.bmp";
-static char s_S2icon1Bmp[12] __attribute__((section(".sdata"), aligned(4))) = "s2icon1.bmp";
-static char s_S2icon2Bmp[12] __attribute__((section(".sdata"), aligned(4))) = "s2icon2.bmp";
-static char s_S2icon3Bmp[12] __attribute__((section(".sdata"), aligned(4))) = "s2icon3.bmp";
-static char s_S2icon4Bmp[12] __attribute__((section(".sdata"), aligned(4))) = "s2icon4.bmp";
-static char s_S2icon5Bmp[12] __attribute__((section(".sdata"), aligned(4))) = "s2icon5.bmp";
-static char s_S2icon6Bmp[12] __attribute__((section(".sdata"), aligned(4))) = "s2icon6.bmp";
-static char s_S2nademoBmp[16] __attribute__((section(".sdata"), aligned(4))) = "s2nademo.bmp";
+static char s_S2win4Bmp[12] PSX_SECTION_ALIGNED(".sdata", 4) = "s2win4.bmp";
+static char s_S2medal1Bmp[16] PSX_SECTION_ALIGNED(".sdata", 4) = "s2medal1.bmp";
+static char s_S2medal2Bmp[16] PSX_SECTION_ALIGNED(".sdata", 4) = "s2medal2.bmp";
+static char s_S2medal3Bmp[16] PSX_SECTION_ALIGNED(".sdata", 4) = "s2medal3.bmp";
+static char s_S2scrollBmp[16] PSX_SECTION_ALIGNED(".sdata", 4) = "s2scroll.bmp";
+static char s_S2win3Bmp[12] PSX_SECTION_ALIGNED(".sdata", 4) = "s2win3.bmp";
+static char s_S2arrow1Bmp_PlayerSelect[16] PSX_SECTION_ALIGNED(".sdata", 4) = "s2arrow1.bmp";
+static char s_S2arrow2Bmp_PlayerSelect[16] PSX_SECTION_ALIGNED(".sdata", 4) = "s2arrow2.bmp";
+static char s_S2win1Bmp[12] PSX_SECTION_ALIGNED(".sdata", 4) = "s2win1.bmp";
+static char s_MemCard[12] PSX_SECTION_ALIGNED(".sdata", 4) = "mem_card";
+static char s_S2win2Bmp[12] PSX_SECTION_ALIGNED(".sdata", 4) = "s2win2.bmp";
+static char s_S2icon1Bmp[12] PSX_SECTION_ALIGNED(".sdata", 4) = "s2icon1.bmp";
+static char s_S2icon2Bmp[12] PSX_SECTION_ALIGNED(".sdata", 4) = "s2icon2.bmp";
+static char s_S2icon3Bmp[12] PSX_SECTION_ALIGNED(".sdata", 4) = "s2icon3.bmp";
+static char s_S2icon4Bmp[12] PSX_SECTION_ALIGNED(".sdata", 4) = "s2icon4.bmp";
+static char s_S2icon5Bmp[12] PSX_SECTION_ALIGNED(".sdata", 4) = "s2icon5.bmp";
+static char s_S2icon6Bmp[12] PSX_SECTION_ALIGNED(".sdata", 4) = "s2icon6.bmp";
+static char s_S2nademoBmp[16] PSX_SECTION_ALIGNED(".sdata", 4) = "s2nademo.bmp";
 
 /** Skater-spooling formats, animation assets, and multiplayer labels. */
 namespace PlayerSelectAddressViewOwners
 {
 extern "C"
 {
-static char s_Loading[12] __attribute__((section(".sdata"), aligned(4))) = "Loading...";
-static char s_PshExt[8] __attribute__((section(".sdata"), aligned(4))) = "%s.psh";
-static char s_SpartFmt[8] __attribute__((section(".sdata"), aligned(4))) = "%spart_";
-static char s_PsxExt[8] __attribute__((section(".sdata"), aligned(4))) = "%s.psx";
-static char s_AnimsFe[12] __attribute__((section(".sdata"), aligned(4))) = "anims_fe";
-static char s_AnimsCsPsx[16] __attribute__((section(".sdata"), aligned(4))) = "anims_cs.psx";
-static char s_FilenameFmt[4] __attribute__((section(".sdata"), aligned(4))) = "%s";
-static short FrontEndAnimVec[4] __attribute__((section(".sdata"), aligned(4))) = { 0, -1, -1, 0 };
-static char s_S2dotsBmp[12] __attribute__((section(".sdata"), aligned(4))) = "s2dots.bmp";
-static char s_Dummy[8] __attribute__((section(".sdata"), aligned(4))) = "dummy";
-static char s_ChooseSkater[16] __attribute__((section(".sdata"), aligned(4))) = "choose skater";
-static char s_PlayerNumFmt[12] __attribute__((section(".sdata"), aligned(4))) = "player %d";
+static char s_Loading[12] PSX_SECTION_ALIGNED(".sdata", 4) = "Loading...";
+static char s_PshExt[8] PSX_SECTION_ALIGNED(".sdata", 4) = "%s.psh";
+static char s_SpartFmt[8] PSX_SECTION_ALIGNED(".sdata", 4) = "%spart_";
+static char s_PsxExt[8] PSX_SECTION_ALIGNED(".sdata", 4) = "%s.psx";
+static char s_AnimsFe[12] PSX_SECTION_ALIGNED(".sdata", 4) = "anims_fe";
+static char s_AnimsCsPsx[16] PSX_SECTION_ALIGNED(".sdata", 4) = "anims_cs.psx";
+static char s_FilenameFmt[4] PSX_SECTION_ALIGNED(".sdata", 4) = "%s";
+static short FrontEndAnimVec[4] PSX_SECTION_ALIGNED(".sdata", 4) = { 0, -1, -1, 0 };
+static char s_S2dotsBmp[12] PSX_SECTION_ALIGNED(".sdata", 4) = "s2dots.bmp";
+static char s_Dummy[8] PSX_SECTION_ALIGNED(".sdata", 4) = "dummy";
+static char s_ChooseSkater[16] PSX_SECTION_ALIGNED(".sdata", 4) = "choose skater";
+static char s_PlayerNumFmt[12] PSX_SECTION_ALIGNED(".sdata", 4) = "player %d";
 }
 }

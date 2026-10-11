@@ -7,6 +7,7 @@
 
 // Owner-local declarations attributed to MECH.cpp by MAIN.SYM.
 
+#include "PSX.h"
 typedef unsigned char u8;
 typedef unsigned short u16;
 typedef unsigned int u32;
@@ -340,14 +341,14 @@ struct CCamera
     int InCompetitionIntro();
 };
 
-typedef char SFaceLightingMech_size_check[(sizeof(struct SFaceLightingMech) == 12) ? 1 : -1];
-typedef char CPanelData_size_check[(sizeof(struct CPanelData) == 2276) ? 1 : -1];
+PSX_LAYOUT_CHECK(SFaceLightingMech_size_check, sizeof(struct SFaceLightingMech) == 12);
+PSX_LAYOUT_CHECK(CPanelData_size_check, sizeof(struct CPanelData) == 2276);
 typedef CCamera CCameraMechCtor;
-typedef char CCameraMech_size_check[(sizeof(CCamera) == 1668) ? 1 : -1];
-typedef char CBruce_mech_size_check[(sizeof(struct CBruce) == 5228) ? 1 : -1];
-typedef char CSpark_size_check[(sizeof(struct CSpark) == 0x5C) ? 1 : -1];
-typedef char Mech_SCharacterProgress_size_check[(sizeof(struct SCharacterProgress) == 32) ? 1 : -1];
-typedef char SVideoInfo_size_check[(sizeof(struct SVideoInfo) == 192) ? 1 : -1];
+PSX_LAYOUT_CHECK(CCameraMech_size_check, sizeof(CCamera) == 1668);
+PSX_LAYOUT_CHECK(CBruce_mech_size_check, sizeof(struct CBruce) == 5228);
+PSX_LAYOUT_CHECK(CSpark_size_check, sizeof(struct CSpark) == 0x5C);
+PSX_LAYOUT_CHECK(Mech_SCharacterProgress_size_check, sizeof(struct SCharacterProgress) == 32);
+PSX_LAYOUT_CHECK(SVideoInfo_size_check, sizeof(struct SVideoInfo) == 192);
 typedef char CBruce_rotation_matrix_offset_check
     [((unsigned long)&(((CBruce *)0)->mRotationMatrix) == 0xE90) ? 1 : -1];
 typedef char CBruce_old_rotation_matrix_offset_check
@@ -359,18 +360,18 @@ typedef char
                                                                                              : -1];
 typedef char
     CBruce_history_offset_check[((unsigned long)&(((CBruce *)0)->mHistory) == 0x114C) ? 1 : -1];
-typedef char SDK_MATRIX_mech_size_check[(sizeof(MATRIX) == 32) ? 1 : -1];
-typedef char SDK_VECTOR_mech_size_check[(sizeof(VECTOR) == 16) ? 1 : -1];
-typedef char CVectorMechCtor_size_check[(sizeof(struct CVectorMechCtor) == 12) ? 1 : -1];
-typedef char SDK_SVECTOR_mech_size_check[(sizeof(SVECTOR) == 8) ? 1 : -1];
-typedef char SDK_CVECTOR_mech_size_check[(sizeof(CVECTOR) == 4) ? 1 : -1];
-typedef char Mech_CFriction_size_check[(sizeof(struct CFriction) == 3) ? 1 : -1];
-typedef char Mech_SLight_size_check[(sizeof(SLight) == 52) ? 1 : -1];
+PSX_LAYOUT_CHECK(SDK_MATRIX_mech_size_check, sizeof(MATRIX) == 32);
+PSX_LAYOUT_CHECK(SDK_VECTOR_mech_size_check, sizeof(VECTOR) == 16);
+PSX_LAYOUT_CHECK(CVectorMechCtor_size_check, sizeof(struct CVectorMechCtor) == 12);
+PSX_LAYOUT_CHECK(SDK_SVECTOR_mech_size_check, sizeof(SVECTOR) == 8);
+PSX_LAYOUT_CHECK(SDK_CVECTOR_mech_size_check, sizeof(CVECTOR) == 4);
+PSX_LAYOUT_CHECK(Mech_CFriction_size_check, sizeof(struct CFriction) == 3);
+PSX_LAYOUT_CHECK(Mech_SLight_size_check, sizeof(SLight) == 52);
 
 #include "FONT.h"
 #include "UTILS.h"
 #include "CFLATRIPPLE.h"
-typedef char CFlatRipple_size_check[(sizeof(CFlatRipple) == 0x74) ? 1 : -1];
+PSX_LAYOUT_CHECK(CFlatRipple_size_check, sizeof(CFlatRipple) == 0x74);
 
 // === External function declarations ===
 #include "VIDEO.h"
@@ -385,13 +386,13 @@ typedef char CFlatRipple_size_check[(sizeof(CFlatRipple) == 0x74) ? 1 : -1];
 /**
  * Compact diagnostic format retained in the original small-data section.
  */
-static char Mech_StatsFormat[12] __attribute__((section(".sdata"), aligned(4))) = "%d %d %d %d";
+static char Mech_StatsFormat[12] PSX_SECTION_ALIGNED(".sdata", 4) = "%d %d %d %d";
 
 /** Active skater used by script and collision systems. */
-CBruce *pCurrentPlayer __attribute__((section(".sbss")));
+CBruce *pCurrentPlayer PSX_SECTION(".sbss");
 
 /** Default skater light used by ordinary levels. */
-SLight Skater_DefaultLight __attribute__((section(".data"))) = {
+SLight Skater_DefaultLight PSX_SECTION(".data") = {
     {
         { 0, 0x1000, 0 },
         { 0, -0x1000, 0 },
@@ -408,7 +409,7 @@ SLight Skater_DefaultLight __attribute__((section(".data"))) = {
 };
 
 /** Warmer skater light selected by the generated Mars level. */
-SLight Skater_MarsLight __attribute__((section(".data"))) = {
+SLight Skater_MarsLight PSX_SECTION(".data") = {
     {
         { 0, 0x1000, 0 },
         { 0, -0x1000, 0 },
@@ -425,7 +426,7 @@ SLight Skater_MarsLight __attribute__((section(".data"))) = {
 };
 
 /** Per-skater hook indices loaded after the skater model is initialized. */
-s16 SkaterHooks[14][10] __attribute__((section(".data"))) = {
+s16 SkaterHooks[14][10] PSX_SECTION(".data") = {
     { 0, 1, 0, 0, 0, 18, 0, 0, 0, 3 },
     { 0, 1, 0, 0, 0, 12, 0, 0, 0, 0 },
     { 0, 1, 0, 0, 0, 12, 0, 0, 0, 0 },
@@ -445,12 +446,12 @@ s16 SkaterHooks[14][10] __attribute__((section(".data"))) = {
 #include "HEADBLOODATFRAME.h"
 
 /** Animation frame that emits head blood for each skater model. */
-s16 HeadBloodAtFrame[14] __attribute__((section(".data"))) = {
+s16 HeadBloodAtFrame[14] PSX_SECTION(".data") = {
     19, -1, 17, 17, 17, 17, 17, 17, 17, 17, 17, 0, 0, 0,
 };
 
 /** Board-stat bonuses filled for the active skaters at run setup. */
-BoardStats GBoardStats[2] __attribute__((section(".sdata"))) = {};
+BoardStats GBoardStats[2] PSX_SECTION(".sdata") = {};
 
 /** Assign all three components of a short game-space vector. */
 static inline void MechSetSVector(CSVector *v, int x, int y, int z)

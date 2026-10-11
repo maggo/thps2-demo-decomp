@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #define CVECTOR_COMPONENT_CTORS
 #define CCLASS_POLY_ITEM_FAMILY
 #include "CCLASS_POLY.h"
@@ -79,9 +80,9 @@ struct CCamera : CBody
     /** Enables the camera's owner-local tweak controls. */
     static int Tweaking;
     /** Selected row in the camera tweak menu. */
-    static u16 TweakRow __attribute__((section(".sdata")));
+    static u16 TweakRow PSX_SECTION(".sdata");
     /** Selected camera-position column in the camera tweak menu. */
-    static u16 TweakCol __attribute__((section(".sdata")));
+    static u16 TweakCol PSX_SECTION(".sdata");
 
     u16 mMikeIndex;
     struct CamPos mPosA;
@@ -236,15 +237,15 @@ struct CCamera : CBody
     void CM_NoBigAir();
 };
 
-typedef char Camera_CClass_size_must_be_4[(sizeof(CClass) == 4) ? 1 : -1];
-typedef char Camera_CItem_size_must_be_76[(sizeof(CItem) == 76) ? 1 : -1];
-typedef char Camera_CBody_size_must_be_264[(sizeof(CBody) == 264) ? 1 : -1];
-typedef char Camera_Quat_size_must_be_20[(sizeof(CQuat) == 20) ? 1 : -1];
-typedef char Camera_AnimQuat_size_must_be_28[(sizeof(t9AnimParam1Z5CQuat) == 28) ? 1 : -1];
-typedef char Camera_CamPos_size_must_be_184[(sizeof(CamPos) == 184) ? 1 : -1];
-typedef char Camera_Camera_size_must_be_1668[(sizeof(CCamera) == 1668) ? 1 : -1];
-typedef char Camera_CamPosStruct_size_must_be_16[(sizeof(CamPosStruct) == 16) ? 1 : -1];
-typedef char Camera_Preset_size_must_be_12[(sizeof(SPresetCamera) == 12) ? 1 : -1];
+PSX_LAYOUT_CHECK(Camera_CClass_size_must_be_4, sizeof(CClass) == 4);
+PSX_LAYOUT_CHECK(Camera_CItem_size_must_be_76, sizeof(CItem) == 76);
+PSX_LAYOUT_CHECK(Camera_CBody_size_must_be_264, sizeof(CBody) == 264);
+PSX_LAYOUT_CHECK(Camera_Quat_size_must_be_20, sizeof(CQuat) == 20);
+PSX_LAYOUT_CHECK(Camera_AnimQuat_size_must_be_28, sizeof(t9AnimParam1Z5CQuat) == 28);
+PSX_LAYOUT_CHECK(Camera_CamPos_size_must_be_184, sizeof(CamPos) == 184);
+PSX_LAYOUT_CHECK(Camera_Camera_size_must_be_1668, sizeof(CCamera) == 1668);
+PSX_LAYOUT_CHECK(Camera_CamPosStruct_size_must_be_16, sizeof(CamPosStruct) == 16);
+PSX_LAYOUT_CHECK(Camera_Preset_size_must_be_12, sizeof(SPresetCamera) == 12);
 
 #include "OB.h"
 #include "MIPS.h"
@@ -377,20 +378,20 @@ inline CQuat::CQuat() : x(0), y(0), z(0), w(0x1000)
 #include "QUAT_API.h"
 
 /** Base camera distance; also anchors CAMERA.CPP's global initializer name. */
-int camDist __attribute__((section(".sdata"))) = 658;
-int camPitch __attribute__((section(".sdata"))) = 54;
-int camYOffset __attribute__((section(".sdata"))) = -220;
+int camDist PSX_SECTION(".sdata") = 658;
+int camPitch PSX_SECTION(".sdata") = 54;
+int camYOffset PSX_SECTION(".sdata") = -220;
 
-static int camXZDistDeltaTimer __attribute__((section(".sdata"))) = 0;
-static int camYDist __attribute__((section(".sdata"))) = -212;
-static int camYDistDeltaTimer __attribute__((section(".sdata"))) = 0;
-static int camXOffset __attribute__((section(".sdata"))) = 0;
-static int camXOffsetDeltaTimer __attribute__((section(".sdata"))) = 0;
-static int camYOffsetDeltaTimer __attribute__((section(".sdata"))) = 0;
-static int camZOffset __attribute__((section(".sdata"))) = 0;
-static int camZOffsetDeltaTimer __attribute__((section(".sdata"))) = 0;
-static int Mick_CameraTweak __attribute__((section(".sdata"))) = 0;
-int Camera_Preset __attribute__((section(".sdata"))) = 2;
+static int camXZDistDeltaTimer PSX_SECTION(".sdata") = 0;
+static int camYDist PSX_SECTION(".sdata") = -212;
+static int camYDistDeltaTimer PSX_SECTION(".sdata") = 0;
+static int camXOffset PSX_SECTION(".sdata") = 0;
+static int camXOffsetDeltaTimer PSX_SECTION(".sdata") = 0;
+static int camYOffsetDeltaTimer PSX_SECTION(".sdata") = 0;
+static int camZOffset PSX_SECTION(".sdata") = 0;
+static int camZOffsetDeltaTimer PSX_SECTION(".sdata") = 0;
+static int Mick_CameraTweak PSX_SECTION(".sdata") = 0;
+int Camera_Preset PSX_SECTION(".sdata") = 2;
 
 /** Camera tuning deltas and CAMERA's private random stream (GLOBALS.H statics, MAIN.SYM order). */
 static int camXZDistDelta;
@@ -425,7 +426,7 @@ static CSVector LandShakeSpeed = CSVector(600, 0, 600);
 static CVector UpDownPosition = CVector(0, -0x6e000, 0);
 
 /** Camera presets and their display names, in the original data order. */
-SPresetCamera Presets[5] __attribute__((section(".data"))) = {
+SPresetCamera Presets[5] PSX_SECTION(".data") = {
     { -2000, 654, 6786, "Very Far" }, { -268, 0, 946, "Far" },    { -140, 118, 386, "Default" },
     { -60, 80, 202, "Close" },        { -124, 0, 0, "Headshot" },
 };
@@ -436,10 +437,10 @@ CQuat testquat2;
 CQuat testquat3;
 
 /** Render-camera storage shared by gameplay and rendering owners. */
-SCamera MikeCamera[2] __attribute__((section(".data"))) = {};
+SCamera MikeCamera[2] PSX_SECTION(".data") = {};
 
 /** Scratch matrix used while converting recovered camera orientations. */
-MATRIX tm __attribute__((section(".data"))) = {};
+MATRIX tm PSX_SECTION(".data") = {};
 
 
 // === Extern "C" forward declarations ===
@@ -530,8 +531,7 @@ CCamera::CCamera(struct CBody *tripod, u16 mike_index)
  * Debug label retained by the original CAMERA object between its constructor
  * diagnostic and virtual dispatch table.
  */
-static char s_JumpCompensation[] __attribute__((section(".rdata"), aligned(4))) =
-    "jump compensation";
+static char s_JumpCompensation[] PSX_SECTION_ALIGNED(".rdata", 4) = "jump compensation";
 
 /** Destroy the camera's body-list attachment and owned value members. */
 CCamera::~CCamera()
@@ -1874,44 +1874,44 @@ check_left:
  * CAMERA's initialized render values and list state. The public scalar
  * declarations above retain the target's proven gp-relative access pattern.
  */
-static int CameraOwnerCamPitch __attribute__((section(".sdata"))) = 54;
-static int CameraOwnerCamDist __attribute__((section(".sdata"))) = 850;
-static int CameraOwnerCamOffset[3] __attribute__((section(".sdata"))) = { 0, 0, 0 };
-static int CameraOwnerNumCameras __attribute__((section(".sdata"))) = 0;
-static CBody *CameraOwnerList __attribute__((section(".sdata"))) = 0;
-static u32 CameraOwnerCurrentMike __attribute__((section(".sdata"))) = 0;
+static int CameraOwnerCamPitch PSX_SECTION(".sdata") = 54;
+static int CameraOwnerCamDist PSX_SECTION(".sdata") = 850;
+static int CameraOwnerCamOffset[3] PSX_SECTION(".sdata") = { 0, 0, 0 };
+static int CameraOwnerNumCameras PSX_SECTION(".sdata") = 0;
+static CBody *CameraOwnerList PSX_SECTION(".sdata") = 0;
+static u32 CameraOwnerCurrentMike PSX_SECTION(".sdata") = 0;
 
 /** Camera-mode diagnostics retained by the original debug build. */
-static char CameraBigAirOverText[] __attribute__((section(".sdata"), aligned(4))) = "big air over";
-static char CameraBigAirText[] __attribute__((section(".sdata"), aligned(4))) = "big air";
-static char CameraResettingText[] __attribute__((section(".sdata"), aligned(4))) = "reseting";
-static char CameraRampingText[] __attribute__((section(".sdata"), aligned(4))) = "ramping";
-static char CameraNormalText[] __attribute__((section(".sdata"), aligned(4))) = "normal";
-static char CameraLooseText[] __attribute__((section(".sdata"), aligned(4))) = "loose cam";
+static char CameraBigAirOverText[] PSX_SECTION_ALIGNED(".sdata", 4) = "big air over";
+static char CameraBigAirText[] PSX_SECTION_ALIGNED(".sdata", 4) = "big air";
+static char CameraResettingText[] PSX_SECTION_ALIGNED(".sdata", 4) = "reseting";
+static char CameraRampingText[] PSX_SECTION_ALIGNED(".sdata", 4) = "ramping";
+static char CameraNormalText[] PSX_SECTION_ALIGNED(".sdata", 4) = "normal";
+static char CameraLooseText[] PSX_SECTION_ALIGNED(".sdata", 4) = "loose cam";
 
 /** Initial state for CCamera's owner-local tweak controls. */
-int CCamera::Tweaking __attribute__((section(".sdata"))) = 0;
+int CCamera::Tweaking PSX_SECTION(".sdata") = 0;
 /*
  * Keep the row and column backing bytes at their target-proven .sdata offsets.
  * Their natural static-member references must remain unresolved here: ASPSX
  * expands same-TU definitions into absolute sequences, while the target uses
  * GP-relative halfword relocations for all 25 accesses in TweakMenu.
  */
-static u16 CameraOwnerTweakRow __attribute__((section(".sdata"))) = 0;
-static u16 CameraOwnerTweakCol __attribute__((section(".sdata"))) = 0;
+static u16 CameraOwnerTweakRow PSX_SECTION(".sdata") = 0;
+static u16 CameraOwnerTweakCol PSX_SECTION(".sdata") = 0;
 
 /** Headings used by CCamera and CamPos's debug displays. */
-static char s_PosA[] __attribute__((section(".sdata"), aligned(4))) = "Pos A";
-static char s_PosB[] __attribute__((section(".sdata"), aligned(4))) = "Pos B";
+static char s_PosA[] PSX_SECTION_ALIGNED(".sdata", 4) = "Pos A";
+static char s_PosB[] PSX_SECTION_ALIGNED(".sdata", 4) = "Pos B";
 
 /* Owner-private AI state immediately follows the tweak labels in the target. */
 namespace
 {
-static int Released __attribute__((section(".sdata"))) = 1;
-static int Mick_DisplayCameraValues __attribute__((section(".sdata"))) = 1;
-static int old_GlobalZoom __attribute__((section(".sdata"))) = 0x100;
-static int Mick_Select_Triggered __attribute__((section(".sdata"))) = 0;
-static int Mick_Select_Released __attribute__((section(".sdata"))) = 0;
+static int Released PSX_SECTION(".sdata") = 1;
+static int Mick_DisplayCameraValues PSX_SECTION(".sdata") = 1;
+static int old_GlobalZoom PSX_SECTION(".sdata") = 0x100;
+static int Mick_Select_Triggered PSX_SECTION(".sdata") = 0;
+static int Mick_Select_Released PSX_SECTION(".sdata") = 0;
 }
 
 /**
@@ -2688,15 +2688,15 @@ void CamPos::DisplayLabels(u16 x, u16 y, u8 r, u8 g, u8 b)
  *
  */
 
-int yangle __attribute__((section(".sdata"))) = 0;
+int yangle PSX_SECTION(".sdata") = 0;
 
-static char s_Follow[] __attribute__((section(".sdata"), aligned(4))) = "Follow";
-static char s_Fixed[] __attribute__((section(".sdata"), aligned(4))) = "Fixed";
-static char s_Quaternion[] __attribute__((section(".sdata"), aligned(4))) = "quaternion";
-static char s_Tripod[] __attribute__((section(".sdata"), aligned(4))) = "Tripod";
-static char s_X[] __attribute__((section(".sdata"), aligned(4))) = "x";
-static char s_Y[] __attribute__((section(".sdata"), aligned(4))) = "y";
-static char s_Z[] __attribute__((section(".sdata"), aligned(4))) = "z";
-static char s_StickO[] __attribute__((section(".sdata"), aligned(4))) = "Stick O";
-static char s_StickLength[] __attribute__((section(".sdata"), aligned(4))) = "Stick Length";
-static char s_StickOffset[] __attribute__((section(".sdata"), aligned(4))) = "Stick Offset";
+static char s_Follow[] PSX_SECTION_ALIGNED(".sdata", 4) = "Follow";
+static char s_Fixed[] PSX_SECTION_ALIGNED(".sdata", 4) = "Fixed";
+static char s_Quaternion[] PSX_SECTION_ALIGNED(".sdata", 4) = "quaternion";
+static char s_Tripod[] PSX_SECTION_ALIGNED(".sdata", 4) = "Tripod";
+static char s_X[] PSX_SECTION_ALIGNED(".sdata", 4) = "x";
+static char s_Y[] PSX_SECTION_ALIGNED(".sdata", 4) = "y";
+static char s_Z[] PSX_SECTION_ALIGNED(".sdata", 4) = "z";
+static char s_StickO[] PSX_SECTION_ALIGNED(".sdata", 4) = "Stick O";
+static char s_StickLength[] PSX_SECTION_ALIGNED(".sdata", 4) = "Stick Length";
+static char s_StickOffset[] PSX_SECTION_ALIGNED(".sdata", 4) = "Stick Offset";

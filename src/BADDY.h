@@ -1,6 +1,7 @@
 // BADDY.h -- interface of BADDY.cpp
 #ifndef BADDY_INC_H
 #define BADDY_INC_H
+#include "PSX.h"
 
 struct CBaddy;
 struct CBody;
@@ -41,7 +42,7 @@ struct SRainEntry
 #ifdef BADDY_OWNER_DECLARATIONS
 #define BADDY_SHARED_STATE_DECL_ATTR
 #else
-#define BADDY_SHARED_STATE_DECL_ATTR __attribute__((section(".data")))
+#define BADDY_SHARED_STATE_DECL_ATTR PSX_SECTION(".data")
 #endif
 
 /** Head of the active scripted-baddy object list. */
@@ -100,7 +101,7 @@ struct CScriptOnlyBaddy : CBaddy
     virtual void SetVariable(unsigned short variable);
 };
 
-typedef char CScriptOnlyBaddy_size_check[(sizeof(struct CScriptOnlyBaddy) == 556) ? 1 : -1];
+PSX_LAYOUT_CHECK(CScriptOnlyBaddy_size_check, sizeof(struct CScriptOnlyBaddy) == 556);
 #endif
 #endif // CCLASS_POLY_BADDY_FAMILY
 

@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #include "CCLASS_POLY.h"
 #include "BIT.h"
 
@@ -48,8 +49,8 @@ struct Blood : CClass
     int mAge;
 };
 
-typedef char blood_owner_size_must_be_92[(sizeof(Blood) == 92) ? 1 : -1];
-typedef char blood_bit_size_must_be_72[(sizeof(BloodBit) == 72) ? 1 : -1];
+PSX_LAYOUT_CHECK(blood_owner_size_must_be_92, sizeof(Blood) == 92);
+PSX_LAYOUT_CHECK(blood_bit_size_must_be_72, sizeof(BloodBit) == 72);
 
 // === Function implementations (address order) ===
 

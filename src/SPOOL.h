@@ -1,5 +1,6 @@
 #ifndef SPOOL_INC_H
 #define SPOOL_INC_H
+#include "PSX.h"
 
 struct Item;
 
@@ -106,8 +107,8 @@ struct SQueue
     unsigned char KeepTextures;
 };
 
-typedef char SQueue_size_must_be_17[(sizeof(SQueue) == 17) ? 1 : -1];
-typedef char SQueue_Name_offset_must_be_0[((unsigned long)&(((SQueue *)0)->Name) == 0) ? 1 : -1];
+PSX_LAYOUT_CHECK(SQueue_size_must_be_17, sizeof(SQueue) == 17);
+PSX_LAYOUT_CHECK(SQueue_Name_offset_must_be_0, (unsigned long)&(((SQueue *)0)->Name) == 0);
 typedef char
     SQueue_Occupied_offset_must_be_13[((unsigned long)&(((SQueue *)0)->Occupied) == 13) ? 1 : -1];
 typedef char

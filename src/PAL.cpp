@@ -6,6 +6,7 @@
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 // Owner-local declarations attributed to PAL.cpp by MAIN.SYM.
+#include "PSX.h"
 typedef unsigned char u8;
 typedef unsigned short u16;
 typedef unsigned int u32;
@@ -43,10 +44,10 @@ typedef unsigned char undefined3[3];
 /** Target-era external compiler view of PAL's list head. */
 extern tag_S_Pal *pPaletteList;
 
-static u8 Free16Slots[Palette16SlotCount] __attribute__((section(".bss")));
-static u8 Free256Slots[Palette256SlotCount] __attribute__((section(".bss")));
-u8 HasTrans16[Palette16SlotCount] __attribute__((section(".data"))) = {};
-u8 HasTrans256[Palette256SlotCount] __attribute__((section(".data"))) = {};
+static u8 Free16Slots[Palette16SlotCount] PSX_SECTION(".bss");
+static u8 Free256Slots[Palette256SlotCount] PSX_SECTION(".bss");
+u8 HasTrans16[Palette16SlotCount] PSX_SECTION(".data") = {};
+u8 HasTrans256[Palette256SlotCount] PSX_SECTION(".data") = {};
 
 // === Function implementations (address order) ===
 

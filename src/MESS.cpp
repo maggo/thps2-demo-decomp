@@ -7,6 +7,7 @@
 
 // MESS.cpp is the sole consumer of these legacy font and runtime records.
 // Keep the recovered layouts with their owner instead of a generated TU header.
+#include "PSX.h"
 typedef unsigned char u8;
 typedef unsigned short u16;
 typedef unsigned int u32;
@@ -108,10 +109,10 @@ enum
 #include "FILEIO.h"
 #include "PAL.h"
 
-typedef char mess_program_size_must_be_32[(sizeof(SMessageProg) == 32) ? 1 : -1];
-typedef char mess_message_size_must_be_28[(sizeof(Message) == 28) ? 1 : -1];
-typedef char mess_font_file_glyph_size_must_be_16[(sizeof(MessFontFileGlyph) == 16) ? 1 : -1];
-typedef char mess_double_buffer_size_must_be_136[(sizeof(MessDoubleBuffer) == 136) ? 1 : -1];
+PSX_LAYOUT_CHECK(mess_program_size_must_be_32, sizeof(SMessageProg) == 32);
+PSX_LAYOUT_CHECK(mess_message_size_must_be_28, sizeof(Message) == 28);
+PSX_LAYOUT_CHECK(mess_font_file_glyph_size_must_be_16, sizeof(MessFontFileGlyph) == 16);
+PSX_LAYOUT_CHECK(mess_double_buffer_size_must_be_136, sizeof(MessDoubleBuffer) == 136);
 #include "MEM.h"
 #include "PACK.h"
 #include <STDDEF.H>
@@ -123,7 +124,7 @@ typedef char mess_double_buffer_size_must_be_136[(sizeof(MessDoubleBuffer) == 13
 #include <STDIO.H>
 #include <STRINGS.H>
 
-typedef char mess_poly_gt4_size_must_be_52[(sizeof(POLY_GT4) == 52) ? 1 : -1];
+PSX_LAYOUT_CHECK(mess_poly_gt4_size_must_be_52, sizeof(POLY_GT4) == 52);
 
 // === Free function declarations ===
 int Mess_TextWidth2(const char *pMessage);
@@ -166,7 +167,7 @@ static u32 FlagsBGR = 0x2c808080;
 static u16 Scale = 0;
 static u16 Sort = 0;
 int MessFade = 0x40;
-static char MessMemoryError[] __attribute__((section(".sdata"))) = "\nmemory error";
+static char MessMemoryError[] PSX_SECTION(".sdata") = "\nmemory error";
 
 /**
  * MESS-owned saved color state.

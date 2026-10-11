@@ -1,12 +1,13 @@
 #ifndef DEMOTIMER_INC_H
 #define DEMOTIMER_INC_H
+#include "PSX.h"
 
 /*
  * FRONT physically owns the demo countdown word in small data. Consumers
  * address it absolutely, so each inclusion must select the proven view.
  */
 #ifdef DEMOTIMER_ABSOLUTE_DECLARATION
-#define DEMOTIMER_DECL_ATTR __attribute__((section(".data")))
+#define DEMOTIMER_DECL_ATTR PSX_SECTION(".data")
 #else
 #define DEMOTIMER_DECL_ATTR
 #endif

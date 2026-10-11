@@ -1,6 +1,7 @@
 // Shared text-effect layout and callable C++ interface.
 #ifndef TEXTEFFECTS_INC_H
 #define TEXTEFFECTS_INC_H
+#include "PSX.h"
 
 #include "globals.h"
 
@@ -159,8 +160,8 @@ struct TrickTextEffect
 
 #endif // TEXTEFFECT_POLYMORPHIC_LAYOUT
 
-typedef char TextEffect_size_must_be_8[(sizeof(TextEffect) == 8) ? 1 : -1];
-typedef char myTextEffectInfo_size_must_be_8[(sizeof(myTextEffectInfo) == 8) ? 1 : -1];
-typedef char FallingTextEffect_size_must_be_288[(sizeof(FallingTextEffect) == 288) ? 1 : -1];
+PSX_LAYOUT_CHECK(TextEffect_size_must_be_8, sizeof(TextEffect) == 8);
+PSX_LAYOUT_CHECK(myTextEffectInfo_size_must_be_8, sizeof(myTextEffectInfo) == 8);
+PSX_LAYOUT_CHECK(FallingTextEffect_size_must_be_288, sizeof(FallingTextEffect) == 288);
 
 #endif // TEXTEFFECTS_INC_H

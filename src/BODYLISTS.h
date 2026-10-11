@@ -4,12 +4,13 @@
  * re-entrant and opt-in per symbol so consumers retain their original
  * declaration order and absolute-address import views.
  */
+#include "PSX.h"
 struct CBody;
 
 #ifdef BODYLISTS_GP_RELATIVE_DECLARATIONS
 #define BODYLISTS_DECL_ATTR
 #else
-#define BODYLISTS_DECL_ATTR __attribute__((section(".data")))
+#define BODYLISTS_DECL_ATTR PSX_SECTION(".data")
 #endif
 
 #ifdef BODYLISTS_DECLARE_BACKGROUND_LIST

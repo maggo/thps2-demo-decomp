@@ -1,3 +1,4 @@
+#include "PSX.h"
 #if defined(SPOOLER_DECLARE_OWNER_ADDRESS_VIEWS)
 /** Absolute-address views of the spooler's owner-local filename strings. */
 namespace SpoolerAddressViews
@@ -28,7 +29,7 @@ struct SpoolItem
 };
 
 #ifdef SPOOLER_ABSOLUTE_MANAGER_DECLARATION
-#define SPOOLER_MANAGER_DECL_ATTR __attribute__((section(".data")))
+#define SPOOLER_MANAGER_DECL_ATTR PSX_SECTION(".data")
 #else
 #define SPOOLER_MANAGER_DECL_ATTR
 #endif
@@ -85,7 +86,7 @@ struct Spooler
 
 #undef SPOOLER_MANAGER_DECL_ATTR
 
-typedef char SpoolItem_size_must_be_32[(sizeof(SpoolItem) == 32) ? 1 : -1];
-typedef char Spooler_size_must_be_2064[(sizeof(Spooler) == 2064) ? 1 : -1];
+PSX_LAYOUT_CHECK(SpoolItem_size_must_be_32, sizeof(SpoolItem) == 32);
+PSX_LAYOUT_CHECK(Spooler_size_must_be_2064, sizeof(Spooler) == 2064);
 
 #endif // SPOOLER_INC_H

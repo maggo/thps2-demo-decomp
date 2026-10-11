@@ -3,10 +3,11 @@
  * This header is intentionally re-entrant so the owner and M3DINIT retain
  * their original per-symbol declaration points and addressing views.
  */
+#include "PSX.h"
 struct SRotatedVertex;
 
 #ifdef M3DINITSTATE_ABSOLUTE_DECLARATION
-#define M3DINITSTATE_DECL_ATTR __attribute__((section(".data")))
+#define M3DINITSTATE_DECL_ATTR PSX_SECTION(".data")
 #else
 #define M3DINITSTATE_DECL_ATTR
 #endif

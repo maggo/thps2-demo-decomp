@@ -1,13 +1,14 @@
 // Shared M3DCOLIJ API and guarded collision-owner layouts.
 #ifndef M3DCOLIJ_INC_H
 #define M3DCOLIJ_INC_H
+#include "PSX.h"
 
 struct SLineInfo;
 
 #ifdef M3DCOLIJ_OWNER_DECLARATIONS
 #define M3DCOLIJ_COLLISION_STATE_DECL_ATTR
 #else
-#define M3DCOLIJ_COLLISION_STATE_DECL_ATTR __attribute__((section(".data")))
+#define M3DCOLIJ_COLLISION_STATE_DECL_ATTR PSX_SECTION(".data")
 #endif
 
 /** Enables baddy collision checks for the active line-query pass. */
@@ -254,7 +255,7 @@ struct SLineInfo
     unsigned int NormalOffset;
 };
 
-typedef char SLineInfo_size_must_be_164[(sizeof(SLineInfo) == 164) ? 1 : -1];
+PSX_LAYOUT_CHECK(SLineInfo_size_must_be_164, sizeof(SLineInfo) == 164);
 typedef char SLineInfo_StartCoords_offset_must_be_0
     [((unsigned long)&(((SLineInfo *)0)->StartCoords) == 0) ? 1 : -1];
 typedef char SLineInfo_EndCoords_offset_must_be_12
@@ -283,9 +284,8 @@ typedef char
     SLineInfo_pItem_offset_must_be_104[((unsigned long)&(((SLineInfo *)0)->pItem) == 104) ? 1 : -1];
 typedef char SLineInfo_Position_offset_must_be_108
     [((unsigned long)&(((SLineInfo *)0)->Position) == 108) ? 1 : -1];
-typedef char SLineInfo_Normal_offset_must_be_120[((unsigned long)&(((SLineInfo *)0)->Normal) == 120)
-                                                     ? 1
-                                                     : -1];
+PSX_LAYOUT_CHECK(SLineInfo_Normal_offset_must_be_120,
+                 (unsigned long)&(((SLineInfo *)0)->Normal) == 120);
 typedef char
     SLineInfo_pFace_offset_must_be_128[((unsigned long)&(((SLineInfo *)0)->pFace) == 128) ? 1 : -1];
 typedef char
@@ -431,10 +431,10 @@ MATRIX *MulMatrix(MATRIX *m0, MATRIX *m1);
 #undef SPOOLENV_ABSOLUTE_DECLARATIONS
 }
 
-typedef char M3dColij_Model_size_must_be_36[(sizeof(SModel) == 36) ? 1 : -1];
-typedef char M3dColij_BodyItem_size_must_be_76[(sizeof(M3dColijBodyItem) == 76) ? 1 : -1];
-typedef char M3dColij_Body_size_must_be_264[(sizeof(CBody) == 264) ? 1 : -1];
-typedef char M3dColij_Cache_size_must_be_16[(sizeof(SColCache) == 16) ? 1 : -1];
-typedef char M3dColij_Hit_size_must_be_36[(sizeof(SHit) == 36) ? 1 : -1];
+PSX_LAYOUT_CHECK(M3dColij_Model_size_must_be_36, sizeof(SModel) == 36);
+PSX_LAYOUT_CHECK(M3dColij_BodyItem_size_must_be_76, sizeof(M3dColijBodyItem) == 76);
+PSX_LAYOUT_CHECK(M3dColij_Body_size_must_be_264, sizeof(CBody) == 264);
+PSX_LAYOUT_CHECK(M3dColij_Cache_size_must_be_16, sizeof(SColCache) == 16);
+PSX_LAYOUT_CHECK(M3dColij_Hit_size_must_be_36, sizeof(SHit) == 36);
 
 #endif // M3DCOLIJ_OWNER_LAYOUT

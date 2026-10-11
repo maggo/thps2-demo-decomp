@@ -3,10 +3,11 @@
  * is intentionally re-entrant so each word can remain at its target-proven
  * declaration point while consumers retain absolute-address import views.
  */
+#include "PSX.h"
 #ifdef FRONTFLOWSTATE_OWNER_DECLARATION
 #define FRONTFLOWSTATE_DECL_ATTR
 #else
-#define FRONTFLOWSTATE_DECL_ATTR __attribute__((section(".data")))
+#define FRONTFLOWSTATE_DECL_ATTR PSX_SECTION(".data")
 #endif
 
 #ifdef FRONTFLOWSTATE_DECLARE_BACKOUT

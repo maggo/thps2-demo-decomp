@@ -1,6 +1,7 @@
 // Public color-conversion and palette-transform declarations.
 #ifndef CREATE_COLOR_INC_H
 #define CREATE_COLOR_INC_H
+#include "PSX.h"
 
 struct tag_S_Pal;
 
@@ -13,7 +14,7 @@ struct HSV_VALUE
     int flags;
 };
 
-typedef char create_color_HSV_VALUE_size_must_be_16[(sizeof(HSV_VALUE) == 16) ? 1 : -1];
+PSX_LAYOUT_CHECK(create_color_HSV_VALUE_size_must_be_16, sizeof(HSV_VALUE) == 16);
 
 /** Remembers a hardware palette as HSV values. */
 void Create_RememberPalette(tag_S_Pal *pPal, HSV_VALUE *pDestPalette);

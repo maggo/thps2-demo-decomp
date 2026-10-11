@@ -1,5 +1,6 @@
 #ifndef EDITORPIECES_H
 #define EDITORPIECES_H
+#include "PSX.h"
 
 /** Selects the active theme and rebuilds its special-piece mappings. */
 void EditorPieces_SetTheme(int theme);
@@ -48,8 +49,8 @@ struct EditorCategory
     unsigned char lastUsedPiece;
 };
 
-typedef char EditorPiece_size_must_be_50[(sizeof(EditorPiece) == 50) ? 1 : -1];
-typedef char EditorCategory_size_must_be_34[(sizeof(EditorCategory) == 34) ? 1 : -1];
+PSX_LAYOUT_CHECK(EditorPiece_size_must_be_50, sizeof(EditorPiece) == 50);
+PSX_LAYOUT_CHECK(EditorCategory_size_must_be_34, sizeof(EditorCategory) == 34);
 
 extern "C"
 {
@@ -105,7 +106,7 @@ struct PoolLinks
     unsigned char link[EditorPoolSideCount];
 };
 
-typedef char PoolLinks_size_must_be_5[(sizeof(PoolLinks) == 5) ? 1 : -1];
+PSX_LAYOUT_CHECK(PoolLinks_size_must_be_5, sizeof(PoolLinks) == 5);
 
 extern "C"
 {

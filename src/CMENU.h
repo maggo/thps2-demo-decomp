@@ -1,5 +1,6 @@
 #ifndef THPS2_CMENU_H
 #define THPS2_CMENU_H
+#include "PSX.h"
 
 #include "globals.h"
 
@@ -75,7 +76,7 @@ struct CMenu
     void Update();
 };
 
-typedef char CMenu_SEntry_size_must_be_24[(sizeof(SEntry) == 0x18) ? 1 : -1];
-typedef char CMenu_size_must_be_384[(sizeof(CMenu) == 0x180) ? 1 : -1];
+PSX_LAYOUT_CHECK(CMenu_SEntry_size_must_be_24, sizeof(SEntry) == 0x18);
+PSX_LAYOUT_CHECK(CMenu_size_must_be_384, sizeof(CMenu) == 0x180);
 
 #endif // THPS2_CMENU_H

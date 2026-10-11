@@ -1,5 +1,6 @@
 #ifndef TRICKOBLIST_INC_H
 #define TRICKOBLIST_INC_H
+#include "PSX.h"
 
 struct CTrickOb;
 
@@ -9,7 +10,7 @@ struct CTrickOb;
  * target-proven declaration view without exposing the object layout.
  */
 #ifdef TRICKOBLIST_ABSOLUTE_DECLARATION
-#define TRICKOBLIST_DECL_ATTR __attribute__((section(".data")))
+#define TRICKOBLIST_DECL_ATTR PSX_SECTION(".data")
 #else
 #define TRICKOBLIST_DECL_ATTR
 #endif

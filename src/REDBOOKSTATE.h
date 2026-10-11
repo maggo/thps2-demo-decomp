@@ -3,10 +3,11 @@
  * is intentionally re-entrant so the owner's original per-symbol declaration
  * order can coexist with absolute consumer views.
  */
+#include "PSX.h"
 #ifdef REDBOOKSTATE_GP_RELATIVE_DECLARATIONS
 #define REDBOOKSTATE_DECL_ATTR
 #else
-#define REDBOOKSTATE_DECL_ATTR __attribute__((section(".data")))
+#define REDBOOKSTATE_DECL_ATTR PSX_SECTION(".data")
 #endif
 
 #ifdef REDBOOKSTATE_DECLARE_VSYNC_SECTOR_CHECK

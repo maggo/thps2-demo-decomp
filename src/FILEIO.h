@@ -1,13 +1,14 @@
 // Shared public interface for the FILEIO owner.
 #ifndef FILEIO_INC_H
 #define FILEIO_INC_H
+#include "PSX.h"
 
 #ifndef FILEIO_OWNER_DECLARATIONS
 /** Current state of the asynchronous file transfer. */
-extern int Loading __attribute__((section(".data")));
+extern int Loading PSX_SECTION(".data");
 
 /** Prevents file I/O while the queued spooler changes transfer ownership. */
-extern int SpoolerBlocksFileIO __attribute__((section(".data")));
+extern int SpoolerBlocksFileIO PSX_SECTION(".data");
 #endif
 
 /** Load a complete file into a newly allocated heap buffer. */

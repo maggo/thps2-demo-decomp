@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #define M3DINIT_OWNER_DECLARATIONS
 #include "M3DINIT.h"
 #undef M3DINIT_OWNER_DECLARATIONS
@@ -209,18 +210,18 @@ static inline int M3dInit_GetModelCount(SModel **ppModels)
     return reinterpret_cast<int *>(ppModels)[-1];
 }
 
-typedef char M3dInit_Texture_size_must_be_40[(sizeof(Texture) == 40) ? 1 : -1];
-typedef char M3dInit_Face_size_must_be_32[(sizeof(M3dInitFace) == 32) ? 1 : -1];
-typedef char M3dInit_VertexBufferEntry_size_must_be_8[(sizeof(SVertex) == 8) ? 1 : -1];
+PSX_LAYOUT_CHECK(M3dInit_Texture_size_must_be_40, sizeof(Texture) == 40);
+PSX_LAYOUT_CHECK(M3dInit_Face_size_must_be_32, sizeof(M3dInitFace) == 32);
+PSX_LAYOUT_CHECK(M3dInit_VertexBufferEntry_size_must_be_8, sizeof(SVertex) == 8);
 
 /** Previous fog maximum retained while camera interpolation is active. */
-int LastDpqMax __attribute__((section(".sdata"))) = 0;
+int LastDpqMax PSX_SECTION(".sdata") = 0;
 
 /** Previous fog minimum retained while camera interpolation is active. */
-int LastDpqMin __attribute__((section(".sdata"))) = 0;
+int LastDpqMin PSX_SECTION(".sdata") = 0;
 
 /** Previous fog shift retained alongside the interpolation endpoints. */
-int LastDpqShift __attribute__((section(".sdata"))) = 0;
+int LastDpqShift PSX_SECTION(".sdata") = 0;
 
 // === Function implementations (address order) ===
 

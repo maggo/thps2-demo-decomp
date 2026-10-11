@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 typedef unsigned char u8;
 typedef unsigned short u16;
 typedef unsigned int u32;
@@ -34,10 +35,10 @@ struct SCrowd
 #include "STATS.h"
 #include "UTILS.h"
 
-SCrowd Crowd[1] __attribute__((section(".data"))) = {};
+SCrowd Crowd[1] PSX_SECTION(".data") = {};
 
 /** Debug trace used when starting the crowd voice. */
-static char CrowdPitchFormat[16] __attribute__((section(".sdata"))) = "Pitch = %d \n";
+static char CrowdPitchFormat[16] PSX_SECTION(".sdata") = "Pitch = %d \n";
 
 #include <STDIO.H>
 

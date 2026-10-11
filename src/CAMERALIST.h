@@ -1,5 +1,6 @@
 #ifndef CAMERALIST_INC_H
 #define CAMERALIST_INC_H
+#include "PSX.h"
 
 struct CBody;
 
@@ -12,7 +13,7 @@ struct CBody;
 #ifdef CAMERALIST_OWNER_DECLARATIONS
 #define CAMERALIST_DECL_ATTR
 #else
-#define CAMERALIST_DECL_ATTR __attribute__((section(".data")))
+#define CAMERALIST_DECL_ATTR PSX_SECTION(".data")
 #endif
 
 extern CBody *CameraList CAMERALIST_DECL_ATTR;

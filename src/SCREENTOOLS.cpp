@@ -6,13 +6,14 @@
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 
+#include "PSX.h"
 #define SCREENTOOLS_POLYMORPHIC_LAYOUT
 #include "SCREENTOOLS.h"
 #include "MEM.h"
 #include "PUREVIRTUAL.h"
 #include <STRINGS.H>
 
-typedef char screentools_font_size_must_be_80[(sizeof(Font) == 80) ? 1 : -1];
+PSX_LAYOUT_CHECK(screentools_font_size_must_be_80, sizeof(Font) == 80);
 
 // === Function implementations (address order) ===
 

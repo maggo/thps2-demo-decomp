@@ -3,10 +3,11 @@
  * intentionally re-entrant so each consumer retains its original declaration
  * point and absolute-address import view.
  */
+#include "PSX.h"
 #ifdef FRONTSTATUS_OWNER_DECLARATION
 #define FRONTSTATUS_DECL_ATTR
 #else
-#define FRONTSTATUS_DECL_ATTR __attribute__((section(".data")))
+#define FRONTSTATUS_DECL_ATTR PSX_SECTION(".data")
 #endif
 
 /** Current paused-game/front-end state, physically allocated by FRONT.cpp. */

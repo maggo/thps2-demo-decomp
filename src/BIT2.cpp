@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #define CCLASS_POLY_BIT_FAMILY
 #include "CCLASS_POLY.h"
 #define BIT2_OWNER_DECLARATIONS
@@ -94,15 +95,15 @@ struct CBodyPositionPrefix
     CItemPositionPrefix CItem;
 };
 
-typedef char Bit2_CBit_size_must_be_72[(sizeof(CBit) == 72) ? 1 : -1];
-typedef char Bit2_CNonRenderedBit_size_must_be_72[(sizeof(CNonRenderedBit) == 72) ? 1 : -1];
-typedef char Bit2_CFT4Bit_size_must_be_96[(sizeof(CFT4Bit) == 96) ? 1 : -1];
-typedef char Bit2_CFlatBit_size_must_be_112[(sizeof(CFlatBit) == 112) ? 1 : -1];
-typedef char Bit2_CMotionBlur_size_must_be_112[(sizeof(CMotionBlur) == 112) ? 1 : -1];
-typedef char Bit2_SLineSeg_size_must_be_16[(sizeof(SLineSeg) == 16) ? 1 : -1];
-typedef char Bit2_CPolyLine_size_must_be_96[(sizeof(CPolyLine) == 96) ? 1 : -1];
-typedef char Bit2_CGPolyLine_size_must_be_100[(sizeof(CGPolyLine) == 100) ? 1 : -1];
-typedef char Bit2_CGLine_size_must_be_104[(sizeof(CGLine) == 104) ? 1 : -1];
+PSX_LAYOUT_CHECK(Bit2_CBit_size_must_be_72, sizeof(CBit) == 72);
+PSX_LAYOUT_CHECK(Bit2_CNonRenderedBit_size_must_be_72, sizeof(CNonRenderedBit) == 72);
+PSX_LAYOUT_CHECK(Bit2_CFT4Bit_size_must_be_96, sizeof(CFT4Bit) == 96);
+PSX_LAYOUT_CHECK(Bit2_CFlatBit_size_must_be_112, sizeof(CFlatBit) == 112);
+PSX_LAYOUT_CHECK(Bit2_CMotionBlur_size_must_be_112, sizeof(CMotionBlur) == 112);
+PSX_LAYOUT_CHECK(Bit2_SLineSeg_size_must_be_16, sizeof(SLineSeg) == 16);
+PSX_LAYOUT_CHECK(Bit2_CPolyLine_size_must_be_96, sizeof(CPolyLine) == 96);
+PSX_LAYOUT_CHECK(Bit2_CGPolyLine_size_must_be_100, sizeof(CGPolyLine) == 100);
+PSX_LAYOUT_CHECK(Bit2_CGLine_size_must_be_104, sizeof(CGLine) == 104);
 typedef char
     Bit2_CItem_position_prefix_size_must_be_16[(sizeof(CItemPositionPrefix) == 16) ? 1 : -1];
 typedef char
@@ -147,8 +148,8 @@ struct CGrindSpark : CGLine
 
 /** Emits a configurable group of short-lived motion-blur particles. */
 
-typedef char Bit2_CGrindSpark_class_size_must_be_120[(sizeof(CGrindSpark) == 120) ? 1 : -1];
-typedef char Bit2_CSmokeGenerator_size_must_be_96[(sizeof(CSmokeGenerator) == 96) ? 1 : -1];
+PSX_LAYOUT_CHECK(Bit2_CGrindSpark_class_size_must_be_120, sizeof(CGrindSpark) == 120);
+PSX_LAYOUT_CHECK(Bit2_CSmokeGenerator_size_must_be_96, sizeof(CSmokeGenerator) == 96);
 // === Extern vtable symbols ===
 
 /** Returns the full vector stored at the linker-visible `ZeroVector` base. */
@@ -170,7 +171,7 @@ namespace Bit2AddressViewOwners
 {
 extern "C"
 {
-static char s_Smoke[8] __attribute__((section(".sdata"))) = "Smoke";
+static char s_Smoke[8] PSX_SECTION(".sdata") = "Smoke";
 }
 }
 

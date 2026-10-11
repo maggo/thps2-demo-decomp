@@ -6,6 +6,7 @@
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 /** One linked animation packet owned by the spooler. */
+#include "PSX.h"
 struct AnimPacket
 {
     unsigned int *pPacket;
@@ -74,19 +75,19 @@ struct SpoolTextureData
     unsigned int Pixels[1];
 };
 
-typedef char SPool_Item_size_must_be_36[(sizeof(Item) == 36) ? 1 : -1];
-typedef char SPool_SDK_SVECTOR_size_must_be_8[(sizeof(SVECTOR) == 8) ? 1 : -1];
+PSX_LAYOUT_CHECK(SPool_Item_size_must_be_36, sizeof(Item) == 36);
+PSX_LAYOUT_CHECK(SPool_SDK_SVECTOR_size_must_be_8, sizeof(SVECTOR) == 8);
 typedef char
     SPool_Model_vertices_offset_must_be_28[((unsigned long)&(((SModel *)0)->Vertices) == 28) ? 1
                                                                                              : -1];
-typedef char SPool_Model_size_must_be_36[(sizeof(SModel) == 36) ? 1 : -1];
+PSX_LAYOUT_CHECK(SPool_Model_size_must_be_36, sizeof(SModel) == 36);
 typedef char
     SPool_AnimatedModelHeader_size_must_be_12[(sizeof(SpoolAnimatedModelHeader) == 12) ? 1 : -1];
-typedef char SPool_Texture_size_must_be_40[(sizeof(Texture) == 40) ? 1 : -1];
+PSX_LAYOUT_CHECK(SPool_Texture_size_must_be_40, sizeof(Texture) == 40);
 typedef char
     SPool_AnimationEntryHeader_size_must_be_12[(sizeof(SpoolAnimationEntryHeader) == 12) ? 1 : -1];
-typedef char SPool_TextureData_size_must_be_24[(sizeof(SpoolTextureData) == 24) ? 1 : -1];
-typedef char SPool_PSXRegion_size_must_be_64[(sizeof(SPSXRegion) == 64) ? 1 : -1];
+PSX_LAYOUT_CHECK(SPool_TextureData_size_must_be_24, sizeof(SpoolTextureData) == 24);
+PSX_LAYOUT_CHECK(SPool_PSXRegion_size_must_be_64, sizeof(SPSXRegion) == 64);
 
 /** Advance a cursor that walks one fixed field through the region array. */
 template <class Field> static inline Field *NextRegionField(Field *field)
@@ -118,17 +119,17 @@ void ExtraAnims_AddSkatersAnims(void);
  */
 #define SPOOLQUEUE_WITHIN_C_LINKAGE
 #include "SPOOLQUEUE.h"
-SQueue SpoolQ[20] __attribute__((section(".data"))) = {};
-SPSXRegion PSXRegion[40] __attribute__((section(".data"))) = {};
-Texture *TextureChecksumHashTable[512] __attribute__((section(".data"))) = {};
-unsigned int *Memories[40] __attribute__((section(".data"))) = {};
+SQueue SpoolQ[20] PSX_SECTION(".data") = {};
+SPSXRegion PSXRegion[40] PSX_SECTION(".data") = {};
+Texture *TextureChecksumHashTable[512] PSX_SECTION(".data") = {};
+unsigned int *Memories[40] PSX_SECTION(".data") = {};
 
 #define ENVREGIONS_OWNER_DECLARATION
 #define ENVREGIONS_WITHIN_C_LINKAGE
 #include "ENVREGIONS.h"
-int EnvRegions[2] __attribute__((section(".sdata"))) = { -1, -1 };
+int EnvRegions[2] PSX_SECTION(".sdata") = { -1, -1 };
 static u32 *pCurrentTexWibPacket = 0;
-u32 *pTexWibPacket[2] __attribute__((section(".sdata"))) = {};
+u32 *pTexWibPacket[2] PSX_SECTION(".sdata") = {};
 #define ENVIROLIST_WITHIN_C_LINKAGE
 #define ENVIROLIST_OWNER_DECLARATION
 #include "ENVIROLIST.h"
@@ -143,7 +144,7 @@ AnimPacket *AnimPackets = 0;
 int TotalTextureUsage = 0;
 
 /** Lower-case PSX filename extension used while resolving packed assets. */
-static char s_LowerPsxExt[8] __attribute__((section(".sdata"))) = ".psx";
+static char s_LowerPsxExt[8] PSX_SECTION(".sdata") = ".psx";
 
 /** Current asynchronous spool phase, recorded as local SpoolMode by MAIN.SYM. */
 static int SpoolMode = 0;
@@ -152,17 +153,16 @@ static int SpoolMode = 0;
  * Filename formats used when loading a model's PSH and enumerating its part
  * textures.
  */
-static char s_PshFileFormat[8] __attribute__((section(".sdata"))) = "%s.psh";
-char s_SpartPrefixFormat[8] __attribute__((section(".sdata"))) = "%spart_";
+static char s_PshFileFormat[8] PSX_SECTION(".sdata") = "%s.psh";
+char s_SpartPrefixFormat[8] PSX_SECTION(".sdata") = "%spart_";
 
-u32 *EnvModelChecksums[2] __attribute__((section(".sdata"))) = {};
+u32 *EnvModelChecksums[2] PSX_SECTION(".sdata") = {};
 
 static int HashIndex;
 static Texture *pCurrentTex;
 
 /** Diagnostic emitted after an animation packet has been compacted in place. */
-static char s_ShrinkingAnimation[36] __attribute__((section(".rdata"))) =
-    "Shrinking animation %s.psx to %d\n";
+static char s_ShrinkingAnimation[36] PSX_SECTION(".rdata") = "Shrinking animation %s.psx to %d\n";
 
 // C-linkage data and PsyQ services.
 extern "C"

@@ -3,8 +3,9 @@
  * This header is intentionally re-entrant so CAMPT and MAIN can retain their
  * absolute-address declaration views at the original compiler encounter sites.
  */
+#include "PSX.h"
 #ifdef CAMERA_TUNING_ABSOLUTE_DECLARATIONS
-#define CAMERA_TUNING_DECL_ATTR __attribute__((section(".data")))
+#define CAMERA_TUNING_DECL_ATTR PSX_SECTION(".data")
 #else
 #define CAMERA_TUNING_DECL_ATTR
 #endif

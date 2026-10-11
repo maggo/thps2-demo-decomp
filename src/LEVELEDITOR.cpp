@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #define LEVELEDITOR_OWNER_DECLARATIONS
 #include "LEVELEDITOR.h"
 #undef LEVELEDITOR_OWNER_DECLARATIONS
@@ -44,7 +45,7 @@ struct CCamera
     CCamera(CBody *tripod, unsigned short mikeIndex);
 };
 
-typedef char level_editor_runtime_camera_size_must_be_0x684[(sizeof(CCamera) == 0x684) ? 1 : -1];
+PSX_LAYOUT_CHECK(level_editor_runtime_camera_size_must_be_0x684, sizeof(CCamera) == 0x684);
 
 // === Forward type declarations ===
 
@@ -78,7 +79,7 @@ struct EditorInModel
     unsigned char flagsPadding[3];
 };
 
-typedef char editor_source_model_size_must_be_68[(sizeof(EditorInModel) == 68) ? 1 : -1];
+PSX_LAYOUT_CHECK(editor_source_model_size_must_be_68, sizeof(EditorInModel) == 68);
 
 /** Owner-local EditorOutModel slice used by cursor sorting and visibility. */
 struct EditorOutModel
@@ -101,7 +102,7 @@ struct EditorOutModel
     EditorOutModel *Next;
 };
 
-typedef char editor_out_model_size_must_be_128[(sizeof(EditorOutModel) == 128) ? 1 : -1];
+PSX_LAYOUT_CHECK(editor_out_model_size_must_be_128, sizeof(EditorOutModel) == 128);
 
 #define LEVELGEN_GRID_MAP_LAYOUT
 #define LEVELGEN_GRID_MAP_LAYOUT_ONLY
@@ -113,9 +114,9 @@ typedef char editor_out_model_size_must_be_128[(sizeof(EditorOutModel) == 128) ?
 struct LevelGenerator
 {
     /** Shared editor grid dimensions and placement cells. */
-    static int GridCellHeight __attribute__((section(".data")));
-    static int GridCellWidth __attribute__((section(".data")));
-    static GridCell GridTab[24][24] __attribute__((section(".data")));
+    static int GridCellHeight PSX_SECTION(".data");
+    static int GridCellWidth PSX_SECTION(".data");
+    static GridCell GridTab[24][24] PSX_SECTION(".data");
 
     /** Constructs a generator for editor or in-game output. */
     LevelGenerator(bool game_build);
@@ -183,8 +184,8 @@ struct Sprite2 : SlicedImage2
     Sprite2(char *name, int pack, int sliceWidth, int sliceHeight);
 };
 
-typedef char editor_sliced_image2_size_must_be_60[(sizeof(SlicedImage2) == 60) ? 1 : -1];
-typedef char editor_sprite2_size_must_be_60[(sizeof(Sprite2) == 60) ? 1 : -1];
+PSX_LAYOUT_CHECK(editor_sliced_image2_size_must_be_60, sizeof(SlicedImage2) == 60);
+PSX_LAYOUT_CHECK(editor_sprite2_size_must_be_60, sizeof(Sprite2) == 60);
 /** Pointer-only menu service used by the editor wrapper. */
 struct BasicMenu
 {
@@ -214,7 +215,7 @@ struct EditorSourceModelView
     unsigned char flags;
 };
 
-typedef char editor_source_model_stride_must_be_68[(sizeof(EditorSourceModelView) == 68) ? 1 : -1];
+PSX_LAYOUT_CHECK(editor_source_model_stride_must_be_68, sizeof(EditorSourceModelView) == 68);
 
 /** LevelGenerator prefix through the editor's source-model table. */
 struct EditorLevelGeneratorModelsView
@@ -267,9 +268,8 @@ struct EditorDoubleBufferView
     unsigned int *OrderingTable;
 };
 
-typedef char editor_double_buffer_prefix_size_must_be_0x8c[(sizeof(EditorDoubleBufferView) == 0x8c)
-                                                               ? 1
-                                                               : -1];
+PSX_LAYOUT_CHECK(editor_double_buffer_prefix_size_must_be_0x8c,
+                 sizeof(EditorDoubleBufferView) == 0x8c);
 
 #include "SCAMERA.h"
 
@@ -369,7 +369,7 @@ struct TextMenuWrapper
 
 typedef TextMenuWrapper EditorTextMenuView;
 
-typedef char editor_text_menu_size_must_be_272[(sizeof(EditorTextMenuView) == 272) ? 1 : -1];
+PSX_LAYOUT_CHECK(editor_text_menu_size_must_be_272, sizeof(EditorTextMenuView) == 272);
 
 /**
  * Runtime-camera slice used by EditorCamera.  The named fields retain their
@@ -484,7 +484,7 @@ struct Cursor : CClass
     void SetCameraTargetVector(SVector camera);
 };
 
-typedef char level_editor_Cursor_size_must_be_5372[(sizeof(Cursor) == 5372) ? 1 : -1];
+PSX_LAYOUT_CHECK(level_editor_Cursor_size_must_be_5372, sizeof(Cursor) == 5372);
 
 // === Owner-local vtable anchors ===
 extern int __vt_12EditorCamera;

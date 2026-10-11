@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #define CCLASS_POLY_ITEM_FAMILY
 #include "CCLASS_POLY.h"
 #define POWERUP_OWNER_DECLARATIONS
@@ -113,12 +114,12 @@ struct CPowerUp : CBody
     void TakeEffect(struct CBruce *);
 };
 
-typedef char powerup_cbit_size_must_be_72[(sizeof(CBit) == 72) ? 1 : -1];
-typedef char powerup_bit_vtable_size_must_be_12[(sizeof(PowerUpBitVtable) == 12) ? 1 : -1];
-typedef char powerup_cglow_size_must_be_104[(sizeof(CGlow) == 104) ? 1 : -1];
-typedef char powerup_local_text_size_must_be_652[(sizeof(LocalText) == 652) ? 1 : -1];
-typedef char powerup_cbruce_slice_size_must_be_4208[(sizeof(CBruce) == 4208) ? 1 : -1];
-typedef char powerup_cpowerup_size_must_be_312[(sizeof(CPowerUp) == 312) ? 1 : -1];
+PSX_LAYOUT_CHECK(powerup_cbit_size_must_be_72, sizeof(CBit) == 72);
+PSX_LAYOUT_CHECK(powerup_bit_vtable_size_must_be_12, sizeof(PowerUpBitVtable) == 12);
+PSX_LAYOUT_CHECK(powerup_cglow_size_must_be_104, sizeof(CGlow) == 104);
+PSX_LAYOUT_CHECK(powerup_local_text_size_must_be_652, sizeof(LocalText) == 652);
+PSX_LAYOUT_CHECK(powerup_cbruce_slice_size_must_be_4208, sizeof(CBruce) == 4208);
+PSX_LAYOUT_CHECK(powerup_cpowerup_size_must_be_312, sizeof(CPowerUp) == 312);
 
 #include "BIT.h"
 #include "SFX.h"

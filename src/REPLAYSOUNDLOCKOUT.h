@@ -1,9 +1,10 @@
 // Shared replay-audio lockout physically owned by VIDEO.cpp.
 #ifndef REPLAYSOUNDLOCKOUT_INC_H
 #define REPLAYSOUNDLOCKOUT_INC_H
+#include "PSX.h"
 
 #ifdef REPLAYSOUNDLOCKOUT_ABSOLUTE_DECLARATION
-#define REPLAYSOUNDLOCKOUT_DECL_ATTR __attribute__((section(".data")))
+#define REPLAYSOUNDLOCKOUT_DECL_ATTR PSX_SECTION(".data")
 #else
 #define REPLAYSOUNDLOCKOUT_DECL_ATTR
 #endif

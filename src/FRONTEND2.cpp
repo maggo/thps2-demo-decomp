@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #include "globals.h"
 #include "PAD.h"
 #include "RFRONT.h"
@@ -80,7 +81,7 @@ struct LevelGenerator
 #include "GENERATELEVEL.h"
 
 /** Default VAB loaded whenever control returns to the front end. */
-static char SFXDataPath[] __attribute__((section(".sdata"))) = "shell.vab";
+static char SFXDataPath[] PSX_SECTION(".sdata") = "shell.vab";
 
 // === Free function declarations ===
 #include "FRONTEND2.h"

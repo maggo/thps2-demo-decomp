@@ -6,6 +6,7 @@
 // classes, and the plain scene-value records shared by level/gameplay code.
 
 
+#include "PSX.h"
 #if !defined(GLOBALS_SCENE_VALUES_ONLY)
 #ifndef SRC_GLOBALS_H
 #define SRC_GLOBALS_H
@@ -155,32 +156,32 @@ struct SHook
     unsigned short Part;
 };
 
-typedef char Vector_size_must_be_12[(sizeof(Vector) == 12) ? 1 : -1];
-typedef char Vector_vx_offset_must_be_0[((unsigned long)&(((Vector *)0)->vx) == 0) ? 1 : -1];
-typedef char Vector_vy_offset_must_be_4[((unsigned long)&(((Vector *)0)->vy) == 4) ? 1 : -1];
-typedef char Vector_vz_offset_must_be_8[((unsigned long)&(((Vector *)0)->vz) == 8) ? 1 : -1];
-typedef char SVector_size_must_be_6[(sizeof(SVector) == 6) ? 1 : -1];
-typedef char SVector_vx_offset_must_be_0[((unsigned long)&(((SVector *)0)->vx) == 0) ? 1 : -1];
-typedef char SVector_vy_offset_must_be_2[((unsigned long)&(((SVector *)0)->vy) == 2) ? 1 : -1];
-typedef char SVector_vz_offset_must_be_4[((unsigned long)&(((SVector *)0)->vz) == 4) ? 1 : -1];
-typedef char Item_size_must_be_36[(sizeof(Item) == 36) ? 1 : -1];
-typedef char Item_Flags_offset_must_be_0[((unsigned long)&(((Item *)0)->Flags) == 0) ? 1 : -1];
-typedef char Item_Inquiry_offset_must_be_2[((unsigned long)&(((Item *)0)->Inquiry) == 2) ? 1 : -1];
+PSX_LAYOUT_CHECK(Vector_size_must_be_12, sizeof(Vector) == 12);
+PSX_LAYOUT_CHECK(Vector_vx_offset_must_be_0, (unsigned long)&(((Vector *)0)->vx) == 0);
+PSX_LAYOUT_CHECK(Vector_vy_offset_must_be_4, (unsigned long)&(((Vector *)0)->vy) == 4);
+PSX_LAYOUT_CHECK(Vector_vz_offset_must_be_8, (unsigned long)&(((Vector *)0)->vz) == 8);
+PSX_LAYOUT_CHECK(SVector_size_must_be_6, sizeof(SVector) == 6);
+PSX_LAYOUT_CHECK(SVector_vx_offset_must_be_0, (unsigned long)&(((SVector *)0)->vx) == 0);
+PSX_LAYOUT_CHECK(SVector_vy_offset_must_be_2, (unsigned long)&(((SVector *)0)->vy) == 2);
+PSX_LAYOUT_CHECK(SVector_vz_offset_must_be_4, (unsigned long)&(((SVector *)0)->vz) == 4);
+PSX_LAYOUT_CHECK(Item_size_must_be_36, sizeof(Item) == 36);
+PSX_LAYOUT_CHECK(Item_Flags_offset_must_be_0, (unsigned long)&(((Item *)0)->Flags) == 0);
+PSX_LAYOUT_CHECK(Item_Inquiry_offset_must_be_2, (unsigned long)&(((Item *)0)->Inquiry) == 2);
 typedef char
     Item_Position_offset_must_be_4[((unsigned long)&(((Item *)0)->Position) == 4) ? 1 : -1];
-typedef char Item_Angles_offset_must_be_16[((unsigned long)&(((Item *)0)->Angles) == 16) ? 1 : -1];
-typedef char Item_Model_offset_must_be_22[((unsigned long)&(((Item *)0)->Model) == 22) ? 1 : -1];
-typedef char Item_Frame_offset_must_be_24[((unsigned long)&(((Item *)0)->Frame) == 24) ? 1 : -1];
+PSX_LAYOUT_CHECK(Item_Angles_offset_must_be_16, (unsigned long)&(((Item *)0)->Angles) == 16);
+PSX_LAYOUT_CHECK(Item_Model_offset_must_be_22, (unsigned long)&(((Item *)0)->Model) == 22);
+PSX_LAYOUT_CHECK(Item_Frame_offset_must_be_24, (unsigned long)&(((Item *)0)->Frame) == 24);
 typedef char
     Item_TintIndex_offset_must_be_25[((unsigned long)&(((Item *)0)->TintIndex) == 25) ? 1 : -1];
-typedef char Item_Anim_offset_must_be_26[((unsigned long)&(((Item *)0)->Anim) == 26) ? 1 : -1];
-typedef char Item_Region_offset_must_be_27[((unsigned long)&(((Item *)0)->Region) == 27) ? 1 : -1];
+PSX_LAYOUT_CHECK(Item_Anim_offset_must_be_26, (unsigned long)&(((Item *)0)->Anim) == 26);
+PSX_LAYOUT_CHECK(Item_Region_offset_must_be_27, (unsigned long)&(((Item *)0)->Region) == 27);
 typedef char
     Item_NextItem_offset_must_be_28[((unsigned long)&(((Item *)0)->NextItem) == 28) ? 1 : -1];
-typedef char Item_RGB_offset_must_be_32[((unsigned long)&(((Item *)0)->RGB) == 32) ? 1 : -1];
-typedef char SHook_size_must_be_8[(sizeof(SHook) == 8) ? 1 : -1];
-typedef char SHook_Offset_offset_must_be_0[((unsigned long)&(((SHook *)0)->Offset) == 0) ? 1 : -1];
-typedef char SHook_Part_offset_must_be_6[((unsigned long)&(((SHook *)0)->Part) == 6) ? 1 : -1];
+PSX_LAYOUT_CHECK(Item_RGB_offset_must_be_32, (unsigned long)&(((Item *)0)->RGB) == 32);
+PSX_LAYOUT_CHECK(SHook_size_must_be_8, sizeof(SHook) == 8);
+PSX_LAYOUT_CHECK(SHook_Offset_offset_must_be_0, (unsigned long)&(((SHook *)0)->Offset) == 0);
+PSX_LAYOUT_CHECK(SHook_Part_offset_must_be_6, (unsigned long)&(((SHook *)0)->Part) == 6);
 
 #endif // SRC_GLOBALS_SCENE_VALUES_DEFINED
 
@@ -193,7 +194,7 @@ struct SMatrix
     short t[3];
 };
 
-typedef char SMatrix_size_must_be_24[(sizeof(SMatrix) == 24) ? 1 : -1];
+PSX_LAYOUT_CHECK(SMatrix_size_must_be_24, sizeof(SMatrix) == 24);
 
 #endif // SRC_GLOBALS_CORE_EMISSION
 

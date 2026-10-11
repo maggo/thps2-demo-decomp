@@ -1,12 +1,13 @@
 #ifndef SPOOLPOS_INC_H
 #define SPOOLPOS_INC_H
+#include "PSX.h"
 
 /*
  * SPOOL physically owns the active queue position in initialized small data.
  * REDBOOK retains its target-proven absolute-address import view.
  */
 #ifdef SPOOLPOS_ABSOLUTE_DECLARATION
-#define SPOOLPOS_DECL_ATTR __attribute__((section(".data")))
+#define SPOOLPOS_DECL_ATTR PSX_SECTION(".data")
 #else
 #define SPOOLPOS_DECL_ATTR
 #endif

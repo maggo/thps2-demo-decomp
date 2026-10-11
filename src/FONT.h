@@ -1,6 +1,7 @@
 // FONT.h -- interface of FONT.cpp
 #ifndef FONT_INC_H
 #define FONT_INC_H
+#include "PSX.h"
 
 /** Initializes the immediate-mode font queue. */
 void Font_Init(void);
@@ -24,7 +25,7 @@ struct SAnimFrame;
 #ifdef FONT_OWNER_DECLARATIONS
 #define FONT_SHARED_STATE_DECL_ATTR
 #else
-#define FONT_SHARED_STATE_DECL_ATTR __attribute__((section(".data")))
+#define FONT_SHARED_STATE_DECL_ATTR PSX_SECTION(".data")
 #endif
 
 /** Glyph animation used by the large immediate-mode font. */

@@ -1,5 +1,6 @@
 #ifndef SVIEWPORT_INC_H
 #define SVIEWPORT_INC_H
+#include "PSX.h"
 
 /** Render viewport bounds and projection parameters. */
 struct SViewport
@@ -16,7 +17,7 @@ struct SViewport
     unsigned short yC;
 };
 
-typedef char SViewport_size_must_be_20[(sizeof(struct SViewport) == 20) ? 1 : -1];
+PSX_LAYOUT_CHECK(SViewport_size_must_be_20, sizeof(struct SViewport) == 20);
 typedef char
     SViewport_xR_offset_must_be_0[((unsigned long)&(((struct SViewport *)0)->xR) == 0) ? 1 : -1];
 typedef char
@@ -27,9 +28,8 @@ typedef char
     SViewport_yT_offset_must_be_6[((unsigned long)&(((struct SViewport *)0)->yT) == 6) ? 1 : -1];
 typedef char SViewport_Hither_offset_must_be_8
     [((unsigned long)&(((struct SViewport *)0)->Hither) == 8) ? 1 : -1];
-typedef char SViewport_Yon_offset_must_be_10[((unsigned long)&(((struct SViewport *)0)->Yon) == 10)
-                                                 ? 1
-                                                 : -1];
+PSX_LAYOUT_CHECK(SViewport_Yon_offset_must_be_10,
+                 (unsigned long)&(((struct SViewport *)0)->Yon) == 10);
 typedef char SViewport_TanHalf_offset_must_be_12
     [((unsigned long)&(((struct SViewport *)0)->TanHalf) == 12) ? 1 : -1];
 typedef char
@@ -43,7 +43,7 @@ typedef char
 #ifdef SVIEWPORT_OWNER_DECLARATIONS
 #define SVIEWPORT_STATE_DECL_ATTR
 #else
-#define SVIEWPORT_STATE_DECL_ATTR __attribute__((section(".data")))
+#define SVIEWPORT_STATE_DECL_ATTR PSX_SECTION(".data")
 #endif
 
 #ifdef __cplusplus

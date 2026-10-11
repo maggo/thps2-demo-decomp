@@ -1,5 +1,6 @@
 #ifndef VERTICALMENUITEM_INC_H
 #define VERTICALMENUITEM_INC_H
+#include "PSX.h"
 
 struct Sprite;
 
@@ -17,7 +18,7 @@ struct VerticalMenuItem
     int erase_sprite_x;
 };
 
-typedef char VerticalMenuItem_size_must_be_64[(sizeof(struct VerticalMenuItem) == 64) ? 1 : -1];
+PSX_LAYOUT_CHECK(VerticalMenuItem_size_must_be_64, sizeof(struct VerticalMenuItem) == 64);
 typedef char VerticalMenuItem_erase_sprite_offset_must_be_0
     [((unsigned long)&(((struct VerticalMenuItem *)0)->erase_sprite) == 0) ? 1 : -1];
 typedef char VerticalMenuItem_string_offset_must_be_4

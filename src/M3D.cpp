@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #include <STDDEF.H>
 #include <LIBGTE.H>
 #include "SMODEL.h"
@@ -138,14 +139,14 @@ struct M3dSuperTransformLayout
     MATRIX mRotationMatrix;
 };
 
-typedef char M3d_SMatrix_size_must_be_24[(sizeof(SMatrix) == 24) ? 1 : -1];
-typedef char M3d_Light_size_must_be_52[(sizeof(SLight) == 52) ? 1 : -1];
-typedef char M3d_CItem_render_prefix_size_must_be_64[(sizeof(M3dCItemRenderLayout) == 64) ? 1 : -1];
-typedef char M3d_Texture_size_must_be_40[(sizeof(Texture) == 40) ? 1 : -1];
+PSX_LAYOUT_CHECK(M3d_SMatrix_size_must_be_24, sizeof(SMatrix) == 24);
+PSX_LAYOUT_CHECK(M3d_Light_size_must_be_52, sizeof(SLight) == 52);
+PSX_LAYOUT_CHECK(M3d_CItem_render_prefix_size_must_be_64, sizeof(M3dCItemRenderLayout) == 64);
+PSX_LAYOUT_CHECK(M3d_Texture_size_must_be_40, sizeof(Texture) == 40);
 typedef char
     M3d_Super_transform_slice_size_must_be_3760[(sizeof(M3dSuperTransformLayout) == 3760) ? 1 : -1];
-typedef char M3d_Super_render_size_must_be_400[(sizeof(CSuper) == 400) ? 1 : -1];
-typedef char M3d_PSXRegion_size_must_be_64[(sizeof(SPSXRegion) == 64) ? 1 : -1];
+PSX_LAYOUT_CHECK(M3d_Super_render_size_must_be_400, sizeof(CSuper) == 400);
+PSX_LAYOUT_CHECK(M3d_PSXRegion_size_must_be_64, sizeof(SPSXRegion) == 64);
 
 /** Return the target-proven derived slice accepted by M3d_BuildTransform. */
 static inline M3dSuperTransformLayout *M3d_GetTransformLayout(CSuper *pSuper)

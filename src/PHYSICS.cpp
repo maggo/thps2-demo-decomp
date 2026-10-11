@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #define PHYSICS_OWNER_DECLARATIONS
 #include "PHYSICS.h"
 #undef PHYSICS_OWNER_DECLARATIONS
@@ -215,7 +216,7 @@ struct CSpark
     CSpark(CVector &position, int velocity, int gravity, int life);
 };
 
-typedef char Physics_CSpark_size_must_be_92[(sizeof(CSpark) == 92) ? 1 : -1];
+PSX_LAYOUT_CHECK(Physics_CSpark_size_must_be_92, sizeof(CSpark) == 92);
 
 #include "CTRICK.h"
 
@@ -851,9 +852,9 @@ struct CBruce : CSuperPhysicsNatural
     void OrientToNormal();
 };
 
-typedef char CItemPhysicsNatural_size_must_be_76[(sizeof(CItemPhysicsNatural) == 76) ? 1 : -1];
-typedef char CBodyPhysicsNatural_size_must_be_264[(sizeof(CBodyPhysicsNatural) == 264) ? 1 : -1];
-typedef char CSuperPhysicsNatural_size_must_be_400[(sizeof(CSuperPhysicsNatural) == 400) ? 1 : -1];
+PSX_LAYOUT_CHECK(CItemPhysicsNatural_size_must_be_76, sizeof(CItemPhysicsNatural) == 76);
+PSX_LAYOUT_CHECK(CBodyPhysicsNatural_size_must_be_264, sizeof(CBodyPhysicsNatural) == 264);
+PSX_LAYOUT_CHECK(CSuperPhysicsNatural_size_must_be_400, sizeof(CSuperPhysicsNatural) == 400);
 typedef char CSuperPhysicsNatural_shadow_source_offset_must_be_316
     [((unsigned long)&(((CSuperPhysicsNatural *)0)->mpShadowSource) == 316) ? 1 : -1];
 typedef char CSuperPhysicsNatural_shadow_rgb_offset_must_be_320
@@ -862,17 +863,17 @@ typedef char CSuperPhysicsNatural_transform_offset_must_be_324
     [((unsigned long)&(((CSuperPhysicsNatural *)0)->mTransform) == 324) ? 1 : -1];
 typedef char CSuperPhysicsNatural_pose_buffer_offset_must_be_356
     [((unsigned long)&(((CSuperPhysicsNatural *)0)->mpPoseBuffer) == 356) ? 1 : -1];
-typedef char CBruceNatural_size_must_be_5228[(sizeof(CBruce) == 5228) ? 1 : -1];
+PSX_LAYOUT_CHECK(CBruceNatural_size_must_be_5228, sizeof(CBruce) == 5228);
 typedef char CBruceNatural_event_queue_offset_must_be_0xAB4
     [((unsigned long)&(((CBruce *)0)->mEventQueue) == 0xAB4) ? 1 : -1];
 
-typedef char SDK_VECTOR_size_must_be_16[(sizeof(VECTOR) == 16) ? 1 : -1];
-typedef char SDK_SVECTOR_size_must_be_8[(sizeof(SVECTOR) == 8) ? 1 : -1];
-typedef char SDK_CVECTOR_size_must_be_4[(sizeof(CVECTOR) == 4) ? 1 : -1];
-typedef char SDK_MATRIX_size_must_be_32[(sizeof(MATRIX) == 32) ? 1 : -1];
+PSX_LAYOUT_CHECK(SDK_VECTOR_size_must_be_16, sizeof(VECTOR) == 16);
+PSX_LAYOUT_CHECK(SDK_SVECTOR_size_must_be_8, sizeof(SVECTOR) == 8);
+PSX_LAYOUT_CHECK(SDK_CVECTOR_size_must_be_4, sizeof(CVECTOR) == 4);
+PSX_LAYOUT_CHECK(SDK_MATRIX_size_must_be_32, sizeof(MATRIX) == 32);
 typedef char
     MATRIX_translation_offset_must_be_20[((unsigned long)&(((MATRIX *)0)->t) == 20) ? 1 : -1];
-typedef char SButtonEvent_size_must_be_8[(sizeof(SButtonEvent) == 8) ? 1 : -1];
+PSX_LAYOUT_CHECK(SButtonEvent_size_must_be_8, sizeof(SButtonEvent) == 8);
 typedef char
     SButtonEvent_Button_offset_must_be_0[((unsigned long)&(((SButtonEvent *)0)->Button) == 0) ? 1
                                                                                               : -1];
@@ -880,26 +881,23 @@ typedef char SButtonEvent_Pressed_offset_must_be_1
     [((unsigned long)&(((SButtonEvent *)0)->Pressed) == 1) ? 1 : -1];
 typedef char
     SButtonEvent_Time_offset_must_be_4[((unsigned long)&(((SButtonEvent *)0)->Time) == 4) ? 1 : -1];
-typedef char CBruceTrickTriggerSlice_size_must_be_0x1070[(sizeof(CBruceTrickTriggerSlice) == 0x1070)
-                                                             ? 1
-                                                             : -1];
+PSX_LAYOUT_CHECK(CBruceTrickTriggerSlice_size_must_be_0x1070,
+                 sizeof(CBruceTrickTriggerSlice) == 0x1070);
 typedef char CBruceTrickTriggerSlice_event_queue_offset_must_be_0xAB4
     [((unsigned long)&(((CBruceTrickTriggerSlice *)0)->mEventQueue) == 0xAB4) ? 1 : -1];
-typedef char STrickQueue_size_must_be_16[(sizeof(STrickQueue) == 16) ? 1 : -1];
-typedef char STrickQueue_pTrick_offset_must_be_0[((unsigned long)&(((STrickQueue *)0)->pTrick) == 0)
-                                                     ? 1
-                                                     : -1];
+PSX_LAYOUT_CHECK(STrickQueue_size_must_be_16, sizeof(STrickQueue) == 16);
+PSX_LAYOUT_CHECK(STrickQueue_pTrick_offset_must_be_0,
+                 (unsigned long)&(((STrickQueue *)0)->pTrick) == 0);
 typedef char
     STrickQueue_Time_offset_must_be_4[((unsigned long)&(((STrickQueue *)0)->Time) == 4) ? 1 : -1];
-typedef char STrickQueue_Button_offset_must_be_8[((unsigned long)&(((STrickQueue *)0)->Button) == 8)
-                                                     ? 1
-                                                     : -1];
+PSX_LAYOUT_CHECK(STrickQueue_Button_offset_must_be_8,
+                 (unsigned long)&(((STrickQueue *)0)->Button) == 8);
 typedef char STrickQueue_EventTime_offset_must_be_12
     [((unsigned long)&(((STrickQueue *)0)->EventTime) == 12) ? 1 : -1];
-typedef char CSVectorPhysicsOwner_size_must_be_6[(sizeof(CSVectorPhysicsOwner) == 6) ? 1 : -1];
-typedef char CVectorPhysicsOwner_size_must_be_12[(sizeof(CVectorPhysicsOwner) == 12) ? 1 : -1];
-typedef char CTrick_size_must_be_36[(sizeof(CTrick) == 36) ? 1 : -1];
-typedef char CPanelData_size_must_be_2276[(sizeof(CPanelData) == 2276) ? 1 : -1];
+PSX_LAYOUT_CHECK(CSVectorPhysicsOwner_size_must_be_6, sizeof(CSVectorPhysicsOwner) == 6);
+PSX_LAYOUT_CHECK(CVectorPhysicsOwner_size_must_be_12, sizeof(CVectorPhysicsOwner) == 12);
+PSX_LAYOUT_CHECK(CTrick_size_must_be_36, sizeof(CTrick) == 36);
+PSX_LAYOUT_CHECK(CPanelData_size_must_be_2276, sizeof(CPanelData) == 2276);
 typedef char SCareerOptionsPhysicsOwner_prefix_size_check
     [(sizeof(SCareerOptionsPhysicsOwner) == 0x8E8) ? 1 : -1];
 typedef char SCareerOptionsPhysicsOwner_vibration_at_0x8E0
@@ -912,7 +910,7 @@ typedef char CBruceScriptQueueSlice_trick_queue_offset_must_be_0xBD8
     [((unsigned long)&(((CBruceScriptQueueSlice *)0)->mTrickQueue) == 0xBD8) ? 1 : -1];
 typedef char CBruceScriptQueueSlice_pressed_at_0xAB5
     [((unsigned long)&(((CBruceScriptQueueSlice *)0)->mEventQueue[0].Pressed) == 0xAB5) ? 1 : -1];
-typedef char CBrucePhysicsSlice_size_must_be_5228[(sizeof(CBrucePhysicsSlice) == 5228) ? 1 : -1];
+PSX_LAYOUT_CHECK(CBrucePhysicsSlice_size_must_be_5228, sizeof(CBrucePhysicsSlice) == 5228);
 typedef char CBrucePhysicsSlice_event_queue_offset_must_be_0xAB4
     [((unsigned long)&(((CBrucePhysicsSlice *)0)->mEventQueue) == 0xAB4) ? 1 : -1];
 typedef char CBrucePhysicsSlice_trick_queue_offset_must_be_0xBD8
@@ -1052,9 +1050,9 @@ static int DirectionTable[16] = {
 }
 
 /** Physics stat override, shared up axis, and active control scheme. */
-int Cheat_StatsOverride __attribute__((section(".sdata"))) = 0;
-CVector WorldUp __attribute__((section(".sdata"))) = { 0, 0, 0 };
-int SelectedControlScheme __attribute__((section(".sdata"))) = 1;
+int Cheat_StatsOverride PSX_SECTION(".sdata") = 0;
+CVector WorldUp PSX_SECTION(".sdata") = { 0, 0, 0 };
+int SelectedControlScheme PSX_SECTION(".sdata") = 1;
 
 /**
  * Owner-local construction type for the global gravity vector.  The original
@@ -1086,48 +1084,48 @@ typedef char
     PhysicsTransitionNames_size_must_be_40[(sizeof(PhysicsTransitionNames) == 40) ? 1 : -1];
 
 /** Physics normal and compact trick-name table. */
-CVector UpNormal __attribute__((section(".sdata"))) = { 0, 0, 0 };
-static PhysicsTransitionNames PhysicsTrickNames
-    __attribute__((section(".sdata"))) = { "OLLIE", "WALL RIDE", "Handplant", "Trick" };
+CVector UpNormal PSX_SECTION(".sdata") = { 0, 0, 0 };
+static PhysicsTransitionNames PhysicsTrickNames PSX_SECTION(".sdata") = { "OLLIE", "WALL RIDE",
+                                                                          "Handplant", "Trick" };
 
 /** Writable extra-animation cursor. */
-short *pExtraAnim __attribute__((section(".sdata"))) = 0;
+short *pExtraAnim PSX_SECTION(".sdata") = 0;
 
 /**
  * Filename followed by the fixed trick-name records addressed from it.
  * The 76-byte extent is target-proven and keeps accesses absolute under
  * PHYSICS's recovered -G16 threshold.
  */
-static char GTricksFilename[76] __attribute__((section(".sdata"))) = "tricks.bin\0\0"
-                                                                     "FOOTPLANT\0\0\0"
-                                                                     "MANUAL\0\0"
-                                                                     "NOSE MANUAL\0"
-                                                                     "FASTPLANT\0\0\0"
-                                                                     "BONELESS\0\0\0\0"
-                                                                     "NOLLIE\0";
+static char GTricksFilename[76] PSX_SECTION(".sdata") = "tricks.bin\0\0"
+                                                        "FOOTPLANT\0\0\0"
+                                                        "MANUAL\0\0"
+                                                        "NOSE MANUAL\0"
+                                                        "FASTPLANT\0\0\0"
+                                                        "BONELESS\0\0\0\0"
+                                                        "NOLLIE\0";
 
 /** One-time trigger-probe initialization flag. */
-static int PhysicsTriggerInitialized __attribute__((section(".sdata"))) = 0;
+static int PhysicsTriggerInitialized PSX_SECTION(".sdata") = 0;
 
 /** Player-one multiplayer wins, losses, streak, and high-tag record. */
-int GWins1 __attribute__((section(".sdata"))) = 0;
-int GLosses1 __attribute__((section(".sdata"))) = 0;
-int GStreak1 __attribute__((section(".sdata"))) = 0;
-int GHighTags1 __attribute__((section(".sdata"))) = 0;
+int GWins1 PSX_SECTION(".sdata") = 0;
+int GLosses1 PSX_SECTION(".sdata") = 0;
+int GStreak1 PSX_SECTION(".sdata") = 0;
+int GHighTags1 PSX_SECTION(".sdata") = 0;
 
 /** Player-two multiplayer wins, losses, streak, and high-tag record. */
-int GWins2 __attribute__((section(".sdata"))) = 0;
-int GLosses2 __attribute__((section(".sdata"))) = 0;
-int GStreak2 __attribute__((section(".sdata"))) = 0;
-int GHighTags2 __attribute__((section(".sdata"))) = 0;
+int GWins2 PSX_SECTION(".sdata") = 0;
+int GLosses2 PSX_SECTION(".sdata") = 0;
+int GStreak2 PSX_SECTION(".sdata") = 0;
+int GHighTags2 PSX_SECTION(".sdata") = 0;
 
 /** Collision-face masks and active extra-animation count. */
-int Face_Air __attribute__((section(".sdata"))) = 0;
-int Face_Skateable __attribute__((section(".sdata"))) = 0;
-int Face_WallRide __attribute__((section(".sdata"))) = 0;
-int Face_Visible __attribute__((section(".sdata"))) = 0;
-int Face_Terrain __attribute__((section(".sdata"))) = 0;
-int NumExtraAnims __attribute__((section(".sdata"))) = 0;
+int Face_Air PSX_SECTION(".sdata") = 0;
+int Face_Skateable PSX_SECTION(".sdata") = 0;
+int Face_WallRide PSX_SECTION(".sdata") = 0;
+int Face_Visible PSX_SECTION(".sdata") = 0;
+int Face_Terrain PSX_SECTION(".sdata") = 0;
+int NumExtraAnims PSX_SECTION(".sdata") = 0;
 
 #include "ZEROVECTOR.h"
 struct Vec3
@@ -1161,7 +1159,7 @@ struct PhysicsDiagnostics
     char loopRestart[0x28];
 };
 
-typedef char PhysicsDiagnostics_size_must_be_0x110[(sizeof(PhysicsDiagnostics) == 0x110) ? 1 : -1];
+PSX_LAYOUT_CHECK(PhysicsDiagnostics_size_must_be_0x110, sizeof(PhysicsDiagnostics) == 0x110);
 
 #define PHYSICS_DECLARE_DIAGNOSTIC_POOL
 #include "PHYSICS.h"

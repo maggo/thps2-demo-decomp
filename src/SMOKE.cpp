@@ -5,13 +5,14 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #define SMOKE_OWNER_DECLARATIONS
 #include "SMOKE.h"
 #undef SMOKE_OWNER_DECLARATIONS
 #include "MECHLIST.h"
 #include "MAIN.h"
 /** Head of the baddy body list (BADDY.cpp; BADDY.h carries the old CItem layout). */
-extern CBody *BaddyList __attribute__((section(".data"))); // 0x800D9B04
+extern CBody *BaddyList PSX_SECTION(".data"); // 0x800D9B04
 #include "BIT.h"
 #include "UTILS.h"
 

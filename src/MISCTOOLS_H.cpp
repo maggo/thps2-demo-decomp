@@ -6,6 +6,7 @@
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 
+#include "PSX.h"
 #include "globals.h"
 
 /** Slider state with the target-proven MISCTOOLS.H layout. */
@@ -24,7 +25,7 @@ struct Slider
     int TMax;
 };
 
-typedef char MiscTools_SliderSizeCheck[(sizeof(Slider) == 44) ? 1 : -1];
+PSX_LAYOUT_CHECK(MiscTools_SliderSizeCheck, sizeof(Slider) == 44);
 
 typedef void (*MiscTools_SliderDestructor)(Slider *, int);
 typedef void (*MiscTools_ClassDestructor)(CClass *, int);

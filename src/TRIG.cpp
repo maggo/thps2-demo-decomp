@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #include "globals.h"
 #include "CITEM.h"
 #include <STDDEF.H>
@@ -440,32 +441,32 @@ struct CBruce
     u8 opaque_after_ignore_input_timers[5228 - 4404];
 };
 
-typedef char Trig_CommandPoint_size_must_be_24[(sizeof(SCommandPoint) == 24) ? 1 : -1];
-typedef char Trig_CItem_size_must_be_76[(sizeof(TrigCItemOwner) == 76) ? 1 : -1];
-typedef char Trig_CBody_size_must_be_264[(sizeof(CBody) == 264) ? 1 : -1];
-typedef char Trig_CCamera_size_must_be_1668[(sizeof(CCamera) == 1668) ? 1 : -1];
-typedef char Trig_CBit_size_must_be_72[(sizeof(CBit) == 72) ? 1 : -1];
-typedef char Trig_CNonRenderedBit_size_must_be_72[(sizeof(CNonRenderedBit) == 72) ? 1 : -1];
-typedef char Trig_LightPrefix_size_must_be_88[(sizeof(TrigLightPrefix) == 88) ? 1 : -1];
+PSX_LAYOUT_CHECK(Trig_CommandPoint_size_must_be_24, sizeof(SCommandPoint) == 24);
+PSX_LAYOUT_CHECK(Trig_CItem_size_must_be_76, sizeof(TrigCItemOwner) == 76);
+PSX_LAYOUT_CHECK(Trig_CBody_size_must_be_264, sizeof(CBody) == 264);
+PSX_LAYOUT_CHECK(Trig_CCamera_size_must_be_1668, sizeof(CCamera) == 1668);
+PSX_LAYOUT_CHECK(Trig_CBit_size_must_be_72, sizeof(CBit) == 72);
+PSX_LAYOUT_CHECK(Trig_CNonRenderedBit_size_must_be_72, sizeof(CNonRenderedBit) == 72);
+PSX_LAYOUT_CHECK(Trig_LightPrefix_size_must_be_88, sizeof(TrigLightPrefix) == 88);
 typedef char Trig_LightPrefix_on_offset_must_be_86
     [((unsigned long)&(((TrigLightPrefix *)0)->mOn) == 86) ? 1 : -1];
-typedef char Trig_Light_storage_size_must_be_100[(TRIG_LIGHT_STORAGE_SIZE == 100) ? 1 : -1];
-typedef char Trig_CPowerUp_size_must_be_312[(sizeof(CPowerUp) == 312) ? 1 : -1];
-typedef char Trig_CSuper_size_must_be_400[(sizeof(CSuper) == 400) ? 1 : -1];
-typedef char Trig_CBaddy_size_must_be_532[(sizeof(CBaddy) == 532) ? 1 : -1];
-typedef char Trig_CPlatform_size_must_be_592[(sizeof(CPlatform) == 592) ? 1 : -1];
-typedef char Trig_CScriptOnlyBaddy_size_must_be_556[(sizeof(CScriptOnlyBaddy) == 556) ? 1 : -1];
-typedef char Trig_CCar_size_must_be_540[(sizeof(CCar) == 540) ? 1 : -1];
-typedef char Trig_CBackground_size_must_be_268[(sizeof(CBackground) == 268) ? 1 : -1];
-typedef char Trig_CTrickOb_size_must_be_24[(sizeof(CTrickOb) == 24) ? 1 : -1];
-typedef char Trig_CPanelData_size_must_be_2276[(sizeof(CPanelData) == 2276) ? 1 : -1];
-typedef char Trig_CBruce_size_must_be_5228[(sizeof(CBruce) == 5228) ? 1 : -1];
-typedef char Trig_STriggerLightBytes_size_must_be_20[(sizeof(STriggerLightBytes) == 20) ? 1 : -1];
-typedef char Trig_STriggerLightWords_size_must_be_20[(sizeof(STriggerLightWords) == 20) ? 1 : -1];
+PSX_LAYOUT_CHECK(Trig_Light_storage_size_must_be_100, TRIG_LIGHT_STORAGE_SIZE == 100);
+PSX_LAYOUT_CHECK(Trig_CPowerUp_size_must_be_312, sizeof(CPowerUp) == 312);
+PSX_LAYOUT_CHECK(Trig_CSuper_size_must_be_400, sizeof(CSuper) == 400);
+PSX_LAYOUT_CHECK(Trig_CBaddy_size_must_be_532, sizeof(CBaddy) == 532);
+PSX_LAYOUT_CHECK(Trig_CPlatform_size_must_be_592, sizeof(CPlatform) == 592);
+PSX_LAYOUT_CHECK(Trig_CScriptOnlyBaddy_size_must_be_556, sizeof(CScriptOnlyBaddy) == 556);
+PSX_LAYOUT_CHECK(Trig_CCar_size_must_be_540, sizeof(CCar) == 540);
+PSX_LAYOUT_CHECK(Trig_CBackground_size_must_be_268, sizeof(CBackground) == 268);
+PSX_LAYOUT_CHECK(Trig_CTrickOb_size_must_be_24, sizeof(CTrickOb) == 24);
+PSX_LAYOUT_CHECK(Trig_CPanelData_size_must_be_2276, sizeof(CPanelData) == 2276);
+PSX_LAYOUT_CHECK(Trig_CBruce_size_must_be_5228, sizeof(CBruce) == 5228);
+PSX_LAYOUT_CHECK(Trig_STriggerLightBytes_size_must_be_20, sizeof(STriggerLightBytes) == 20);
+PSX_LAYOUT_CHECK(Trig_STriggerLightWords_size_must_be_20, sizeof(STriggerLightWords) == 20);
 typedef char
     Trig_SBackgroundCommandPayload_size_must_be_10[(sizeof(SBackgroundCommandPayload) == 10) ? 1
                                                                                              : -1];
-typedef char Trig_MATRIX_size_must_be_32[(sizeof(MATRIX) == 32) ? 1 : -1];
+PSX_LAYOUT_CHECK(Trig_MATRIX_size_must_be_32, sizeof(MATRIX) == 32);
 typedef char Trig_rotation_matrix_offset_must_be_0xe90
     [((unsigned long)&(((CBruce *)0)->mRotationMatrix) == 0xE90) ? 1 : -1];
 
@@ -488,7 +489,7 @@ typedef char Trig_rotation_matrix_offset_must_be_0xe90
 #include "TRICKOB.h"
 
 /** Gap definitions and score/name metadata used by trigger command 0xC9. */
-SGapTrick GapTricks[304] __attribute__((section(".data"))) = {
+SGapTrick GapTricks[304] PSX_SECTION(".data") = {
     { 0, 250, "[WIMPY GAP]" },
     { 1, 500, "[GAP]" },
     { 2, 1000, "[PHAT GAP]" },
@@ -798,21 +799,21 @@ SGapTrick GapTricks[304] __attribute__((section(".data"))) = {
 /** Restart and trigger-menu name tables populated while parsing TRG files. */
 #define RESTARTNAMETABLES_OWNER_DECLARATION
 #include "RESTARTNAMETABLES.h"
-char *CheatRestarts[20] __attribute__((section(".data"))) = { 0 };
-char *HorseRestarts[20] __attribute__((section(".data"))) = { 0 };
-char *MenuFilenamePointers[40] __attribute__((section(".data"))) = { 0 };
+char *CheatRestarts[20] PSX_SECTION(".data") = { 0 };
+char *HorseRestarts[20] PSX_SECTION(".data") = { 0 };
+char *MenuFilenamePointers[40] PSX_SECTION(".data") = { 0 };
 
 /** Trigger-file state and restart counters initialized before parsing. */
-int NumCheatRestarts __attribute__((section(".sdata"))) = 0;
-int NumHorseRestarts __attribute__((section(".sdata"))) = 0;
-unsigned short *TrigFile __attribute__((section(".sdata"))) = 0;
-int RestartNode __attribute__((section(".sdata"))) = 0xFFFF;
-short **OffsetList __attribute__((section(".sdata"))) = 0;
-int NumNodes __attribute__((section(".sdata"))) = 0;
-char *pCurrentObjFile __attribute__((section(".sdata"))) = 0;
-int NumTrigMenuEntries __attribute__((section(".sdata"))) = 0;
-static SCommandPoint *CommandPoints __attribute__((section(".sdata"))) = 0;
-int TotalCommandPointMemory __attribute__((section(".sdata"))) = 0;
+int NumCheatRestarts PSX_SECTION(".sdata") = 0;
+int NumHorseRestarts PSX_SECTION(".sdata") = 0;
+unsigned short *TrigFile PSX_SECTION(".sdata") = 0;
+int RestartNode PSX_SECTION(".sdata") = 0xFFFF;
+short **OffsetList PSX_SECTION(".sdata") = 0;
+int NumNodes PSX_SECTION(".sdata") = 0;
+char *pCurrentObjFile PSX_SECTION(".sdata") = 0;
+int NumTrigMenuEntries PSX_SECTION(".sdata") = 0;
+static SCommandPoint *CommandPoints PSX_SECTION(".sdata") = 0;
+int TotalCommandPointMemory PSX_SECTION(".sdata") = 0;
 
 /** Polymorphic CItem prefix used to recover CBody's native virtual-call ABI. */
 struct CItemKillView
@@ -840,11 +841,11 @@ struct CBodyKillView : CItemKillView
     virtual void DeleteStuff();
 };
 
-typedef char Trig_CItemKillView_size_must_be_76[(sizeof(CItemKillView) == 76) ? 1 : -1];
+PSX_LAYOUT_CHECK(Trig_CItemKillView_size_must_be_76, sizeof(CItemKillView) == 76);
 
 // === Owner-local absolute-addressed globals ===
 // MAIN_STRUCTS identifies this as TRIG's file-local command-point hash table.
-static SCommandPoint *HashTable[256] __attribute__((section(".bss")));
+static SCommandPoint *HashTable[256] PSX_SECTION(".bss");
 
 // === External function declarations ===
 #include "MEM.h"
@@ -1283,19 +1284,19 @@ void Trig_LoadTRG(char *Name)
 }
 
 /** Diagnostic messages retained by the original trigger parser. */
-static char TrigFakeTRGMessage1[] __attribute__((section(".sdata"))) = "Trig_FakeTRG 1\n";
-static char TrigFakeTRGMessage2[] __attribute__((section(".sdata"))) = "Trig_FakeTRG 2\n";
+static char TrigFakeTRGMessage1[] PSX_SECTION(".sdata") = "Trig_FakeTRG 1\n";
+static char TrigFakeTRGMessage2[] PSX_SECTION(".sdata") = "Trig_FakeTRG 2\n";
 
 /** Scratch allocation used while commands wait for asynchronous spooling. */
-static unsigned int *pPSXDualBuffer __attribute__((section(".sdata"))) = 0;
+static unsigned int *pPSXDualBuffer PSX_SECTION(".sdata") = 0;
 
 /** Default inline command list attached to command-point nodes. */
-static unsigned short CrateCommands[2] __attribute__((section(".sdata"))) = { 3, 0xFFFF };
+static unsigned short CrateCommands[2] PSX_SECTION(".sdata") = { 3, 0xFFFF };
 
 /** Object-file regions and the compacted trigger-file size. */
-unsigned char CurrentObjFileRegion __attribute__((section(".sdata"))) = 0;
-unsigned char CurrentItemsFileRegion __attribute__((section(".sdata"))) = 0;
-unsigned char CurrentMedalsFileRegion __attribute__((section(".sdata"))) = 0;
+unsigned char CurrentObjFileRegion PSX_SECTION(".sdata") = 0;
+unsigned char CurrentItemsFileRegion PSX_SECTION(".sdata") = 0;
+unsigned char CurrentMedalsFileRegion PSX_SECTION(".sdata") = 0;
 
 /**
  * GetFlag__FUcPUc

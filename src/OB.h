@@ -1,5 +1,6 @@
 // Shared declarations and opt-in owner layouts for OB.cpp.
 
+#include "PSX.h"
 #ifndef OB_LAYOUT_ONLY
 
 #ifndef OB_INC_H
@@ -330,32 +331,31 @@ struct CBruceTrickOwner
     int mPhysicsState;
 };
 
-typedef char CVectorOwner_size_check[(sizeof(struct CVectorOwner) == 12) ? 1 : -1];
-typedef char CSVectorOwner_size_check[(sizeof(struct CSVectorOwner) == 6) ? 1 : -1];
-typedef char SDK_VECTOR_owner_size_check[(sizeof(VECTOR) == 16) ? 1 : -1];
-typedef char SDK_SVECTOR_owner_size_check[(sizeof(SVECTOR) == 8) ? 1 : -1];
-typedef char SDK_CVECTOR_owner_size_check[(sizeof(CVECTOR) == 4) ? 1 : -1];
-typedef char ObAnimationEntryOwner_size_check[(sizeof(struct ObAnimationEntryOwner) == 8) ? 1 : -1];
+PSX_LAYOUT_CHECK(CVectorOwner_size_check, sizeof(struct CVectorOwner) == 12);
+PSX_LAYOUT_CHECK(CSVectorOwner_size_check, sizeof(struct CSVectorOwner) == 6);
+PSX_LAYOUT_CHECK(SDK_VECTOR_owner_size_check, sizeof(VECTOR) == 16);
+PSX_LAYOUT_CHECK(SDK_SVECTOR_owner_size_check, sizeof(SVECTOR) == 8);
+PSX_LAYOUT_CHECK(SDK_CVECTOR_owner_size_check, sizeof(CVECTOR) == 4);
+PSX_LAYOUT_CHECK(ObAnimationEntryOwner_size_check, sizeof(struct ObAnimationEntryOwner) == 8);
 typedef char
     ObAnimationTableOwner_size_check[(sizeof(struct ObAnimationTableOwner) == 16) ? 1 : -1];
-typedef char CItemOwner_size_check[(sizeof(struct CItemOwner) == 76) ? 1 : -1];
-typedef char CBodyOwner_size_check[(sizeof(struct CBodyOwner) == 264) ? 1 : -1];
-typedef char MATRIX_owner_size_check[(sizeof(MATRIX) == 32) ? 1 : -1];
+PSX_LAYOUT_CHECK(CItemOwner_size_check, sizeof(struct CItemOwner) == 76);
+PSX_LAYOUT_CHECK(CBodyOwner_size_check, sizeof(struct CBodyOwner) == 264);
+PSX_LAYOUT_CHECK(MATRIX_owner_size_check, sizeof(MATRIX) == 32);
 typedef char CSuperOwner_shadow_source_offset_check
     [((unsigned long)&((struct CSuperOwner *)0)->mpShadowSource == 316) ? 1 : -1];
 typedef char CSuperOwner_shadow_rgb_offset_check
     [((unsigned long)&((struct CSuperOwner *)0)->mpShadowRGB == 320) ? 1 : -1];
-typedef char CSuperOwner_transform_offset_check[((int)&((struct CSuperOwner *)0)->mTransform == 324)
-                                                    ? 1
-                                                    : -1];
+PSX_LAYOUT_CHECK(CSuperOwner_transform_offset_check,
+                 (int)&((struct CSuperOwner *)0)->mTransform == 324);
 typedef char CSuperOwner_pose_buffer_offset_check
     [((int)&((struct CSuperOwner *)0)->mpPoseBuffer == 356) ? 1 : -1];
-typedef char CSuperOwner_size_check[(sizeof(struct CSuperOwner) == 400) ? 1 : -1];
+PSX_LAYOUT_CHECK(CSuperOwner_size_check, sizeof(struct CSuperOwner) == 400);
 typedef char
     CBrucePositionOwner_prefix_size_check[(sizeof(struct CBrucePositionOwner) == 400) ? 1 : -1];
 typedef char
     CBruceVibrationOwner_size_check[(sizeof(struct CBruceVibrationOwner) == 3504) ? 1 : -1];
-typedef char CBruceTrickOwner_size_check[(sizeof(struct CBruceTrickOwner) == 4208) ? 1 : -1];
+PSX_LAYOUT_CHECK(CBruceTrickOwner_size_check, sizeof(struct CBruceTrickOwner) == 4208);
 
 #endif // OB_OWNER_LAYOUT
 

@@ -9,6 +9,7 @@
 // === Forward type declarations ===
 // Empty struct bodies allow by-value/by-reference parameters in C++
 
+#include "PSX.h"
 #include "CCLASS_POLY.h"
 #define DUST_POLYMORPHIC_LAYOUT
 #define BIT_DUST_MANAGER_LAYOUT
@@ -40,7 +41,7 @@ extern "C"
 {
 
 /** Particle animation selected for dust puffs. */
-char s_SmokeAnim[8] __attribute__((section(".sdata"))) = "smoke";
+char s_SmokeAnim[8] PSX_SECTION(".sdata") = "smoke";
 }
 }
 

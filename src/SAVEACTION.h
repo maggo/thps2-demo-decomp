@@ -4,8 +4,9 @@
  * view while CARD retains the target's absolute-address declaration.
  * `ESaveAction` is provided by FRONT.h before either selector is used.
  */
+#include "PSX.h"
 #ifdef SAVEACTION_ABSOLUTE_DECLARATION
-#define SAVEACTION_DECL_ATTR __attribute__((section(".data")))
+#define SAVEACTION_DECL_ATTR PSX_SECTION(".data")
 #else
 #define SAVEACTION_DECL_ATTR
 #endif

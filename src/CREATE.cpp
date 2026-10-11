@@ -7,6 +7,7 @@
 
 // CREATE owner-local types and declarations.
 
+#include "PSX.h"
 typedef unsigned char u8;
 typedef unsigned short u16;
 typedef unsigned int u32;
@@ -142,7 +143,7 @@ struct MySkaterTextureInfo : CClass
 
 #include "SLIGHT.h"
 
-typedef char Create_SLight_size_must_be_52[(sizeof(SLight) == 52) ? 1 : -1];
+PSX_LAYOUT_CHECK(Create_SLight_size_must_be_52, sizeof(SLight) == 52);
 
 #include "OB.h"
 #include "CBODY.h"
@@ -189,7 +190,7 @@ extern SGroup Group[4];
  * MAIN.SYM names this original 19-pointer table `BodyPart`; all recovered
  * consumers use that canonical identity directly.
  */
-char *BodyPart[19] __attribute__((section(".data"))) = {
+char *BodyPart[19] PSX_SECTION(".data") = {
     "_pelvis",       "_right_thigh", "_right_shoe",  "_right_shin",    "_left_thigh",
     "_left_shoe",    "_left_shin",   "_stomach",     "_chest",         "_left_hand",
     "_left_forearm", "_left_bicep",  "_right_hand",  "_right_forearm", "_right_bicep",
@@ -303,7 +304,7 @@ struct SDoubleBuffer
     unsigned char *Polys;
 };
 
-typedef char Create_SDoubleBuffer_size_must_be_0xAC[(sizeof(SDoubleBuffer) == 0xAC) ? 1 : -1];
+PSX_LAYOUT_CHECK(Create_SDoubleBuffer_size_must_be_0xAC, sizeof(SDoubleBuffer) == 0xAC);
 
 /** Polymorphic prefix needed for original CClass assignment semantics. */
 struct CreateClassAssignmentBase
@@ -375,7 +376,7 @@ struct VMenuItem
     int JustX;
 };
 
-typedef char Create_VMenuItem_size_must_be_0x2C[(sizeof(VMenuItem) == 0x2C) ? 1 : -1];
+PSX_LAYOUT_CHECK(Create_VMenuItem_size_must_be_0x2C, sizeof(VMenuItem) == 0x2C);
 
 /** Proven virtual dispatch prefix for the vertical character menu. */
 struct CreateVerticalMenuVtable
@@ -417,7 +418,7 @@ public:
     int Spacing;
 };
 
-typedef char Create_VerticalMenu2_size_must_be_0x74[(sizeof(VerticalMenu2) == 0x74) ? 1 : -1];
+PSX_LAYOUT_CHECK(Create_VerticalMenu2_size_must_be_0x74, sizeof(VerticalMenu2) == 0x74);
 
 
 /** Prompt row containing an icon and its explanatory text. */
@@ -446,9 +447,9 @@ struct CreateFacePacket
     unsigned int TextureWindow;
 };
 
-typedef char Create_FacePacket_prefix_size_must_be_32[(sizeof(CreateFacePacket) == 32) ? 1 : -1];
+PSX_LAYOUT_CHECK(Create_FacePacket_prefix_size_must_be_32, sizeof(CreateFacePacket) == 32);
 
-typedef char Create_SMatrix_size_must_be_24[(sizeof(SMatrix) == 24) ? 1 : -1];
+PSX_LAYOUT_CHECK(Create_SMatrix_size_must_be_24, sizeof(SMatrix) == 24);
 
 #include "SCAMERA.h"
 
@@ -469,7 +470,7 @@ struct CreateCSuperView
     unsigned char PadToEnd[0x190 - 0x130];
 };
 
-typedef char Create_CSuper_size_must_be_0x190[(sizeof(CreateCSuperView) == 0x190) ? 1 : -1];
+PSX_LAYOUT_CHECK(Create_CSuper_size_must_be_0x190, sizeof(CreateCSuperView) == 0x190);
 
 /** Narrow stats-table slice retaining the original 344-byte stride. */
 struct CreateStatsEntry
@@ -487,7 +488,7 @@ struct CreateStatsEntry
     unsigned char PadToEnd[0x158 - 0x30];
 };
 
-typedef char Create_StatsEntry_size_must_be_0x158[(sizeof(CreateStatsEntry) == 0x158) ? 1 : -1];
+PSX_LAYOUT_CHECK(Create_StatsEntry_size_must_be_0x158, sizeof(CreateStatsEntry) == 0x158);
 
 // === Class declarations ===
 class MySkater : public CClass
@@ -601,7 +602,7 @@ public:
     virtual void draw(int x, int y);
 };
 
-typedef char Create_CharacterEditor_size_must_be_0x1A0[(sizeof(CharacterEditor) == 0x1A0) ? 1 : -1];
+PSX_LAYOUT_CHECK(Create_CharacterEditor_size_must_be_0x1A0, sizeof(CharacterEditor) == 0x1A0);
 
 /** CREATE-owned storage for the original file-local MySkater singleton. */
 
@@ -4485,7 +4486,7 @@ void Create_BeginSpooling(void)
 
 
 /** Body-part group prefixes selected by the character editor. */
-SGroup Group[4] __attribute__((section(".data"))) = {
+SGroup Group[4] PSX_SECTION(".data") = {
     { 0, "_head" },
     { 0, "_chest" },
     { 0, "_left_shin" },
@@ -4493,12 +4494,12 @@ SGroup Group[4] __attribute__((section(".data"))) = {
 };
 
 /** Projection bounds used by the character-editor skater preview. */
-SViewport CreateViewport __attribute__((section(".data"))) = {
+SViewport CreateViewport PSX_SECTION(".data") = {
     0x200, 0xF0, 0, 0, 10, 30000, 0xD55, 0, 0, 0,
 };
 
 /** Lighting used by the character-editor source and build skaters. */
-static SLight Skater_CreateLight __attribute__((section(".data"))) = {
+static SLight Skater_CreateLight PSX_SECTION(".data") = {
     { { 0, 4096, 0 }, { 0, -4096, 0 }, { 0, 0, 4096 } },
     0,
     { { 640, 2944, 320 }, { 640, 2944, 320 }, { 640, 2944, 320 } },
@@ -4512,7 +4513,7 @@ static SLight Skater_CreateLight __attribute__((section(".data"))) = {
  * The original keeps this zero-filled storage in `.data`; loading a skater PSH
  * fills each pointer/name pair in place.
  */
-SPart Part[120] __attribute__((section(".data"))) = {};
+SPart Part[120] PSX_SECTION(".data") = {};
 
 
 namespace CreateAnimationOwners
@@ -4520,7 +4521,7 @@ namespace CreateAnimationOwners
 extern "C"
 {
 /** Default animation range copied into a newly created skater. */
-static CreateAnimHdr8 sDefaultAnimHdrs[1] __attribute__((section(".sdata"), aligned(2))) = {
+static CreateAnimHdr8 sDefaultAnimHdrs[1] PSX_SECTION_ALIGNED(".sdata", 2) = {
     { { 0, -1, -1, 9999 } },
 };
 }

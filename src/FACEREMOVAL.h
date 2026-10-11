@@ -1,5 +1,6 @@
 #ifndef FACEREMOVAL_INC_H
 #define FACEREMOVAL_INC_H
+#include "PSX.h"
 
 #define GLOBALS_SCENE_VALUES_ONLY
 #include "globals.h"
@@ -14,11 +15,11 @@ struct FP
     FP *next2;
 };
 
-typedef char FP_size_must_be_24[(sizeof(FP) == 24) ? 1 : -1];
-typedef char FP_pt_offset_must_be_0[((unsigned long)&(((FP *)0)->pt) == 0) ? 1 : -1];
-typedef char FP_in_offset_must_be_12[((unsigned long)&(((FP *)0)->in) == 12) ? 1 : -1];
-typedef char FP_next_offset_must_be_16[((unsigned long)&(((FP *)0)->next) == 16) ? 1 : -1];
-typedef char FP_next2_offset_must_be_20[((unsigned long)&(((FP *)0)->next2) == 20) ? 1 : -1];
+PSX_LAYOUT_CHECK(FP_size_must_be_24, sizeof(FP) == 24);
+PSX_LAYOUT_CHECK(FP_pt_offset_must_be_0, (unsigned long)&(((FP *)0)->pt) == 0);
+PSX_LAYOUT_CHECK(FP_in_offset_must_be_12, (unsigned long)&(((FP *)0)->in) == 12);
+PSX_LAYOUT_CHECK(FP_next_offset_must_be_16, (unsigned long)&(((FP *)0)->next) == 16);
+PSX_LAYOUT_CHECK(FP_next2_offset_must_be_20, (unsigned long)&(((FP *)0)->next2) == 20);
 
 /** Allocates the fixed face-removal point pool. */
 void FaceRemoval_Setup(void);

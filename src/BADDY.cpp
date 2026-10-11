@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #define CCLASS_POLY_ITEM_FAMILY
 #define CCLASS_POLY_BADDY_FAMILY
 #include "CCLASS_POLY.h"
@@ -47,7 +48,7 @@ struct CCamera
     void Shake(const CVector &position, EShakeType magnitude);
 };
 
-typedef char Baddy_CCamera_size_check[(sizeof(CCamera) == 1668) ? 1 : -1];
+PSX_LAYOUT_CHECK(Baddy_CCamera_size_check, sizeof(CCamera) == 1668);
 
 #include "CVECTOROPS.h"
 
@@ -163,14 +164,14 @@ struct CSpark
 #include "SLINESEG.h"
 #include "CGPOLYLINE.h"
 
-typedef char Baddy_SLineSeg_size_must_be_16[(sizeof(struct SLineSeg) == 16) ? 1 : -1];
-typedef char Baddy_CBit_size_must_be_72[(sizeof(CBit) == 72) ? 1 : -1];
-typedef char Baddy_CSpecialDisplay_size_must_be_72[(sizeof(CSpecialDisplay) == 72) ? 1 : -1];
-typedef char Baddy_CTexturedRibbon_size_must_be_108[(sizeof(CTexturedRibbon) == 108) ? 1 : -1];
-typedef char Baddy_SWidthWobble_size_must_be_8[(sizeof(SWidthWobble) == 8) ? 1 : -1];
-typedef char Baddy_CSmokeJet_size_must_be_364[(sizeof(CSmokeJet) == 364) ? 1 : -1];
-typedef char Baddy_CGPolyLine_size_must_be_100[(sizeof(CGPolyLine) == 100) ? 1 : -1];
-typedef char Baddy_SRainEntry_size_must_be_16[(sizeof(SRainEntry) == 16) ? 1 : -1];
+PSX_LAYOUT_CHECK(Baddy_SLineSeg_size_must_be_16, sizeof(struct SLineSeg) == 16);
+PSX_LAYOUT_CHECK(Baddy_CBit_size_must_be_72, sizeof(CBit) == 72);
+PSX_LAYOUT_CHECK(Baddy_CSpecialDisplay_size_must_be_72, sizeof(CSpecialDisplay) == 72);
+PSX_LAYOUT_CHECK(Baddy_CTexturedRibbon_size_must_be_108, sizeof(CTexturedRibbon) == 108);
+PSX_LAYOUT_CHECK(Baddy_SWidthWobble_size_must_be_8, sizeof(SWidthWobble) == 8);
+PSX_LAYOUT_CHECK(Baddy_CSmokeJet_size_must_be_364, sizeof(CSmokeJet) == 364);
+PSX_LAYOUT_CHECK(Baddy_CGPolyLine_size_must_be_100, sizeof(CGPolyLine) == 100);
+PSX_LAYOUT_CHECK(Baddy_SRainEntry_size_must_be_16, sizeof(SRainEntry) == 16);
 
 // === Function implementations (address order) ===
 

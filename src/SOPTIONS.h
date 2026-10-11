@@ -1,5 +1,6 @@
 #ifndef SOPTIONS_INC_H
 #define SOPTIONS_INC_H
+#include "PSX.h"
 
 /** Persistent game and controller options stored with a career save. */
 struct SOptions
@@ -21,7 +22,7 @@ struct SOptions
     char HorseWord[16];
 };
 
-typedef char SOptions_size_must_be_416[(sizeof(struct SOptions) == 416) ? 1 : -1];
+PSX_LAYOUT_CHECK(SOptions_size_must_be_416, sizeof(struct SOptions) == 416);
 typedef char SOptions_SFXVolume_offset_must_be_0
     [((unsigned long)&(((struct SOptions *)0)->SFXVolume) == 0) ? 1 : -1];
 typedef char SOptions_MusicVolume_offset_must_be_4

@@ -1,12 +1,13 @@
 #ifndef THPS2_M3DINIT_H
 #define THPS2_M3DINIT_H
+#include "PSX.h"
 
 struct STexWibItemInfo;
 
 #ifdef M3DINIT_OWNER_DECLARATIONS
 #define M3DINIT_SHARED_STATE_DECL_ATTR
 #else
-#define M3DINIT_SHARED_STATE_DECL_ATTR __attribute__((section(".data")))
+#define M3DINIT_SHARED_STATE_DECL_ATTR PSX_SECTION(".data")
 #endif
 
 /** Model part index enlarged for the character-select head preview. */

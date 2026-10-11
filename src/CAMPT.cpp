@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #define CAMERA_TUNING_ABSOLUTE_DECLARATIONS
 #include "CAMERATUNING.h"
 
@@ -98,9 +99,9 @@ struct CBruce
     CVector mUp;
 };
 
-typedef char campt_video_info_size_must_be_192[(sizeof(SVideoInfo) == 192) ? 1 : -1];
-typedef char campt_camera_slice_size_must_be_0x5c8[(sizeof(CCamera) == 0x5c8) ? 1 : -1];
-typedef char campt_bruce_slice_size_must_be_0x10c4[(sizeof(CBruce) == 0x10c4) ? 1 : -1];
+PSX_LAYOUT_CHECK(campt_video_info_size_must_be_192, sizeof(SVideoInfo) == 192);
+PSX_LAYOUT_CHECK(campt_camera_slice_size_must_be_0x5c8, sizeof(CCamera) == 0x5c8);
+PSX_LAYOUT_CHECK(campt_bruce_slice_size_must_be_0x10c4, sizeof(CBruce) == 0x10c4);
 
 #include "TRIG.h"
 #include "UTILS.h"
@@ -108,13 +109,13 @@ typedef char campt_bruce_slice_size_must_be_0x10c4[(sizeof(CBruce) == 0x10c4) ? 
 
 // === Owner-local globals ===
 // $gp-relative camera point count (0x282c($gp)).
-int CamPtIndex __attribute__((section(".sdata"))) = 0;
+int CamPtIndex PSX_SECTION(".sdata") = 0;
 
 // === Absolute-addressed tables ===
-int CamModes[70] __attribute__((section(".data"))) = {
+int CamModes[70] PSX_SECTION(".data") = {
     0x532, 0x550, 0x51e, 0x53c, 0x532, 0x550, 0x51e, 0x800,
 };
-u16 CamPtNode[70] __attribute__((section(".data"))) = {};
+u16 CamPtNode[70] PSX_SECTION(".data") = {};
 
 // === Absolute-addressed globals ===
 #include "GSKATER_STATE.h"

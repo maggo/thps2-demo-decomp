@@ -1,5 +1,6 @@
 #ifndef BITSTATE_TYPES_INC_H
 #define BITSTATE_TYPES_INC_H
+#include "PSX.h"
 
 struct CGLine;
 struct CGPolyLine;
@@ -18,7 +19,7 @@ struct Texture;
 #ifdef BITSTATE_OWNER_DECLARATIONS
 #define BITSTATE_DECL_ATTR
 #else
-#define BITSTATE_DECL_ATTR __attribute__((section(".data")))
+#define BITSTATE_DECL_ATTR PSX_SECTION(".data")
 #endif
 
 #if defined(BITSTATE_DECLARE_USE_CACHE_FOR_BITS) && !defined(BITSTATE_USE_CACHE_FOR_BITS_DECLARED)

@@ -1,12 +1,13 @@
 #ifndef NOTINDEMOPIECE_INC_H
 #define NOTINDEMOPIECE_INC_H
+#include "PSX.h"
 
 /*
  * EDITORPIECES physically owns the active unavailable-piece replacement in
  * initialized small data. Consumers retain the target's absolute view.
  */
 #ifdef NOTINDEMOPIECE_ABSOLUTE_DECLARATION
-#define NOTINDEMOPIECE_DECL_ATTR __attribute__((section(".data")))
+#define NOTINDEMOPIECE_DECL_ATTR PSX_SECTION(".data")
 #else
 #define NOTINDEMOPIECE_DECL_ATTR
 #endif

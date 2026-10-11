@@ -1,12 +1,13 @@
 #ifndef TOTALTEXTUREUSAGE_INC_H
 #define TOTALTEXTUREUSAGE_INC_H
+#include "PSX.h"
 
 /*
  * SPOOL physically owns the texture-allocation counter in small data. Every
  * cross-owner consumer addresses that word absolutely.
  */
 #ifdef TOTALTEXTUREUSAGE_ABSOLUTE_DECLARATION
-#define TOTALTEXTUREUSAGE_DECL_ATTR __attribute__((section(".data")))
+#define TOTALTEXTUREUSAGE_DECL_ATTR PSX_SECTION(".data")
 #else
 #define TOTALTEXTUREUSAGE_DECL_ATTR
 #endif

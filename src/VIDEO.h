@@ -1,3 +1,4 @@
+#include "PSX.h"
 #if defined(VIDEO_LAYOUT_ONLY) && !defined(VIDEO_HIGHLIGHT_LAYOUT) && !defined(VIDEO_HEAD_LAYOUT)
 #error VIDEO_LAYOUT_ONLY requires VIDEO_HIGHLIGHT_LAYOUT or VIDEO_HEAD_LAYOUT
 #endif
@@ -12,7 +13,7 @@ struct CBruce;
 #ifdef VIDEO_OWNER_DECLARATIONS
 #define VIDEO_SHARED_STATE_DECL_ATTR
 #else
-#define VIDEO_SHARED_STATE_DECL_ATTR __attribute__((section(".data")))
+#define VIDEO_SHARED_STATE_DECL_ATTR PSX_SECTION(".data")
 #endif
 
 /** Selects full-replay or highlight playback for the active replay. */
@@ -88,7 +89,7 @@ struct SHighlight
     int Score;
 };
 
-typedef char SHighlight_size_must_be_8[(sizeof(struct SHighlight) == 8) ? 1 : -1];
+PSX_LAYOUT_CHECK(SHighlight_size_must_be_8, sizeof(struct SHighlight) == 8);
 typedef char SHighlight_FromFrame_offset_must_be_0
     [((unsigned long)&(((struct SHighlight *)0)->FromFrame) == 0) ? 1 : -1];
 typedef char SHighlight_ToFrame_offset_must_be_2
@@ -120,7 +121,7 @@ struct SVideoHead
     char Padding[7];
 };
 
-typedef char SVideoHead_size_must_be_64[(sizeof(struct SVideoHead) == 64) ? 1 : -1];
+PSX_LAYOUT_CHECK(SVideoHead_size_must_be_64, sizeof(struct SVideoHead) == 64);
 typedef char SVideoHead_NumFrames_offset_must_be_0
     [((unsigned long)&(((struct SVideoHead *)0)->NumFrames) == 0) ? 1 : -1];
 typedef char SVideoHead_Highlights_offset_must_be_4

@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #define CCLASS_POLY_ITEM_FAMILY
 #define CCLASS_POLY_BADDY_FAMILY
 #define CCAR_NATURAL
@@ -160,11 +161,11 @@ struct SVideoInfo
     unsigned char _remainingVideoState[188];
 };
 
-typedef char car_owner_size_must_be_540[(sizeof(CCar) == 540) ? 1 : -1];
+PSX_LAYOUT_CHECK(car_owner_size_must_be_540, sizeof(CCar) == 540);
 typedef char
     car_bruce_collision_slice_size_must_be_0x1070[(sizeof(CBruceCarCollisionOwner) == 0x1070) ? 1
                                                                                               : -1];
-typedef char car_video_info_size_must_be_192[(sizeof(SVideoInfo) == 192) ? 1 : -1];
+PSX_LAYOUT_CHECK(car_video_info_size_must_be_192, sizeof(SVideoInfo) == 192);
 
 /** Identity views kept for the existing call sites. */
 static inline CVector &Car_Vector(CVector &vector)
@@ -249,12 +250,12 @@ extern "C"
  */
 namespace CarAddressViewOwners
 {
-static char s_CarModel_Taxi[8] __attribute__((section(".sdata"), aligned(4))) = "c_taxi";
-static char s_CarModel_Police[12] __attribute__((section(".sdata"), aligned(4))) = "c_police";
-static char s_CarModel_Van[8] __attribute__((section(".sdata"), aligned(4))) = "c_van";
-static char s_CarModel_Cable[8] __attribute__((section(".sdata"), aligned(4))) = "c_cable";
-static char s_CarModel_Kart[8] __attribute__((section(".sdata"), aligned(4))) = "c_kart";
-static char s_CarModel_Mar[8] __attribute__((section(".sdata"), aligned(4))) = "c_mar";
+static char s_CarModel_Taxi[8] PSX_SECTION_ALIGNED(".sdata", 4) = "c_taxi";
+static char s_CarModel_Police[12] PSX_SECTION_ALIGNED(".sdata", 4) = "c_police";
+static char s_CarModel_Van[8] PSX_SECTION_ALIGNED(".sdata", 4) = "c_van";
+static char s_CarModel_Cable[8] PSX_SECTION_ALIGNED(".sdata", 4) = "c_cable";
+static char s_CarModel_Kart[8] PSX_SECTION_ALIGNED(".sdata", 4) = "c_kart";
+static char s_CarModel_Mar[8] PSX_SECTION_ALIGNED(".sdata", 4) = "c_mar";
 }
 }
 

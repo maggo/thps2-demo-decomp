@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #define GAMEFMV_DEFINE_OWNER_LOCAL_DECODER_STATE
 #define GAMEFMV_OWNER_DECLARATIONS
 #include "GAMEFMV.h"
@@ -12,9 +13,9 @@
 #undef GAMEFMV_DEFINE_OWNER_LOCAL_DECODER_STATE
 #include "MAIN.h"
 
-typedef char GameFMV_StHEADER_size_must_be_32[(sizeof(StHEADER) == 32) ? 1 : -1];
-typedef char GameFMV_movie_details_size_must_be_32[(sizeof(SMovieDetails) == 32) ? 1 : -1];
-typedef char GameFMV_cd_file_size_must_be_24[(sizeof(CdlFILE) == 24) ? 1 : -1];
+PSX_LAYOUT_CHECK(GameFMV_StHEADER_size_must_be_32, sizeof(StHEADER) == 32);
+PSX_LAYOUT_CHECK(GameFMV_movie_details_size_must_be_32, sizeof(SMovieDetails) == 32);
+PSX_LAYOUT_CHECK(GameFMV_cd_file_size_must_be_24, sizeof(CdlFILE) == 24);
 
 #include <LIBPRESS.H>
 #include "STCDINTRFLAG.h"
@@ -53,7 +54,7 @@ struct GameFMVSoundVector : CVector
     GameFMVSoundVector() {}
 };
 
-typedef char GameFMV_sound_vector_size_must_be_12[(sizeof(GameFMVSoundVector) == 12) ? 1 : -1];
+PSX_LAYOUT_CHECK(GameFMV_sound_vector_size_must_be_12, sizeof(GameFMVSoundVector) == 12);
 
 /** Playback-mode flag owned by GAMEFMV. */
 int GameFMV_IsMovie = 0;
@@ -77,7 +78,7 @@ GameFMVSoundVector GameFMV_SoundSource[8];
 #define GAMEFMV_MOVIE(name_, width_, height_, end_, vlc_, ring_, rgb_, music_) \
     { name_, width_, height_, end_, vlc_, ring_, rgb_, { 0, 0, 0 }, 1, music_ }
 
-static SMovieDetails movieDetails[30] __attribute__((section(".data"))) = {
+static SMovieDetails movieDetails[30] PSX_SECTION(".data") = {
     GAMEFMV_MOVIE("\\ATVILOGO.STR;1", 320, 240, 208, 0x25800, 48, 1, 128),
     GAMEFMV_MOVIE("\\LOGO.STR;1", 320, 144, 237, 0x16800, 48, 1, 128),
     GAMEFMV_MOVIE("\\ANTHRAX.STR;1", 96, 64, 3746, 0x4000, 16, 0, 102),
@@ -119,13 +120,13 @@ int CycleTracks = 2;
 static int alreadyHandledPause = 0;
 
 /** Stable public-to-table track mapping used during disc lookup. */
-static u8 indices[30] __attribute__((section(".data"))) = {
+static u8 indices[30] PSX_SECTION(".data") = {
     0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14,
     15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
 };
 
 /** Decoder output slices allocated for the active movie. */
-unsigned short *decodeSliceBuffer[11] __attribute__((section(".data"))) = {};
+unsigned short *decodeSliceBuffer[11] PSX_SECTION(".data") = {};
 
 /** Owner-local ring buffer pointer (a local common record in MAIN.SYM). */
 static unsigned long *pRingBuffer;

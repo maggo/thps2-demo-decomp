@@ -3,7 +3,8 @@
  * is intentionally re-entrant so consumers retain their original declaration
  * points, linkage contexts, and absolute-address import views.
  */
-#define M3DCOLOURSTATE_DECL_ATTR __attribute__((section(".data")))
+#include "PSX.h"
+#define M3DCOLOURSTATE_DECL_ATTR PSX_SECTION(".data")
 
 #ifdef M3DCOLOURSTATE_DECLARE_FADE_COLOUR
 /** Renderer fade colour copied into the scratchpad frame state. */

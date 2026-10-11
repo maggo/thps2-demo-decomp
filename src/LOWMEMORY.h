@@ -1,12 +1,13 @@
 #ifndef LOWMEMORY_INC_H
 #define LOWMEMORY_INC_H
+#include "PSX.h"
 
 /*
  * MEM physically owns the allocator pressure flag in initialized small data.
  * SHATTER retains its target-proven absolute-address import view.
  */
 #ifdef LOWMEMORY_ABSOLUTE_DECLARATION
-#define LOWMEMORY_DECL_ATTR __attribute__((section(".data")))
+#define LOWMEMORY_DECL_ATTR PSX_SECTION(".data")
 #else
 #define LOWMEMORY_DECL_ATTR
 #endif

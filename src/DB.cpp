@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #define DB_BUFFER_LAYOUT
 #define DB_OWNER_DECLARATIONS
 #include "DB.h"
@@ -49,7 +50,7 @@ enum
 };
 
 /** The two GPU display buffers, initialized before the first frame is built. */
-SDoubleBuffer DoubleBuffer[DbBufferCount] __attribute__((section(".data"))) = { { 0 } };
+SDoubleBuffer DoubleBuffer[DbBufferCount] PSX_SECTION(".data") = { { 0 } };
 
 /**
  * The ordering-table word follows Db_Init's display-area constant and the two
@@ -351,7 +352,7 @@ void Db_Init(void)
  * first use, making ASPSX choose absolute loads instead of the target's
  * GP-relative form.
  */
-static unsigned int DbSharedBufferPointers[2] __attribute__((section(".sdata"))) = { 0, 0 };
+static unsigned int DbSharedBufferPointers[2] PSX_SECTION(".sdata") = { 0, 0 };
 
 /**
  * Exchange display buffers without submitting a frame, then clear the new OT.

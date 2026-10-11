@@ -13,6 +13,7 @@
  * ScreenElementList (declared in that order: the exe has their tables in
  * reverse declaration order, ScreenElementList first).
  */
+#include "PSX.h"
 #if defined(SCREENTOOLS_POLYMORPHIC_LAYOUT) && !defined(SCREENTOOLS_POLYMORPHIC_LAYOUT_EMITTED)
 #define SCREENTOOLS_POLYMORPHIC_LAYOUT_EMITTED
 #define SCREENTOOLS_AGGREGATE_LAYOUT_EMITTED /* the POD views are superseded */
@@ -96,7 +97,7 @@ struct ScreenElementList : ScreenElement
     void addItem(ScreenElement *element);
 };
 
-typedef char frontend_screen_element_size_must_be_36[(sizeof(ScreenElement) == 36) ? 1 : -1];
+PSX_LAYOUT_CHECK(frontend_screen_element_size_must_be_36, sizeof(ScreenElement) == 36);
 typedef char
     frontend_screen_element_list_size_must_be_104[(sizeof(ScreenElementList) == 104) ? 1 : -1];
 typedef char
@@ -184,7 +185,7 @@ struct SpriteScreenElement
     struct Sprite2 *mSprite;
 };
 
-typedef char frontend_screen_element_size_must_be_36[(sizeof(ScreenElement) == 36) ? 1 : -1];
+PSX_LAYOUT_CHECK(frontend_screen_element_size_must_be_36, sizeof(ScreenElement) == 36);
 typedef char
     frontend_screen_element_list_size_must_be_104[(sizeof(ScreenElementList) == 104) ? 1 : -1];
 typedef char

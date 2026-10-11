@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #include "CCLASS_POLY.h"
 #include "DB.h"
 #include <STDDEF.H>
@@ -171,13 +172,13 @@ struct VerticalDialog : public VerticalMenu
     virtual void draw();
 };
 
-typedef char shell_sliced_image_size_must_be_52[(sizeof(SlicedImage) == 52) ? 1 : -1];
-typedef char shell_double_buffer_size_must_be_172[(sizeof(SDoubleBuffer) == 172) ? 1 : -1];
-typedef char shell_sprite_size_must_be_24[(sizeof(Sprite) == 24) ? 1 : -1];
-typedef char shell_erase_sprite_size_must_be_16[(sizeof(EraseSprite) == 16) ? 1 : -1];
-typedef char shell_pad_buffer_size_must_be_284[(sizeof(PadBuffer) == 284) ? 1 : -1];
-typedef char shell_vertical_menu_size_must_be_820[(sizeof(VerticalMenu) == 820) ? 1 : -1];
-typedef char shell_vertical_dialog_size_must_be_820[(sizeof(VerticalDialog) == 820) ? 1 : -1];
+PSX_LAYOUT_CHECK(shell_sliced_image_size_must_be_52, sizeof(SlicedImage) == 52);
+PSX_LAYOUT_CHECK(shell_double_buffer_size_must_be_172, sizeof(SDoubleBuffer) == 172);
+PSX_LAYOUT_CHECK(shell_sprite_size_must_be_24, sizeof(Sprite) == 24);
+PSX_LAYOUT_CHECK(shell_erase_sprite_size_must_be_16, sizeof(EraseSprite) == 16);
+PSX_LAYOUT_CHECK(shell_pad_buffer_size_must_be_284, sizeof(PadBuffer) == 284);
+PSX_LAYOUT_CHECK(shell_vertical_menu_size_must_be_820, sizeof(VerticalMenu) == 820);
+PSX_LAYOUT_CHECK(shell_vertical_dialog_size_must_be_820, sizeof(VerticalDialog) == 820);
 
 #include "MEM.h"
 #include "PACK.h"
@@ -188,7 +189,7 @@ typedef char shell_vertical_dialog_size_must_be_820[(sizeof(VerticalDialog) == 8
 
 // === External globals (absolute) ===
 /** Diagnostic emitted when a bitmap is not in the expected 8-bit format. */
-static char ShellInvalidBitmapDepthMessage[] __attribute__((section(".rdata"), aligned(4))) =
+static char ShellInvalidBitmapDepthMessage[] PSX_SECTION_ALIGNED(".rdata", 4) =
     "\nNot 8 bits per pixel, is %d bits per pixel";
 /** Byte offsets in the little-endian BMP header consumed by Load8BitBMP2. */
 enum ShellBitmapOffset
@@ -228,8 +229,8 @@ extern "C"
 {
 
 /** Current and midpoint shell ordering-table entries. */
-int OT_entry __attribute__((section(".sdata"))) = 0x1000;
-static int OT_half __attribute__((section(".sdata"))) = 0;
+int OT_entry PSX_SECTION(".sdata") = 0x1000;
+static int OT_half PSX_SECTION(".sdata") = 0;
 
 
 /** Read-only ordering-table bounds diagnostic. */
@@ -238,7 +239,7 @@ extern const char s_OTEntryOutOfRange[];
 /** Nonzero while the shell is rendering through its high-resolution path. */
 #include "HIRESMODE.h"
 
-int HiresMode __attribute__((section(".sdata")));
+int HiresMode PSX_SECTION(".sdata");
 }
 
 // === Function implementations (address order) ===
@@ -943,10 +944,10 @@ void SlicedImage::draw(int x, int y, int UsePanelOT, int r, int g, int b, int Tr
 }
 
 /** Ordering-table bounds diagnostic. */
-extern const char s_OTEntryOutOfRange[16] __attribute__((section(".sdata"))) = "\nOT_entry is %d";
+extern const char s_OTEntryOutOfRange[16] PSX_SECTION(".sdata") = "\nOT_entry is %d";
 
 /** Shared PadBuffer input-suppression flag. */
-int PadBuffer::mIgnoreTwo __attribute__((section(".sdata"))) = 0;
+int PadBuffer::mIgnoreTwo PSX_SECTION(".sdata") = 0;
 
 /**
  * DrawIt__FP4RECTiiii

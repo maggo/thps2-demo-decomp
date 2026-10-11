@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #define SHATTER_OWNER_DECLARATIONS
 #include "SHATTER.h"
 #undef SHATTER_OWNER_DECLARATIONS
@@ -50,7 +51,7 @@ struct ShatterFace
     } Material;
 };
 
-typedef char Shatter_face_prefix_must_be_16[((int)&((ShatterFace *)0)->Material == 16) ? 1 : -1];
+PSX_LAYOUT_CHECK(Shatter_face_prefix_must_be_16, (int)&((ShatterFace *)0)->Material == 16);
 
 struct CBit
 {
@@ -95,9 +96,9 @@ struct ShatterObjectVtable
 
 #include "CSMOKETRAIL.h"
 
-typedef char Shatter_smoke_trail_size_must_be_100[(sizeof(CSmokeTrail) == 100) ? 1 : -1];
-typedef char Shatter_bit_size_must_be_72[(sizeof(CBit) == 72) ? 1 : -1];
-typedef char Shatter_chunk_bit_size_must_be_192[(sizeof(CChunkBit) == 192) ? 1 : -1];
+PSX_LAYOUT_CHECK(Shatter_smoke_trail_size_must_be_100, sizeof(CSmokeTrail) == 100);
+PSX_LAYOUT_CHECK(Shatter_bit_size_must_be_72, sizeof(CBit) == 72);
+PSX_LAYOUT_CHECK(Shatter_chunk_bit_size_must_be_192, sizeof(CChunkBit) == 192);
 
 // CShatterBit — a shatter fragment: a CChunkBit with angular velocity and a smoke trail.
 struct CShatterBit : public CChunkBit
@@ -131,13 +132,13 @@ static int ShatterSound = 0;
  * The explicit section preserves the original owner and lets the generic
  * ASPSX preparation step expose these local definitions before their uses.
  */
-static CVector ShatterSoundPos __attribute__((section(".sbss")));
-static CVector ShatterCentre __attribute__((section(".sbss"), aligned(16)));
-static int VRAMClut __attribute__((section(".sbss")));
-static int VRAMTPage __attribute__((section(".sbss")));
-static u8 AverageR __attribute__((section(".sbss")));
-static u8 AverageG __attribute__((section(".sbss")));
-static u8 AverageB __attribute__((section(".sbss")));
+static CVector ShatterSoundPos PSX_SECTION(".sbss");
+static CVector ShatterCentre PSX_SECTION_ALIGNED(".sbss", 16);
+static int VRAMClut PSX_SECTION(".sbss");
+static int VRAMTPage PSX_SECTION(".sbss");
+static u8 AverageR PSX_SECTION(".sbss");
+static u8 AverageG PSX_SECTION(".sbss");
+static u8 AverageB PSX_SECTION(".sbss");
 
 // === $gp-relative globals ===
 // The target contributes one local vtable anchor word in this owner's `.sbss`.

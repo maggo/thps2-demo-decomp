@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #include "CCLASS_POLY.h"
 #define CClass CClassData
 #include "GENOBJS.h"
@@ -18,8 +19,8 @@
 /** Shared generator state used when sizing generated models. */
 struct LevelGenerator
 {
-    static int GridCellHeight __attribute__((section(".data")));
-    static int GridCellWidth __attribute__((section(".data")));
+    static int GridCellHeight PSX_SECTION(".data");
+    static int GridCellWidth PSX_SECTION(".data");
 };
 
 /** Return caller-provided storage for an owner constructor. */
@@ -76,10 +77,10 @@ struct GenObjsOutputFaceHeader
     u16 size;
 };
 
-typedef char GenObjs_ModelPoint_size_must_be_8[(sizeof(ModelPoint) == 8) ? 1 : -1];
-typedef char GenObjs_ModelBounds_size_must_be_12[(sizeof(ModelBounds) == 12) ? 1 : -1];
-typedef char GenObjs_ModelFace_size_must_be_44[(sizeof(ModelFace) == 44) ? 1 : -1];
-typedef char GenObjs_ModelFace2_size_must_be_20[(sizeof(ModelFace2) == 20) ? 1 : -1];
+PSX_LAYOUT_CHECK(GenObjs_ModelPoint_size_must_be_8, sizeof(ModelPoint) == 8);
+PSX_LAYOUT_CHECK(GenObjs_ModelBounds_size_must_be_12, sizeof(ModelBounds) == 12);
+PSX_LAYOUT_CHECK(GenObjs_ModelFace_size_must_be_44, sizeof(ModelFace) == 44);
+PSX_LAYOUT_CHECK(GenObjs_ModelFace2_size_must_be_20, sizeof(ModelFace2) == 20);
 typedef char
     GenObjs_OutputFaceHeader_size_must_be_4[(sizeof(GenObjsOutputFaceHeader) == 4) ? 1 : -1];
 
@@ -168,13 +169,13 @@ struct GenObjsEditorOutModel
     GenObjsEditorOutModel *Next;
 };
 
-typedef char GenObjs_RailPoint_size_must_be_28[(sizeof(GenObjsRailPoint) == 28) ? 1 : -1];
-typedef char GenObjs_RailString_layout_size_must_be_32[(sizeof(GenObjsRailString) == 32) ? 1 : -1];
-typedef char GenObjs_RailInfo_size_must_be_12[(sizeof(GenObjsRailInfo) == 12) ? 1 : -1];
-typedef char GenObjs_EditorInModel_size_must_be_68[(sizeof(GenObjsEditorInModel) == 68) ? 1 : -1];
+PSX_LAYOUT_CHECK(GenObjs_RailPoint_size_must_be_28, sizeof(GenObjsRailPoint) == 28);
+PSX_LAYOUT_CHECK(GenObjs_RailString_layout_size_must_be_32, sizeof(GenObjsRailString) == 32);
+PSX_LAYOUT_CHECK(GenObjs_RailInfo_size_must_be_12, sizeof(GenObjsRailInfo) == 12);
+PSX_LAYOUT_CHECK(GenObjs_EditorInModel_size_must_be_68, sizeof(GenObjsEditorInModel) == 68);
 typedef char
     GenObjs_EditorOutModel_size_must_be_128[(sizeof(GenObjsEditorOutModel) == 128) ? 1 : -1];
-typedef char GenObjs_SDK_SVECTOR_size_must_be_8[(sizeof(SVECTOR) == 8) ? 1 : -1];
+PSX_LAYOUT_CHECK(GenObjs_SDK_SVECTOR_size_must_be_8, sizeof(SVECTOR) == 8);
 
 /** Read MAIN.SYM's scalar POLYBUFFERSIZE without adding a synthetic import. */
 static inline int GenObjsPolyBufferSize(void)
@@ -269,7 +270,7 @@ public:
     bool Compare(RailPoint *point);
 };
 
-typedef char GenObjs_RailPoint_class_size_must_be_28[(sizeof(RailPoint) == 28) ? 1 : -1];
+PSX_LAYOUT_CHECK(GenObjs_RailPoint_class_size_must_be_28, sizeof(RailPoint) == 28);
 
 /** Generated rail string with its original CClass base and linked-list fields. */
 class RailString : public CClass
@@ -292,15 +293,15 @@ public:
     virtual ~RailString();
 };
 
-typedef char GenObjs_RailString_size_must_be_32[(sizeof(RailString) == 32) ? 1 : -1];
+PSX_LAYOUT_CHECK(GenObjs_RailString_size_must_be_32, sizeof(RailString) == 32);
 
 #include "RAILINFO.h"
 
 /** World-space directions for the editor's four static model lights. */
-Vector EditorOutModel::LightVect[4] __attribute__((section(".data"))) = {};
+Vector EditorOutModel::LightVect[4] PSX_SECTION(".data") = {};
 
 /** World-space positions for the editor's four static model lights. */
-Vector EditorOutModel::LightLoc[4] __attribute__((section(".data"))) = {};
+Vector EditorOutModel::LightLoc[4] PSX_SECTION(".data") = {};
 
 /** Rail-merge diagnostics recovered from the original small-data block. */
 static char s_From_empty[];
@@ -313,8 +314,7 @@ static char s_Added_string[];
 static char s_Merged_string[];
 
 /** Successful-merge prefix emitted before the merged rail contents. */
-static char s_Heigh_ho_Did_Merge[28] __attribute__((section(".rdata"))) =
-    "\nHeigh ho -- Did Merge: ";
+static char s_Heigh_ho_Did_Merge[28] PSX_SECTION(".rdata") = "\nHeigh ho -- Did Merge: ";
 
 // === Function implementations (address order) ===
 
@@ -2792,23 +2792,23 @@ void RailInfo::MergeAdd(RailString *string_to_merge, bool debugify)
 }
 
 
-static char s_From_empty[12] __attribute__((section(".sdata"))) = "From empty\n";
-static char s_To_empty[12] __attribute__((section(".sdata"))) = "To empty\n";
-static char s_from_not_loop[16] __attribute__((section(".sdata"))) = "from not loop\n";
-static char s_To_not_loop[16] __attribute__((section(".sdata"))) = "To not loop\n";
-static char s_Added_string[16] __attribute__((section(".sdata"))) = " Added string\n";
-static char s_Merged_string[16] __attribute__((section(".sdata"))) = " Merged string\n";
+static char s_From_empty[12] PSX_SECTION(".sdata") = "From empty\n";
+static char s_To_empty[12] PSX_SECTION(".sdata") = "To empty\n";
+static char s_from_not_loop[16] PSX_SECTION(".sdata") = "from not loop\n";
+static char s_To_not_loop[16] PSX_SECTION(".sdata") = "To not loop\n";
+static char s_Added_string[16] PSX_SECTION(".sdata") = " Added string\n";
+static char s_Merged_string[16] PSX_SECTION(".sdata") = " Merged string\n";
 
 /** EditorOutModel's target-owned small-data state, in address order. */
-unsigned char *EditorOutModel::MixLookup __attribute__((section(".sdata"))) = 0;
-unsigned char *EditorOutModel::IntensityLookup __attribute__((section(".sdata"))) = 0;
-int EditorOutModel::FallOff __attribute__((section(".sdata"))) = 0;
-int EditorOutModel::LightIntensity __attribute__((section(".sdata"))) = 0;
-int EditorOutModel::DaMix __attribute__((section(".sdata"))) = 0;
-int EditorOutModel::CurrentFace __attribute__((section(".sdata"))) = 0;
-ModelFace2 *EditorOutModel::FaceBuf __attribute__((section(".sdata"))) = 0;
+unsigned char *EditorOutModel::MixLookup PSX_SECTION(".sdata") = 0;
+unsigned char *EditorOutModel::IntensityLookup PSX_SECTION(".sdata") = 0;
+int EditorOutModel::FallOff PSX_SECTION(".sdata") = 0;
+int EditorOutModel::LightIntensity PSX_SECTION(".sdata") = 0;
+int EditorOutModel::DaMix PSX_SECTION(".sdata") = 0;
+int EditorOutModel::CurrentFace PSX_SECTION(".sdata") = 0;
+ModelFace2 *EditorOutModel::FaceBuf PSX_SECTION(".sdata") = 0;
 
 /** EditorInModel's target-owned polygon-buffer state, in address order. */
-int EditorInModel::GameBuild __attribute__((section(".sdata"))) = 0;
-ModelFace *EditorInModel::pMaxBufEntry __attribute__((section(".sdata"))) = 0;
-ModelFace *EditorInModel::pPolyBufEntry __attribute__((section(".sdata"))) = 0;
+int EditorInModel::GameBuild PSX_SECTION(".sdata") = 0;
+ModelFace *EditorInModel::pMaxBufEntry PSX_SECTION(".sdata") = 0;
+ModelFace *EditorInModel::pPolyBufEntry PSX_SECTION(".sdata") = 0;

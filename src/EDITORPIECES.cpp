@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #define EDITORPIECES_OWNER_DECLARATIONS
 #include "EDITORPIECES.h"
 #undef EDITORPIECES_OWNER_DECLARATIONS
@@ -22,7 +23,7 @@ int MapBasePieceToTheme(int piece, int theme);
  * The prototype ships one mapping value per entry for all four themes, while
  * retaining the four-byte map for the retail theme-specific format.
  */
-EditorPiece PieceMap[EditorPieceCount] __attribute__((section(".data"))) = {
+EditorPiece PieceMap[EditorPieceCount] PSX_SECTION(".data") = {
     EDITOR_PIECE(0x7C, "EdIc1_00.bmp", "under construction", 0x80),
     EDITOR_PIECE(0x0E, "EdIc1_28.bmp", "low single corner", 0x80),
     EDITOR_PIECE(0x10, "EdIc1_30.bmp", "low double corner", 0x80),
@@ -177,14 +178,14 @@ EditorPiece PieceMap[EditorPieceCount] __attribute__((section(".data"))) = {
 };
 
 /** Pool-edge compatibility nibble pairs for each rotatable pool piece. */
-PoolLinks PoolLinkMap[EditorPoolLinkCount] __attribute__((section(".data"))) = {
+PoolLinks PoolLinkMap[EditorPoolLinkCount] PSX_SECTION(".data") = {
     { 0x73, { 0x21, 0x00, 0x12, 0x33 } }, { 0x75, { 0x00, 0x00, 0x12, 0x21 } },
     { 0x76, { 0x33, 0x21, 0x12, 0x33 } }, { 0x74, { 0x33, 0x33, 0x33, 0x33 } },
     { 0x6D, { 0x44, 0x44, 0x44, 0x44 } }, { EditorPieceUnavailable, { 0x00, 0x00, 0x00, 0x00 } },
 };
 
 /** Ordered editor category names and their first prototype piece IDs. */
-EditorCategory CategoryMap[EditorCategoryCount] __attribute__((section(".data"))) = {
+EditorCategory CategoryMap[EditorCategoryCount] PSX_SECTION(".data") = {
     { 0x2C, "Risers", 0 },   { 0x03, "Quarter pipes", 0 }, { 0x83, "Quarter pipes 2", 0 },
     { 0x3C, "Rails", 0 },    { 0x3F, "Offset Rails", 0 },  { 0x21, "Walls", 0 },
     { 0x12, "Slopes", 0 },   { 0x49, "Stairs", 0 },        { 0x6C, "Pools", 0 },
@@ -197,7 +198,7 @@ EditorCategory CategoryMap[EditorCategoryCount] __attribute__((section(".data"))
  * Stable save-file piece ordering. FF entries are intentionally unavailable
  * slots; FE terminates the table.
  */
-unsigned char SaveMap[EditorSaveMapCount] __attribute__((section(".data"))) = {
+unsigned char SaveMap[EditorSaveMapCount] PSX_SECTION(".data") = {
     0x7E,
     0x00,
     0x01,
@@ -346,13 +347,13 @@ unsigned char SaveMap[EditorSaveMapCount] __attribute__((section(".data"))) = {
 };
 
 /** Runtime-selected floor-piece identifiers for the active theme. */
-int Floor1X1Piece[EditorFloorPieceCount] __attribute__((section(".data"))) = { 0 };
-int Floor1X2Piece[EditorFloorPieceCount] __attribute__((section(".data"))) = { 0 };
-int Floor2X2Piece[EditorFloorPieceCount] __attribute__((section(".data"))) = { 0 };
+int Floor1X1Piece[EditorFloorPieceCount] PSX_SECTION(".data") = { 0 };
+int Floor1X2Piece[EditorFloorPieceCount] PSX_SECTION(".data") = { 0 };
+int Floor2X2Piece[EditorFloorPieceCount] PSX_SECTION(".data") = { 0 };
 
 /** Runtime-selected riser and unavailable-piece IDs. */
-int RiserPiece __attribute__((section(".sdata"))) = 0;
-int NotInDemoPiece __attribute__((section(".sdata"))) = 0;
+int RiserPiece PSX_SECTION(".sdata") = 0;
+int NotInDemoPiece PSX_SECTION(".sdata") = 0;
 
 #undef EDITOR_PIECE
 

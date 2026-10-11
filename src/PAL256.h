@@ -1,5 +1,6 @@
 #ifndef PAL256_INC_H
 #define PAL256_INC_H
+#include "PSX.h"
 
 /*
  * PAL owns the shared 256-colour palette coordinates in small BSS. Consumers
@@ -9,7 +10,7 @@
 #ifdef PAL256_OWNER_DECLARATIONS
 #define PAL256_DECL_ATTR
 #else
-#define PAL256_DECL_ATTR __attribute__((section(".data")))
+#define PAL256_DECL_ATTR PSX_SECTION(".data")
 #endif
 
 /** X coordinate of the shared 256-colour palette allocation area. */

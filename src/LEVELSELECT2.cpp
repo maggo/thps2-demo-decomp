@@ -7,6 +7,7 @@
 
 // Owner-local declarations attributed to LEVELSELECT2.cpp by MAIN.SYM.
 
+#include "PSX.h"
 typedef unsigned char u8;
 typedef unsigned short u16;
 typedef unsigned int u32;
@@ -108,9 +109,9 @@ struct LevelSelectDoubleBuffer
 #include "M3DMATHS.h"
 #undef M3DMATHS_TYPED_API
 #include "IMAGE.h"
-typedef char levelselect_item_size_must_be_36[(sizeof(Item) == 36) ? 1 : -1];
-typedef char levelselect_button_size_must_be_16[(sizeof(SButton) == 16) ? 1 : -1];
-typedef char levelselect_control_size_must_be_364[(sizeof(SControl) == 364) ? 1 : -1];
+PSX_LAYOUT_CHECK(levelselect_item_size_must_be_36, sizeof(Item) == 36);
+PSX_LAYOUT_CHECK(levelselect_button_size_must_be_16, sizeof(SButton) == 16);
+PSX_LAYOUT_CHECK(levelselect_control_size_must_be_364, sizeof(SControl) == 364);
 typedef char
     levelselect_double_buffer_size_must_be_148[(sizeof(LevelSelectDoubleBuffer) == 148) ? 1 : -1];
 #include "SFX.h"
@@ -124,9 +125,9 @@ typedef char
 
 // === Forward type declarations ===
 
-typedef char levelselect_image_size_must_be_28[(sizeof(Image) == 28) ? 1 : -1];
-typedef char levelselect_sliced_image_size_must_be_60[(sizeof(SlicedImage2) == 60) ? 1 : -1];
-typedef char levelselect_sprite_size_must_be_60[(sizeof(Sprite2) == 60) ? 1 : -1];
+PSX_LAYOUT_CHECK(levelselect_image_size_must_be_28, sizeof(Image) == 28);
+PSX_LAYOUT_CHECK(levelselect_sliced_image_size_must_be_60, sizeof(SlicedImage2) == 60);
+PSX_LAYOUT_CHECK(levelselect_sprite_size_must_be_60, sizeof(Sprite2) == 60);
 
 /** Little-endian views used by the PSX texture and VRAM interfaces. */
 union LevelSelectPackedInt
@@ -289,20 +290,19 @@ struct GoalScreenElement : ScreenElement
     void update();
 };
 
-typedef char levelselect_goal_element_size_must_be_204[(sizeof(GoalScreenElement) == 204) ? 1 : -1];
+PSX_LAYOUT_CHECK(levelselect_goal_element_size_must_be_204, sizeof(GoalScreenElement) == 204);
 typedef char
     levelselect_video_element_size_must_be_156[(sizeof(VideoScreenElement) == 156) ? 1 : -1];
-typedef char levelselect_packed_int_size_must_be_4[(sizeof(LevelSelectPackedInt) == 4) ? 1 : -1];
-typedef char levelselect_name_element_size_must_be_44[(sizeof(NameScreenElement) == 44) ? 1 : -1];
+PSX_LAYOUT_CHECK(levelselect_packed_int_size_must_be_4, sizeof(LevelSelectPackedInt) == 4);
+PSX_LAYOUT_CHECK(levelselect_name_element_size_must_be_44, sizeof(NameScreenElement) == 44);
 typedef char
     levelselect_prompt_element_size_must_be_104[(sizeof(PromptScreenElement) == 104) ? 1 : -1];
 typedef char
     levelselect_career_element_size_must_be_152[(sizeof(CareerScreenElement) == 152) ? 1 : -1];
-typedef char levelselect_level_name_element_size_must_be_292[(sizeof(LevelNameScreenElement) == 292)
-                                                                 ? 1
-                                                                 : -1];
-typedef char levelselect_globe_element_size_must_be_96[(sizeof(GlobeScreenElement) == 96) ? 1 : -1];
-typedef char levelselect_screen_size_must_be_284[(sizeof(LevelSelectScreen) == 284) ? 1 : -1];
+PSX_LAYOUT_CHECK(levelselect_level_name_element_size_must_be_292,
+                 sizeof(LevelNameScreenElement) == 292);
+PSX_LAYOUT_CHECK(levelselect_globe_element_size_must_be_96, sizeof(GlobeScreenElement) == 96);
+PSX_LAYOUT_CHECK(levelselect_screen_size_must_be_284, sizeof(LevelSelectScreen) == 284);
 typedef char
     levelselect_skater_name_size_must_be_192[(sizeof(SkaterNameScreenElement) == 192) ? 1 : -1];
 
@@ -331,7 +331,7 @@ static SViewport *pViewport = &CreateViewport1;
  * The original owner keeps this zero-initialized word between the viewport
  * pointer and its filename pool in `.sdata`.
  */
-static int SelectedLevel __attribute__((section(".sdata"))) = 0;
+static int SelectedLevel PSX_SECTION(".sdata") = 0;
 
 // === External object declarations ===
 #include "PDOUBLEBUFFER.h"
@@ -361,29 +361,25 @@ namespace LevelSelectAddressViewOwners
 {
 extern "C"
 {
-static char s_MainfFnt_LevelSelect[] __attribute__((section(".sdata"), aligned(4))) = "mainf.fnt";
-static char s_S2font2Fnt_LevelSelect[] __attribute__((section(".sdata"), aligned(4))) =
-    "s2font2.fnt";
-static char s_S2font1Fnt[] __attribute__((section(".sdata"), aligned(4))) = "s2font1.fnt";
-static char s_Ingame1Fnt[] __attribute__((section(".sdata"), aligned(4))) = "ingame1.fnt";
-static char s_S2bgd3Bmp[] __attribute__((section(".sdata"), aligned(4))) = "s2bgd3.bmp";
-static char s_S2prmpt4Bmp_LevelSelect[] __attribute__((section(".sdata"), aligned(4))) =
-    "s2prmpt4.bmp";
-static char s_Select_LevelSelect[] __attribute__((section(".sdata"), aligned(4))) = "select";
-static char s_S2prmpt1Bmp_LevelSelect[] __attribute__((section(".sdata"), aligned(4))) =
-    "s2prmpt1.bmp";
-static char s_Accept_LevelSelect[] __attribute__((section(".sdata"), aligned(4))) = "accept";
-static char s_S2prmpt2Bmp_LevelSelect[] __attribute__((section(".sdata"), aligned(4))) =
-    "s2prmpt2.bmp";
-static char s_Back_LevelSelect[] __attribute__((section(".sdata"), aligned(4))) = "back";
-static char s_S2versusBmp[] __attribute__((section(".sdata"), aligned(4))) = "s2versus.bmp";
-static char s_Globe[] __attribute__((section(".sdata"), aligned(4))) = "globe";
-static char s_S2crosshBmp[] __attribute__((section(".sdata"), aligned(4))) = "s2crossh.bmp";
-static char s_MarBmp[] __attribute__((section(".sdata"), aligned(4))) = "mar.bmp";
-static char s_LevnaBmp[] __attribute__((section(".sdata"), aligned(4))) = "levna.bmp";
-static char s_S2win5Bmp[] __attribute__((section(".sdata"), aligned(4))) = "s2win5.bmp";
-static char s_S2levl00Bmp[] __attribute__((section(".sdata"), aligned(4))) = "s2levl00.bmp";
-static char s_S2levl0NumBmp[] __attribute__((section(".sdata"), aligned(4))) = "s2levl0%d.bmp";
+static char s_MainfFnt_LevelSelect[] PSX_SECTION_ALIGNED(".sdata", 4) = "mainf.fnt";
+static char s_S2font2Fnt_LevelSelect[] PSX_SECTION_ALIGNED(".sdata", 4) = "s2font2.fnt";
+static char s_S2font1Fnt[] PSX_SECTION_ALIGNED(".sdata", 4) = "s2font1.fnt";
+static char s_Ingame1Fnt[] PSX_SECTION_ALIGNED(".sdata", 4) = "ingame1.fnt";
+static char s_S2bgd3Bmp[] PSX_SECTION_ALIGNED(".sdata", 4) = "s2bgd3.bmp";
+static char s_S2prmpt4Bmp_LevelSelect[] PSX_SECTION_ALIGNED(".sdata", 4) = "s2prmpt4.bmp";
+static char s_Select_LevelSelect[] PSX_SECTION_ALIGNED(".sdata", 4) = "select";
+static char s_S2prmpt1Bmp_LevelSelect[] PSX_SECTION_ALIGNED(".sdata", 4) = "s2prmpt1.bmp";
+static char s_Accept_LevelSelect[] PSX_SECTION_ALIGNED(".sdata", 4) = "accept";
+static char s_S2prmpt2Bmp_LevelSelect[] PSX_SECTION_ALIGNED(".sdata", 4) = "s2prmpt2.bmp";
+static char s_Back_LevelSelect[] PSX_SECTION_ALIGNED(".sdata", 4) = "back";
+static char s_S2versusBmp[] PSX_SECTION_ALIGNED(".sdata", 4) = "s2versus.bmp";
+static char s_Globe[] PSX_SECTION_ALIGNED(".sdata", 4) = "globe";
+static char s_S2crosshBmp[] PSX_SECTION_ALIGNED(".sdata", 4) = "s2crossh.bmp";
+static char s_MarBmp[] PSX_SECTION_ALIGNED(".sdata", 4) = "mar.bmp";
+static char s_LevnaBmp[] PSX_SECTION_ALIGNED(".sdata", 4) = "levna.bmp";
+static char s_S2win5Bmp[] PSX_SECTION_ALIGNED(".sdata", 4) = "s2win5.bmp";
+static char s_S2levl00Bmp[] PSX_SECTION_ALIGNED(".sdata", 4) = "s2levl00.bmp";
+static char s_S2levl0NumBmp[] PSX_SECTION_ALIGNED(".sdata", 4) = "s2levl0%d.bmp";
 }
 }
 /** Read the low halfword of an integer-backed PSX screen coordinate. */

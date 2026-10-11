@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #include "CCLASS_POLY.h"
 #define RAIL_OWNER_DECLARATIONS
 #include "RAIL.h"
@@ -74,14 +75,12 @@ struct RailLinkAlias
 #define RAIL_NEXT_LINK_ALIAS(rail) \
     (*(CRail **)((unsigned char *)(rail) + RAIL_LINK_ALIAS_OFFSET(next)))
 
-typedef char rail_previous_alias_offset_check[((unsigned int)&((RailLinkAlias *)0)->previous ==
-                                               (unsigned int)&((CRail *)0)->mpPrevious)
-                                                  ? 1
-                                                  : -1];
+PSX_LAYOUT_CHECK(rail_previous_alias_offset_check, (unsigned int)&((RailLinkAlias *)0)->previous ==
+                                                       (unsigned int)&((CRail *)0)->mpPrevious);
 typedef char rail_next_alias_offset_check
     [((unsigned int)&((RailLinkAlias *)0)->next == (unsigned int)&((CRail *)0)->mpNext) ? 1 : -1];
-typedef char rail_node_sort_size_check[(sizeof(NodeSort) == 4) ? 1 : -1];
-typedef char rail_object_size_check[(sizeof(CRail) == 40) ? 1 : -1];
+PSX_LAYOUT_CHECK(rail_node_sort_size_check, sizeof(NodeSort) == 4);
+PSX_LAYOUT_CHECK(rail_object_size_check, sizeof(CRail) == 40);
 
 /*
  * The destructor's first vtable write must retain the original all-types alias
@@ -138,7 +137,7 @@ struct CBruceRailOwner
     struct CVector mFront;
 };
 
-typedef char CBruceRailOwner_minimum_size_check[(sizeof(struct CBruceRailOwner) == 4268) ? 1 : -1];
+PSX_LAYOUT_CHECK(CBruceRailOwner_minimum_size_check, sizeof(struct CBruceRailOwner) == 4268);
 
 #define CAREER_OWNER_LAYOUT
 #include "CAREER.h"

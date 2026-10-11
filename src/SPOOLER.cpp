@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #include "CCLASS_POLY.h"
 #define SPOOLER_POLYMORPHIC_LAYOUT
 #include "FILEIO.h"
@@ -33,9 +34,9 @@ template <class Field> static inline Field *NextSpoolItemField(Field *field)
 Spooler *Spooler::SpoolMgr = 0;
 
 /** Filename and platform suffixes used by the spooler in original order. */
-static char s_FileNameFormat[4] __attribute__((section(".sdata"))) = "%s";
-static char s_Ext_psx[4] __attribute__((section(".sdata"))) = "psx";
-static char s_Ext_PSX[4] __attribute__((section(".sdata"))) = "PSX";
+static char s_FileNameFormat[4] PSX_SECTION(".sdata") = "%s";
+static char s_Ext_psx[4] PSX_SECTION(".sdata") = "psx";
+static char s_Ext_PSX[4] PSX_SECTION(".sdata") = "PSX";
 
 // Keep the call sites opaque to the literals' owner definitions above.  The
 // original compiler addressed these three strings absolutely even though the

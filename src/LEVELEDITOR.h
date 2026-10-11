@@ -1,6 +1,7 @@
 // Public interface and recovered layouts for LEVELEDITOR.cpp.
 #ifndef LEVELEDITOR_INC_H
 #define LEVELEDITOR_INC_H
+#include "PSX.h"
 
 #include "globals.h"
 #include "LEVELEDITOR_STATE.h"
@@ -226,11 +227,11 @@ struct EditorCamera : CClass
     struct CBody *Target;
 };
 
-typedef char level_editor_Font_size_must_be_80[(sizeof(FontStorage) == 80) ? 1 : -1];
-typedef char level_editor_SelectManager_size_must_be_1576[(sizeof(SelectManager) == 1576) ? 1 : -1];
-typedef char level_editor_CursorModel_size_must_be_104[(sizeof(CursorModel) == 104) ? 1 : -1];
-typedef char level_editor_LevelEditor_size_must_be_92[(sizeof(LevelEditor) == 92) ? 1 : -1];
-typedef char level_editor_EditorCamera_size_must_be_44[(sizeof(EditorCamera) == 44) ? 1 : -1];
+PSX_LAYOUT_CHECK(level_editor_Font_size_must_be_80, sizeof(FontStorage) == 80);
+PSX_LAYOUT_CHECK(level_editor_SelectManager_size_must_be_1576, sizeof(SelectManager) == 1576);
+PSX_LAYOUT_CHECK(level_editor_CursorModel_size_must_be_104, sizeof(CursorModel) == 104);
+PSX_LAYOUT_CHECK(level_editor_LevelEditor_size_must_be_92, sizeof(LevelEditor) == 92);
+PSX_LAYOUT_CHECK(level_editor_EditorCamera_size_must_be_44, sizeof(EditorCamera) == 44);
 
 // === Variables (gp-relative in this TU) ===
 #ifdef LEVELEDITOR_OWNER_DECLARATIONS

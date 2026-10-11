@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #include "CARD.h"
 #include "FRONT.h"
 
@@ -76,11 +77,11 @@ struct SVideoInfo
     char reserved_008[184];
 };
 
-typedef char SCareer_size_must_be_2420[(sizeof(SCareer) == 2420) ? 1 : -1];
+PSX_LAYOUT_CHECK(SCareer_size_must_be_2420, sizeof(SCareer) == 2420);
 typedef char
     SCardFilePrefix_size_must_be_640[(sizeof(SCardFilePrefix) == CARD_HEADER_SIZE) ? 1 : -1];
-typedef char SCardHead_size_must_be_512[(sizeof(SCardHead) == CARD_SECTOR_SIZE) ? 1 : -1];
-typedef char SVideoInfo_size_must_be_192[(sizeof(SVideoInfo) == 192) ? 1 : -1];
+PSX_LAYOUT_CHECK(SCardHead_size_must_be_512, sizeof(SCardHead) == CARD_SECTOR_SIZE);
+PSX_LAYOUT_CHECK(SVideoInfo_size_must_be_192, sizeof(SVideoInfo) == 192);
 
 /** Obtain typed portions of a raw memory-card file buffer. */
 static inline SCardFilePrefix *Card_FilePrefix(unsigned long *buffer)
@@ -132,7 +133,7 @@ namespace CardAddressViewOwners
 {
 extern "C"
 {
-static char s_CardFileNameFmt[8] __attribute__((section(".sdata"))) = "bu00:%s";
+static char s_CardFileNameFmt[8] PSX_SECTION(".sdata") = "bu00:%s";
 }
 }
 
@@ -146,10 +147,10 @@ static char s_CardFileNameFmt[8] __attribute__((section(".sdata"))) = "bu00:%s";
 #include "CARD.h"
 
 /** Memory-card wildcard used to enumerate one connector and slot. */
-static char s_CardWildcardFmt[12] __attribute__((section(".sdata"))) = "bu%1d%1d:*";
+static char s_CardWildcardFmt[12] PSX_SECTION(".sdata") = "bu%1d%1d:*";
 
 /** Memory-card device name used by the format operation. */
-static char s_CardDeviceFmt[12] __attribute__((section(".sdata"))) = "bu%1d%1d:";
+static char s_CardDeviceFmt[12] PSX_SECTION(".sdata") = "bu%1d%1d:";
 
 int CardStatusTemp = 0;
 int CardStatusMode = 0;
@@ -167,47 +168,45 @@ long FILE_DSCRPTR = 0;
 
 // === CARD-owned read-only data ===
 /** Development-host diagnostic printed before writing the first header. */
-static char s_WriteHeaderSizeFmt[36] __attribute__((section(".rdata"))) =
-    "\nWriting the header buffer, size %d";
+static char s_WriteHeaderSizeFmt[36] PSX_SECTION(".rdata") = "\nWriting the header buffer, size %d";
 
 /** Development-host diagnostic printed before writing the first payload. */
-static char s_WriteDataSizeFmt[36] __attribute__((section(".rdata"))) =
-    "\nWriting the data buffer, size %d";
+static char s_WriteDataSizeFmt[36] PSX_SECTION(".rdata") = "\nWriting the data buffer, size %d";
 
 /** Development-host diagnostic printed before writing the second header. */
-static char s_Write2PHeaderSizeFmt[48] __attribute__((section(".rdata"))) =
+static char s_Write2PHeaderSizeFmt[48] PSX_SECTION(".rdata") =
     "\nWriting the 2 player header buffer, size %d";
 
 /** Development-host diagnostic printed before writing the second payload. */
-static char s_Write2PDataSizeFmt[44] __attribute__((section(".rdata"))) =
-    "\nWriting the 2 player data buffer, size %d";
+static char
+    s_Write2PDataSizeFmt[44] PSX_SECTION(".rdata") = "\nWriting the 2 player data buffer, size %d";
 
 /** Replay checksum diagnostic for the first player payload. */
-static char s_ChecksumError1P[52] __attribute__((section(".rdata"))) =
+static char s_ChecksumError1P[52] PSX_SECTION(".rdata") =
     "\nChecksum error for 1P in Card_LoadReplayFromCD()";
 
 /** Replay checksum diagnostic for the second player payload. */
-static char s_ChecksumError2P[52] __attribute__((section(".rdata"))) =
+static char s_ChecksumError2P[52] PSX_SECTION(".rdata") =
     "\nChecksum error for 2P in Card_LoadReplayFromCD()";
 
 /** Shift-JIS title stored in career-save headers. */
-static char CARD_GTITLE[30] __attribute__((section(".rdata"))) =
+static char CARD_GTITLE[30] PSX_SECTION(".rdata") =
     "\x82\x73\x82\x67\x82\x6f\x82\x72\x81\x40\x82\x62\x82\x60"
     "\x82\x71\x82\x64\x82\x64\x82\x71\x81\x40\x81\x5b\x81\x40";
 
 /** Shift-JIS title stored in replay-save headers. */
-static char CARD_VTITLE[30] __attribute__((section(".rdata"))) =
+static char CARD_VTITLE[30] PSX_SECTION(".rdata") =
     "\x82\x73\x82\x67\x82\x6f\x82\x72\x81\x40\x82\x71\x82\x64"
     "\x82\x6f\x82\x6b\x82\x60\x82\x78\x81\x40\x81\x5b\x81\x40";
 
 /** 16-color CLUT for the replay memory-card icon. */
-static char Tape01IconPalette[32] __attribute__((section(".rdata"))) = {
+static char Tape01IconPalette[32] PSX_SECTION(".rdata") = {
     0xFA, 0x5E, 0x74, 0x35, 0x7B, 0x6F, 0x30, 0x4E, 0x72, 0x56, 0x16, 0x73, 0xF5, 0x6E, 0xE6, 0x1C,
     0x6A, 0x2D, 0x07, 0x25, 0xEE, 0x41, 0xAC, 0x39, 0x41, 0x08, 0x84, 0x10, 0xFF, 0x7F, 0xF6, 0x62,
 };
 
 /** 16x16 four-bit replay memory-card icon pixels. */
-static char Tape01IconTexture[128] __attribute__((section(".rdata"))) = {
+static char Tape01IconTexture[128] PSX_SECTION(".rdata") = {
     0x55, 0x55, 0x55, 0x55, 0x55, 0xB4, 0x6B, 0x55, 0x55, 0x55, 0x55, 0x55, 0xB4, 0xD8, 0x9C, 0x56,
     0x55, 0x55, 0x55, 0x36, 0x8A, 0xAD, 0xB2, 0x59, 0x55, 0x55, 0x45, 0xAA, 0x79, 0xF8, 0xEE, 0x38,
     0x55, 0x45, 0xBB, 0xD8, 0x2B, 0xAF, 0xEF, 0xCB, 0x65, 0x8B, 0xC9, 0xFD, 0x42, 0x8A, 0x8D, 0xCC,
@@ -219,13 +218,13 @@ static char Tape01IconTexture[128] __attribute__((section(".rdata"))) = {
 };
 
 /** 16-color CLUT for the career memory-card icon. */
-static char Tony01IconPalette[32] __attribute__((section(".rdata"))) = {
+static char Tony01IconPalette[32] PSX_SECTION(".rdata") = {
     0x83, 0x18, 0x2F, 0x5E, 0x91, 0x66, 0x8B, 0x35, 0xCD, 0x41, 0x07, 0x25, 0x32, 0x42, 0x99, 0x1E,
     0x36, 0x1A, 0xDC, 0x26, 0xBA, 0x26, 0x56, 0x26, 0x1D, 0x33, 0xB9, 0x32, 0xFF, 0x7F, 0xDE, 0x7B,
 };
 
 /** 16x16 four-bit career memory-card icon pixels. */
-static char Tony01IconTexture[128] __attribute__((section(".rdata"))) = {
+static char Tony01IconTexture[128] PSX_SECTION(".rdata") = {
     0x22, 0x12, 0x12, 0x12, 0x22, 0x12, 0x22, 0x31, 0xEE, 0x4E, 0x4E, 0x4E, 0xEE, 0x4E, 0xEE, 0x0E,
     0xE1, 0x55, 0x3E, 0x5E, 0x6E, 0x5E, 0x3E, 0x05, 0xE1, 0x30, 0xEE, 0x5E, 0xEE, 0x5E, 0xEE, 0x0F,
     0xE1, 0x30, 0x3E, 0x5E, 0x5E, 0x00, 0x34, 0x0F, 0xE1, 0x30, 0x5E, 0x5E, 0x0E, 0x45, 0xEE, 0x0F,
@@ -238,11 +237,11 @@ static char Tony01IconTexture[128] __attribute__((section(".rdata"))) = {
 
 // === Absolute-addressed globals ===
 /** Memory-card filename templates for career and replay saves. */
-char CARD_FNAME[25] __attribute__((section(".data"))) = "bu00:BASLUS-00860THPSGxx";
-char CARD_VNAME[25] __attribute__((section(".data"))) = "bu00:BASLUS-00860THPSVxx";
+char CARD_FNAME[25] PSX_SECTION(".data") = "bu00:BASLUS-00860THPSGxx";
+char CARD_VNAME[25] PSX_SECTION(".data") = "bu00:BASLUS-00860THPSVxx";
 /** Per-directory-entry file classification and raw card directory records. */
-EFileType FileType[15] __attribute__((section(".data"))) = { THPS_SAVE_FILE };
-DIRENTRY SLOT_DIR[15] __attribute__((section(".data"))) = { { { 0 } } };
+EFileType FileType[15] PSX_SECTION(".data") = { THPS_SAVE_FILE };
+DIRENTRY SLOT_DIR[15] PSX_SECTION(".data") = { { { 0 } } };
 
 /**
  * Independent view of the CARD-owned file-type table.

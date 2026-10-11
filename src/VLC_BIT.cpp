@@ -5,6 +5,7 @@
 // The historical external source is provenance evidence only and is not copied.
 // Address range: 0x8007E87C - 0x8007EDD0
 
+#include "PSX.h"
 #include "VLC_BIT.h"
 
 typedef unsigned char VlcByte;
@@ -57,7 +58,7 @@ union VlcOwnedData
     VlcRunLevelPair buildPairs[109];
 };
 
-typedef char VlcPairSizeCheck[(sizeof(VlcRunLevelPair) == 2) ? 1 : -1];
+PSX_LAYOUT_CHECK(VlcPairSizeCheck, sizeof(VlcRunLevelPair) == 2);
 
 /*
  * The pair order is the order expected by the decoder's scratchpad offsets.

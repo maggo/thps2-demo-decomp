@@ -3,10 +3,11 @@
  * intentionally re-entrant so each translation unit can request either word
  * at its original declaration point and retain its target addressing view.
  */
+#include "PSX.h"
 #ifdef SOUNDLEVELS_OWNER_DECLARATIONS
 #define SOUNDLEVELS_DECL_ATTR
 #else
-#define SOUNDLEVELS_DECL_ATTR __attribute__((section(".data")))
+#define SOUNDLEVELS_DECL_ATTR PSX_SECTION(".data")
 #endif
 
 #ifdef SOUNDLEVELS_DECLARE_SFXLEVEL

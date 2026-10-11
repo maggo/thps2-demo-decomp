@@ -1,6 +1,7 @@
 // Public declarations and owner-local layouts for SFX.cpp.
 #ifndef SFX_INC_H
 #define SFX_INC_H
+#include "PSX.h"
 
 struct CVector;
 
@@ -86,9 +87,9 @@ struct SFXVabImage
     VagAtr tones[1];
 };
 
-typedef char sfx_VabHdr_size_must_be_32[(sizeof(VabHdr) == 32) ? 1 : -1];
-typedef char sfx_ProgAtr_size_must_be_16[(sizeof(ProgAtr) == 16) ? 1 : -1];
-typedef char sfx_VagAtr_size_must_be_32[(sizeof(VagAtr) == 32) ? 1 : -1];
+PSX_LAYOUT_CHECK(sfx_VabHdr_size_must_be_32, sizeof(VabHdr) == 32);
+PSX_LAYOUT_CHECK(sfx_ProgAtr_size_must_be_16, sizeof(ProgAtr) == 16);
+PSX_LAYOUT_CHECK(sfx_VagAtr_size_must_be_32, sizeof(VagAtr) == 32);
 
 struct soundRAMentry
 {
@@ -108,7 +109,7 @@ union SFXVoiceSpatialData
     } fields;
 };
 
-typedef char sfx_spatial_data_size_must_be_4[(sizeof(SFXVoiceSpatialData) == 4) ? 1 : -1];
+PSX_LAYOUT_CHECK(sfx_spatial_data_size_must_be_4, sizeof(SFXVoiceSpatialData) == 4);
 
 // Canonical PsyQ SPU types and API declarations.
 #include <LIBSPU.H>

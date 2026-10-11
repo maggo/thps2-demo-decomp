@@ -1,5 +1,6 @@
 #ifndef RCOSSIN_INC_H
 #define RCOSSIN_INC_H
+#include "PSX.h"
 
 /**
  * Packed sine/cosine lookup table supplied by Psy-Q LIBGTE.
@@ -14,7 +15,7 @@
 
 #ifdef RCOSSIN_SCALAR_VIEW
 #define RCOSSIN_DECL_SUFFIX
-#define RCOSSIN_DECL_ATTR __attribute__((section(".data")))
+#define RCOSSIN_DECL_ATTR PSX_SECTION(".data")
 #else
 #define RCOSSIN_DECL_SUFFIX []
 #define RCOSSIN_DECL_ATTR

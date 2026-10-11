@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #include "globals.h"
 #include "MAIN.h"
 #include "DB.h"
@@ -43,10 +44,10 @@ struct tag_S_Pal;
 
 #include "TEXTURE.h"
 
-typedef char M3dElips_SDK_SVECTOR_size_must_be_8[(sizeof(SVECTOR) == 8) ? 1 : -1];
-typedef char M3dElips_Bounds_size_must_be_12[(sizeof(M3dElipsBounds) == 12) ? 1 : -1];
-typedef char M3dElips_Texture_size_must_be_40[(sizeof(Texture) == 40) ? 1 : -1];
-typedef char M3dElips_Vec_size_must_be_6[(sizeof(Vec) == 6) ? 1 : -1];
+PSX_LAYOUT_CHECK(M3dElips_SDK_SVECTOR_size_must_be_8, sizeof(SVECTOR) == 8);
+PSX_LAYOUT_CHECK(M3dElips_Bounds_size_must_be_12, sizeof(M3dElipsBounds) == 12);
+PSX_LAYOUT_CHECK(M3dElips_Texture_size_must_be_40, sizeof(Texture) == 40);
+PSX_LAYOUT_CHECK(M3dElips_Vec_size_must_be_6, sizeof(Vec) == 6);
 
 #include <LIBGPU.H>
 
@@ -68,7 +69,7 @@ void M3dMaths_ScaleLastVec12(int scale);
 void M3dMaths_AddScaledLastVec12(Vec *vector, int scale);
 
 typedef short M3dElipsMatrix[3][3];
-typedef char M3dElips_Matrix_size_must_be_18[(sizeof(M3dElipsMatrix) == 18) ? 1 : -1];
+PSX_LAYOUT_CHECK(M3dElips_Matrix_size_must_be_18, sizeof(M3dElipsMatrix) == 18);
 
 // The original maths ABI exposes matrix storage as unsigned 16-bit words.
 // Keep that representation conversion named at the boundary instead of

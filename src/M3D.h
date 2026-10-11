@@ -1,5 +1,6 @@
 #ifndef THPS2_M3D_H
 #define THPS2_M3D_H
+#include "PSX.h"
 
 struct SCamera;
 struct SViewport;
@@ -8,7 +9,7 @@ struct CSuper;
 #ifdef M3D_OWNER_DECLARATIONS
 #define M3D_RENDER_STATE_DECL_ATTR
 #else
-#define M3D_RENDER_STATE_DECL_ATTR __attribute__((section(".data")))
+#define M3D_RENDER_STATE_DECL_ATTR PSX_SECTION(".data")
 #endif
 
 #ifdef __cplusplus
@@ -99,18 +100,15 @@ struct STexWibItemInfo
     unsigned char ZeroVAmplitudes;
 };
 
-typedef char SProjectedVertex_X_offset_must_be_0[((unsigned long)&(((SProjectedVertex *)0)->X) == 0)
-                                                     ? 1
-                                                     : -1];
-typedef char SProjectedVertex_Y_offset_must_be_2[((unsigned long)&(((SProjectedVertex *)0)->Y) == 2)
-                                                     ? 1
-                                                     : -1];
-typedef char SProjectedVertex_z_offset_must_be_4[((unsigned long)&(((SProjectedVertex *)0)->z) == 4)
-                                                     ? 1
-                                                     : -1];
+PSX_LAYOUT_CHECK(SProjectedVertex_X_offset_must_be_0,
+                 (unsigned long)&(((SProjectedVertex *)0)->X) == 0);
+PSX_LAYOUT_CHECK(SProjectedVertex_Y_offset_must_be_2,
+                 (unsigned long)&(((SProjectedVertex *)0)->Y) == 2);
+PSX_LAYOUT_CHECK(SProjectedVertex_z_offset_must_be_4,
+                 (unsigned long)&(((SProjectedVertex *)0)->z) == 4);
 typedef char SProjectedVertex_Outcode_offset_must_be_6
     [((unsigned long)&(((SProjectedVertex *)0)->Outcode) == 6) ? 1 : -1];
-typedef char SProjectedVertex_size_must_be_8[(sizeof(SProjectedVertex) == 8) ? 1 : -1];
+PSX_LAYOUT_CHECK(SProjectedVertex_size_must_be_8, sizeof(SProjectedVertex) == 8);
 
 typedef char
     SRotatedVertex_x_offset_must_be_0[((unsigned long)&(((SRotatedVertex *)0)->x) == 0) ? 1 : -1];
@@ -118,7 +116,7 @@ typedef char
     SRotatedVertex_y_offset_must_be_2[((unsigned long)&(((SRotatedVertex *)0)->y) == 2) ? 1 : -1];
 typedef char SRotatedVertex_Special_offset_must_be_4
     [((unsigned long)&(((SRotatedVertex *)0)->Special) == 4) ? 1 : -1];
-typedef char SRotatedVertex_size_must_be_8[(sizeof(SRotatedVertex) == 8) ? 1 : -1];
+PSX_LAYOUT_CHECK(SRotatedVertex_size_must_be_8, sizeof(SRotatedVertex) == 8);
 
 typedef char
     STexWibVertInfo_u_offset_must_be_0[((unsigned long)&(((STexWibVertInfo *)0)->u) == 0) ? 1 : -1];
@@ -128,7 +126,7 @@ typedef char STexWibVertInfo_uAmpPhase_offset_must_be_2
     [((unsigned long)&(((STexWibVertInfo *)0)->uAmpPhase) == 2) ? 1 : -1];
 typedef char STexWibVertInfo_vAmpPhase_offset_must_be_3
     [((unsigned long)&(((STexWibVertInfo *)0)->vAmpPhase) == 3) ? 1 : -1];
-typedef char STexWibVertInfo_size_must_be_4[(sizeof(STexWibVertInfo) == 4) ? 1 : -1];
+PSX_LAYOUT_CHECK(STexWibVertInfo_size_must_be_4, sizeof(STexWibVertInfo) == 4);
 
 typedef char STexWibItemInfo_ItemOffset_offset_must_be_0
     [((unsigned long)&(((STexWibItemInfo *)0)->ItemOffset) == 0) ? 1 : -1];
@@ -144,6 +142,6 @@ typedef char STexWibItemInfo_ZeroUAmplitudes_offset_must_be_14
     [((unsigned long)&(((STexWibItemInfo *)0)->ZeroUAmplitudes) == 14) ? 1 : -1];
 typedef char STexWibItemInfo_ZeroVAmplitudes_offset_must_be_15
     [((unsigned long)&(((STexWibItemInfo *)0)->ZeroVAmplitudes) == 15) ? 1 : -1];
-typedef char STexWibItemInfo_size_must_be_16[(sizeof(STexWibItemInfo) == 16) ? 1 : -1];
+PSX_LAYOUT_CHECK(STexWibItemInfo_size_must_be_16, sizeof(STexWibItemInfo) == 16);
 
 #endif // M3D_VERTEX_WIBBLE_LAYOUTS && !M3D_VERTEX_WIBBLE_LAYOUTS_EMITTED

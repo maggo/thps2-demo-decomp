@@ -7,6 +7,7 @@
 
 // PANEL-owned generated declarations and layouts. This was the only live
 // consumer of the former PANEL.h reconstruction boundary.
+#include "PSX.h"
 typedef unsigned char u8;
 typedef unsigned short u16;
 typedef unsigned int u32;
@@ -377,25 +378,25 @@ static inline FallingTextEffect *PanelFallingEffect(TextEffect *effect)
     return reinterpret_cast<FallingTextEffect *>(effect);
 }
 
-typedef char panel_texture_size_must_be_40[(sizeof(Texture) == 40) ? 1 : -1];
-typedef char panel_video_info_size_must_be_192[(sizeof(SVideoInfo) == 192) ? 1 : -1];
-typedef char panel_font_size_must_be_80[(sizeof(Font) == 80) ? 1 : -1];
-typedef char panel_assignable_font_size_must_be_80[(sizeof(PanelAssignableFont) == 80) ? 1 : -1];
-typedef char panel_text_effect_size_must_be_8[(sizeof(TextEffect) == 8) ? 1 : -1];
+PSX_LAYOUT_CHECK(panel_texture_size_must_be_40, sizeof(Texture) == 40);
+PSX_LAYOUT_CHECK(panel_video_info_size_must_be_192, sizeof(SVideoInfo) == 192);
+PSX_LAYOUT_CHECK(panel_font_size_must_be_80, sizeof(Font) == 80);
+PSX_LAYOUT_CHECK(panel_assignable_font_size_must_be_80, sizeof(PanelAssignableFont) == 80);
+PSX_LAYOUT_CHECK(panel_text_effect_size_must_be_8, sizeof(TextEffect) == 8);
 typedef char
     panel_falling_text_effect_size_must_be_288[(sizeof(FallingTextEffect) == 288) ? 1 : -1];
-typedef char panel_trick_text_effect_size_must_be_24[(sizeof(TrickTextEffect) == 24) ? 1 : -1];
-typedef char panel_trick_size_must_be_36[(sizeof(CTrick) == 36) ? 1 : -1];
-typedef char panel_sprite2_size_must_be_60[(sizeof(Sprite2) == 60) ? 1 : -1];
+PSX_LAYOUT_CHECK(panel_trick_text_effect_size_must_be_24, sizeof(TrickTextEffect) == 24);
+PSX_LAYOUT_CHECK(panel_trick_size_must_be_36, sizeof(CTrick) == 36);
+PSX_LAYOUT_CHECK(panel_sprite2_size_must_be_60, sizeof(Sprite2) == 60);
 typedef char
     panel_sprite_dispatch_size_must_be_24[(sizeof(PanelSpriteDispatchTable) == 24) ? 1 : -1];
 typedef char panel_text_effect_dispatch_prefix_size_must_be_20
     [(sizeof(PanelTextEffectDispatchTable) == 20) ? 1 : -1];
-typedef char panel_data_size_must_be_2276[(sizeof(CPanelData) == 2276) ? 1 : -1];
+PSX_LAYOUT_CHECK(panel_data_size_must_be_2276, sizeof(CPanelData) == 2276);
 typedef char
     panel_double_buffer_prefix_size_must_be_136[(sizeof(PanelDoubleBuffer) == 136) ? 1 : -1];
-typedef char panel_bruce_view_size_must_be_4208[(sizeof(PanelBruceScoreView) == 4208) ? 1 : -1];
-typedef char panel_career_view_size_must_be_2400[(sizeof(PanelCareerScoreView) == 2400) ? 1 : -1];
+PSX_LAYOUT_CHECK(panel_bruce_view_size_must_be_4208, sizeof(PanelBruceScoreView) == 4208);
+PSX_LAYOUT_CHECK(panel_career_view_size_must_be_2400, sizeof(PanelCareerScoreView) == 2400);
 
 /** Readable, typed ABI bridges to services owned by other translation units. */
 #include "PDOUBLEBUFFER.h"
@@ -430,8 +431,7 @@ inline void *operator new(unsigned int, void *storage)
 }
 
 /** Diagnostic emitted while constructing the player's panel state. */
-static char str_cpanel_print[] __attribute__((section(".rdata"))) =
-    "CPanelData::CPanelData() called\n";
+static char str_cpanel_print[] PSX_SECTION(".rdata") = "CPanelData::CPanelData() called\n";
 
 /**
  * Complete PANEL small-data prefix through the S-K-A-T-E label strings.
@@ -449,16 +449,16 @@ namespace PanelAddressViewOwners
 {
 extern "C"
 {
-static char str_panel_anim[8] __attribute__((section(".sdata"))) = "Font";
+static char str_panel_anim[8] PSX_SECTION(".sdata") = "Font";
 }
 }
-static char str_panel_sfx[16] __attribute__((section(".sdata"))) = "Panel_Init()\n";
-static char str_panel_font1[12] __attribute__((section(".sdata"))) = "time.fnt";
-static char str_panel_font2[12] __attribute__((section(".sdata"))) = "score.fnt";
-static char str_panel_font3[16] __attribute__((section(".sdata"))) = "s2tricks.fnt";
-static char str_panel_messfont[12] __attribute__((section(".sdata"))) = "ingame1.fnt";
-static char str_panel_sprite[16] __attribute__((section(".sdata"))) = "s2switch.bmp";
-static char str_panel_uninit[16] __attribute__((section(".sdata"))) = "Panel_Uninit()\n";
+static char str_panel_sfx[16] PSX_SECTION(".sdata") = "Panel_Init()\n";
+static char str_panel_font1[12] PSX_SECTION(".sdata") = "time.fnt";
+static char str_panel_font2[12] PSX_SECTION(".sdata") = "score.fnt";
+static char str_panel_font3[16] PSX_SECTION(".sdata") = "s2tricks.fnt";
+static char str_panel_messfont[12] PSX_SECTION(".sdata") = "ingame1.fnt";
+static char str_panel_sprite[16] PSX_SECTION(".sdata") = "s2switch.bmp";
+static char str_panel_uninit[16] PSX_SECTION(".sdata") = "Panel_Uninit()\n";
 
 int TAPES_Display = 0;
 int TAPES_Pos = 0x214;
@@ -469,31 +469,31 @@ namespace PanelAddressViewOwners
 {
 extern "C"
 {
-static char str_letter_S[4] __attribute__((section(".sdata"))) = "S";
-static char str_letter_K[4] __attribute__((section(".sdata"))) = "K";
-static char str_letter_A[4] __attribute__((section(".sdata"))) = "A";
-static char str_letter_T[4] __attribute__((section(".sdata"))) = "T";
-static char str_letter_E[4] __attribute__((section(".sdata"))) = "E";
+static char str_letter_S[4] PSX_SECTION(".sdata") = "S";
+static char str_letter_K[4] PSX_SECTION(".sdata") = "K";
+static char str_letter_A[4] PSX_SECTION(".sdata") = "A";
+static char str_letter_T[4] PSX_SECTION(".sdata") = "T";
+static char str_letter_E[4] PSX_SECTION(".sdata") = "E";
 }
 }
 
 /** Percentage retained as repeated tricks depreciate through a combo. */
-int Depreciation_Values[5] __attribute__((section(".data"))) = {
+int Depreciation_Values[5] PSX_SECTION(".data") = {
     100, 75, 50, 25, 10,
 };
 
 /** Multiplier contribution selected by a trick's spin bucket. */
-int Spin_Mult_Values[6] __attribute__((section(".data"))) = {
+int Spin_Mult_Values[6] PSX_SECTION(".data") = {
     0, 1, 2, 4, 8, 16,
 };
 
 /** Multiplier applied to a completed chain by its trick-count bucket. */
-int Num_Mult_Values[15] __attribute__((section(".data"))) = {
+int Num_Mult_Values[15] PSX_SECTION(".data") = {
     0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28,
 };
 
 /** Fixed score-overflow message emitted before the late PANEL formats. */
-static char Panel_ScoreOverflow_owner[8] asm("$LC0") __attribute__((section(".sdata"))) = "Yowza!";
+static char Panel_ScoreOverflow_owner[8] asm("$LC0") PSX_SECTION(".sdata") = "Yowza!";
 
 /*
  * These address-only views intentionally omit the storage section.  GCC 2.x
@@ -525,54 +525,54 @@ namespace PanelAddressViewOwners
 {
 extern "C"
 {
-static char str_score_fmt[4] __attribute__((section(".sdata"))) = "%ld";
+static char str_score_fmt[4] PSX_SECTION(".sdata") = "%ld";
 }
 }
-static char Panel_HalfMultiplierFormat[8] __attribute__((section(".sdata"))) = " x%d.5";
+static char Panel_HalfMultiplierFormat[8] PSX_SECTION(".sdata") = " x%d.5";
 namespace PanelAddressViewOwners
 {
 extern "C"
 {
-static char str_mult_fmt[8] __attribute__((section(".sdata"))) = " x%d";
+static char str_mult_fmt[8] PSX_SECTION(".sdata") = " x%d";
 }
 }
-static char str_time_fmt[12] __attribute__((section(".sdata"))) = "%ld:%02ld";
+static char str_time_fmt[12] PSX_SECTION(".sdata") = "%ld:%02ld";
 namespace PanelAddressViewOwners
 {
 extern "C"
 {
-static char str_goalcounter_name[8] __attribute__((section(".sdata"))) = "spank";
+static char str_goalcounter_name[8] PSX_SECTION(".sdata") = "spank";
 }
 }
-static char str_goalcounter_fmt[12] __attribute__((section(".sdata"))) = "%d OF 5 %s";
+static char str_goalcounter_fmt[12] PSX_SECTION(".sdata") = "%d OF 5 %s";
 
-static char str_tmr_perfect_spin[16] __attribute__((section(".sdata"))) = "~PERFECT& %d %s";
-static char str_tmr_perfect[16] __attribute__((section(".sdata"))) = "~PERFECT& %s";
-static char str_tmr_sloppy_spin[16] __attribute__((section(".sdata"))) = "|SLOPPY` %d %s";
-static char str_tmr_sloppy[12] __attribute__((section(".sdata"))) = "|SLOPPY` %s";
+static char str_tmr_perfect_spin[16] PSX_SECTION(".sdata") = "~PERFECT& %d %s";
+static char str_tmr_perfect[16] PSX_SECTION(".sdata") = "~PERFECT& %s";
+static char str_tmr_sloppy_spin[16] PSX_SECTION(".sdata") = "|SLOPPY` %d %s";
+static char str_tmr_sloppy[12] PSX_SECTION(".sdata") = "|SLOPPY` %s";
 namespace PanelAddressViewOwners
 {
 extern "C"
 {
-static char str_tmr_spin[8] __attribute__((section(".sdata"))) = "%d %s";
-static char str_tmr_name[4] __attribute__((section(".sdata"))) = "%s";
+static char str_tmr_spin[8] PSX_SECTION(".sdata") = "%d %s";
+static char str_tmr_name[4] PSX_SECTION(".sdata") = "%s";
 }
 }
-static char str_tmr_cont_spin[12] __attribute__((section(".sdata"))) = "%s + %d %s";
+static char str_tmr_cont_spin[12] PSX_SECTION(".sdata") = "%s + %d %s";
 namespace PanelAddressViewOwners
 {
 extern "C"
 {
-static char str_tmr_cont[8] __attribute__((section(".sdata"))) = "%s + %s";
+static char str_tmr_cont[8] PSX_SECTION(".sdata") = "%s + %s";
 }
 }
-static char str_tmr_overflow[12] __attribute__((section(".sdata"))) = "%s + ...";
+static char str_tmr_overflow[12] PSX_SECTION(".sdata") = "%s + ...";
 namespace PanelAddressViewOwners
 {
 extern "C"
 {
-static char str_tmr_break_spin[8] __attribute__((section(".sdata"))) = "+ %d %s";
-static char str_tmr_break[8] __attribute__((section(".sdata"))) = "+ %s";
+static char str_tmr_break_spin[8] PSX_SECTION(".sdata") = "+ %d %s";
+static char str_tmr_break[8] PSX_SECTION(".sdata") = "+ %s";
 }
 }
 
@@ -1926,7 +1926,7 @@ int Panel_Letter(int Letter)
 // Demangled: Panel_Tape(int)
 void Panel_Tape(int Tape)
 {
-    static char buf[32] __attribute__((section(".bss")));
+    static char buf[32] PSX_SECTION(".bss");
 
     TAPES_Display = 40;
     Career_GiveTape(GLevel, Tape);
@@ -1967,7 +1967,7 @@ void Panel_Tape(int Tape)
  */
 void Panel_GoalCounter(int N)
 {
-    static char Msg[32] __attribute__((section(".bss")));
+    static char Msg[32] PSX_SECTION(".bss");
 
     if (GGame == 1)
     {

@@ -1,5 +1,6 @@
 #ifndef SANIMFRAME_INC_H
 #define SANIMFRAME_INC_H
+#include "PSX.h"
 
 struct Texture;
 
@@ -13,7 +14,7 @@ struct SAnimFrame
     struct Texture *pTexture;
 };
 
-typedef char SAnimFrame_size_must_be_8[(sizeof(struct SAnimFrame) == 8) ? 1 : -1];
+PSX_LAYOUT_CHECK(SAnimFrame_size_must_be_8, sizeof(struct SAnimFrame) == 8);
 typedef char
     SAnimFrame_OffX_offset_must_be_0[((unsigned long)&(((struct SAnimFrame *)0)->OffX) == 0) ? 1
                                                                                              : -1];

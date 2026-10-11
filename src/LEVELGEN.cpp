@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #include "CCLASS_POLY.h"
 #define CClass CClassData
 #include "FACEREMOVAL.h"
@@ -288,22 +289,22 @@ namespace LevelGenConstructorABI
 
 typedef char
     LevelGen_FakeTriggerNode_size_must_be_24[(sizeof(LevelGen_FakeTriggerNode) == 24) ? 1 : -1];
-typedef char LevelGen_ModelBounds_size_must_be_12[(sizeof(LevelGenModelBounds) == 12) ? 1 : -1];
+PSX_LAYOUT_CHECK(LevelGen_ModelBounds_size_must_be_12, sizeof(LevelGenModelBounds) == 12);
 typedef char
     LevelGen_TextureUsage_view_size_must_be_20[(sizeof(LevelGenTextureUsageView) == 20) ? 1 : -1];
 typedef char
     LevelGen_ZonePacketHeader_size_must_be_28[(sizeof(LevelGenZonePacketHeader) == 28) ? 1 : -1];
 typedef char
     LevelGen_TriggerFileHeader_size_must_be_12[(sizeof(LevelGenTriggerFileHeader) == 12) ? 1 : -1];
-typedef char LevelGen_RailInfo_size_must_be_12[(sizeof(RailInfo) == 12) ? 1 : -1];
-typedef char LevelGen_EditorInModel_size_must_be_68[(sizeof(EditorInModel) == 68) ? 1 : -1];
-typedef char LevelGen_RailPoint_size_must_be_28[(sizeof(RailPoint) == 28) ? 1 : -1];
-typedef char LevelGen_RailString_size_must_be_32[(sizeof(RailString) == 32) ? 1 : -1];
-typedef char LevelGen_GridCell_size_must_be_16[(sizeof(GridCell) == 16) ? 1 : -1];
-typedef char LevelGen_ZoneCell_size_must_be_98[(sizeof(ZoneCell) == 98) ? 1 : -1];
-typedef char LevelGen_MapCell_size_must_be_20[(sizeof(MapCell) == 20) ? 1 : -1];
-typedef char LevelGen_EditorOutModel_size_must_be_128[(sizeof(EditorOutModel) == 128) ? 1 : -1];
-typedef char LevelGen_LevelGenerator_size_must_be_42548[(sizeof(LevelGenerator) == 42548) ? 1 : -1];
+PSX_LAYOUT_CHECK(LevelGen_RailInfo_size_must_be_12, sizeof(RailInfo) == 12);
+PSX_LAYOUT_CHECK(LevelGen_EditorInModel_size_must_be_68, sizeof(EditorInModel) == 68);
+PSX_LAYOUT_CHECK(LevelGen_RailPoint_size_must_be_28, sizeof(RailPoint) == 28);
+PSX_LAYOUT_CHECK(LevelGen_RailString_size_must_be_32, sizeof(RailString) == 32);
+PSX_LAYOUT_CHECK(LevelGen_GridCell_size_must_be_16, sizeof(GridCell) == 16);
+PSX_LAYOUT_CHECK(LevelGen_ZoneCell_size_must_be_98, sizeof(ZoneCell) == 98);
+PSX_LAYOUT_CHECK(LevelGen_MapCell_size_must_be_20, sizeof(MapCell) == 20);
+PSX_LAYOUT_CHECK(LevelGen_EditorOutModel_size_must_be_128, sizeof(EditorOutModel) == 128);
+PSX_LAYOUT_CHECK(LevelGen_LevelGenerator_size_must_be_42548, sizeof(LevelGenerator) == 42548);
 #define EDITORPIECES_SIZED_FLOOR_DECLARATIONS
 #include "EDITORPIECES.h"
 #undef EDITORPIECES_SIZED_FLOOR_DECLARATIONS
@@ -315,17 +316,17 @@ typedef char LevelGen_LevelGenerator_size_must_be_42548[(sizeof(LevelGenerator) 
 #undef SPOOLENV_ABSOLUTE_DECLARATIONS
 
 /** Editor grid dimensions and generated-region defaults. */
-int GridSize __attribute__((section(".sdata"))) = 24;
+int GridSize PSX_SECTION(".sdata") = 24;
 namespace LevelGenAddressViewOwners
 {
 extern "C"
 {
-static char s_EditOutputRegionName[8] __attribute__((section(".sdata"))) = "edit";
+static char s_EditOutputRegionName[8] PSX_SECTION(".sdata") = "edit";
 }
 }
-int LevelGenerator::OutRegion __attribute__((section(".sdata"))) = 0;
-int LevelGenerator::GridCellHeight __attribute__((section(".sdata"))) = 0;
-int LevelGenerator::GridCellWidth __attribute__((section(".sdata"))) = 0;
+int LevelGenerator::OutRegion PSX_SECTION(".sdata") = 0;
+int LevelGenerator::GridCellHeight PSX_SECTION(".sdata") = 0;
+int LevelGenerator::GridCellWidth PSX_SECTION(".sdata") = 0;
 
 // The original compilation addresses this fixed name as an ordinary object,
 // rather than through the small-data base used for the surrounding globals.

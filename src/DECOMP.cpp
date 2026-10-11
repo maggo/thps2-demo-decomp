@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #include "MEM.h"
 #include "M3DUTILS.h"
 #include "globals.h"
@@ -55,9 +56,9 @@ struct CSuper
     u8 opaque_after_mAnim[116];
 };
 
-typedef char DecompCItemOwner_size_must_be_0x4c[(sizeof(DecompCItemOwner) == 0x4c) ? 1 : -1];
-typedef char DecompCBodyOwner_size_must_be_0x108[(sizeof(DecompCBodyOwner) == 0x108) ? 1 : -1];
-typedef char DecompCSuper_size_must_be_0x190[(sizeof(CSuper) == 0x190) ? 1 : -1];
+PSX_LAYOUT_CHECK(DecompCItemOwner_size_must_be_0x4c, sizeof(DecompCItemOwner) == 0x4c);
+PSX_LAYOUT_CHECK(DecompCBodyOwner_size_must_be_0x108, sizeof(DecompCBodyOwner) == 0x108);
+PSX_LAYOUT_CHECK(DecompCSuper_size_must_be_0x190, sizeof(CSuper) == 0x190);
 
 /** Animation data owned by M3DUTILS and shared with the decompressor. */
 #include "TWEENBUFFER.h"

@@ -1,12 +1,13 @@
 #ifndef TRANSPARENTPALFOREDITOR_INC_H
 #define TRANSPARENTPALFOREDITOR_INC_H
+#include "PSX.h"
 
 /*
  * PAL owns this editor palette-mode word as target BSS.  LEVELGEN retains its
  * target-proven absolute-address import view.
  */
 #ifdef TRANSPARENTPALFOREDITOR_ABSOLUTE_DECLARATION
-#define TRANSPARENTPALFOREDITOR_DECL_ATTR __attribute__((section(".data")))
+#define TRANSPARENTPALFOREDITOR_DECL_ATTR PSX_SECTION(".data")
 #else
 #define TRANSPARENTPALFOREDITOR_DECL_ATTR
 #endif

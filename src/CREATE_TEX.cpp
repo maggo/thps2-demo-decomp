@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #include "CCLASS_POLY.h"
 #define CREATE_TEX_POLYMORPHIC_LAYOUT
 
@@ -20,7 +21,7 @@
 #undef CREATE_TEX_SPEC_LAYOUT_ONLY
 #undef CREATE_TEX_SPEC_LAYOUT
 
-typedef char CreateTex_Spec_size_must_be_72[(sizeof(CCreateTexSpec) == 72) ? 1 : -1];
+PSX_LAYOUT_CHECK(CreateTex_Spec_size_must_be_72, sizeof(CCreateTexSpec) == 72);
 /** Shared declarations for the process-lifetime specification catalogs. */
 #include "CREATETEXSPECS.h"
 
@@ -30,300 +31,270 @@ typedef char CreateTex_Spec_size_must_be_72[(sizeof(CCreateTexSpec) == 72) ? 1 :
  * 0x800DAB50-0x800DB260 in the target.  Keeping the semantic objects in target
  * order preserves every pointer relocation without raw-address initializers.
  */
-static char CreateTex_faceSkin2[] __attribute__((section(".sdata"), aligned(4))) = "fceskin2";
-static char CreateTex_buzzCut[] __attribute__((section(".sdata"), aligned(4))) = "Buzz cut";
-static char CreateTex_faceAsian3[] __attribute__((section(".sdata"), aligned(4))) = "fceAsn_3";
+static char CreateTex_faceSkin2[] PSX_SECTION_ALIGNED(".sdata", 4) = "fceskin2";
+static char CreateTex_buzzCut[] PSX_SECTION_ALIGNED(".sdata", 4) = "Buzz cut";
+static char CreateTex_faceAsian3[] PSX_SECTION_ALIGNED(".sdata", 4) = "fceAsn_3";
 namespace CreateTexAddressViewOwners
 {
 extern "C"
 {
-static char CreateTex_asianGuyLabel[] __attribute__((section(".sdata"), aligned(4))) = "Asian Guy";
+static char CreateTex_asianGuyLabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "Asian Guy";
 }
 }
-_SCreateTexList DefaultFace[3] __attribute__((section(".data"))) = {
+_SCreateTexList DefaultFace[3] PSX_SECTION(".data") = {
     { CreateTex_faceSkin2, CreateTex_buzzCut },
     { CreateTex_faceAsian3, CreateTexAddressViewOwners::CreateTex_asianGuyLabel },
     { 0, 0 },
 };
 
-static char CreateTex_faceShadow[] __attribute__((section(".sdata"), aligned(4))) = "fceshdw1";
-static char CreateTex_capOn[] __attribute__((section(".sdata"), aligned(4))) = "Cap on";
-_SCreateTexList ShadowedFace __attribute__((section(".sdata"))) = {
+static char CreateTex_faceShadow[] PSX_SECTION_ALIGNED(".sdata", 4) = "fceshdw1";
+static char CreateTex_capOn[] PSX_SECTION_ALIGNED(".sdata", 4) = "Cap on";
+_SCreateTexList ShadowedFace PSX_SECTION(".sdata") = {
     CreateTex_faceShadow,
     CreateTex_capOn,
 };
-static _SCreateTexList CreateTex_ShadowedFaceEnd __attribute__((section(".sdata"))) = { 0, 0 };
+static _SCreateTexList CreateTex_ShadowedFaceEnd PSX_SECTION(".sdata") = { 0, 0 };
 
-static char CreateTex_faceBlackBald[] __attribute__((section(".sdata"), aligned(4))) = "fcebkbd1";
-static char CreateTex_bald[] __attribute__((section(".sdata"), aligned(4))) = "Bald";
-static char CreateTex_faceAfro1[] __attribute__((section(".sdata"), aligned(4))) = "fceafro1";
-static char CreateTex_shortHair[] __attribute__((section(".sdata"), aligned(4))) = "Short hair";
-static char CreateTex_faceCurly2[] __attribute__((section(".sdata"), aligned(4))) = "fcecrly2";
-static char CreateTex_curlyHairLabel[] __attribute__((section(".sdata"), aligned(4))) =
-    "Curly Hair";
-static char CreateTex_faceAfroWig2[] __attribute__((section(".sdata"), aligned(4))) = "fceawig2";
-static char CreateTex_bleachedAfro[] __attribute__((section(".sdata"), aligned(4))) =
-    "Bleached Afro";
-static char CreateTex_helmetTopTexture[] __attribute__((section(".sdata"), aligned(4))) =
-    "helmet_0";
-static char CreateTex_helmetLabel[] __attribute__((section(".sdata"), aligned(4))) = "Helmet";
-_SCreateTexList HelmetTop __attribute__((section(".sdata"))) = {
+static char CreateTex_faceBlackBald[] PSX_SECTION_ALIGNED(".sdata", 4) = "fcebkbd1";
+static char CreateTex_bald[] PSX_SECTION_ALIGNED(".sdata", 4) = "Bald";
+static char CreateTex_faceAfro1[] PSX_SECTION_ALIGNED(".sdata", 4) = "fceafro1";
+static char CreateTex_shortHair[] PSX_SECTION_ALIGNED(".sdata", 4) = "Short hair";
+static char CreateTex_faceCurly2[] PSX_SECTION_ALIGNED(".sdata", 4) = "fcecrly2";
+static char CreateTex_curlyHairLabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "Curly Hair";
+static char CreateTex_faceAfroWig2[] PSX_SECTION_ALIGNED(".sdata", 4) = "fceawig2";
+static char CreateTex_bleachedAfro[] PSX_SECTION_ALIGNED(".sdata", 4) = "Bleached Afro";
+static char CreateTex_helmetTopTexture[] PSX_SECTION_ALIGNED(".sdata", 4) = "helmet_0";
+static char CreateTex_helmetLabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "Helmet";
+_SCreateTexList HelmetTop PSX_SECTION(".sdata") = {
     CreateTex_helmetTopTexture,
     CreateTex_helmetLabel,
 };
-static _SCreateTexList CreateTex_HelmetTopEnd __attribute__((section(".sdata"))) = { 0, 0 };
+static _SCreateTexList CreateTex_HelmetTopEnd PSX_SECTION(".sdata") = { 0, 0 };
 
-static char CreateTex_helmetFaceTexture[] __attribute__((section(".sdata"), aligned(4))) =
-    "fcehlmt1";
-static char CreateTex_chinStrap[] __attribute__((section(".sdata"), aligned(4))) = "Chin Strap";
-_SCreateTexList HelmetFace __attribute__((section(".sdata"))) = {
+static char CreateTex_helmetFaceTexture[] PSX_SECTION_ALIGNED(".sdata", 4) = "fcehlmt1";
+static char CreateTex_chinStrap[] PSX_SECTION_ALIGNED(".sdata", 4) = "Chin Strap";
+_SCreateTexList HelmetFace PSX_SECTION(".sdata") = {
     CreateTex_helmetFaceTexture,
     CreateTex_chinStrap,
 };
-static _SCreateTexList CreateTex_HelmetFaceEnd __attribute__((section(".sdata"))) = { 0, 0 };
+static _SCreateTexList CreateTex_HelmetFaceEnd PSX_SECTION(".sdata") = { 0, 0 };
 
-static char CreateTex_capBirdTexture[] __attribute__((section(".sdata"), aligned(4))) = "capbird0";
-static char CreateTex_birdLogo[] __attribute__((section(".sdata"), aligned(4))) = "Bird Logo";
-static char CreateTex_capSkullTexture[] __attribute__((section(".sdata"), aligned(4))) = "capskul0";
-static char CreateTex_skullLogo[] __attribute__((section(".sdata"), aligned(4))) = "Skull Logo";
-static char CreateTex_beanieTexture[] __attribute__((section(".sdata"), aligned(4))) = "beanie_0";
-static char CreateTex_beanieLabel[] __attribute__((section(".sdata"), aligned(4))) = "Beanie";
-_SCreateTexList BeanieTop __attribute__((section(".sdata"))) = {
+static char CreateTex_capBirdTexture[] PSX_SECTION_ALIGNED(".sdata", 4) = "capbird0";
+static char CreateTex_birdLogo[] PSX_SECTION_ALIGNED(".sdata", 4) = "Bird Logo";
+static char CreateTex_capSkullTexture[] PSX_SECTION_ALIGNED(".sdata", 4) = "capskul0";
+static char CreateTex_skullLogo[] PSX_SECTION_ALIGNED(".sdata", 4) = "Skull Logo";
+static char CreateTex_beanieTexture[] PSX_SECTION_ALIGNED(".sdata", 4) = "beanie_0";
+static char CreateTex_beanieLabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "Beanie";
+_SCreateTexList BeanieTop PSX_SECTION(".sdata") = {
     CreateTex_beanieTexture,
     CreateTex_beanieLabel,
 };
-static _SCreateTexList CreateTex_BeanieTopEnd __attribute__((section(".sdata"))) = { 0, 0 };
+static _SCreateTexList CreateTex_BeanieTopEnd PSX_SECTION(".sdata") = { 0, 0 };
 
-static char CreateTex_afroALabel[] __attribute__((section(".sdata"), aligned(4))) = "Afro A";
-_SCreateTexList AfroFace __attribute__((section(".sdata"))) = {
+static char CreateTex_afroALabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "Afro A";
+_SCreateTexList AfroFace PSX_SECTION(".sdata") = {
     CreateTex_faceAfro1,
     CreateTex_afroALabel,
 };
-static _SCreateTexList CreateTex_AfroFaceEnd __attribute__((section(".sdata"))) = { 0, 0 };
+static _SCreateTexList CreateTex_AfroFaceEnd PSX_SECTION(".sdata") = { 0, 0 };
 
-static char CreateTex_rastaTexture[] __attribute__((section(".sdata"), aligned(4))) = "fcersta1";
-static char CreateTex_rastaLabel[] __attribute__((section(".sdata"), aligned(4))) = "Rasta";
-_SCreateTexList RastaFace __attribute__((section(".sdata"))) = {
+static char CreateTex_rastaTexture[] PSX_SECTION_ALIGNED(".sdata", 4) = "fcersta1";
+static char CreateTex_rastaLabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "Rasta";
+_SCreateTexList RastaFace PSX_SECTION(".sdata") = {
     CreateTex_rastaTexture,
     CreateTex_rastaLabel,
 };
-static _SCreateTexList CreateTex_RastaFaceEnd __attribute__((section(".sdata"))) = { 0, 0 };
+static _SCreateTexList CreateTex_RastaFaceEnd PSX_SECTION(".sdata") = { 0, 0 };
 
-static char CreateTex_skinTexture[] __attribute__((section(".sdata"), aligned(4))) = "fcebald2";
-static char CreateTex_baldieLabel[] __attribute__((section(".sdata"), aligned(4))) = "Baldie";
-_SCreateTexList SkinFace __attribute__((section(".sdata"))) = {
+static char CreateTex_skinTexture[] PSX_SECTION_ALIGNED(".sdata", 4) = "fcebald2";
+static char CreateTex_baldieLabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "Baldie";
+_SCreateTexList SkinFace PSX_SECTION(".sdata") = {
     CreateTex_skinTexture,
     CreateTex_baldieLabel,
 };
-static _SCreateTexList CreateTex_SkinFaceEnd __attribute__((section(".sdata"))) = { 0, 0 };
+static _SCreateTexList CreateTex_SkinFaceEnd PSX_SECTION(".sdata") = { 0, 0 };
 
-static char CreateTex_whiteFroLabel[] __attribute__((section(".sdata"), aligned(4))) = "White Fro";
-_SCreateTexList WhiteAfroFace __attribute__((section(".sdata"))) = {
+static char CreateTex_whiteFroLabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "White Fro";
+_SCreateTexList WhiteAfroFace PSX_SECTION(".sdata") = {
     CreateTex_faceAfroWig2,
     CreateTex_whiteFroLabel,
 };
-static _SCreateTexList CreateTex_WhiteAfroFaceEnd __attribute__((section(".sdata"))) = { 0, 0 };
+static _SCreateTexList CreateTex_WhiteAfroFaceEnd PSX_SECTION(".sdata") = { 0, 0 };
 
-static char CreateTex_gilliganTexture[] __attribute__((section(".sdata"), aligned(4))) = "GlgnHat0";
-static char CreateTex_gilliganLabel[] __attribute__((section(".sdata"), aligned(4))) = "Gilligan";
-_SCreateTexList GilliganTop __attribute__((section(".sdata"))) = {
+static char CreateTex_gilliganTexture[] PSX_SECTION_ALIGNED(".sdata", 4) = "GlgnHat0";
+static char CreateTex_gilliganLabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "Gilligan";
+_SCreateTexList GilliganTop PSX_SECTION(".sdata") = {
     CreateTex_gilliganTexture,
     CreateTex_gilliganLabel,
 };
-static _SCreateTexList CreateTex_GilliganTopEnd __attribute__((section(".sdata"))) = { 0, 0 };
+static _SCreateTexList CreateTex_GilliganTopEnd PSX_SECTION(".sdata") = { 0, 0 };
 
-static char CreateTex_asianFaceTexture[] __attribute__((section(".sdata"), aligned(4))) =
-    "fceasn_3";
-_SCreateTexList AsianFace __attribute__((section(".sdata"))) = {
+static char CreateTex_asianFaceTexture[] PSX_SECTION_ALIGNED(".sdata", 4) = "fceasn_3";
+_SCreateTexList AsianFace PSX_SECTION(".sdata") = {
     CreateTex_asianFaceTexture,
     CreateTexAddressViewOwners::CreateTex_asianGuyLabel,
 };
-static _SCreateTexList CreateTex_AsianFaceEnd __attribute__((section(".sdata"))) = { 0, 0 };
+static _SCreateTexList CreateTex_AsianFaceEnd PSX_SECTION(".sdata") = { 0, 0 };
 
-static char CreateTex_slickFaceTexture[] __attribute__((section(".sdata"), aligned(4))) =
-    "fcestrt2";
+static char CreateTex_slickFaceTexture[] PSX_SECTION_ALIGNED(".sdata", 4) = "fcestrt2";
 namespace CreateTexAddressViewOwners
 {
 extern "C"
 {
-static char CreateTex_slickLabel[] __attribute__((section(".sdata"), aligned(4))) = "Slick";
+static char CreateTex_slickLabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "Slick";
 }
 }
-_SCreateTexList SlickFace __attribute__((section(".sdata"))) = {
+_SCreateTexList SlickFace PSX_SECTION(".sdata") = {
     CreateTex_slickFaceTexture,
     CreateTexAddressViewOwners::CreateTex_slickLabel,
 };
-static _SCreateTexList CreateTex_SlickFaceEnd __attribute__((section(".sdata"))) = { 0, 0 };
+static _SCreateTexList CreateTex_SlickFaceEnd PSX_SECTION(".sdata") = { 0, 0 };
 
-static char CreateTex_openHandTexture[] __attribute__((section(".sdata"), aligned(4))) = "handopn1";
-static char CreateTex_openHandLabel[] __attribute__((section(".sdata"), aligned(4))) = "Open hand";
-_SCreateTexList GenericHand __attribute__((section(".sdata"))) = {
+static char CreateTex_openHandTexture[] PSX_SECTION_ALIGNED(".sdata", 4) = "handopn1";
+static char CreateTex_openHandLabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "Open hand";
+_SCreateTexList GenericHand PSX_SECTION(".sdata") = {
     CreateTex_openHandTexture,
     CreateTex_openHandLabel,
 };
-static _SCreateTexList CreateTex_GenericHandEnd __attribute__((section(".sdata"))) = { 0, 0 };
+static _SCreateTexList CreateTex_GenericHandEnd PSX_SECTION(".sdata") = { 0, 0 };
 
-static char CreateTex_genericShoeTexture[] __attribute__((section(".sdata"), aligned(4))) =
-    "handopn2";
-static char CreateTex_shoeALabel[] __attribute__((section(".sdata"), aligned(4))) = "Shoe A";
-_SCreateTexList GenericShoe __attribute__((section(".sdata"))) = {
+static char CreateTex_genericShoeTexture[] PSX_SECTION_ALIGNED(".sdata", 4) = "handopn2";
+static char CreateTex_shoeALabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "Shoe A";
+_SCreateTexList GenericShoe PSX_SECTION(".sdata") = {
     CreateTex_genericShoeTexture,
     CreateTex_shoeALabel,
 };
-static _SCreateTexList CreateTex_GenericShoeEnd __attribute__((section(".sdata"))) = { 0, 0 };
+static _SCreateTexList CreateTex_GenericShoeEnd PSX_SECTION(".sdata") = { 0, 0 };
 
-static char CreateTex_tshirtTexture[] __attribute__((section(".sdata"), aligned(4))) = "tshirt_0";
-static char CreateTex_tshirtLabel[] __attribute__((section(".sdata"), aligned(4))) = "T Shirt";
-_SCreateTexList DefaultChest __attribute__((section(".sdata"))) = {
+static char CreateTex_tshirtTexture[] PSX_SECTION_ALIGNED(".sdata", 4) = "tshirt_0";
+static char CreateTex_tshirtLabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "T Shirt";
+_SCreateTexList DefaultChest PSX_SECTION(".sdata") = {
     CreateTex_tshirtTexture,
     CreateTex_tshirtLabel,
 };
-static _SCreateTexList CreateTex_DefaultChestEnd __attribute__((section(".sdata"))) = { 0, 0 };
+static _SCreateTexList CreateTex_DefaultChestEnd PSX_SECTION(".sdata") = { 0, 0 };
 
-static char CreateTex_shortSleeveTexture[] __attribute__((section(".sdata"), aligned(4))) =
-    "shtslve0";
-_SCreateTexList DefaultBicep __attribute__((section(".sdata"))) = {
+static char CreateTex_shortSleeveTexture[] PSX_SECTION_ALIGNED(".sdata", 4) = "shtslve0";
+_SCreateTexList DefaultBicep PSX_SECTION(".sdata") = {
     CreateTex_shortSleeveTexture,
     CreateTex_tshirtLabel,
 };
-static _SCreateTexList CreateTex_DefaultBicepEnd __attribute__((section(".sdata"))) = { 0, 0 };
+static _SCreateTexList CreateTex_DefaultBicepEnd PSX_SECTION(".sdata") = { 0, 0 };
 
-static char CreateTex_forearmTexture[] __attribute__((section(".sdata"), aligned(4))) = "forearm1";
-static char CreateTex_forearmLabel[] __attribute__((section(".sdata"), aligned(4))) = "Forearm";
-_SCreateTexList DefaultForearm __attribute__((section(".sdata"))) = {
+static char CreateTex_forearmTexture[] PSX_SECTION_ALIGNED(".sdata", 4) = "forearm1";
+static char CreateTex_forearmLabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "Forearm";
+_SCreateTexList DefaultForearm PSX_SECTION(".sdata") = {
     CreateTex_forearmTexture,
     CreateTex_forearmLabel,
 };
-static _SCreateTexList CreateTex_DefaultForearmEnd __attribute__((section(".sdata"))) = { 0, 0 };
+static _SCreateTexList CreateTex_DefaultForearmEnd PSX_SECTION(".sdata") = { 0, 0 };
 
-static char CreateTex_buttonShirtTexture[] __attribute__((section(".sdata"), aligned(4))) =
-    "btnshrt0";
-static char CreateTex_buttonShirtLabel[] __attribute__((section(".sdata"), aligned(4))) =
-    "Button Shirt";
-_SCreateTexList LongSleeveChest __attribute__((section(".sdata"))) = {
+static char CreateTex_buttonShirtTexture[] PSX_SECTION_ALIGNED(".sdata", 4) = "btnshrt0";
+static char CreateTex_buttonShirtLabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "Button Shirt";
+_SCreateTexList LongSleeveChest PSX_SECTION(".sdata") = {
     CreateTex_buttonShirtTexture,
     CreateTex_buttonShirtLabel,
 };
-static _SCreateTexList CreateTex_LongSleeveChestEnd __attribute__((section(".sdata"))) = { 0, 0 };
+static _SCreateTexList CreateTex_LongSleeveChestEnd PSX_SECTION(".sdata") = { 0, 0 };
 
-static char CreateTex_longSleeveTexture[] __attribute__((section(".sdata"), aligned(4))) =
-    "lngslve0";
-static char CreateTex_longSleeve2Label[] __attribute__((section(".sdata"), aligned(4))) =
-    "Long Sleeve 2";
-_SCreateTexList LongSleeveFullArm __attribute__((section(".sdata"))) = {
+static char CreateTex_longSleeveTexture[] PSX_SECTION_ALIGNED(".sdata", 4) = "lngslve0";
+static char CreateTex_longSleeve2Label[] PSX_SECTION_ALIGNED(".sdata", 4) = "Long Sleeve 2";
+_SCreateTexList LongSleeveFullArm PSX_SECTION(".sdata") = {
     CreateTex_longSleeveTexture,
     CreateTex_longSleeve2Label,
 };
-static _SCreateTexList CreateTex_LongSleeveFullArmEnd __attribute__((section(".sdata"))) = { 0, 0 };
+static _SCreateTexList CreateTex_LongSleeveFullArmEnd PSX_SECTION(".sdata") = { 0, 0 };
 
-static char CreateTex_noShirtTexture[] __attribute__((section(".sdata"), aligned(4))) = "noshirt1";
-static char CreateTex_shirtlessLabel[] __attribute__((section(".sdata"), aligned(4))) = "Shirtless";
-_SCreateTexList NoShirtChest __attribute__((section(".sdata"))) = {
+static char CreateTex_noShirtTexture[] PSX_SECTION_ALIGNED(".sdata", 4) = "noshirt1";
+static char CreateTex_shirtlessLabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "Shirtless";
+_SCreateTexList NoShirtChest PSX_SECTION(".sdata") = {
     CreateTex_noShirtTexture,
     CreateTex_shirtlessLabel,
 };
-static _SCreateTexList CreateTex_NoShirtChestEnd __attribute__((section(".sdata"))) = { 0, 0 };
+static _SCreateTexList CreateTex_NoShirtChestEnd PSX_SECTION(".sdata") = { 0, 0 };
 
-static char CreateTex_bareArmTexture[] __attribute__((section(".sdata"), aligned(4))) = "barearm1";
-static char CreateTex_sleevelessLabel[] __attribute__((section(".sdata"), aligned(4))) =
-    "Sleeveless";
-_SCreateTexList NoShirtFullArm __attribute__((section(".sdata"))) = {
+static char CreateTex_bareArmTexture[] PSX_SECTION_ALIGNED(".sdata", 4) = "barearm1";
+static char CreateTex_sleevelessLabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "Sleeveless";
+_SCreateTexList NoShirtFullArm PSX_SECTION(".sdata") = {
     CreateTex_bareArmTexture,
     CreateTex_sleevelessLabel,
 };
-static _SCreateTexList CreateTex_NoShirtFullArmEnd __attribute__((section(".sdata"))) = { 0, 0 };
+static _SCreateTexList CreateTex_NoShirtFullArmEnd PSX_SECTION(".sdata") = { 0, 0 };
 
-static char CreateTex_hoodyTexture[] __attribute__((section(".sdata"), aligned(4))) = "hoody__0";
-static char CreateTex_hoodyLabel[] __attribute__((section(".sdata"), aligned(4))) = "Hoody";
-_SCreateTexList HoodyChest __attribute__((section(".sdata"))) = {
+static char CreateTex_hoodyTexture[] PSX_SECTION_ALIGNED(".sdata", 4) = "hoody__0";
+static char CreateTex_hoodyLabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "Hoody";
+_SCreateTexList HoodyChest PSX_SECTION(".sdata") = {
     CreateTex_hoodyTexture,
     CreateTex_hoodyLabel,
 };
-static _SCreateTexList CreateTex_HoodyChestEnd __attribute__((section(".sdata"))) = { 0, 0 };
+static _SCreateTexList CreateTex_HoodyChestEnd PSX_SECTION(".sdata") = { 0, 0 };
 
-static char CreateTex_longSleeveLabel[] __attribute__((section(".sdata"), aligned(4))) =
-    "Long Sleeve";
-_SCreateTexList HoodyFullArm __attribute__((section(".sdata"))) = {
+static char CreateTex_longSleeveLabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "Long Sleeve";
+_SCreateTexList HoodyFullArm PSX_SECTION(".sdata") = {
     CreateTex_longSleeveTexture,
     CreateTex_longSleeveLabel,
 };
-static _SCreateTexList CreateTex_HoodyFullArmEnd __attribute__((section(".sdata"))) = { 0, 0 };
+static _SCreateTexList CreateTex_HoodyFullArmEnd PSX_SECTION(".sdata") = { 0, 0 };
 
-static char CreateTex_tankTopTexture[] __attribute__((section(".sdata"), aligned(4))) = "tanktop1";
-static char CreateTex_johnMcLaneLabel[] __attribute__((section(".sdata"), aligned(4))) =
-    "John McLane";
-_SCreateTexList TanktopChest __attribute__((section(".sdata"))) = {
+static char CreateTex_tankTopTexture[] PSX_SECTION_ALIGNED(".sdata", 4) = "tanktop1";
+static char CreateTex_johnMcLaneLabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "John McLane";
+_SCreateTexList TanktopChest PSX_SECTION(".sdata") = {
     CreateTex_tankTopTexture,
     CreateTex_johnMcLaneLabel,
 };
-static _SCreateTexList CreateTex_TanktopChestEnd __attribute__((section(".sdata"))) = { 0, 0 };
-_SCreateTexList TanktopFullArm __attribute__((section(".sdata"))) = {
+static _SCreateTexList CreateTex_TanktopChestEnd PSX_SECTION(".sdata") = { 0, 0 };
+_SCreateTexList TanktopFullArm PSX_SECTION(".sdata") = {
     CreateTex_bareArmTexture,
     CreateTex_sleevelessLabel,
 };
-static _SCreateTexList CreateTex_TanktopFullArmEnd __attribute__((section(".sdata"))) = { 0, 0 };
+static _SCreateTexList CreateTex_TanktopFullArmEnd PSX_SECTION(".sdata") = { 0, 0 };
 
-static char CreateTex_elbowPadsLabel[] __attribute__((section(".sdata"), aligned(4))) =
-    "Elbow Pads";
-_SCreateTexList ElbowPadsChest __attribute__((section(".sdata"))) = {
+static char CreateTex_elbowPadsLabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "Elbow Pads";
+_SCreateTexList ElbowPadsChest PSX_SECTION(".sdata") = {
     CreateTex_tshirtTexture,
     CreateTex_elbowPadsLabel,
 };
-static _SCreateTexList CreateTex_ElbowPadsChestEnd __attribute__((section(".sdata"))) = { 0, 0 };
+static _SCreateTexList CreateTex_ElbowPadsChestEnd PSX_SECTION(".sdata") = { 0, 0 };
 
-static char CreateTex_shortSleeveLabel[] __attribute__((section(".sdata"), aligned(4))) =
-    "Short Sleeve";
-_SCreateTexList ElbowPadsBicep __attribute__((section(".sdata"))) = {
+static char CreateTex_shortSleeveLabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "Short Sleeve";
+_SCreateTexList ElbowPadsBicep PSX_SECTION(".sdata") = {
     CreateTex_shortSleeveTexture,
     CreateTex_shortSleeveLabel,
 };
-static _SCreateTexList CreateTex_ElbowPadsBicepEnd __attribute__((section(".sdata"))) = { 0, 0 };
+static _SCreateTexList CreateTex_ElbowPadsBicepEnd PSX_SECTION(".sdata") = { 0, 0 };
 
-static char CreateTex_elbowPadTexture[] __attribute__((section(".sdata"), aligned(4))) = "elbwpad1";
-_SCreateTexList ElbowPadsForearm __attribute__((section(".sdata"))) = {
+static char CreateTex_elbowPadTexture[] PSX_SECTION_ALIGNED(".sdata", 4) = "elbwpad1";
+_SCreateTexList ElbowPadsForearm PSX_SECTION(".sdata") = {
     CreateTex_elbowPadTexture,
     CreateTex_elbowPadsLabel,
 };
-static _SCreateTexList CreateTex_ElbowPadsForearmEnd __attribute__((section(".sdata"))) = { 0, 0 };
+static _SCreateTexList CreateTex_ElbowPadsForearmEnd PSX_SECTION(".sdata") = { 0, 0 };
 
-static char CreateTex_shortsTexture[] __attribute__((section(".sdata"), aligned(4))) = "shorts_0";
-static char CreateTex_shortsLabel[] __attribute__((section(".sdata"), aligned(4))) = "Shorts";
-static char CreateTex_cargoShortsTexture[] __attribute__((section(".sdata"), aligned(4))) =
-    "cgshort0";
-static char CreateTex_cargoShortsLabel[] __attribute__((section(".sdata"), aligned(4))) =
-    "Cargo Shorts";
-static char CreateTex_bareShinTexture[] __attribute__((section(".sdata"), aligned(4))) = "shinnkd1";
-static char CreateTex_noSocksLabel[] __attribute__((section(".sdata"), aligned(4))) = "No Socks";
-static char CreateTex_ankleSocksTexture[] __attribute__((section(".sdata"), aligned(4))) =
-    "shinsok1";
-static char CreateTex_ankleSocksLabel[] __attribute__((section(".sdata"), aligned(4))) =
-    "Ankle Socks";
-static char CreateTex_highSocksWhiteTexture[] __attribute__((section(".sdata"), aligned(4))) =
-    "shinhskw";
-static char CreateTex_highSocksLabel[] __attribute__((section(".sdata"), aligned(4))) =
-    "High Socks";
-static char CreateTex_highSocksTexture[] __attribute__((section(".sdata"), aligned(4))) =
-    "shinhsok";
-static char CreateTex_mervynsLabel[] __attribute__((section(".sdata"), aligned(4))) = "Mervyns";
-static char CreateTex_longPantsTexture[] __attribute__((section(".sdata"), aligned(4))) =
-    "lngpant0";
-static char CreateTex_regularPantsLabel[] __attribute__((section(".sdata"), aligned(4))) =
-    "Regular Pants";
-static char CreateTex_cargoPantsTexture[] __attribute__((section(".sdata"), aligned(4))) =
-    "cgpants0";
-static char CreateTex_cargoPantsLabel[] __attribute__((section(".sdata"), aligned(4))) =
-    "Cargo Pants";
-static char CreateTex_kneepadTexture[] __attribute__((section(".sdata"), aligned(4))) = "kneepad0";
-static char CreateTex_kneepadsLabel[] __attribute__((section(".sdata"), aligned(4))) = "Kneepads";
-_SCreateTexList KneepadThigh __attribute__((section(".sdata"))) = {
+static char CreateTex_shortsTexture[] PSX_SECTION_ALIGNED(".sdata", 4) = "shorts_0";
+static char CreateTex_shortsLabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "Shorts";
+static char CreateTex_cargoShortsTexture[] PSX_SECTION_ALIGNED(".sdata", 4) = "cgshort0";
+static char CreateTex_cargoShortsLabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "Cargo Shorts";
+static char CreateTex_bareShinTexture[] PSX_SECTION_ALIGNED(".sdata", 4) = "shinnkd1";
+static char CreateTex_noSocksLabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "No Socks";
+static char CreateTex_ankleSocksTexture[] PSX_SECTION_ALIGNED(".sdata", 4) = "shinsok1";
+static char CreateTex_ankleSocksLabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "Ankle Socks";
+static char CreateTex_highSocksWhiteTexture[] PSX_SECTION_ALIGNED(".sdata", 4) = "shinhskw";
+static char CreateTex_highSocksLabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "High Socks";
+static char CreateTex_highSocksTexture[] PSX_SECTION_ALIGNED(".sdata", 4) = "shinhsok";
+static char CreateTex_mervynsLabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "Mervyns";
+static char CreateTex_longPantsTexture[] PSX_SECTION_ALIGNED(".sdata", 4) = "lngpant0";
+static char CreateTex_regularPantsLabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "Regular Pants";
+static char CreateTex_cargoPantsTexture[] PSX_SECTION_ALIGNED(".sdata", 4) = "cgpants0";
+static char CreateTex_cargoPantsLabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "Cargo Pants";
+static char CreateTex_kneepadTexture[] PSX_SECTION_ALIGNED(".sdata", 4) = "kneepad0";
+static char CreateTex_kneepadsLabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "Kneepads";
+_SCreateTexList KneepadThigh PSX_SECTION(".sdata") = {
     CreateTex_kneepadTexture,
     CreateTex_kneepadsLabel,
 };
-static _SCreateTexList CreateTex_KneepadThighEnd __attribute__((section(".sdata"))) = { 0, 0 };
-static char CreateTex_noSocksLowerLabel[] __attribute__((section(".sdata"), aligned(4))) =
-    "No socks";
-static char CreateTex_ankleSocksLowerLabel[] __attribute__((section(".sdata"), aligned(4))) =
-    "Ankle socks";
+static _SCreateTexList CreateTex_KneepadThighEnd PSX_SECTION(".sdata") = { 0, 0 };
+static char CreateTex_noSocksLowerLabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "No socks";
+static char CreateTex_ankleSocksLowerLabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "Ankle socks";
 
 /*
  * Geometry and front-end labels consumed by the global constructor. Their
@@ -334,55 +305,50 @@ namespace CreateTexAddressViewOwners
 {
 extern "C"
 {
-static char CreateTex_defaultKey[] __attribute__((section(".sdata"), aligned(4))) = "default";
-static char CreateTex_defaultLabel[] __attribute__((section(".sdata"), aligned(4))) = "Default";
-static char CreateTex_capHelmetKey[] __attribute__((section(".sdata"), aligned(4))) = "caphelmet";
-static char CreateTex_helmetAltLabel[] __attribute__((section(".sdata"), aligned(4))) = "helmet";
-static char CreateTex_capBackwardKey[] __attribute__((section(".sdata"), aligned(4))) =
-    "capbackward";
-static char CreateTex_capBackLabel[] __attribute__((section(".sdata"), aligned(4))) = "cap back";
-static char CreateTex_capForwardKey[] __attribute__((section(".sdata"), aligned(4))) = "capforward";
-static char CreateTex_capForwardLabel[] __attribute__((section(".sdata"), aligned(4))) =
-    "cap forward";
-static char CreateTex_capBeanieKey[] __attribute__((section(".sdata"), aligned(4))) = "capbeanie";
-static char CreateTex_beanieAltLabel[] __attribute__((section(".sdata"), aligned(4))) = "beanie";
-static char CreateTex_curlyHairKey[] __attribute__((section(".sdata"), aligned(4))) = "curlyhair";
-static char CreateTex_curlyLabel[] __attribute__((section(".sdata"), aligned(4))) = "curly";
-static char CreateTex_afroKey[] __attribute__((section(".sdata"), aligned(4))) = "afro";
-static char CreateTex_afroGuyLabel[] __attribute__((section(".sdata"), aligned(4))) = "afro guy";
-static char CreateTex_dreadsKey[] __attribute__((section(".sdata"), aligned(4))) = "dreads";
-static char CreateTex_rastaGuyLabel[] __attribute__((section(".sdata"), aligned(4))) = "rasta guy";
-static char CreateTex_skinKey[] __attribute__((section(".sdata"), aligned(4))) = "skin";
-static char CreateTex_skinheadLabel[] __attribute__((section(".sdata"), aligned(4))) = "skinhead";
-static char CreateTex_afroWhiteKey[] __attribute__((section(".sdata"), aligned(4))) = "afrowhite";
-static char CreateTex_whiteFroAltLabel[] __attribute__((section(".sdata"), aligned(4))) =
-    "whitefro";
-static char CreateTex_gilliganKey[] __attribute__((section(".sdata"), aligned(4))) = "gilligan";
-static char CreateTex_heySkipperLabel[] __attribute__((section(".sdata"), aligned(4))) =
-    "hey skipper";
-static char CreateTex_baldBlackKey[] __attribute__((section(".sdata"), aligned(4))) = "baldblack";
-static char CreateTex_blackBaldLabel[] __attribute__((section(".sdata"), aligned(4))) =
-    "black bald";
-static char CreateTex_slickKey[] __attribute__((section(".sdata"), aligned(4))) = "slick";
-static char CreateTex_asianKey[] __attribute__((section(".sdata"), aligned(4))) = "asian";
-static char CreateTex_emptyKey[] __attribute__((section(".sdata"), aligned(4))) = "";
-static char CreateTex_normalLabel[] __attribute__((section(".sdata"), aligned(4))) = "normal";
-static char CreateTex_longSleeveKey[] __attribute__((section(".sdata"), aligned(4))) = "longsleve";
-static char CreateTex_jacketLabel[] __attribute__((section(".sdata"), aligned(4))) = "jacket";
-static char CreateTex_noShirtKey[] __attribute__((section(".sdata"), aligned(4))) = "noshirt";
-static char CreateTex_nudeLabel[] __attribute__((section(".sdata"), aligned(4))) = "nude";
-static char CreateTex_hoodyKey[] __attribute__((section(".sdata"), aligned(4))) = "hoody";
-static char CreateTex_hoodLabel[] __attribute__((section(".sdata"), aligned(4))) = "hood";
-static char CreateTex_tankTopKey[] __attribute__((section(".sdata"), aligned(4))) = "tanktop";
-static char CreateTex_tankLabel[] __attribute__((section(".sdata"), aligned(4))) = "tank";
-static char CreateTex_elbowPadsKey[] __attribute__((section(".sdata"), aligned(4))) = "elbowpads";
-static char CreateTex_padsLabel[] __attribute__((section(".sdata"), aligned(4))) = "pads";
-static char CreateTex_standardLabel[] __attribute__((section(".sdata"), aligned(4))) = "standard";
-static char CreateTex_longPantsKey[] __attribute__((section(".sdata"), aligned(4))) = "longpants";
-static char CreateTex_slacksLabel[] __attribute__((section(".sdata"), aligned(4))) = "slacks";
-static char CreateTex_kneePadKey[] __attribute__((section(".sdata"), aligned(4))) = "kneepad";
-static char CreateTex_baggyPantsKey[] __attribute__((section(".sdata"), aligned(4))) = "baggypants";
-static char CreateTex_baggyLabel[8] __attribute__((section(".sdata"), aligned(4))) = "baggy";
+static char CreateTex_defaultKey[] PSX_SECTION_ALIGNED(".sdata", 4) = "default";
+static char CreateTex_defaultLabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "Default";
+static char CreateTex_capHelmetKey[] PSX_SECTION_ALIGNED(".sdata", 4) = "caphelmet";
+static char CreateTex_helmetAltLabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "helmet";
+static char CreateTex_capBackwardKey[] PSX_SECTION_ALIGNED(".sdata", 4) = "capbackward";
+static char CreateTex_capBackLabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "cap back";
+static char CreateTex_capForwardKey[] PSX_SECTION_ALIGNED(".sdata", 4) = "capforward";
+static char CreateTex_capForwardLabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "cap forward";
+static char CreateTex_capBeanieKey[] PSX_SECTION_ALIGNED(".sdata", 4) = "capbeanie";
+static char CreateTex_beanieAltLabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "beanie";
+static char CreateTex_curlyHairKey[] PSX_SECTION_ALIGNED(".sdata", 4) = "curlyhair";
+static char CreateTex_curlyLabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "curly";
+static char CreateTex_afroKey[] PSX_SECTION_ALIGNED(".sdata", 4) = "afro";
+static char CreateTex_afroGuyLabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "afro guy";
+static char CreateTex_dreadsKey[] PSX_SECTION_ALIGNED(".sdata", 4) = "dreads";
+static char CreateTex_rastaGuyLabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "rasta guy";
+static char CreateTex_skinKey[] PSX_SECTION_ALIGNED(".sdata", 4) = "skin";
+static char CreateTex_skinheadLabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "skinhead";
+static char CreateTex_afroWhiteKey[] PSX_SECTION_ALIGNED(".sdata", 4) = "afrowhite";
+static char CreateTex_whiteFroAltLabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "whitefro";
+static char CreateTex_gilliganKey[] PSX_SECTION_ALIGNED(".sdata", 4) = "gilligan";
+static char CreateTex_heySkipperLabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "hey skipper";
+static char CreateTex_baldBlackKey[] PSX_SECTION_ALIGNED(".sdata", 4) = "baldblack";
+static char CreateTex_blackBaldLabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "black bald";
+static char CreateTex_slickKey[] PSX_SECTION_ALIGNED(".sdata", 4) = "slick";
+static char CreateTex_asianKey[] PSX_SECTION_ALIGNED(".sdata", 4) = "asian";
+static char CreateTex_emptyKey[] PSX_SECTION_ALIGNED(".sdata", 4) = "";
+static char CreateTex_normalLabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "normal";
+static char CreateTex_longSleeveKey[] PSX_SECTION_ALIGNED(".sdata", 4) = "longsleve";
+static char CreateTex_jacketLabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "jacket";
+static char CreateTex_noShirtKey[] PSX_SECTION_ALIGNED(".sdata", 4) = "noshirt";
+static char CreateTex_nudeLabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "nude";
+static char CreateTex_hoodyKey[] PSX_SECTION_ALIGNED(".sdata", 4) = "hoody";
+static char CreateTex_hoodLabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "hood";
+static char CreateTex_tankTopKey[] PSX_SECTION_ALIGNED(".sdata", 4) = "tanktop";
+static char CreateTex_tankLabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "tank";
+static char CreateTex_elbowPadsKey[] PSX_SECTION_ALIGNED(".sdata", 4) = "elbowpads";
+static char CreateTex_padsLabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "pads";
+static char CreateTex_standardLabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "standard";
+static char CreateTex_longPantsKey[] PSX_SECTION_ALIGNED(".sdata", 4) = "longpants";
+static char CreateTex_slacksLabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "slacks";
+static char CreateTex_kneePadKey[] PSX_SECTION_ALIGNED(".sdata", 4) = "kneepad";
+static char CreateTex_baggyPantsKey[] PSX_SECTION_ALIGNED(".sdata", 4) = "baggypants";
+static char CreateTex_baggyLabel[8] PSX_SECTION_ALIGNED(".sdata", 4) = "baggy";
 }
 }
 
@@ -391,44 +357,44 @@ static char CreateTex_baggyLabel[8] __attribute__((section(".sdata"), aligned(4)
  * CCreateTexSpec tables at 0x800C44A0-0x800C4588.
  */
 
-_SCreateTexList BlackBald[3] __attribute__((section(".data"))) = {
+_SCreateTexList BlackBald[3] PSX_SECTION(".data") = {
     { CreateTex_faceBlackBald, CreateTex_bald },
     { CreateTex_faceAfro1, CreateTex_shortHair },
     { 0, 0 },
 };
-_SCreateTexList CurlyHair[3] __attribute__((section(".data"))) = {
+_SCreateTexList CurlyHair[3] PSX_SECTION(".data") = {
     { CreateTex_faceCurly2, CreateTex_curlyHairLabel },
     { CreateTex_faceAfroWig2, CreateTex_bleachedAfro },
     { 0, 0 },
 };
-_SCreateTexList CapTop[3] __attribute__((section(".data"))) = {
+_SCreateTexList CapTop[3] PSX_SECTION(".data") = {
     { CreateTex_capBirdTexture, CreateTex_birdLogo },
     { CreateTex_capSkullTexture, CreateTex_skullLogo },
     { 0, 0 },
 };
-_SCreateTexList DefaultThigh[3] __attribute__((section(".data"))) = {
+_SCreateTexList DefaultThigh[3] PSX_SECTION(".data") = {
     { CreateTex_shortsTexture, CreateTex_shortsLabel },
     { CreateTex_cargoShortsTexture, CreateTex_cargoShortsLabel },
     { 0, 0 },
 };
-_SCreateTexList DefaultShin[5] __attribute__((section(".data"))) = {
+_SCreateTexList DefaultShin[5] PSX_SECTION(".data") = {
     { CreateTex_bareShinTexture, CreateTex_noSocksLabel },
     { CreateTex_ankleSocksTexture, CreateTex_ankleSocksLabel },
     { CreateTex_highSocksWhiteTexture, CreateTex_highSocksLabel },
     { CreateTex_highSocksTexture, CreateTex_mervynsLabel },
     { 0, 0 },
 };
-_SCreateTexList LongPantsFullLeg[3] __attribute__((section(".data"))) = {
+_SCreateTexList LongPantsFullLeg[3] PSX_SECTION(".data") = {
     { CreateTex_longPantsTexture, CreateTex_regularPantsLabel },
     { CreateTex_cargoPantsTexture, CreateTex_cargoPantsLabel },
     { 0, 0 },
 };
-_SCreateTexList KneepadShin[3] __attribute__((section(".data"))) = {
+_SCreateTexList KneepadShin[3] PSX_SECTION(".data") = {
     { CreateTex_bareShinTexture, CreateTex_noSocksLowerLabel },
     { CreateTex_ankleSocksTexture, CreateTex_ankleSocksLowerLabel },
     { 0, 0 },
 };
-_SCreateTexList BaggyPantsFullLeg[3] __attribute__((section(".data"))) = {
+_SCreateTexList BaggyPantsFullLeg[3] PSX_SECTION(".data") = {
     { CreateTex_longPantsTexture, CreateTex_regularPantsLabel },
     { CreateTex_cargoPantsTexture, CreateTex_cargoPantsLabel },
     { 0, 0 },

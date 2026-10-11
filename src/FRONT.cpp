@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #include <STDDEF.H>
 #include <LIBGTE.H>
 
@@ -351,22 +352,22 @@ struct FrontLoadingGaugeState
 typedef char
     Front_LoadingGaugeState_size_must_be_28[(sizeof(struct FrontLoadingGaugeState) == 28) ? 1 : -1];
 
-typedef char Front_CClass_size_must_be_4[(sizeof(CClass) == 4) ? 1 : -1];
-typedef char Front_SControl_size_must_be_364[(sizeof(SControl) == 0x16c) ? 1 : -1];
-typedef char Front_SPSXRegion_size_must_be_64[(sizeof(SPSXRegion) == 0x40) ? 1 : -1];
-typedef char Front_LocalText_size_must_be_652[(sizeof(LocalText) == 0x28c) ? 1 : -1];
-typedef char Front_SVideoInfo_size_must_be_192[(sizeof(SVideoInfo) == 0xc0) ? 1 : -1];
-typedef char Front_CTape_size_must_be_368[(sizeof(CTape) == 0x170) ? 1 : -1];
-typedef char Front_CBodyView_size_must_be_264[(sizeof(CBodyFrontView) == 0x108) ? 1 : -1];
-typedef char Front_CSuperView_size_must_be_400[(sizeof(CSuperFrontView) == 0x190) ? 1 : -1];
+PSX_LAYOUT_CHECK(Front_CClass_size_must_be_4, sizeof(CClass) == 4);
+PSX_LAYOUT_CHECK(Front_SControl_size_must_be_364, sizeof(SControl) == 0x16c);
+PSX_LAYOUT_CHECK(Front_SPSXRegion_size_must_be_64, sizeof(SPSXRegion) == 0x40);
+PSX_LAYOUT_CHECK(Front_LocalText_size_must_be_652, sizeof(LocalText) == 0x28c);
+PSX_LAYOUT_CHECK(Front_SVideoInfo_size_must_be_192, sizeof(SVideoInfo) == 0xc0);
+PSX_LAYOUT_CHECK(Front_CTape_size_must_be_368, sizeof(CTape) == 0x170);
+PSX_LAYOUT_CHECK(Front_CBodyView_size_must_be_264, sizeof(CBodyFrontView) == 0x108);
+PSX_LAYOUT_CHECK(Front_CSuperView_size_must_be_400, sizeof(CSuperFrontView) == 0x190);
 typedef char
     Front_CPanelDataView_size_must_be_2276[(sizeof(CPanelDataFrontView) == 0x8e4) ? 1 : -1];
-typedef char Front_CBruce_size_must_be_5228[(sizeof(CBruce) == 0x146c) ? 1 : -1];
-typedef char Front_SEntry_size_must_be_24[(sizeof(SEntry) == 0x18) ? 1 : -1];
-typedef char Front_SDK_VECTOR_size_must_be_16[(sizeof(VECTOR) == 16) ? 1 : -1];
+PSX_LAYOUT_CHECK(Front_CBruce_size_must_be_5228, sizeof(CBruce) == 0x146c);
+PSX_LAYOUT_CHECK(Front_SEntry_size_must_be_24, sizeof(SEntry) == 0x18);
+PSX_LAYOUT_CHECK(Front_SDK_VECTOR_size_must_be_16, sizeof(VECTOR) == 16);
 typedef char Front_SFrontBackground_focus_offset_must_be_12
     [((unsigned long)&(((SFrontBackground *)0)->Focus) == 12) ? 1 : -1];
-typedef char Front_SFrontBackground_size_must_be_36[(sizeof(SFrontBackground) == 0x24) ? 1 : -1];
+PSX_LAYOUT_CHECK(Front_SFrontBackground_size_must_be_36, sizeof(SFrontBackground) == 0x24);
 
 #include "SFX.h"
 #include "LEVELGEN.h"
@@ -414,7 +415,7 @@ inline void *operator new(unsigned int, void *p)
 
 // === Forward type declarations ===
 
-typedef char Front_CMenu_size_must_be_384[(sizeof(CMenu) == 0x180) ? 1 : -1];
+PSX_LAYOUT_CHECK(Front_CMenu_size_must_be_384, sizeof(CMenu) == 0x180);
 
 /**
  * Deleting-destructor prefix used by the composed tape view in this owner.
@@ -432,7 +433,7 @@ struct FrontCMenuVTable
 };
 
 
-typedef char Front_CMenu_vtable_size_must_be_28[(sizeof(FrontCMenuVTable) == 28) ? 1 : -1];
+PSX_LAYOUT_CHECK(Front_CMenu_vtable_size_must_be_28, sizeof(FrontCMenuVTable) == 28);
 
 /** Invoke the deleting-destructor slot shared by front-end menu objects. */
 static inline void Front_DestroyMenu(CMenu *menu)
@@ -485,11 +486,11 @@ struct Sprite2
     void Delete(int flags) { vtable->Delete(this, flags); }
 };
 
-typedef char Front_Sprite2_size_must_be_60[(sizeof(Sprite2) == 0x3c) ? 1 : -1];
+PSX_LAYOUT_CHECK(Front_Sprite2_size_must_be_60, sizeof(Sprite2) == 0x3c);
 
 #include "SPRITE.h"
 
-typedef char Front_Sprite_size_must_be_24[(sizeof(Sprite) == 0x18) ? 1 : -1];
+PSX_LAYOUT_CHECK(Front_Sprite_size_must_be_24, sizeof(Sprite) == 0x18);
 
 #include "PROMPTSCREENELEMENT.h"
 
@@ -539,7 +540,7 @@ typedef char
 
 #include "GAMEPREFERENCES.h"
 
-typedef char Front_SFrontBackground_size_must_be_36[(sizeof(SFrontBackground) == 36) ? 1 : -1];
+PSX_LAYOUT_CHECK(Front_SFrontBackground_size_must_be_36, sizeof(SFrontBackground) == 36);
 /*
  * Declare the initialized small-data prefix before its users. String arrays
  * with unknown extent keep their original absolute address formation with
@@ -551,71 +552,71 @@ void LoadingScreen_Main(void)
 {
 }
 
-extern int GHorseContinue __attribute__((section(".sdata")));
-extern int MIDILEVEL __attribute__((section(".sdata")));
-extern int SFXLEVEL __attribute__((section(".sdata")));
-extern int XALEVEL __attribute__((section(".sdata")));
+extern int GHorseContinue PSX_SECTION(".sdata");
+extern int MIDILEVEL PSX_SECTION(".sdata");
+extern int SFXLEVEL PSX_SECTION(".sdata");
+extern int XALEVEL PSX_SECTION(".sdata");
 #define FRONTTIMERS_TITLE_TIMEOUT_OWNER_DECLARATION
 #include "FRONTTIMERS.h"
-extern int TitleTimeout __attribute__((section(".sdata")));
-extern int GRollCredits __attribute__((section(".sdata")));
-extern int GHighScoreLineIndex __attribute__((section(".sdata")));
-extern int GHighScoreInitialCursorPos __attribute__((section(".sdata")));
-extern int GSoftResetEnabled __attribute__((section(".sdata")));
-extern EPausedStatus Status __attribute__((section(".sdata")));
+extern int TitleTimeout PSX_SECTION(".sdata");
+extern int GRollCredits PSX_SECTION(".sdata");
+extern int GHighScoreLineIndex PSX_SECTION(".sdata");
+extern int GHighScoreInitialCursorPos PSX_SECTION(".sdata");
+extern int GSoftResetEnabled PSX_SECTION(".sdata");
+extern EPausedStatus Status PSX_SECTION(".sdata");
 namespace
 {
 extern "C++"
 {
-extern int DemoFlashTimer __attribute__((section(".sdata")));
-extern char DemoString[] __attribute__((section(".sdata"), aligned(4)));
-extern char HorseLabel1[] __attribute__((section(".sdata"), aligned(4)));
-extern char HorseLabel2[] __attribute__((section(".sdata"), aligned(4)));
+extern int DemoFlashTimer PSX_SECTION(".sdata");
+extern char DemoString[] PSX_SECTION_ALIGNED(".sdata", 4);
+extern char HorseLabel1[] PSX_SECTION_ALIGNED(".sdata", 4);
+extern char HorseLabel2[] PSX_SECTION_ALIGNED(".sdata", 4);
 }
 }
-extern int CurrentFrontBackground __attribute__((section(".sdata")));
+extern int CurrentFrontBackground PSX_SECTION(".sdata");
 
 namespace
 {
 extern "C++"
 {
-extern char FrontRoofLib[] __attribute__((section(".sdata"), aligned(4)));
-extern char FrontRoofEnv[] __attribute__((section(".sdata"), aligned(4)));
-extern char FrontRoofSizes[] __attribute__((section(".sdata"), aligned(4)));
-extern char FrontSewerLib[] __attribute__((section(".sdata"), aligned(4)));
-extern char FrontSewerEnv[] __attribute__((section(".sdata"), aligned(4)));
-extern char FrontSewerSizes[] __attribute__((section(".sdata"), aligned(4)));
-extern char FrontNoBackground[] __attribute__((section(".sdata"), aligned(4)));
+extern char FrontRoofLib[] PSX_SECTION_ALIGNED(".sdata", 4);
+extern char FrontRoofEnv[] PSX_SECTION_ALIGNED(".sdata", 4);
+extern char FrontRoofSizes[] PSX_SECTION_ALIGNED(".sdata", 4);
+extern char FrontSewerLib[] PSX_SECTION_ALIGNED(".sdata", 4);
+extern char FrontSewerEnv[] PSX_SECTION_ALIGNED(".sdata", 4);
+extern char FrontSewerSizes[] PSX_SECTION_ALIGNED(".sdata", 4);
+extern char FrontNoBackground[] PSX_SECTION_ALIGNED(".sdata", 4);
 }
 }
 
-extern const unsigned int *pSizeData __attribute__((section(".sdata")));
-extern int GamePaused __attribute__((section(".sdata")));
+extern const unsigned int *pSizeData PSX_SECTION(".sdata");
+extern int GamePaused PSX_SECTION(".sdata");
 
 namespace
 {
 extern "C++"
 {
-extern int WobbleAmplitude __attribute__((section(".sdata")));
-extern int WobbleT __attribute__((section(".sdata")));
-extern int UpDownAutoRepeatTimer __attribute__((section(".sdata")));
+extern int WobbleAmplitude PSX_SECTION(".sdata");
+extern int WobbleT PSX_SECTION(".sdata");
+extern int UpDownAutoRepeatTimer PSX_SECTION(".sdata");
 }
 }
 
 #define FRONTTIMERS_LEFT_RIGHT_TIMER_OWNER_DECLARATION
 #include "FRONTTIMERS.h"
-extern int LeftRightAutoRepeatTimer __attribute__((section(".sdata")));
-extern SAnimFrame *ButtonsAnim __attribute__((section(".sdata")));
-extern int VoiceLevelGotFocus __attribute__((section(".sdata")));
+extern int LeftRightAutoRepeatTimer PSX_SECTION(".sdata");
+extern SAnimFrame *ButtonsAnim PSX_SECTION(".sdata");
+extern int VoiceLevelGotFocus PSX_SECTION(".sdata");
 
-extern CMenu *pYesNoMenu __attribute__((section(".sdata")));
-extern CMenu *pESMenu __attribute__((section(".sdata")));
-extern CMenu *pVSMenu __attribute__((section(".sdata")));
-extern CMenu *pVS2Menu __attribute__((section(".sdata")));
-extern CMenu *pVS3Menu __attribute__((section(".sdata")));
-extern CMenu *pEHMenu __attribute__((section(".sdata")));
-extern CMenu *pERMMenu __attribute__((section(".sdata")));
-extern CMenu *pSoundMenu __attribute__((section(".sdata")));
+extern CMenu *pYesNoMenu PSX_SECTION(".sdata");
+extern CMenu *pESMenu PSX_SECTION(".sdata");
+extern CMenu *pVSMenu PSX_SECTION(".sdata");
+extern CMenu *pVS2Menu PSX_SECTION(".sdata");
+extern CMenu *pVS3Menu PSX_SECTION(".sdata");
+extern CMenu *pEHMenu PSX_SECTION(".sdata");
+extern CMenu *pERMMenu PSX_SECTION(".sdata");
+extern CMenu *pSoundMenu PSX_SECTION(".sdata");
 
 /*
  * Target-named owners export the canonical data symbols.  Objects larger
@@ -630,7 +631,7 @@ namespace
 {
 extern "C++"
 {
-extern RECT Db_SkyColorBak[] __attribute__((section(".sdata")));
+extern RECT Db_SkyColorBak[] PSX_SECTION(".sdata");
 }
 }
 }
@@ -640,10 +641,10 @@ namespace
 {
 extern "C++"
 {
-extern int GaugeOn __attribute__((section(".sdata")));
-extern unsigned int TotalProgress __attribute__((section(".sdata")));
-extern unsigned int TotalSize __attribute__((section(".sdata")));
-extern FrontLoadingGaugeState FrontLoadingGauge __attribute__((section(".sdata")));
+extern int GaugeOn PSX_SECTION(".sdata");
+extern unsigned int TotalProgress PSX_SECTION(".sdata");
+extern unsigned int TotalSize PSX_SECTION(".sdata");
+extern FrontLoadingGaugeState FrontLoadingGauge PSX_SECTION(".sdata");
 }
 }
 
@@ -653,14 +654,14 @@ namespace
 {
 extern "C++"
 {
-extern CMenu *pPausedMenu __attribute__((section(".sdata")));
+extern CMenu *pPausedMenu PSX_SECTION(".sdata");
 }
 }
 namespace
 {
 extern "C++"
 {
-extern CMenu *pRestartsMenu __attribute__((section(".sdata")));
+extern CMenu *pRestartsMenu PSX_SECTION(".sdata");
 }
 }
 
@@ -670,42 +671,42 @@ namespace
 {
 extern "C++"
 {
-extern char GrafLabel1[] __attribute__((section(".sdata"), aligned(4)));
+extern char GrafLabel1[] PSX_SECTION_ALIGNED(".sdata", 4);
 }
 }
 namespace
 {
 extern "C++"
 {
-extern char GrafLabel2[] __attribute__((section(".sdata"), aligned(4)));
+extern char GrafLabel2[] PSX_SECTION_ALIGNED(".sdata", 4);
 }
 }
 namespace
 {
 extern "C++"
 {
-extern char GrafLabel3[] __attribute__((section(".sdata"), aligned(4)));
+extern char GrafLabel3[] PSX_SECTION_ALIGNED(".sdata", 4);
 }
 }
 namespace
 {
 extern "C++"
 {
-extern char GrafLabel4[] __attribute__((section(".sdata"), aligned(4)));
+extern char GrafLabel4[] PSX_SECTION_ALIGNED(".sdata", 4);
 }
 }
 namespace
 {
 extern "C++"
 {
-extern char GrafLabel5[] __attribute__((section(".sdata"), aligned(4)));
+extern char GrafLabel5[] PSX_SECTION_ALIGNED(".sdata", 4);
 }
 }
 namespace
 {
 extern "C++"
 {
-extern char GrafLabel6[] __attribute__((section(".sdata"), aligned(4)));
+extern char GrafLabel6[] PSX_SECTION_ALIGNED(".sdata", 4);
 }
 }
 }
@@ -751,7 +752,7 @@ namespace
 {
 extern "C++"
 {
-extern char GrafFmt[] __attribute__((section(".sdata"), aligned(4)));
+extern char GrafFmt[] PSX_SECTION_ALIGNED(".sdata", 4);
 }
 }
 }
@@ -759,168 +760,168 @@ namespace
 {
 extern "C++"
 {
-extern char Front_GrafPlayer1Match[] __attribute__((section(".sdata"), aligned(4)));
+extern char Front_GrafPlayer1Match[] PSX_SECTION_ALIGNED(".sdata", 4);
 }
 }
 namespace
 {
 extern "C++"
 {
-extern char Front_GrafPlayer2Match[] __attribute__((section(".sdata"), aligned(4)));
+extern char Front_GrafPlayer2Match[] PSX_SECTION_ALIGNED(".sdata", 4);
 }
 }
 namespace
 {
 extern "C++"
 {
-extern char Front_GrafSeparator[4] __attribute__((section(".sdata"), aligned(4)));
+extern char Front_GrafSeparator[4] PSX_SECTION_ALIGNED(".sdata", 4);
 }
 }
 namespace
 {
 extern "C++"
 {
-extern char Front_GrafStringFormat[4] __attribute__((section(".sdata"), aligned(4)));
+extern char Front_GrafStringFormat[4] PSX_SECTION_ALIGNED(".sdata", 4);
 }
 }
 namespace
 {
 extern "C++"
 {
-extern char Front_GrafTimeUp[] __attribute__((section(".sdata"), aligned(4)));
+extern char Front_GrafTimeUp[] PSX_SECTION_ALIGNED(".sdata", 4);
 }
 }
 namespace
 {
 extern "C++"
 {
-extern char Front_GrafGameOver[] __attribute__((section(".sdata"), aligned(4)));
+extern char Front_GrafGameOver[] PSX_SECTION_ALIGNED(".sdata", 4);
 }
 }
 namespace
 {
 extern "C++"
 {
-extern char Front_GrafCountFormat[] __attribute__((section(".sdata"), aligned(4)));
+extern char Front_GrafCountFormat[] PSX_SECTION_ALIGNED(".sdata", 4);
 }
 }
 namespace
 {
 extern "C++"
 {
-extern char Front_GrafLongFormat[4] __attribute__((section(".sdata"), aligned(4)));
+extern char Front_GrafLongFormat[4] PSX_SECTION_ALIGNED(".sdata", 4);
 }
 }
 namespace
 {
 extern "C++"
 {
-extern char Front_GrafTrickFont[] __attribute__((section(".sdata"), aligned(4)));
+extern char Front_GrafTrickFont[] PSX_SECTION_ALIGNED(".sdata", 4);
 }
 }
 namespace
 {
 extern "C++"
 {
-extern char Front_GrafPasscodeFormat[] __attribute__((section(".sdata"), aligned(4)));
+extern char Front_GrafPasscodeFormat[] PSX_SECTION_ALIGNED(".sdata", 4);
 }
 }
 namespace
 {
 extern "C++"
 {
-extern char Front_GrafTie[4] __attribute__((section(".sdata"), aligned(4)));
+extern char Front_GrafTie[4] PSX_SECTION_ALIGNED(".sdata", 4);
 }
 }
 namespace
 {
 extern "C++"
 {
-extern char Front_GrafPlayer2Wins[] __attribute__((section(".sdata"), aligned(4)));
+extern char Front_GrafPlayer2Wins[] PSX_SECTION_ALIGNED(".sdata", 4);
 }
 }
 namespace
 {
 extern "C++"
 {
-extern char Front_GrafPlayer1Wins[] __attribute__((section(".sdata"), aligned(4)));
+extern char Front_GrafPlayer1Wins[] PSX_SECTION_ALIGNED(".sdata", 4);
 }
 }
 namespace
 {
 extern "C++"
 {
-extern char Front_GrafScoreSetFormat[] __attribute__((section(".sdata"), aligned(4)));
+extern char Front_GrafScoreSetFormat[] PSX_SECTION_ALIGNED(".sdata", 4);
 }
 }
 namespace
 {
 extern "C++"
 {
-extern char Front_GrafGoingForFormat[] __attribute__((section(".sdata"), aligned(4)));
+extern char Front_GrafGoingForFormat[] PSX_SECTION_ALIGNED(".sdata", 4);
 }
 }
 namespace
 {
 extern "C++"
 {
-extern char Front_GrafYouScoredFormat[] __attribute__((section(".sdata"), aligned(4)));
+extern char Front_GrafYouScoredFormat[] PSX_SECTION_ALIGNED(".sdata", 4);
 }
 }
 namespace
 {
 extern "C++"
 {
-extern char Front_GrafPush[8] __attribute__((section(".sdata"), aligned(4)));
+extern char Front_GrafPush[8] PSX_SECTION_ALIGNED(".sdata", 4);
 }
 }
 namespace
 {
 extern "C++"
 {
-extern char Front_GrafYouAreAn[] __attribute__((section(".sdata"), aligned(4)));
+extern char Front_GrafYouAreAn[] PSX_SECTION_ALIGNED(".sdata", 4);
 }
 }
 namespace
 {
 extern "C++"
 {
-extern char Front_GrafYouAreA[] __attribute__((section(".sdata"), aligned(4)));
+extern char Front_GrafYouAreA[] PSX_SECTION_ALIGNED(".sdata", 4);
 }
 }
 namespace
 {
 extern "C++"
 {
-extern char Front_GrafSwitch[8] __attribute__((section(".sdata"), aligned(4)));
+extern char Front_GrafSwitch[8] PSX_SECTION_ALIGNED(".sdata", 4);
 }
 }
 namespace
 {
 extern "C++"
 {
-extern char Front_GrafPlayer1ScoreFormat[] __attribute__((section(".sdata"), aligned(4)));
+extern char Front_GrafPlayer1ScoreFormat[] PSX_SECTION_ALIGNED(".sdata", 4);
 }
 }
 namespace
 {
 extern "C++"
 {
-extern char Front_GrafPlayer2ScoreFormat[] __attribute__((section(".sdata"), aligned(4)));
+extern char Front_GrafPlayer2ScoreFormat[] PSX_SECTION_ALIGNED(".sdata", 4);
 }
 }
 namespace
 {
 extern "C++"
 {
-extern char Front_GrafDraw[8] __attribute__((section(".sdata"), aligned(4)));
+extern char Front_GrafDraw[8] PSX_SECTION_ALIGNED(".sdata", 4);
 }
 }
 namespace
 {
 extern "C++"
 {
-extern char Front_GrafGameStateFormat[] __attribute__((section(".sdata"), aligned(4)));
+extern char Front_GrafGameStateFormat[] PSX_SECTION_ALIGNED(".sdata", 4);
 }
 }
 
@@ -930,7 +931,7 @@ namespace
 {
 extern "C++"
 {
-extern char _restart_comp_string[] __attribute__((section(".sdata"), aligned(4)));
+extern char _restart_comp_string[] PSX_SECTION_ALIGNED(".sdata", 4);
 }
 }
 }
@@ -940,9 +941,9 @@ namespace
 {
 extern "C++"
 {
-extern int StartSelectPressed __attribute__((section(".sdata")));
-extern unsigned int VblanksWhenStartSelectFirstPressed __attribute__((section(".sdata")));
-extern char FrontEditorPrefix[] __attribute__((section(".sdata"), aligned(4)));
+extern int StartSelectPressed PSX_SECTION(".sdata");
+extern unsigned int VblanksWhenStartSelectFirstPressed PSX_SECTION(".sdata");
+extern char FrontEditorPrefix[] PSX_SECTION_ALIGNED(".sdata", 4);
 }
 }
 
@@ -954,77 +955,77 @@ namespace
 {
 extern "C++"
 {
-extern char s_S2Demo2Bmp[] __attribute__((section(".sdata"), aligned(4)));
+extern char s_S2Demo2Bmp[] PSX_SECTION_ALIGNED(".sdata", 4);
 }
 }
 namespace
 {
 extern "C++"
 {
-extern char s_Skate2Vab[] __attribute__((section(".sdata"), aligned(4)));
+extern char s_Skate2Vab[] PSX_SECTION_ALIGNED(".sdata", 4);
 }
 }
 namespace
 {
 extern "C++"
 {
-extern char s_ScorepBmp[] __attribute__((section(".sdata"), aligned(4)));
+extern char s_ScorepBmp[] PSX_SECTION_ALIGNED(".sdata", 4);
 }
 }
 namespace
 {
 extern "C++"
 {
-extern char s_SpecialBmp[] __attribute__((section(".sdata"), aligned(4)));
+extern char s_SpecialBmp[] PSX_SECTION_ALIGNED(".sdata", 4);
 }
 }
 namespace
 {
 extern "C++"
 {
-extern char s_SpecBarBmp[] __attribute__((section(".sdata"), aligned(4)));
+extern char s_SpecBarBmp[] PSX_SECTION_ALIGNED(".sdata", 4);
 }
 }
 namespace
 {
 extern "C++"
 {
-extern char s_PausedBmp[] __attribute__((section(".sdata"), aligned(4)));
+extern char s_PausedBmp[] PSX_SECTION_ALIGNED(".sdata", 4);
 }
 }
 namespace
 {
 extern "C++"
 {
-extern char s_Bits[] __attribute__((section(".sdata"), aligned(4)));
+extern char s_Bits[] PSX_SECTION_ALIGNED(".sdata", 4);
 }
 }
 namespace
 {
 extern "C++"
 {
-extern char s_Items[] __attribute__((section(".sdata"), aligned(4)));
+extern char s_Items[] PSX_SECTION_ALIGNED(".sdata", 4);
 }
 }
 namespace
 {
 extern "C++"
 {
-extern char s_SkMedals[] __attribute__((section(".sdata"), aligned(4)));
+extern char s_SkMedals[] PSX_SECTION_ALIGNED(".sdata", 4);
 }
 }
 namespace
 {
 extern "C++"
 {
-extern char s_Sk2Anim[] __attribute__((section(".sdata"), aligned(4)));
+extern char s_Sk2Anim[] PSX_SECTION_ALIGNED(".sdata", 4);
 }
 }
 namespace
 {
 extern "C++"
 {
-extern char s_SkEdThemeFmt[] __attribute__((section(".sdata"), aligned(4)));
+extern char s_SkEdThemeFmt[] PSX_SECTION_ALIGNED(".sdata", 4);
 }
 }
 }
@@ -1043,7 +1044,7 @@ namespace
 {
 extern "C++"
 {
-extern FrontEditorLevelSuffixBytes s_AckSuffix __attribute__((section(".sdata")));
+extern FrontEditorLevelSuffixBytes s_AckSuffix PSX_SECTION(".sdata");
 }
 }
 }
@@ -1053,14 +1054,14 @@ namespace
 {
 extern "C++"
 {
-extern char s_S2Prmpt1Bmp[] __attribute__((section(".sdata"), aligned(4)));
+extern char s_S2Prmpt1Bmp[] PSX_SECTION_ALIGNED(".sdata", 4);
 }
 }
 namespace
 {
 extern "C++"
 {
-extern char s_ToContinue[] __attribute__((section(".sdata"), aligned(4)));
+extern char s_ToContinue[] PSX_SECTION_ALIGNED(".sdata", 4);
 }
 }
 }
@@ -1070,14 +1071,14 @@ namespace
 {
 extern "C++"
 {
-extern int s_PromptClipRectLo __attribute__((section(".sdata")));
+extern int s_PromptClipRectLo PSX_SECTION(".sdata");
 }
 }
 namespace
 {
 extern "C++"
 {
-extern int s_PromptClipRectHi __attribute__((section(".sdata")));
+extern int s_PromptClipRectHi PSX_SECTION(".sdata");
 }
 }
 }
@@ -1101,7 +1102,7 @@ int NextHorsePlayer;
 int NextHorseScore;
 int NextHorseRestart;
 int NextHorseLetters[2];
-SONG_POS Paused_SongPos __attribute__((section(".sdata")));
+SONG_POS Paused_SongPos PSX_SECTION(".sdata");
 int Front_OnTime;
 int StatsMode;
 int GStart1;
@@ -1110,7 +1111,7 @@ unsigned int JudgeTimer;
 unsigned int LadderTimer;
 unsigned int WinLoseTimer;
 
-typedef char Front_GrafFmt_size_must_be_292[(sizeof(FrontDisplayStringPool) == 292) ? 1 : -1];
+PSX_LAYOUT_CHECK(Front_GrafFmt_size_must_be_292, sizeof(FrontDisplayStringPool) == 292);
 
 /**
  * Messages retained in FRONT's original read-only literal pool.
@@ -1160,7 +1161,7 @@ namespace FrontReadOnlyPrefixOwner
 {
 extern "C"
 {
-FrontDefaultGameStateOwner DefaultGameState __attribute__((section(".rdata"))) = {
+FrontDefaultGameStateOwner DefaultGameState PSX_SECTION(".rdata") = {
     {
         0,
         {
@@ -1194,7 +1195,7 @@ FrontDefaultGameStateOwner DefaultGameState __attribute__((section(".rdata"))) =
 };
 }
 
-static FrontReadOnlyLiteralPool DefaultGameStateLiterals __attribute__((section(".rdata"))) = {
+static FrontReadOnlyLiteralPool DefaultGameStateLiterals PSX_SECTION(".rdata") = {
     "PLAYER 1 SET SCORE",
     "PLAYER 2 SET SCORE",
     "You didn't make the cut...",
@@ -5379,71 +5380,71 @@ void Front_LoadGame(SSaveGame *pGame)
 
 
 /* FRONT initialized small-data definitions, in original owner order. */
-int GHorseContinue __attribute__((section(".sdata"))) = 0;
-int MIDILEVEL __attribute__((section(".sdata"))) = 0x4000;
-int SFXLEVEL __attribute__((section(".sdata"))) = 0x4000;
-int XALEVEL __attribute__((section(".sdata"))) = 0x7f;
+int GHorseContinue PSX_SECTION(".sdata") = 0;
+int MIDILEVEL PSX_SECTION(".sdata") = 0x4000;
+int SFXLEVEL PSX_SECTION(".sdata") = 0x4000;
+int XALEVEL PSX_SECTION(".sdata") = 0x7f;
 #define FRONTTIMERS_TITLE_TIMEOUT_OWNER_DECLARATION
 #include "FRONTTIMERS.h"
-int TitleTimeout __attribute__((section(".sdata"))) = 0x14;
-int GRollCredits __attribute__((section(".sdata"))) = 0;
-int GHighScoreLineIndex __attribute__((section(".sdata"))) = -1;
-int GHighScoreInitialCursorPos __attribute__((section(".sdata"))) = 0;
-int GSoftResetEnabled __attribute__((section(".sdata"))) = 1;
-EPausedStatus Status __attribute__((section(".sdata"))) = STATUS_NORMAL;
+int TitleTimeout PSX_SECTION(".sdata") = 0x14;
+int GRollCredits PSX_SECTION(".sdata") = 0;
+int GHighScoreLineIndex PSX_SECTION(".sdata") = -1;
+int GHighScoreInitialCursorPos PSX_SECTION(".sdata") = 0;
+int GSoftResetEnabled PSX_SECTION(".sdata") = 1;
+EPausedStatus Status PSX_SECTION(".sdata") = STATUS_NORMAL;
 namespace
 {
 extern "C++"
 {
-int DemoFlashTimer __attribute__((section(".sdata"))) = 0x30;
-char DemoString[] __attribute__((section(".sdata"), aligned(4))) = "demo mode";
-char HorseLabel1[] __attribute__((section(".sdata"), aligned(4))) = "PLAYER 1";
-char HorseLabel2[] __attribute__((section(".sdata"), aligned(4))) = "PLAYER 2";
+int DemoFlashTimer PSX_SECTION(".sdata") = 0x30;
+char DemoString[] PSX_SECTION_ALIGNED(".sdata", 4) = "demo mode";
+char HorseLabel1[] PSX_SECTION_ALIGNED(".sdata", 4) = "PLAYER 1";
+char HorseLabel2[] PSX_SECTION_ALIGNED(".sdata", 4) = "PLAYER 2";
 }
 }
-int CurrentFrontBackground __attribute__((section(".sdata"))) = 0;
+int CurrentFrontBackground PSX_SECTION(".sdata") = 0;
 
 namespace
 {
 extern "C++"
 {
-char FrontRoofLib[] __attribute__((section(".sdata"), aligned(4))) = "roof_lib";
-char FrontRoofEnv[] __attribute__((section(".sdata"), aligned(4))) = "roof_1";
-char FrontRoofSizes[] __attribute__((section(".sdata"), aligned(4))) = "roofback";
-char FrontSewerLib[] __attribute__((section(".sdata"), aligned(4))) = "sewr_lib";
-char FrontSewerEnv[] __attribute__((section(".sdata"), aligned(4))) = "sewr_4";
-char FrontSewerSizes[] __attribute__((section(".sdata"), aligned(4))) = "sewrback";
-char FrontNoBackground[] __attribute__((section(".sdata"), aligned(4))) = "";
+char FrontRoofLib[] PSX_SECTION_ALIGNED(".sdata", 4) = "roof_lib";
+char FrontRoofEnv[] PSX_SECTION_ALIGNED(".sdata", 4) = "roof_1";
+char FrontRoofSizes[] PSX_SECTION_ALIGNED(".sdata", 4) = "roofback";
+char FrontSewerLib[] PSX_SECTION_ALIGNED(".sdata", 4) = "sewr_lib";
+char FrontSewerEnv[] PSX_SECTION_ALIGNED(".sdata", 4) = "sewr_4";
+char FrontSewerSizes[] PSX_SECTION_ALIGNED(".sdata", 4) = "sewrback";
+char FrontNoBackground[] PSX_SECTION_ALIGNED(".sdata", 4) = "";
 }
 }
 
-const unsigned int *pSizeData __attribute__((section(".sdata"))) = 0;
-int GamePaused __attribute__((section(".sdata"))) = 0;
+const unsigned int *pSizeData PSX_SECTION(".sdata") = 0;
+int GamePaused PSX_SECTION(".sdata") = 0;
 
 namespace
 {
 extern "C++"
 {
-int WobbleAmplitude __attribute__((section(".sdata"))) = 0;
-int WobbleT __attribute__((section(".sdata"))) = 0;
-int UpDownAutoRepeatTimer __attribute__((section(".sdata"))) = 0;
+int WobbleAmplitude PSX_SECTION(".sdata") = 0;
+int WobbleT PSX_SECTION(".sdata") = 0;
+int UpDownAutoRepeatTimer PSX_SECTION(".sdata") = 0;
 }
 }
 
 #define FRONTTIMERS_LEFT_RIGHT_TIMER_OWNER_DECLARATION
 #include "FRONTTIMERS.h"
-int LeftRightAutoRepeatTimer __attribute__((section(".sdata"))) = 0;
-SAnimFrame *ButtonsAnim __attribute__((section(".sdata"))) = 0;
-int VoiceLevelGotFocus __attribute__((section(".sdata"))) = 0;
+int LeftRightAutoRepeatTimer PSX_SECTION(".sdata") = 0;
+SAnimFrame *ButtonsAnim PSX_SECTION(".sdata") = 0;
+int VoiceLevelGotFocus PSX_SECTION(".sdata") = 0;
 
-CMenu *pYesNoMenu __attribute__((section(".sdata"))) = 0;
-CMenu *pESMenu __attribute__((section(".sdata"))) = 0;
-CMenu *pVSMenu __attribute__((section(".sdata"))) = 0;
-CMenu *pVS2Menu __attribute__((section(".sdata"))) = 0;
-CMenu *pVS3Menu __attribute__((section(".sdata"))) = 0;
-CMenu *pEHMenu __attribute__((section(".sdata"))) = 0;
-CMenu *pERMMenu __attribute__((section(".sdata"))) = 0;
-CMenu *pSoundMenu __attribute__((section(".sdata"))) = 0;
+CMenu *pYesNoMenu PSX_SECTION(".sdata") = 0;
+CMenu *pESMenu PSX_SECTION(".sdata") = 0;
+CMenu *pVSMenu PSX_SECTION(".sdata") = 0;
+CMenu *pVS2Menu PSX_SECTION(".sdata") = 0;
+CMenu *pVS3Menu PSX_SECTION(".sdata") = 0;
+CMenu *pEHMenu PSX_SECTION(".sdata") = 0;
+CMenu *pERMMenu PSX_SECTION(".sdata") = 0;
+CMenu *pSoundMenu PSX_SECTION(".sdata") = 0;
 
 namespace FrontAddressViewOwners
 {
@@ -5453,7 +5454,7 @@ namespace
 {
 extern "C++"
 {
-RECT Db_SkyColorBak[] __attribute__((section(".sdata"))) = {
+RECT Db_SkyColorBak[] PSX_SECTION(".sdata") = {
     { 0, 0, 512, 511 },
 };
 }
@@ -5465,10 +5466,10 @@ namespace
 {
 extern "C++"
 {
-int GaugeOn __attribute__((section(".sdata"))) = 0;
-unsigned int TotalProgress __attribute__((section(".sdata"))) = 0;
-unsigned int TotalSize __attribute__((section(".sdata"))) = 0;
-FrontLoadingGaugeState FrontLoadingGauge __attribute__((section(".sdata"))) = {
+int GaugeOn PSX_SECTION(".sdata") = 0;
+unsigned int TotalProgress PSX_SECTION(".sdata") = 0;
+unsigned int TotalSize PSX_SECTION(".sdata") = 0;
+FrontLoadingGaugeState FrontLoadingGauge PSX_SECTION(".sdata") = {
     { 106, 200, 300, 12 },
     { 108, 201, 296, 10 },
     { 0, 0, 0, 0 },
@@ -5483,14 +5484,14 @@ namespace
 {
 extern "C++"
 {
-CMenu *pPausedMenu __attribute__((section(".sdata"))) = 0;
+CMenu *pPausedMenu PSX_SECTION(".sdata") = 0;
 }
 }
 namespace
 {
 extern "C++"
 {
-CMenu *pRestartsMenu __attribute__((section(".sdata"))) = 0;
+CMenu *pRestartsMenu PSX_SECTION(".sdata") = 0;
 }
 }
 
@@ -5500,42 +5501,42 @@ namespace
 {
 extern "C++"
 {
-char GrafLabel1[] __attribute__((section(".sdata"), aligned(4))) = "TAGS";
+char GrafLabel1[] PSX_SECTION_ALIGNED(".sdata", 4) = "TAGS";
 }
 }
 namespace
 {
 extern "C++"
 {
-char GrafLabel2[] __attribute__((section(".sdata"), aligned(4))) = "STEALS";
+char GrafLabel2[] PSX_SECTION_ALIGNED(".sdata", 4) = "STEALS";
 }
 }
 namespace
 {
 extern "C++"
 {
-char GrafLabel3[] __attribute__((section(".sdata"), aligned(4))) = "HIGH";
+char GrafLabel3[] PSX_SECTION_ALIGNED(".sdata", 4) = "HIGH";
 }
 }
 namespace
 {
 extern "C++"
 {
-char GrafLabel4[] __attribute__((section(".sdata"), aligned(4))) = "WINS";
+char GrafLabel4[] PSX_SECTION_ALIGNED(".sdata", 4) = "WINS";
 }
 }
 namespace
 {
 extern "C++"
 {
-char GrafLabel5[] __attribute__((section(".sdata"), aligned(4))) = "LOSSES";
+char GrafLabel5[] PSX_SECTION_ALIGNED(".sdata", 4) = "LOSSES";
 }
 }
 namespace
 {
 extern "C++"
 {
-char GrafLabel6[] __attribute__((section(".sdata"), aligned(4))) = "STREAK";
+char GrafLabel6[] PSX_SECTION_ALIGNED(".sdata", 4) = "STREAK";
 }
 }
 }
@@ -5546,7 +5547,7 @@ namespace
 {
 extern "C++"
 {
-char GrafFmt[4] __attribute__((section(".sdata"), aligned(4))) = "%d";
+char GrafFmt[4] PSX_SECTION_ALIGNED(".sdata", 4) = "%d";
 }
 }
 }
@@ -5554,171 +5555,168 @@ namespace
 {
 extern "C++"
 {
-char Front_GrafPlayer1Match[16] __attribute__((section(".sdata"), aligned(4))) = "PLAYER 1 MATCH";
+char Front_GrafPlayer1Match[16] PSX_SECTION_ALIGNED(".sdata", 4) = "PLAYER 1 MATCH";
 }
 }
 namespace
 {
 extern "C++"
 {
-char Front_GrafPlayer2Match[16] __attribute__((section(".sdata"), aligned(4))) = "PLAYER 2 MATCH";
+char Front_GrafPlayer2Match[16] PSX_SECTION_ALIGNED(".sdata", 4) = "PLAYER 2 MATCH";
 }
 }
 namespace
 {
 extern "C++"
 {
-char Front_GrafSeparator[4] __attribute__((section(".sdata"), aligned(4))) = "_";
+char Front_GrafSeparator[4] PSX_SECTION_ALIGNED(".sdata", 4) = "_";
 }
 }
 namespace
 {
 extern "C++"
 {
-char Front_GrafStringFormat[4] __attribute__((section(".sdata"), aligned(4))) = "%s";
+char Front_GrafStringFormat[4] PSX_SECTION_ALIGNED(".sdata", 4) = "%s";
 }
 }
 namespace
 {
 extern "C++"
 {
-char Front_GrafTimeUp[12] __attribute__((section(".sdata"), aligned(4))) = "TIME IS UP!";
+char Front_GrafTimeUp[12] PSX_SECTION_ALIGNED(".sdata", 4) = "TIME IS UP!";
 }
 }
 namespace
 {
 extern "C++"
 {
-char Front_GrafGameOver[12] __attribute__((section(".sdata"), aligned(4))) = "GAME OVER";
+char Front_GrafGameOver[12] PSX_SECTION_ALIGNED(".sdata", 4) = "GAME OVER";
 }
 }
 namespace
 {
 extern "C++"
 {
-char Front_GrafCountFormat[12] __attribute__((section(".sdata"), aligned(4))) = "%ld of %ld";
+char Front_GrafCountFormat[12] PSX_SECTION_ALIGNED(".sdata", 4) = "%ld of %ld";
 }
 }
 namespace
 {
 extern "C++"
 {
-char Front_GrafLongFormat[4] __attribute__((section(".sdata"), aligned(4))) = "%ld";
+char Front_GrafLongFormat[4] PSX_SECTION_ALIGNED(".sdata", 4) = "%ld";
 }
 }
 namespace
 {
 extern "C++"
 {
-char Front_GrafTrickFont[16] __attribute__((section(".sdata"), aligned(4))) = "s2tricks.fnt";
+char Front_GrafTrickFont[16] PSX_SECTION_ALIGNED(".sdata", 4) = "s2tricks.fnt";
 }
 }
 namespace
 {
 extern "C++"
 {
-char Front_GrafPasscodeFormat[16] __attribute__((section(".sdata"), aligned(4))) = "PASSCODE : %s";
+char Front_GrafPasscodeFormat[16] PSX_SECTION_ALIGNED(".sdata", 4) = "PASSCODE : %s";
 }
 }
 namespace
 {
 extern "C++"
 {
-char Front_GrafTie[4] __attribute__((section(".sdata"), aligned(4))) = "TIE";
+char Front_GrafTie[4] PSX_SECTION_ALIGNED(".sdata", 4) = "TIE";
 }
 }
 namespace
 {
 extern "C++"
 {
-char Front_GrafPlayer2Wins[16] __attribute__((section(".sdata"), aligned(4))) = "PLAYER TWO WINS";
+char Front_GrafPlayer2Wins[16] PSX_SECTION_ALIGNED(".sdata", 4) = "PLAYER TWO WINS";
 }
 }
 namespace
 {
 extern "C++"
 {
-char Front_GrafPlayer1Wins[16] __attribute__((section(".sdata"), aligned(4))) = "PLAYER ONE WINS";
+char Front_GrafPlayer1Wins[16] PSX_SECTION_ALIGNED(".sdata", 4) = "PLAYER ONE WINS";
 }
 }
 namespace
 {
 extern "C++"
 {
-char Front_GrafScoreSetFormat[16] __attribute__((section(".sdata"), aligned(4))) =
-    "SCORE SET AT %d";
+char Front_GrafScoreSetFormat[16] PSX_SECTION_ALIGNED(".sdata", 4) = "SCORE SET AT %d";
 }
 }
 namespace
 {
 extern "C++"
 {
-char Front_GrafGoingForFormat[16] __attribute__((section(".sdata"), aligned(4))) = "GOING FOR %d";
+char Front_GrafGoingForFormat[16] PSX_SECTION_ALIGNED(".sdata", 4) = "GOING FOR %d";
 }
 }
 namespace
 {
 extern "C++"
 {
-char Front_GrafYouScoredFormat[16] __attribute__((section(".sdata"), aligned(4))) = "YOU SCORED %d";
+char Front_GrafYouScoredFormat[16] PSX_SECTION_ALIGNED(".sdata", 4) = "YOU SCORED %d";
 }
 }
 namespace
 {
 extern "C++"
 {
-char Front_GrafPush[8] __attribute__((section(".sdata"), aligned(4))) = "PUSH";
+char Front_GrafPush[8] PSX_SECTION_ALIGNED(".sdata", 4) = "PUSH";
 }
 }
 namespace
 {
 extern "C++"
 {
-char Front_GrafYouAreAn[12] __attribute__((section(".sdata"), aligned(4))) = "YOU ARE AN";
+char Front_GrafYouAreAn[12] PSX_SECTION_ALIGNED(".sdata", 4) = "YOU ARE AN";
 }
 }
 namespace
 {
 extern "C++"
 {
-char Front_GrafYouAreA[12] __attribute__((section(".sdata"), aligned(4))) = "YOU ARE A";
+char Front_GrafYouAreA[12] PSX_SECTION_ALIGNED(".sdata", 4) = "YOU ARE A";
 }
 }
 namespace
 {
 extern "C++"
 {
-char Front_GrafSwitch[8] __attribute__((section(".sdata"), aligned(4))) = "SWITCH";
+char Front_GrafSwitch[8] PSX_SECTION_ALIGNED(".sdata", 4) = "SWITCH";
 }
 }
 namespace
 {
 extern "C++"
 {
-char Front_GrafPlayer1ScoreFormat[16] __attribute__((section(".sdata"), aligned(4))) =
-    "PLAYER ONE %d";
+char Front_GrafPlayer1ScoreFormat[16] PSX_SECTION_ALIGNED(".sdata", 4) = "PLAYER ONE %d";
 }
 }
 namespace
 {
 extern "C++"
 {
-char Front_GrafPlayer2ScoreFormat[16] __attribute__((section(".sdata"), aligned(4))) =
-    "PLAYER TWO %d";
+char Front_GrafPlayer2ScoreFormat[16] PSX_SECTION_ALIGNED(".sdata", 4) = "PLAYER TWO %d";
 }
 }
 namespace
 {
 extern "C++"
 {
-char Front_GrafDraw[8] __attribute__((section(".sdata"), aligned(4))) = "DRAW";
+char Front_GrafDraw[8] PSX_SECTION_ALIGNED(".sdata", 4) = "DRAW";
 }
 }
 namespace
 {
 extern "C++"
 {
-char Front_GrafGameStateFormat[12] __attribute__((section(".sdata"), aligned(4))) = "gs = %d\n";
+char Front_GrafGameStateFormat[12] PSX_SECTION_ALIGNED(".sdata", 4) = "gs = %d\n";
 }
 }
 
@@ -5728,7 +5726,7 @@ namespace
 {
 extern "C++"
 {
-char _restart_comp_string[] __attribute__((section(".sdata"), aligned(4))) = "RE_START_FRIG";
+char _restart_comp_string[] PSX_SECTION_ALIGNED(".sdata", 4) = "RE_START_FRIG";
 }
 }
 }
@@ -5738,9 +5736,9 @@ namespace
 {
 extern "C++"
 {
-int StartSelectPressed __attribute__((section(".sdata"))) = 0;
-unsigned int VblanksWhenStartSelectFirstPressed __attribute__((section(".sdata"))) = 0;
-char FrontEditorPrefix[] __attribute__((section(".sdata"), aligned(4))) = "de_";
+int StartSelectPressed PSX_SECTION(".sdata") = 0;
+unsigned int VblanksWhenStartSelectFirstPressed PSX_SECTION(".sdata") = 0;
+char FrontEditorPrefix[] PSX_SECTION_ALIGNED(".sdata", 4) = "de_";
 }
 }
 
@@ -5752,77 +5750,77 @@ namespace
 {
 extern "C++"
 {
-char s_S2Demo2Bmp[] __attribute__((section(".sdata"), aligned(4))) = "s2demo2.bmp";
+char s_S2Demo2Bmp[] PSX_SECTION_ALIGNED(".sdata", 4) = "s2demo2.bmp";
 }
 }
 namespace
 {
 extern "C++"
 {
-char s_Skate2Vab[] __attribute__((section(".sdata"), aligned(4))) = "skate2.vab";
+char s_Skate2Vab[] PSX_SECTION_ALIGNED(".sdata", 4) = "skate2.vab";
 }
 }
 namespace
 {
 extern "C++"
 {
-char s_ScorepBmp[] __attribute__((section(".sdata"), aligned(4))) = "scorep.bmp";
+char s_ScorepBmp[] PSX_SECTION_ALIGNED(".sdata", 4) = "scorep.bmp";
 }
 }
 namespace
 {
 extern "C++"
 {
-char s_SpecialBmp[] __attribute__((section(".sdata"), aligned(4))) = "special.bmp";
+char s_SpecialBmp[] PSX_SECTION_ALIGNED(".sdata", 4) = "special.bmp";
 }
 }
 namespace
 {
 extern "C++"
 {
-char s_SpecBarBmp[] __attribute__((section(".sdata"), aligned(4))) = "spec_bar.bmp";
+char s_SpecBarBmp[] PSX_SECTION_ALIGNED(".sdata", 4) = "spec_bar.bmp";
 }
 }
 namespace
 {
 extern "C++"
 {
-char s_PausedBmp[] __attribute__((section(".sdata"), aligned(4))) = "paused.bmp";
+char s_PausedBmp[] PSX_SECTION_ALIGNED(".sdata", 4) = "paused.bmp";
 }
 }
 namespace
 {
 extern "C++"
 {
-char s_Bits[] __attribute__((section(".sdata"), aligned(4))) = "bits";
+char s_Bits[] PSX_SECTION_ALIGNED(".sdata", 4) = "bits";
 }
 }
 namespace
 {
 extern "C++"
 {
-char s_Items[] __attribute__((section(".sdata"), aligned(4))) = "items";
+char s_Items[] PSX_SECTION_ALIGNED(".sdata", 4) = "items";
 }
 }
 namespace
 {
 extern "C++"
 {
-char s_SkMedals[] __attribute__((section(".sdata"), aligned(4))) = "SkMedals";
+char s_SkMedals[] PSX_SECTION_ALIGNED(".sdata", 4) = "SkMedals";
 }
 }
 namespace
 {
 extern "C++"
 {
-char s_Sk2Anim[] __attribute__((section(".sdata"), aligned(4))) = "sk2anim";
+char s_Sk2Anim[] PSX_SECTION_ALIGNED(".sdata", 4) = "sk2anim";
 }
 }
 namespace
 {
 extern "C++"
 {
-char s_SkEdThemeFmt[] __attribute__((section(".sdata"), aligned(4))) = "SkEd%d";
+char s_SkEdThemeFmt[] PSX_SECTION_ALIGNED(".sdata", 4) = "SkEd%d";
 }
 }
 }
@@ -5833,8 +5831,7 @@ namespace
 {
 extern "C++"
 {
-FrontEditorLevelSuffixBytes s_AckSuffix
-    __attribute__((section(".sdata"))) = { { 'a', 'c', 'k', '\0' } };
+FrontEditorLevelSuffixBytes s_AckSuffix PSX_SECTION(".sdata") = { { 'a', 'c', 'k', '\0' } };
 }
 }
 }
@@ -5844,14 +5841,14 @@ namespace
 {
 extern "C++"
 {
-char s_S2Prmpt1Bmp[] __attribute__((section(".sdata"), aligned(4))) = "s2prmpt1.bmp";
+char s_S2Prmpt1Bmp[] PSX_SECTION_ALIGNED(".sdata", 4) = "s2prmpt1.bmp";
 }
 }
 namespace
 {
 extern "C++"
 {
-char s_ToContinue[] __attribute__((section(".sdata"), aligned(4))) = "to continue";
+char s_ToContinue[] PSX_SECTION_ALIGNED(".sdata", 4) = "to continue";
 }
 }
 }
@@ -5861,14 +5858,14 @@ namespace
 {
 extern "C++"
 {
-int s_PromptClipRectLo __attribute__((section(".sdata"))) = 0x00cb00a3;
+int s_PromptClipRectLo PSX_SECTION(".sdata") = 0x00cb00a3;
 }
 }
 namespace
 {
 extern "C++"
 {
-int s_PromptClipRectHi __attribute__((section(".sdata"))) = 0x002300ba;
+int s_PromptClipRectHi PSX_SECTION(".sdata") = 0x002300ba;
 }
 }
 }

@@ -30,6 +30,9 @@ executable rebuild.
   `// NAME.cpp -- description`, the original object name, its function count
   and address range, and the compiler line. Headers start with
   `// NAME.h -- interface of NAME.cpp`.
+- **PSX specifics go through `src/PSX.h`:** `PSX_SECTION(".sdata")`,
+  `PSX_SECTION_ALIGNED(".rdata", 4)` and `PSX_LAYOUT_CHECK(name, sizeof(T) == N)`
+  instead of raw `__attribute__` or `typedef char` tricks.
 - **Generated files.** `src/SQRTTAB.inc` comes from
   `tools/generate_sqrttab.py`; regenerate it instead of editing it.
 - **Compiler settings** per translation unit live in `tools/tu_flags.json`.

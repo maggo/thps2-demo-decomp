@@ -1,5 +1,6 @@
 #ifndef GENERATELEVEL_INC_H
 #define GENERATELEVEL_INC_H
+#include "PSX.h"
 
 /**
  * Pointer-sized level-generation flag, physically owned by LEVELEDITOR.cpp.
@@ -10,7 +11,7 @@
 #ifdef GENERATELEVEL_OWNER_DECLARATIONS
 #define GENERATELEVEL_DECL_ATTR
 #else
-#define GENERATELEVEL_DECL_ATTR __attribute__((section(".data")))
+#define GENERATELEVEL_DECL_ATTR PSX_SECTION(".data")
 #endif
 
 extern void *GenerateLevel GENERATELEVEL_DECL_ATTR;

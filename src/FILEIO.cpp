@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #include "DEBUG.h"
 #include "GAMEFMV.h"
 #include "MEM.h"
@@ -45,12 +46,10 @@ extern int FileIO_OpenDbgStr[];
 #include "MEM.h"
 
 /** Original host-path template retained by the debug file loader. */
-static char FilePathPattern[28] __attribute__((section(".rdata"))) =
-    "c:\\psx\\sk2demo\\????????.???";
+static char FilePathPattern[28] PSX_SECTION(".rdata") = "c:\\psx\\sk2demo\\????????.???";
 
 /** Heap diagnostic format used while starting an asynchronous load. */
-static char FileIO_LoadDbgStr[36] __attribute__((section(".rdata"))) =
-    " Heaps: Small(0) %d, Large(1) %d";
+static char FileIO_LoadDbgStr[36] PSX_SECTION(".rdata") = " Heaps: Small(0) %d, Large(1) %d";
 
 /** Complete initialized FILEIO small-data contribution in target order. */
 char *Where = 0;
@@ -65,18 +64,18 @@ int LoadFromPRE = 0;
 char *ThePREFile = 0;
 int ThePREFileSize = 0;
 
-static char FileIO_InitErrStr[16] __attribute__((section(".sdata"))) = "Retry CdInit\n";
-static char FileIO_WadName[12] __attribute__((section(".sdata"))) = "\\CD.HED;1";
-static char FileIO_WadName2[12] __attribute__((section(".sdata"))) = "\\CD.WAD;1";
-static char FileIO_DebugFmt[12] __attribute__((section(".sdata"))) = "fileio.cpp";
+static char FileIO_InitErrStr[16] PSX_SECTION(".sdata") = "Retry CdInit\n";
+static char FileIO_WadName[12] PSX_SECTION(".sdata") = "\\CD.HED;1";
+static char FileIO_WadName2[12] PSX_SECTION(".sdata") = "\\CD.WAD;1";
+static char FileIO_DebugFmt[12] PSX_SECTION(".sdata") = "fileio.cpp";
 namespace FileIOAddressViewOwners
 {
 extern "C"
 {
-static RECT FileIO_CdModeRect[1] __attribute__((section(".sdata"))) = {
+static RECT FileIO_CdModeRect[1] PSX_SECTION(".sdata") = {
     { 485, 18, 10, 10 },
 };
-static char FileIO_OpenDbgStr[8] __attribute__((section(".sdata"))) = "(%d) ";
+static char FileIO_OpenDbgStr[8] PSX_SECTION(".sdata") = "(%d) ";
 }
 }
 
@@ -95,18 +94,18 @@ namespace FileIOAddressViewOwners
 {
 extern "C"
 {
-static char FileSubDirName[16] __attribute__((section(".sbss")));
+static char FileSubDirName[16] PSX_SECTION(".sbss");
 }
 }
-static int FirstChar __attribute__((section(".sbss")));
-static unsigned int FileID __attribute__((section(".sbss")));
-static int FileSize __attribute__((section(".sbss")));
-static int Remainder __attribute__((section(".sbss")));
-static int NewLoad __attribute__((section(".sbss")));
-static int WadStart __attribute__((section(".sbss")));
-static CdlLOC FileStart __attribute__((section(".sbss")));
-static unsigned long *Dest __attribute__((section(".sbss")));
-static int NumSectors __attribute__((section(".sbss")));
+static int FirstChar PSX_SECTION(".sbss");
+static unsigned int FileID PSX_SECTION(".sbss");
+static int FileSize PSX_SECTION(".sbss");
+static int Remainder PSX_SECTION(".sbss");
+static int NewLoad PSX_SECTION(".sbss");
+static int WadStart PSX_SECTION(".sbss");
+static CdlLOC FileStart PSX_SECTION(".sbss");
+static unsigned long *Dest PSX_SECTION(".sbss");
+static int NumSectors PSX_SECTION(".sbss");
 static int Start;
 
 // Public owner interface. Keep this encounter point aligned with the

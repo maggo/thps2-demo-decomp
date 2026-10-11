@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #define CAREER_LAYOUT_DECLARATIONS
 #include "CAREER.h"
 #undef CAREER_LAYOUT_DECLARATIONS
@@ -17,10 +18,10 @@
 #include <STDIO.H>
 typedef char
     Career_SCharacterProgress_size_must_be_32[(sizeof(SCharacterProgress) == 0x20) ? 1 : -1];
-typedef char Career_SHighScore_size_must_be_12[(sizeof(SHighScore) == 0x0c) ? 1 : -1];
-typedef char Career_SOptions_size_must_be_416[(sizeof(SOptions) == 0x1a0) ? 1 : -1];
-typedef char Career_SCareer_size_must_be_2420[(sizeof(SCareer) == 0x974) ? 1 : -1];
-typedef char Career_GamePreferences_size_must_be_416[(sizeof(GamePreferences) == 0x1a0) ? 1 : -1];
+PSX_LAYOUT_CHECK(Career_SHighScore_size_must_be_12, sizeof(SHighScore) == 0x0c);
+PSX_LAYOUT_CHECK(Career_SOptions_size_must_be_416, sizeof(SOptions) == 0x1a0);
+PSX_LAYOUT_CHECK(Career_SCareer_size_must_be_2420, sizeof(SCareer) == 0x974);
+PSX_LAYOUT_CHECK(Career_GamePreferences_size_must_be_416, sizeof(GamePreferences) == 0x1a0);
 
 /** Fixed counts and volume conversions used by career preferences. */
 enum CareerConstant
@@ -63,13 +64,13 @@ enum CareerConstant
  * The final two entries deliberately reuse earlier initials, matching the
  * original pointer table rather than duplicating the strings.
  */
-char *DefaultHighScoreInitials[25] __attribute__((section(".data"))) = {
+char *DefaultHighScoreInitials[25] PSX_SECTION(".data") = {
     "RJM", "RAD", "JKU", "JRK", "DRS", "MIK", "SIL", "SMP", "JOW", "DMT", "NIC", "NAH", "CJR",
     "AJC", "KEN", "JJJ", "CCT", "TVO", "CAB", "DWP", "GAJ", "JAF", "DWP", "TVO", 0
 };
 
 /** Persistent option values mirrored into each career save. */
-GamePreferences GPreferences __attribute__((section(".data"))) = {};
+GamePreferences GPreferences PSX_SECTION(".data") = {};
 
 // === Owner-local function declarations ===
 void Options_SetPreferences(void);

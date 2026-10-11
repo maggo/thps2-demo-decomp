@@ -1,3 +1,4 @@
+#include "PSX.h"
 #if defined(STATS_BOARD_LAYOUT_ONLY) && !defined(STATS_BOARD_LAYOUT)
 #error STATS_BOARD_LAYOUT_ONLY requires STATS_BOARD_LAYOUT
 #endif
@@ -49,7 +50,7 @@ struct SBoard
     int turning;
 };
 
-typedef char SBoard_size_must_be_32[(sizeof(struct SBoard) == 32) ? 1 : -1];
+PSX_LAYOUT_CHECK(SBoard_size_must_be_32, sizeof(struct SBoard) == 32);
 typedef char SBoard_BoardTexture_offset_must_be_0
     [((unsigned long)&(((struct SBoard *)0)->BoardTexture) == 0) ? 1 : -1];
 typedef char SBoard_BoardName_offset_must_be_4
@@ -148,8 +149,8 @@ struct SLevel
     short IntroStartAngZ;
 };
 
-typedef char SStats_size_must_be_344[(sizeof(SStats) == 344) ? 1 : -1];
-typedef char SLevel_size_must_be_116[(sizeof(SLevel) == 116) ? 1 : -1];
+PSX_LAYOUT_CHECK(SStats_size_must_be_344, sizeof(SStats) == 344);
+PSX_LAYOUT_CHECK(SLevel_size_must_be_116, sizeof(SLevel) == 116);
 
 #ifdef __cplusplus
 extern "C"

@@ -1,5 +1,6 @@
 #ifndef MEM_INC_H
 #define MEM_INC_H
+#include "PSX.h"
 
 #ifdef MEM_OWNER_DECLARATIONS
 /** Header stored immediately before each allocator payload. */
@@ -10,7 +11,7 @@ struct SBlockHeader
     SBlockHeader *Next;
 };
 
-typedef char SBlockHeader_size_must_be_8[(sizeof(SBlockHeader) == 8) ? 1 : -1];
+PSX_LAYOUT_CHECK(SBlockHeader_size_must_be_8, sizeof(SBlockHeader) == 8);
 
 extern "C"
 {
@@ -68,7 +69,7 @@ int Mem_GetBlockSize(void *p);
  */
 #if defined(MEM_HEAP_SCALARS_DECLARATION) || defined(MEM_HEAP_SCALARS_ABSOLUTE_DECLARATION)
 #ifdef MEM_HEAP_SCALARS_ABSOLUTE_DECLARATION
-#define MEM_HEAP_SCALAR_DECL_ATTR __attribute__((section(".data")))
+#define MEM_HEAP_SCALAR_DECL_ATTR PSX_SECTION(".data")
 #else
 #define MEM_HEAP_SCALAR_DECL_ATTR
 #endif

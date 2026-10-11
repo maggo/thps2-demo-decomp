@@ -1,5 +1,6 @@
 #ifndef PACK_H
 #define PACK_H
+#include "PSX.h"
 
 struct TSPack;
 
@@ -20,7 +21,7 @@ enum EPackInitType
 #ifdef PACK_OWNER_DECLARATIONS
 #define PACK_SHARED_STATE_DECL_ATTR
 #else
-#define PACK_SHARED_STATE_DECL_ATTR __attribute__((section(".data")))
+#define PACK_SHARED_STATE_DECL_ATTR PSX_SECTION(".data")
 #endif
 
 /** Suppress allocations that touch the bottom edge of the VRAM pack area. */
@@ -59,16 +60,16 @@ struct TSPack
     unsigned char aligned;
 };
 
-typedef char TSPack_size_must_be_16[(sizeof(TSPack) == 16) ? 1 : -1];
-typedef char TSPack_X_offset_must_be_0[((unsigned long)&(((TSPack *)0)->X) == 0) ? 1 : -1];
-typedef char TSPack_Y_offset_must_be_2[((unsigned long)&(((TSPack *)0)->Y) == 2) ? 1 : -1];
-typedef char TSPack_W_offset_must_be_4[((unsigned long)&(((TSPack *)0)->W) == 4) ? 1 : -1];
-typedef char TSPack_H_offset_must_be_6[((unsigned long)&(((TSPack *)0)->H) == 6) ? 1 : -1];
-typedef char TSPack_pNext_offset_must_be_8[((unsigned long)&(((TSPack *)0)->pNext) == 8) ? 1 : -1];
-typedef char TSPack_Type_offset_must_be_12[((unsigned long)&(((TSPack *)0)->Type) == 12) ? 1 : -1];
+PSX_LAYOUT_CHECK(TSPack_size_must_be_16, sizeof(TSPack) == 16);
+PSX_LAYOUT_CHECK(TSPack_X_offset_must_be_0, (unsigned long)&(((TSPack *)0)->X) == 0);
+PSX_LAYOUT_CHECK(TSPack_Y_offset_must_be_2, (unsigned long)&(((TSPack *)0)->Y) == 2);
+PSX_LAYOUT_CHECK(TSPack_W_offset_must_be_4, (unsigned long)&(((TSPack *)0)->W) == 4);
+PSX_LAYOUT_CHECK(TSPack_H_offset_must_be_6, (unsigned long)&(((TSPack *)0)->H) == 6);
+PSX_LAYOUT_CHECK(TSPack_pNext_offset_must_be_8, (unsigned long)&(((TSPack *)0)->pNext) == 8);
+PSX_LAYOUT_CHECK(TSPack_Type_offset_must_be_12, (unsigned long)&(((TSPack *)0)->Type) == 12);
 typedef char
     TSPack_no_bottom_offset_must_be_13[((unsigned long)&(((TSPack *)0)->no_bottom) == 13) ? 1 : -1];
-typedef char TSPack_bpp_offset_must_be_14[((unsigned long)&(((TSPack *)0)->bpp) == 14) ? 1 : -1];
+PSX_LAYOUT_CHECK(TSPack_bpp_offset_must_be_14, (unsigned long)&(((TSPack *)0)->bpp) == 14);
 typedef char
     TSPack_aligned_offset_must_be_15[((unsigned long)&(((TSPack *)0)->aligned) == 15) ? 1 : -1];
 

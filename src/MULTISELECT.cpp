@@ -6,6 +6,7 @@
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 
+#include "PSX.h"
 #define SCREENTOOLS_POLYMORPHIC_LAYOUT
 #include "SCREENTOOLS.h"
 #include "MENU.h"
@@ -52,7 +53,7 @@ struct MultiSelectScreen : ScreenElementList
     int EndProcess();
 };
 
-typedef char multiselect_screen_size_must_be_360[(sizeof(MultiSelectScreen) == 360) ? 1 : -1];
+PSX_LAYOUT_CHECK(multiselect_screen_size_must_be_360, sizeof(MultiSelectScreen) == 360);
 
 /**
  * MULTISELECT's target-owned menu text and resource names in object order.
@@ -60,61 +61,53 @@ typedef char multiselect_screen_size_must_be_360[(sizeof(MultiSelectScreen) == 3
  * The six small owners use namespace-scoped C linkage so they remain
  * lexically distinct from the incomplete address views required below.
  */
-static char s_SplitscreenModes[20] __attribute__((section(".rdata"), aligned(4))) =
-    "splitscreen modes";
-static char s_MultiplayerModes[20] __attribute__((section(".rdata"), aligned(4))) =
-    "multiplayer modes";
-static char s_S2bgd4Bmp[12] __attribute__((section(".sdata"), aligned(4))) = "s2bgd4.bmp";
-static char s_MainfFnt_MultiSelect[12] __attribute__((section(".sdata"), aligned(4))) = "mainf.fnt";
-static char s_S2font2Fnt_MultiSelect[12] __attribute__((section(".sdata"), aligned(4))) =
-    "s2font2.fnt";
-static char s_TrickAttack[16] __attribute__((section(".sdata"), aligned(4))) = "trick attack";
-static char s_Graffiti[12] __attribute__((section(".sdata"), aligned(4))) = "graffiti";
+static char s_SplitscreenModes[20] PSX_SECTION_ALIGNED(".rdata", 4) = "splitscreen modes";
+static char s_MultiplayerModes[20] PSX_SECTION_ALIGNED(".rdata", 4) = "multiplayer modes";
+static char s_S2bgd4Bmp[12] PSX_SECTION_ALIGNED(".sdata", 4) = "s2bgd4.bmp";
+static char s_MainfFnt_MultiSelect[12] PSX_SECTION_ALIGNED(".sdata", 4) = "mainf.fnt";
+static char s_S2font2Fnt_MultiSelect[12] PSX_SECTION_ALIGNED(".sdata", 4) = "s2font2.fnt";
+static char s_TrickAttack[16] PSX_SECTION_ALIGNED(".sdata", 4) = "trick attack";
+static char s_Graffiti[12] PSX_SECTION_ALIGNED(".sdata", 4) = "graffiti";
 
 namespace MultiSelectAddressViewOwners
 {
 extern "C"
 {
-static char s_Tag[4] __attribute__((section(".sdata"), aligned(4))) = "tag";
-static char s_Contest[8] __attribute__((section(".sdata"), aligned(4))) = "contest";
-static char s_Horse[8] __attribute__((section(".sdata"), aligned(4))) = "horse";
+static char s_Tag[4] PSX_SECTION_ALIGNED(".sdata", 4) = "tag";
+static char s_Contest[8] PSX_SECTION_ALIGNED(".sdata", 4) = "contest";
+static char s_Horse[8] PSX_SECTION_ALIGNED(".sdata", 4) = "horse";
 }
 }
 
-static char s_S2arrow2Bmp_MultiSelect[16] __attribute__((section(".sdata"), aligned(4))) =
-    "s2arrow2.bmp";
-static char s_S2arrow1Bmp_MultiSelect[16] __attribute__((section(".sdata"), aligned(4))) =
-    "s2arrow1.bmp";
-static char s_S2prmpt4Bmp_MultiSelect[16] __attribute__((section(".sdata"), aligned(4))) =
-    "s2prmpt4.bmp";
+static char s_S2arrow2Bmp_MultiSelect[16] PSX_SECTION_ALIGNED(".sdata", 4) = "s2arrow2.bmp";
+static char s_S2arrow1Bmp_MultiSelect[16] PSX_SECTION_ALIGNED(".sdata", 4) = "s2arrow1.bmp";
+static char s_S2prmpt4Bmp_MultiSelect[16] PSX_SECTION_ALIGNED(".sdata", 4) = "s2prmpt4.bmp";
 
 namespace MultiSelectAddressViewOwners
 {
 extern "C"
 {
-static char s_Select_MultiSelect[8] __attribute__((section(".sdata"), aligned(4))) = "select";
+static char s_Select_MultiSelect[8] PSX_SECTION_ALIGNED(".sdata", 4) = "select";
 }
 }
 
-static char s_S2prmpt1Bmp_MultiSelect[16] __attribute__((section(".sdata"), aligned(4))) =
-    "s2prmpt1.bmp";
-
-namespace MultiSelectAddressViewOwners
-{
-extern "C"
-{
-static char s_Accept_MultiSelect[8] __attribute__((section(".sdata"), aligned(4))) = "accept";
-}
-}
-
-static char s_S2prmpt2Bmp_MultiSelect[16] __attribute__((section(".sdata"), aligned(4))) =
-    "s2prmpt2.bmp";
+static char s_S2prmpt1Bmp_MultiSelect[16] PSX_SECTION_ALIGNED(".sdata", 4) = "s2prmpt1.bmp";
 
 namespace MultiSelectAddressViewOwners
 {
 extern "C"
 {
-static char s_Back_MultiSelect[8] __attribute__((section(".sdata"), aligned(4))) = "back";
+static char s_Accept_MultiSelect[8] PSX_SECTION_ALIGNED(".sdata", 4) = "accept";
+}
+}
+
+static char s_S2prmpt2Bmp_MultiSelect[16] PSX_SECTION_ALIGNED(".sdata", 4) = "s2prmpt2.bmp";
+
+namespace MultiSelectAddressViewOwners
+{
+extern "C"
+{
+static char s_Back_MultiSelect[8] PSX_SECTION_ALIGNED(".sdata", 4) = "back";
 }
 }
 

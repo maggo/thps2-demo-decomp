@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #include "REDBOOK.h"
 #include "FILEIO.h"
 #define SPOOL_QUEUE_LAYOUT
@@ -21,7 +22,7 @@ struct Redbook_CdResponse
     CdlLOC position;
 };
 
-typedef char Redbook_CdResponse_size_must_be_9[sizeof(Redbook_CdResponse) == 9 ? 1 : -1];
+PSX_LAYOUT_CHECK(Redbook_CdResponse_size_must_be_9, sizeof(Redbook_CdResponse) == 9);
 
 #include "SPOOLQUEUE.h"
 
@@ -34,7 +35,7 @@ static inline CdlLOC *Redbook_ResponsePosition(unsigned char *result)
 
 // === External declarations (C linkage) ===
 // $gp-relative globals (≤8 bytes, accessible via $gp+offset with -G8)
-int XAGroupSectorLengths[1][8] __attribute__((section(".data"))) = { {
+int XAGroupSectorLengths[1][8] PSX_SECTION(".data") = { {
     2251,
     2250,
     -1,
@@ -55,29 +56,29 @@ int XAGroupSectorLengths[1][8] __attribute__((section(".data"))) = { {
  */
 // Not `const`: GCC 2.x discards an unreferenced const array outright, and this
 // word is the first of the owner's small-data contribution.
-int XAGroupStartingSector[1] __attribute__((section(".sdata"))) = { 0 };
-int Redbook_XACurrentPriority __attribute__((section(".sdata"))) = -1;
-int Redbook_XAStartSector __attribute__((section(".sdata"))) = 0;
-int Redbook_XACompleteTimer __attribute__((section(".sdata"))) = 0;
-bool Redbook_XACheckSectorOnVSync __attribute__((section(".sdata"))) = false;
-bool Redbook_XAModeSet __attribute__((section(".sdata"))) = false;
-int Redbook_XAPaused __attribute__((section(".sdata"))) = 0;
-bool Redbook_XAValid __attribute__((section(".sdata"))) = false;
-int Redbook_XACurrentGroup __attribute__((section(".sdata"))) = 0;
-int Redbook_XACurrentChannel __attribute__((section(".sdata"))) = 0;
-int Redbook_XATryAgain __attribute__((section(".sdata"))) = 0;
-int Redbook_XASeeking __attribute__((section(".sdata"))) = 0;
-int Redbook_XAFadeScale __attribute__((section(".sdata"))) = 255;
-int Redbook_XAFading __attribute__((section(".sdata"))) = 0;
+int XAGroupStartingSector[1] PSX_SECTION(".sdata") = { 0 };
+int Redbook_XACurrentPriority PSX_SECTION(".sdata") = -1;
+int Redbook_XAStartSector PSX_SECTION(".sdata") = 0;
+int Redbook_XACompleteTimer PSX_SECTION(".sdata") = 0;
+bool Redbook_XACheckSectorOnVSync PSX_SECTION(".sdata") = false;
+bool Redbook_XAModeSet PSX_SECTION(".sdata") = false;
+int Redbook_XAPaused PSX_SECTION(".sdata") = 0;
+bool Redbook_XAValid PSX_SECTION(".sdata") = false;
+int Redbook_XACurrentGroup PSX_SECTION(".sdata") = 0;
+int Redbook_XACurrentChannel PSX_SECTION(".sdata") = 0;
+int Redbook_XATryAgain PSX_SECTION(".sdata") = 0;
+int Redbook_XASeeking PSX_SECTION(".sdata") = 0;
+int Redbook_XAFadeScale PSX_SECTION(".sdata") = 255;
+int Redbook_XAFading PSX_SECTION(".sdata") = 0;
 
 /** XA disc path and the CD error diagnostic in original small-data order. */
-static char XA_FileName[16] __attribute__((section(".sdata"))) = "\\COMPILED.XA;1";
-static char XA_ErrorMsg[16] __attribute__((section(".sdata"))) = "CdlDiskError!\n";
+static char XA_FileName[16] PSX_SECTION(".sdata") = "\\COMPILED.XA;1";
+static char XA_ErrorMsg[16] PSX_SECTION(".sdata") = "CdlDiskError!\n";
 
 /* Small-data words that follow the two strings in the original contribution. */
-int Redbook_XAEndSector __attribute__((section(".sdata"))) = 0;
-int Redbook_XACurrentSector __attribute__((section(".sdata"))) = 0;
-u8 CdControlComeback[8] __attribute__((section(".sdata"))) = { 0 };
+int Redbook_XAEndSector PSX_SECTION(".sdata") = 0;
+int Redbook_XACurrentSector PSX_SECTION(".sdata") = 0;
+u8 CdControlComeback[8] PSX_SECTION(".sdata") = { 0 };
 
 static void Redbook_InitialRand(int a);
 static int Redbook_Rnd(int n);

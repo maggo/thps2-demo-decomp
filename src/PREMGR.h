@@ -1,5 +1,6 @@
 #ifndef PREMGR_INC_H
 #define PREMGR_INC_H
+#include "PSX.h"
 
 struct PREManager;
 
@@ -11,7 +12,7 @@ struct PREManager;
 #ifdef PREMGR_OWNER_DECLARATION
 #define PREMGR_DECL_ATTR
 #else
-#define PREMGR_DECL_ATTR __attribute__((section(".data")))
+#define PREMGR_DECL_ATTR PSX_SECTION(".data")
 #endif
 
 /** Singleton archive manager physically owned by PRE.cpp. */

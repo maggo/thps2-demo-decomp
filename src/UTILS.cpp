@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #define UTILS_OWNER_DECLARATIONS
 #include "UTILS.h"
 #undef UTILS_OWNER_DECLARATIONS
@@ -44,7 +45,7 @@ struct CBody
     int IsDead() const;
 };
 
-typedef char utils_body_size_must_be_264[(sizeof(CBody) == 264) ? 1 : -1];
+PSX_LAYOUT_CHECK(utils_body_size_must_be_264, sizeof(CBody) == 264);
 
 #include "CFRICTION.h"
 
@@ -75,11 +76,11 @@ struct CBit
 
 #include "SCAMERA.h"
 
-typedef char utils_bit_size_must_be_72[(sizeof(CBit) == 72) ? 1 : -1];
-typedef char utils_light_size_must_be_100[(sizeof(CLight) == 100) ? 1 : -1];
-typedef char utils_matrix_size_must_be_32[(sizeof(MATRIX) == 32) ? 1 : -1];
-typedef char utils_sdk_vector_size_must_be_16[(sizeof(VECTOR) == 16) ? 1 : -1];
-typedef char utils_sdk_svector_size_must_be_8[(sizeof(SVECTOR) == 8) ? 1 : -1];
+PSX_LAYOUT_CHECK(utils_bit_size_must_be_72, sizeof(CBit) == 72);
+PSX_LAYOUT_CHECK(utils_light_size_must_be_100, sizeof(CLight) == 100);
+PSX_LAYOUT_CHECK(utils_matrix_size_must_be_32, sizeof(MATRIX) == 32);
+PSX_LAYOUT_CHECK(utils_sdk_vector_size_must_be_16, sizeof(VECTOR) == 16);
+PSX_LAYOUT_CHECK(utils_sdk_svector_size_must_be_8, sizeof(SVECTOR) == 8);
 #include "OB.h"
 #include "POWERUP.h"
 #include "DB.h"
@@ -146,18 +147,18 @@ struct UtilsExplosionCentreVector : CVector
 UtilsExplosionCentreVector ExplosionCentre[3];
 
 // === Owner-local globals (gp-relative, <=8 bytes for -G8) ===
-int ExplosionStackIndex __attribute__((section(".sdata"))) = 0;
-volatile unsigned int GameFade __attribute__((section(".sdata"))) = 0;
-volatile unsigned int Vblanks __attribute__((section(".sdata"))) = 0;
-volatile unsigned int Xblanks __attribute__((section(".sdata"))) = 0;
-unsigned int LastVblanks __attribute__((section(".sdata"))) = 0;
-int DoDisplayDraw __attribute__((section(".sdata"))) = 0;
-int DoVblankProcessing __attribute__((section(".sdata"))) = 1;
-int VblankUpdateBar __attribute__((section(".sdata"))) = 0;
-int ExplosionType[3] __attribute__((section(".sdata"))) = {};
-int ExplosionRadius[3] __attribute__((section(".sdata"))) = {};
-int ExplosionDamage[3] __attribute__((section(".sdata"))) = {};
-int ExplosionPriority[3] __attribute__((section(".sdata"))) = {};
+int ExplosionStackIndex PSX_SECTION(".sdata") = 0;
+volatile unsigned int GameFade PSX_SECTION(".sdata") = 0;
+volatile unsigned int Vblanks PSX_SECTION(".sdata") = 0;
+volatile unsigned int Xblanks PSX_SECTION(".sdata") = 0;
+unsigned int LastVblanks PSX_SECTION(".sdata") = 0;
+int DoDisplayDraw PSX_SECTION(".sdata") = 0;
+int DoVblankProcessing PSX_SECTION(".sdata") = 1;
+int VblankUpdateBar PSX_SECTION(".sdata") = 0;
+int ExplosionType[3] PSX_SECTION(".sdata") = {};
+int ExplosionRadius[3] PSX_SECTION(".sdata") = {};
+int ExplosionDamage[3] PSX_SECTION(".sdata") = {};
+int ExplosionPriority[3] PSX_SECTION(".sdata") = {};
 
 // === External function declarations ===
 #include "M3DMATHS.h"

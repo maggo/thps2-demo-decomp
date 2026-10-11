@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #define CVECTOR_COMPONENT_CTORS
 #define CCLASS_POLY_ITEM_FAMILY
 #define CCLASS_POLY_ITEM_FAMILY_IMPLEMENT
@@ -80,9 +81,9 @@ struct CQuadBit
                      int flags);
 };
 
-typedef char CBitOwner_size_check[(sizeof(struct CBitOwner) == 72) ? 1 : -1];
-typedef char CQuadBitOwner_size_check[(sizeof(struct CQuadBitOwner) == 156) ? 1 : -1];
-typedef char SVECTOR_owner_size_check[(sizeof(SVECTOR) == 8) ? 1 : -1];
+PSX_LAYOUT_CHECK(CBitOwner_size_check, sizeof(struct CBitOwner) == 72);
+PSX_LAYOUT_CHECK(CQuadBitOwner_size_check, sizeof(struct CQuadBitOwner) == 156);
+PSX_LAYOUT_CHECK(SVECTOR_owner_size_check, sizeof(SVECTOR) == 8);
 
 #include "BIT.h"
 
@@ -122,22 +123,22 @@ extern "C" void __dv__FRC7CVectorRCi(CVectorOwner *, const CVectorOwner *, const
 #define Ob_VectorDivide ObVectorAbi::__dv__FRC7CVectorRCi
 
 /** Active and suspended environmental-object list heads. */
-CBody *EnvironmentalObjectList __attribute__((section(".sdata"))) = 0;
-CBody *SuspendedList __attribute__((section(".sdata"))) = 0;
+CBody *EnvironmentalObjectList PSX_SECTION(".sdata") = 0;
+CBody *SuspendedList PSX_SECTION(".sdata") = 0;
 
 /** Canonical zero vectors (constructed by the TU's global initializer). */
 CVector ZeroVector(0, 0, 0);
 CSVector ZeroSVector(0, 0, 0);
 
 /** Distance beyond which environmental objects may be suspended. */
-unsigned int SuspendDistance __attribute__((section(".sdata"))) = 13000;
+unsigned int SuspendDistance PSX_SECTION(".sdata") = 13000;
 
 /** Texture name used by the body shadow quad. */
 namespace ObAddressViewOwners
 {
 extern "C"
 {
-static char s_Shadow[8] __attribute__((section(".sdata"))) = "Shadow";
+static char s_Shadow[8] PSX_SECTION(".sdata") = "Shadow";
 }
 }
 

@@ -1,6 +1,7 @@
 // FONTTOOLS.h -- interface of FONTTOOLS.cpp
 #ifndef FONTTOOLS_INC_H
 #define FONTTOOLS_INC_H
+#include "PSX.h"
 
 #include "globals.h"
 
@@ -159,11 +160,11 @@ inline const Font *FontFromStorage(const FontStorage *storage)
 
 #endif
 
-typedef char FontCharacter_size_must_be_0x10[(sizeof(FontCharacter) == 0x10) ? 1 : -1];
+PSX_LAYOUT_CHECK(FontCharacter_size_must_be_0x10, sizeof(FontCharacter) == 0x10);
 #ifndef FONTTOOLS_POLYMORPHIC_LAYOUT
-typedef char FontStorage_size_must_be_0x50[(sizeof(FontStorage) == 0x50) ? 1 : -1];
+PSX_LAYOUT_CHECK(FontStorage_size_must_be_0x50, sizeof(FontStorage) == 0x50);
 #endif
-typedef char Font_size_must_be_0x50[(sizeof(Font) == 0x50) ? 1 : -1];
+PSX_LAYOUT_CHECK(Font_size_must_be_0x50, sizeof(Font) == 0x50);
 
 #ifdef FONTTOOLS_OWNER_DECLARATIONS
 

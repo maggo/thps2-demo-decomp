@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #include "TRICKTIPS.h"
 #include "MAIN.h"
 #include "STATS.h"
@@ -50,8 +51,8 @@ enum TrickTipsConstant
     TrickTipsReminderDelay = 600
 };
 
-typedef char TrickTips_Skater_prefix_must_be_4116[(sizeof(TrickTipsSkater) == 4116) ? 1 : -1];
-typedef char TrickTips_Monitor_size_must_be_276[(sizeof(CTrickTipMonitor) == 276) ? 1 : -1];
+PSX_LAYOUT_CHECK(TrickTips_Skater_prefix_must_be_4116, sizeof(TrickTipsSkater) == 4116);
+PSX_LAYOUT_CHECK(TrickTips_Monitor_size_must_be_276, sizeof(CTrickTipMonitor) == 276);
 
 #define CAREER_LAYOUT_DECLARATIONS
 #include "CAREER.h"
@@ -115,30 +116,30 @@ struct TrickTipLongTextBlock
 typedef char
     TrickTipLongTextBlock_size_must_be_0xE8[(sizeof(TrickTipLongTextBlock) == 0xe8) ? 1 : -1];
 
-static TrickTipLongTextBlock TrickTipLongText __attribute__((section(".rdata"), aligned(4))) = {
+static TrickTipLongTextBlock TrickTipLongText PSX_SECTION_ALIGNED(".rdata", 4) = {
     "DONT HOLD FORWARD", "LAND STRAIGHT TO",      "FINISH YOUR TRICKS", "RELEASE X TO JUMP (OLLIE)",
     "HOLD JUMP LONGER",  "THE TOP OF RAMPS",      "GET OVER POOL LIP",  "RIGHT TO BALANCE",
     "PRESS JUMP WHILE",  "GRINDING TO OLLIE OUT", "SPIN VERT TRICKS",
 };
 
 /** Labels prepended to trick-tip and reminder messages. */
-static char TrickTipLabel[] __attribute__((section(".sdata"), aligned(4))) = "TIP: ";
-char *TEXT_TIP __attribute__((section(".sdata"))) = TrickTipLabel;
-static char TrickTipRememberLabel[] __attribute__((section(".sdata"), aligned(4))) = "REMEMBER: ";
-char *TEXT_REMEMBER __attribute__((section(".sdata"))) = TrickTipRememberLabel;
+static char TrickTipLabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "TIP: ";
+char *TEXT_TIP PSX_SECTION(".sdata") = TrickTipLabel;
+static char TrickTipRememberLabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "REMEMBER: ";
+char *TEXT_REMEMBER PSX_SECTION(".sdata") = TrickTipRememberLabel;
 
 /**
  * Complete-object vtable installed by the static monitor constructor.
  */
-int __vt_16CTrickTipMonitor_complete __attribute__((section(".sdata"), aligned(8))) = 0;
+int __vt_16CTrickTipMonitor_complete PSX_SECTION_ALIGNED(".sdata", 8) = 0;
 struct TrickTipMonitorCompleteVtableTailLayout
 {
     void *reserved;
     void (*destroy)(CTrickTipMonitor *, int);
     void *unused;
 };
-static TrickTipMonitorCompleteVtableTailLayout TrickTipMonitorCompleteVtableTail
-    __attribute__((section(".sdata"), aligned(4))) = {
+static TrickTipMonitorCompleteVtableTailLayout
+    TrickTipMonitorCompleteVtableTail PSX_SECTION_ALIGNED(".sdata", 4) = {
         0,
         &__DOT__16CTrickTipMonitor,
         0,
@@ -147,17 +148,17 @@ static TrickTipMonitorCompleteVtableTailLayout TrickTipMonitorCompleteVtableTail
 /**
  * Destruction-phase vtable installed before the CClass base destructor.
  */
-int __vt_16CTrickTipMonitor __attribute__((section(".sdata"), aligned(4))) = 0;
+int __vt_16CTrickTipMonitor PSX_SECTION_ALIGNED(".sdata", 4) = 0;
 struct TrickTipMonitorVtableTailLayout
 {
     void *reserved;
     void (*destroyBase)(CClass *, int);
 };
-static TrickTipMonitorVtableTailLayout TrickTipMonitorVtableTail
-    __attribute__((section(".sdata"), aligned(4))) = {
-        0,
-        &__DOT__6CClass_80073FD8,
-    };
+static TrickTipMonitorVtableTailLayout TrickTipMonitorVtableTail PSX_SECTION_ALIGNED(".sdata",
+                                                                                     4) = {
+    0,
+    &__DOT__6CClass_80073FD8,
+};
 
 /**
  * Short trick-tip lines emitted in small data by the original owner.
@@ -228,9 +229,9 @@ struct TrickTipSmallTextBlock
 
 typedef char
     TrickTipSmallTextBlock_size_must_be_0x32C[(sizeof(TrickTipSmallTextBlock) == 0x32c) ? 1 : -1];
-typedef char CTrickTipText_size_must_be_0x14[(sizeof(CTrickTipText) == 0x14) ? 1 : -1];
+PSX_LAYOUT_CHECK(CTrickTipText_size_must_be_0x14, sizeof(CTrickTipText) == 0x14);
 
-static TrickTipSmallTextBlock TrickTipSmallText __attribute__((section(".sdata"), aligned(4))) = {
+static TrickTipSmallTextBlock TrickTipSmallText PSX_SECTION_ALIGNED(".sdata", 4) = {
     "HOLD JUMP TO",    "CROUCH AND",      "GO FASTER",       "UNLESS YOU WANT", "TO LEAVE RAMPS",
     "AVOID BAILING",   "BEFORE LANDING",  "TO OLLIE HIGHER", "RELEASE JUMP AT", "FOR BIG AIR",
     "HOLD FORWARD TO", "PRESS GRIND",     "BUTTON NEAR",     "RAILS AND LIPS",  "USE LEFT AND",
@@ -248,7 +249,7 @@ static TrickTipSmallTextBlock TrickTipSmallText __attribute__((section(".sdata")
 /**
  * Target-owned trick-tip descriptors and their recovered message lines.
  */
-static CTrickTipText TRICKTIP[27] __attribute__((section(".rdata"), aligned(4))) = {
+static CTrickTipText TRICKTIP[27] PSX_SECTION_ALIGNED(".rdata", 4) = {
     { START_TIP, 2, TrickTipSmallText.HoldJumpTo, TrickTipSmallText.CrouchAnd,
       TrickTipSmallText.GoFaster },
     { ANYTIME_TIP, 2, TrickTipLongText.DontHoldForward, TrickTipSmallText.UnlessYouWant,
@@ -310,7 +311,7 @@ struct TrickTipMonitorStorage : CTrickTipMonitor
     ~TrickTipMonitorStorage() { CClass.vtable = &__vt_16CTrickTipMonitor; }
 };
 
-static TrickTipMonitorStorage TrickTipMonitor __attribute__((section(".bss")));
+static TrickTipMonitorStorage TrickTipMonitor PSX_SECTION(".bss");
 
 // === Function implementations (address order) ===
 

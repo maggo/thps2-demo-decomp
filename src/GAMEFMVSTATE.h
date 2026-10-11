@@ -4,10 +4,11 @@
  * addressing views. This header is intentionally re-entrant so each owner
  * declaration stays at its original symbol-order position.
  */
+#include "PSX.h"
 #ifdef GAMEFMVSTATE_OWNER_DECLARATION
 #define GAMEFMVSTATE_DECL_ATTR
 #else
-#define GAMEFMVSTATE_DECL_ATTR __attribute__((section(".data")))
+#define GAMEFMVSTATE_DECL_ATTR PSX_SECTION(".data")
 #endif
 
 #ifdef GAMEFMVSTATE_DECLARE_ACTIVE

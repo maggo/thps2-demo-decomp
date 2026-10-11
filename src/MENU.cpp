@@ -6,6 +6,7 @@
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 
+#include "PSX.h"
 #include "MENU.h"
 
 struct Slice;
@@ -34,8 +35,8 @@ struct SlicedImage2 : Image
     unsigned short Clut;
 };
 
-typedef char menu_image_size_must_be_28[(sizeof(Image) == 28) ? 1 : -1];
-typedef char menu_sliced_image_size_must_be_60[(sizeof(SlicedImage2) == 60) ? 1 : -1];
+PSX_LAYOUT_CHECK(menu_image_size_must_be_28, sizeof(Image) == 28);
+PSX_LAYOUT_CHECK(menu_sliced_image_size_must_be_60, sizeof(SlicedImage2) == 60);
 
 #include "SFX.h"
 #include "PAD.h"
@@ -55,8 +56,7 @@ inline void *operator new(unsigned int, void *p)
 #undef CClass
 
 /** MENU diagnostic text (read-only data, ahead of the compiler's vtables). */
-static char processPress_fmt[24] __attribute__((section(".rdata"), aligned(4))) =
-    "Highlighted is %d\n";
+static char processPress_fmt[24] PSX_SECTION_ALIGNED(".rdata", 4) = "Highlighted is %d\n";
 
 // === Function implementations (address order) ===
 

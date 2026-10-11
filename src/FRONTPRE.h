@@ -1,5 +1,6 @@
 #ifndef FRONTPRE_H
 #define FRONTPRE_H
+#include "PSX.h"
 
 #include "globals.h"
 
@@ -43,8 +44,8 @@ struct FrontPreLoader
 /** Front-end screen -> PRE archive table (FRONTPRE.cpp). */
 extern _FrontPreInfo preInfo[FrontPreInfoCount];
 
-typedef char FrontPreInfo_size_must_be_8[(sizeof(_FrontPreInfo) == 8) ? 1 : -1];
-typedef char FrontPreLoader_size_must_be_52[(sizeof(FrontPreLoader) == 52) ? 1 : -1];
+PSX_LAYOUT_CHECK(FrontPreInfo_size_must_be_8, sizeof(_FrontPreInfo) == 8);
+PSX_LAYOUT_CHECK(FrontPreLoader_size_must_be_52, sizeof(FrontPreLoader) == 52);
 
 /**
  * Trivial storage for owners whose recovered lifecycle is still explicit.

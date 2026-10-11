@@ -1,5 +1,6 @@
 #ifndef TRIG_INC_H
 #define TRIG_INC_H
+#include "PSX.h"
 
 struct CBody;
 struct CBruce;
@@ -9,7 +10,7 @@ struct SCommandPoint;
 #ifdef TRIG_OWNER_DECLARATIONS
 #define TRIG_SHARED_STATE_DECL_ATTR
 #else
-#define TRIG_SHARED_STATE_DECL_ATTR __attribute__((section(".data")))
+#define TRIG_SHARED_STATE_DECL_ATTR PSX_SECTION(".data")
 #endif
 
 /** Number of cheat restart names collected from the active trigger stream. */
@@ -46,7 +47,7 @@ typedef char
     SGapTrick_Score_offset_must_be_2[((unsigned long)&(((SGapTrick *)0)->Score) == 2) ? 1 : -1];
 typedef char
     SGapTrick_Name_offset_must_be_4[((unsigned long)&(((SGapTrick *)0)->Name) == 4) ? 1 : -1];
-typedef char SGapTrick_size_must_be_8[(sizeof(SGapTrick) == 8) ? 1 : -1];
+PSX_LAYOUT_CHECK(SGapTrick_size_must_be_8, sizeof(SGapTrick) == 8);
 
 /** Clear the trigger-file menu entries. */
 void Trig_ClearTrigMenu(void);

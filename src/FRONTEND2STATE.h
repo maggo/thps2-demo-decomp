@@ -3,8 +3,9 @@
  * header is intentionally re-entrant so their original declaration order can
  * be preserved while LEVELSELECT2 retains its absolute-address view.
  */
+#include "PSX.h"
 #ifdef FRONTEND2STATE_ABSOLUTE_DECLARATIONS
-#define FRONTEND2STATE_DECL_ATTR __attribute__((section(".data")))
+#define FRONTEND2STATE_DECL_ATTR PSX_SECTION(".data")
 #else
 #define FRONTEND2STATE_DECL_ATTR
 #endif

@@ -1,12 +1,13 @@
 #ifndef FRONTCHEATS_INC_H
 #define FRONTCHEATS_INC_H
+#include "PSX.h"
 
 /*
  * MAIN physically owns these front-end cheat toggles in small data.  FRONT
  * retains the target-proven absolute-address import view.
  */
 #ifdef FRONTCHEATS_ABSOLUTE_DECLARATION
-#define FRONTCHEATS_DECL_ATTR __attribute__((section(".data")))
+#define FRONTCHEATS_DECL_ATTR PSX_SECTION(".data")
 #else
 #define FRONTCHEATS_DECL_ATTR
 #endif

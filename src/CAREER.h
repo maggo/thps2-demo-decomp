@@ -1,4 +1,5 @@
 // Canonical career progression and persistent-preference interface.
+#include "PSX.h"
 #if (defined(CAREER_LAYOUT_DECLARATIONS) || defined(CAREER_OWNER_LAYOUT)) && \
     !defined(CAREER_HIGH_SCORE_LAYOUT)
 #define CAREER_HIGH_SCORE_LAYOUT
@@ -16,7 +17,7 @@ struct SHighScore
     int Score;
 };
 
-typedef char SHighScore_size_must_be_12[(sizeof(struct SHighScore) == 12) ? 1 : -1];
+PSX_LAYOUT_CHECK(SHighScore_size_must_be_12, sizeof(struct SHighScore) == 12);
 typedef char
     SHighScore_Name_offset_must_be_0[((unsigned long)&(((struct SHighScore *)0)->Name) == 0) ? 1
                                                                                              : -1];
@@ -171,15 +172,15 @@ struct SCareerOwner
     struct SOptions Options;
 };
 
-typedef char SLevelCareerView_size_must_be_116[(sizeof(SLevelCareerView) == 0x74) ? 1 : -1];
-typedef char SLevelHiScoreView_size_must_be_116[(sizeof(SLevelHiScoreView) == 0x74) ? 1 : -1];
+PSX_LAYOUT_CHECK(SLevelCareerView_size_must_be_116, sizeof(SLevelCareerView) == 0x74);
+PSX_LAYOUT_CHECK(SLevelHiScoreView_size_must_be_116, sizeof(SLevelHiScoreView) == 0x74);
 typedef char
     SLevelCompetitionView_size_must_be_116[(sizeof(SLevelCompetitionView) == 0x74) ? 1 : -1];
-typedef char CBruceCareerView_size_must_be_4420[(sizeof(CBruceCareerView) == 0x1144) ? 1 : -1];
+PSX_LAYOUT_CHECK(CBruceCareerView_size_must_be_4420, sizeof(CBruceCareerView) == 0x1144);
 typedef char
     CareerOwner_SCharacterProgress_size_must_be_32[(sizeof(SCharacterProgress) == 0x20) ? 1 : -1];
-typedef char CareerOwner_SOptions_size_must_be_416[(sizeof(SOptions) == 0x1a0) ? 1 : -1];
-typedef char SCareerOwner_size_must_be_2420[(sizeof(SCareerOwner) == 0x974) ? 1 : -1];
+PSX_LAYOUT_CHECK(CareerOwner_SOptions_size_must_be_416, sizeof(SOptions) == 0x1a0);
+PSX_LAYOUT_CHECK(SCareerOwner_size_must_be_2420, sizeof(SCareerOwner) == 0x974);
 
 #endif // CAREER_OWNER_LAYOUT
 #endif // CAREER_HIGH_SCORE_LAYOUT_ONLY

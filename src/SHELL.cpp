@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #include "SHELL.h"
 
 #include "PAD.h"
@@ -13,10 +14,10 @@
 int arccos(int a);
 
 /** Rolling state used by the shell's controller-input cheat detector. */
-unsigned int CheatCheck __attribute__((section(".sdata"))) = 0;
+unsigned int CheatCheck PSX_SECTION(".sdata") = 0;
 
 /** Nonzero while gameplay is executing under the front-end shell. */
-unsigned char InShell __attribute__((section(".sdata"))) = 0;
+unsigned char InShell PSX_SECTION(".sdata") = 0;
 
 // === Function implementations (address order) ===
 

@@ -11,6 +11,7 @@
 // small data.
 #ifndef CCLASS_POLY_H
 #define CCLASS_POLY_H
+#include "PSX.h"
 
 #define CClass CClassData
 #include "globals.h"
@@ -260,12 +261,12 @@ struct CBaddy : CSuper
     void ParseScript(unsigned short *pScript);
 };
 
-typedef char CBaddy_poly_size_must_be_532[(sizeof(CBaddy) == 532) ? 1 : -1];
+PSX_LAYOUT_CHECK(CBaddy_poly_size_must_be_532, sizeof(CBaddy) == 532);
 #endif // CCLASS_POLY_BADDY_FAMILY
 
-typedef char CItem_poly_size_must_be_76[(sizeof(CItem) == 76) ? 1 : -1];
-typedef char CBody_poly_size_must_be_264[(sizeof(CBody) == 264) ? 1 : -1];
-typedef char CSuper_poly_size_must_be_400[(sizeof(CSuper) == 400) ? 1 : -1];
+PSX_LAYOUT_CHECK(CItem_poly_size_must_be_76, sizeof(CItem) == 76);
+PSX_LAYOUT_CHECK(CBody_poly_size_must_be_264, sizeof(CBody) == 264);
+PSX_LAYOUT_CHECK(CSuper_poly_size_must_be_400, sizeof(CSuper) == 400);
 
 #endif // CCLASS_POLY_ITEM_FAMILY_DEFINED
 #endif // CCLASS_POLY_ITEM_FAMILY
@@ -312,7 +313,7 @@ struct CBit
     static void operator delete(void *p);
 };
 
-typedef char CBit_poly_size_must_be_72[(sizeof(CBit) == 72) ? 1 : -1];
+PSX_LAYOUT_CHECK(CBit_poly_size_must_be_72, sizeof(CBit) == 72);
 
 #endif // CCLASS_POLY_BIT_FAMILY_DEFINED
 #endif // CCLASS_POLY_BIT_FAMILY

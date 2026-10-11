@@ -4,8 +4,9 @@
  * This header is intentionally re-entrant so both declarations stay at their
  * original owner-local encounter points.
  */
+#include "PSX.h"
 #ifdef M3DCOLIJMASKS_ABSOLUTE_DECLARATION
-#define M3DCOLIJMASKS_DECL_ATTR __attribute__((section(".data")))
+#define M3DCOLIJMASKS_DECL_ATTR PSX_SECTION(".data")
 #else
 #define M3DCOLIJMASKS_DECL_ATTR
 #endif

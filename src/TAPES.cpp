@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #define CCLASS_POLY_ITEM_FAMILY
 #include "CCLASS_POLY.h"
 #include "CFRICTION.h"
@@ -140,9 +141,9 @@ struct CTape : CBody
     u32 mTimer; // 0x16c
 };
 
-typedef char tapes_bit_size_must_be_72[(sizeof(CTapeBitLayout) == 0x48) ? 1 : -1];
-typedef char tapes_owner_size_must_be_368[(sizeof(CTape) == 0x170) ? 1 : -1];
-typedef char tapes_glow_vtable_prefix_size_must_be_12[(sizeof(CTapeGlowVTable) == 12) ? 1 : -1];
+PSX_LAYOUT_CHECK(tapes_bit_size_must_be_72, sizeof(CTapeBitLayout) == 0x48);
+PSX_LAYOUT_CHECK(tapes_owner_size_must_be_368, sizeof(CTape) == 0x170);
+PSX_LAYOUT_CHECK(tapes_glow_vtable_prefix_size_must_be_12, sizeof(CTapeGlowVTable) == 12);
 
 /** Power-up type values handled by the tape owner. */
 enum TapePowerUpType

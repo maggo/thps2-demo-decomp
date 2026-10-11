@@ -1,10 +1,11 @@
 #ifndef LEVELEDITOR_STATE_INC_H
 #define LEVELEDITOR_STATE_INC_H
+#include "PSX.h"
 
 #ifdef LEVELEDITOR_OWNER_DECLARATIONS
 #define LEVELEDITOR_STATE_DECL_ATTR
 #else
-#define LEVELEDITOR_STATE_DECL_ATTR __attribute__((section(".data")))
+#define LEVELEDITOR_STATE_DECL_ATTR PSX_SECTION(".data")
 #endif
 
 /** Active theme index used while rebuilding a generated level. */

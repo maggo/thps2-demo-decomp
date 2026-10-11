@@ -1,5 +1,6 @@
 #ifndef CITEM_INC_H
 #define CITEM_INC_H
+#include "PSX.h"
 
 struct SLight;
 
@@ -54,7 +55,7 @@ public:
     static void operator delete(void *storage);
 };
 
-typedef char CItem_size_must_be_76[(sizeof(CItem) == 76) ? 1 : -1];
-typedef char CItem_vtable_offset_must_be_72[((unsigned long)&(((CItem *)0)->_vf) == 72) ? 1 : -1];
+PSX_LAYOUT_CHECK(CItem_size_must_be_76, sizeof(CItem) == 76);
+PSX_LAYOUT_CHECK(CItem_vtable_offset_must_be_72, (unsigned long)&(((CItem *)0)->_vf) == 72);
 
 #endif // CITEM_INC_H

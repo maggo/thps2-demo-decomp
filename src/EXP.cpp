@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #include "EXP.h"
 
 // Owner-local layouts used by this translation unit.
@@ -63,12 +64,12 @@ enum ExpRippleConstant
     ExpForceDamage = 0xFFFF
 };
 
-typedef char Exp_SDK_SVECTOR_size_must_be_8[(sizeof(SVECTOR) == 8) ? 1 : -1];
-typedef char Exp_CBit_size_must_be_72[(sizeof(CBit) == 72) ? 1 : -1];
-typedef char Exp_SLineSeg_size_must_be_16[(sizeof(SLineSeg) == 16) ? 1 : -1];
-typedef char Exp_TrigPair_size_must_be_4[(sizeof(ExpTrigPair) == 4) ? 1 : -1];
-typedef char Exp_CPolyLine_size_must_be_96[(sizeof(CPolyLine) == 96) ? 1 : -1];
-typedef char Exp_CFlatRipple_size_must_be_116[(sizeof(CFlatRipple) == 116) ? 1 : -1];
+PSX_LAYOUT_CHECK(Exp_SDK_SVECTOR_size_must_be_8, sizeof(SVECTOR) == 8);
+PSX_LAYOUT_CHECK(Exp_CBit_size_must_be_72, sizeof(CBit) == 72);
+PSX_LAYOUT_CHECK(Exp_SLineSeg_size_must_be_16, sizeof(SLineSeg) == 16);
+PSX_LAYOUT_CHECK(Exp_TrigPair_size_must_be_4, sizeof(ExpTrigPair) == 4);
+PSX_LAYOUT_CHECK(Exp_CPolyLine_size_must_be_96, sizeof(CPolyLine) == 96);
+PSX_LAYOUT_CHECK(Exp_CFlatRipple_size_must_be_116, sizeof(CFlatRipple) == 116);
 
 #include "BIT.h"
 #include "PSXREGION.h"

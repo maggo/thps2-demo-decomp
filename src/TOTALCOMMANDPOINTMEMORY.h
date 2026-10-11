@@ -2,8 +2,9 @@
  * TRIG physically owns the command-point allocation counter in initialized
  * small data. Cross-owner consumers address that word absolutely.
  */
+#include "PSX.h"
 #ifdef TOTALCOMMANDPOINTMEMORY_ABSOLUTE_DECLARATION
-#define TOTALCOMMANDPOINTMEMORY_DECL_ATTR __attribute__((section(".data")))
+#define TOTALCOMMANDPOINTMEMORY_DECL_ATTR PSX_SECTION(".data")
 #else
 #define TOTALCOMMANDPOINTMEMORY_DECL_ATTR
 #endif

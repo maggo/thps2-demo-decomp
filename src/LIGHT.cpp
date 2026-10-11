@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #include "globals.h"
 
 /** Return caller-owned storage for an ordinary placement construction. */
@@ -54,12 +55,12 @@ struct CBit
 
 #include "CLIGHT.h"
 
-typedef char Light_CBit_size_must_be_72[(sizeof(CBit) == 72) ? 1 : -1];
-typedef char Light_BitVTable_prefix_size_must_be_12[(sizeof(LightBitVTable) == 12) ? 1 : -1];
-typedef char Light_CNonRenderedBit_size_must_be_72[(sizeof(CNonRenderedBit) == 72) ? 1 : -1];
-typedef char Light_CGlow_size_must_be_104[(sizeof(CGlow) == 104) ? 1 : -1];
-typedef char Light_CWobblyGlow_size_must_be_176[(sizeof(CWobblyGlow) == 176) ? 1 : -1];
-typedef char CLight_size_must_be_100[(sizeof(CLight) == 100) ? 1 : -1];
+PSX_LAYOUT_CHECK(Light_CBit_size_must_be_72, sizeof(CBit) == 72);
+PSX_LAYOUT_CHECK(Light_BitVTable_prefix_size_must_be_12, sizeof(LightBitVTable) == 12);
+PSX_LAYOUT_CHECK(Light_CNonRenderedBit_size_must_be_72, sizeof(CNonRenderedBit) == 72);
+PSX_LAYOUT_CHECK(Light_CGlow_size_must_be_104, sizeof(CGlow) == 104);
+PSX_LAYOUT_CHECK(Light_CWobblyGlow_size_must_be_176, sizeof(CWobblyGlow) == 176);
+PSX_LAYOUT_CHECK(CLight_size_must_be_100, sizeof(CLight) == 100);
 
 #include "BIT.h"
 

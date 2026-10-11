@@ -1,6 +1,7 @@
 // Shared utility types, timing globals, and public functions.
 #ifndef UTILS_INC_H
 #define UTILS_INC_H
+#include "PSX.h"
 
 struct CVector;
 struct CSVector;
@@ -36,7 +37,7 @@ unsigned int Utils_CalculateSpatialAttenuation(const CVector &position, int near
 #ifdef UTILS_OWNER_DECLARATIONS
 #define UTILS_SHARED_STATE_DECL_ATTR
 #else
-#define UTILS_SHARED_STATE_DECL_ATTR __attribute__((section(".data")))
+#define UTILS_SHARED_STATE_DECL_ATTR PSX_SECTION(".data")
 #endif
 
 /** Remaining intensity of the interrupt-driven full-screen fade. */

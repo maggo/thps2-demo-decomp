@@ -1,5 +1,6 @@
 #ifndef SCAMERA_INC_H
 #define SCAMERA_INC_H
+#include "PSX.h"
 
 #ifndef _LIBGTE_H_
 #error "SCAMERA.h requires <LIBGTE.H> first"
@@ -36,15 +37,14 @@ typedef char
     SCamera_Height_offset_must_be_40[((unsigned long)&(((SCamera *)0)->Height) == 40) ? 1 : -1];
 typedef char
     SCamera_Angles_offset_must_be_44[((unsigned long)&(((SCamera *)0)->Angles) == 44) ? 1 : -1];
-typedef char SCamera_Transform_offset_must_be_52[((unsigned long)&(((SCamera *)0)->Transform) == 52)
-                                                     ? 1
-                                                     : -1];
+PSX_LAYOUT_CHECK(SCamera_Transform_offset_must_be_52,
+                 (unsigned long)&(((SCamera *)0)->Transform) == 52);
 typedef char
     SCamera_Inverse_offset_must_be_84[((unsigned long)&(((SCamera *)0)->Inverse) == 84) ? 1 : -1];
 typedef char
     SCamera_View_offset_must_be_116[((unsigned long)&(((SCamera *)0)->View) == 116) ? 1 : -1];
-typedef char SCamera_Up_offset_must_be_148[((unsigned long)&(((SCamera *)0)->Up) == 148) ? 1 : -1];
-typedef char SCamera_size_must_be_164[(sizeof(SCamera) == 164) ? 1 : -1];
+PSX_LAYOUT_CHECK(SCamera_Up_offset_must_be_148, (unsigned long)&(((SCamera *)0)->Up) == 148);
+PSX_LAYOUT_CHECK(SCamera_size_must_be_164, sizeof(SCamera) == 164);
 
 #ifdef __cplusplus
 extern "C"
@@ -52,7 +52,7 @@ extern "C"
 #endif
 
 /** Two render-camera slots owned by CAMERA.cpp. */
-extern SCamera MikeCamera[2] __attribute__((section(".data")));
+extern SCamera MikeCamera[2] PSX_SECTION(".data");
 
 #ifdef __cplusplus
 }

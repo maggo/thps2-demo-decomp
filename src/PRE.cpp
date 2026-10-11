@@ -5,12 +5,13 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #define PRE_POLYMORPHIC_LAYOUT
 #include "PRE.h"
 #include "PREAPI.h"
 #include "MEM.h"
 
-typedef char pre_manager_size_must_be_324[(sizeof(PREManager) == 324) ? 1 : -1];
+PSX_LAYOUT_CHECK(pre_manager_size_must_be_324, sizeof(PREManager) == 324);
 
 // String literals (absolute addresses in .rodata)
 static char PRE_full_msg[]; // 0x800B290C "PRE: All slots full\n" (approx)
@@ -22,7 +23,7 @@ static char PRE_open_err[]; // 0x800B2928 "PRE: could not open %s\n" (approx)
 #include "PREMGR.h"
 
 /** PRE archive manager singleton owned by this translation unit. */
-PREManager *PREMgr __attribute__((section(".sdata"))) = 0;
+PREManager *PREMgr PSX_SECTION(".sdata") = 0;
 
 // Small-data order in this owner is PREMgr, PRE_null_arr, PRE_fmt_s, then
 // both vtables, so the recovered definitions follow the string owners.
@@ -31,8 +32,8 @@ namespace PreAddressViewOwners
 extern "C"
 {
 /** Empty name and filename-copy format stored beside the singleton. */
-static char PRE_null_arr[4] __attribute__((section(".sdata"))) = { 0, 0, 0, 0 };
-static char PRE_fmt_s[4] __attribute__((section(".sdata"))) = "%s";
+static char PRE_null_arr[4] PSX_SECTION(".sdata") = { 0, 0, 0, 0 };
+static char PRE_fmt_s[4] PSX_SECTION(".sdata") = "%s";
 }
 }
 
@@ -304,5 +305,5 @@ inpre_not_found:
 }
 
 /** Diagnostics emitted when no PRE slot or allocation is available. */
-static char PRE_full_msg[28] __attribute__((section(".rdata"))) = "\nOut of PREManager slots";
-static char PRE_open_err[28] __attribute__((section(".rdata"))) = "\nMemory error loading %s";
+static char PRE_full_msg[28] PSX_SECTION(".rdata") = "\nOut of PREManager slots";
+static char PRE_open_err[28] PSX_SECTION(".rdata") = "\nMemory error loading %s";

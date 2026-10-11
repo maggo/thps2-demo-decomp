@@ -1,5 +1,6 @@
 #ifndef PAD_INC_H
 #define PAD_INC_H
+#include "PSX.h"
 
 
 /*
@@ -86,10 +87,10 @@ struct ControllerBuffer
     unsigned char pad[34];
 };
 
-typedef char SButton_size_must_be_16[(sizeof(SButton) == 16) ? 1 : -1];
-typedef char SControl_size_must_be_364[(sizeof(SControl) == 364) ? 1 : -1];
-typedef char ControllerData_size_must_be_8[(sizeof(ControllerData) == 8) ? 1 : -1];
-typedef char ControllerBuffer_size_must_be_34[(sizeof(ControllerBuffer) == 34) ? 1 : -1];
+PSX_LAYOUT_CHECK(SButton_size_must_be_16, sizeof(SButton) == 16);
+PSX_LAYOUT_CHECK(SControl_size_must_be_364, sizeof(SControl) == 364);
+PSX_LAYOUT_CHECK(ControllerData_size_must_be_8, sizeof(ControllerData) == 8);
+PSX_LAYOUT_CHECK(ControllerBuffer_size_must_be_34, sizeof(ControllerBuffer) == 34);
 
 /** Shared gameplay input state for the two supported controllers. */
 extern struct SControl Pad[2];

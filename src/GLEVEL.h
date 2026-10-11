@@ -3,10 +3,11 @@
  * common. This header is intentionally re-entrant so every consumer retains
  * its original declaration point and absolute-address import view.
  */
+#include "PSX.h"
 #ifdef GLEVEL_OWNER_DECLARATION
 #define GLEVEL_DECL_ATTR
 #else
-#define GLEVEL_DECL_ATTR __attribute__((section(".data")))
+#define GLEVEL_DECL_ATTR PSX_SECTION(".data")
 #endif
 
 /** Current gameplay-level index, physically allocated by HIRES.cpp. */

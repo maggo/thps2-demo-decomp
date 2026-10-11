@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #include "FRONT.h"
 #define RFRONT_OWNER_DECLARATIONS
 #include "RFRONT.h"
@@ -177,7 +178,7 @@ struct RFrontCachedBackground
     int captureStatus;
 };
 
-typedef char RFrontSprite_size_must_be_24[(sizeof(Sprite) == 24) ? 1 : -1];
+PSX_LAYOUT_CHECK(RFrontSprite_size_must_be_24, sizeof(Sprite) == 24);
 typedef char
     RFrontCachedBackground_size_must_be_20[(sizeof(RFrontCachedBackground) == 20) ? 1 : -1];
 
@@ -220,11 +221,11 @@ struct VerticalMenu
     void down();
 };
 
-typedef char RFrontVerticalMenu_size_must_be_820[(sizeof(VerticalMenu) == 820) ? 1 : -1];
+PSX_LAYOUT_CHECK(RFrontVerticalMenu_size_must_be_820, sizeof(VerticalMenu) == 820);
 
 #include "LOCALTXT.h"
 
-typedef char RFront_LocalText_size_must_be_652[(sizeof(LocalText) == 0x28c) ? 1 : -1];
+PSX_LAYOUT_CHECK(RFront_LocalText_size_must_be_652, sizeof(LocalText) == 0x28c);
 
 #define VIDEO_HEAD_LAYOUT
 #define VIDEO_LAYOUT_ONLY
@@ -292,9 +293,9 @@ struct RFrontCareerLoadBlock
     char reserved_bf4[0x0c];
 };
 
-typedef char SCardHeadRFront_size_must_be_512[(sizeof(SCardHead) == 0x200) ? 1 : -1];
-typedef char SVideoInfoRFront_size_must_be_192[(sizeof(SVideoInfo) == 0xc0) ? 1 : -1];
-typedef char SCareerRFront_size_must_be_2420[(sizeof(SCareer) == 0x974) ? 1 : -1];
+PSX_LAYOUT_CHECK(SCardHeadRFront_size_must_be_512, sizeof(SCardHead) == 0x200);
+PSX_LAYOUT_CHECK(SVideoInfoRFront_size_must_be_192, sizeof(SVideoInfo) == 0xc0);
+PSX_LAYOUT_CHECK(SCareerRFront_size_must_be_2420, sizeof(SCareer) == 0x974);
 typedef char
     RFrontCareerLoadBlock_size_must_be_3072[(sizeof(RFrontCareerLoadBlock) == 0xc00) ? 1 : -1];
 
@@ -366,12 +367,11 @@ int GHasCareerLoaded = 0;
 int GLoadedCareerIsSaved = 0;
 
 /** First eight characters of the ten-character, blank-padded save name. */
-SaveGameNameLayout SaveGameName
-    __attribute__((section(".sdata"))) = { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' };
+SaveGameNameLayout SaveGameName PSX_SECTION(".sdata") = { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' };
 }
 
 /** Final two characters and terminator of the RFRONT-owned save name. */
-static char SaveGameNameTail[3] __attribute__((section(".sdata"))) = { ' ', ' ', '\0' };
+static char SaveGameNameTail[3] PSX_SECTION(".sdata") = { ' ', ' ', '\0' };
 
 extern "C"
 {
@@ -381,8 +381,8 @@ int CursorPos = 0;
 int SizeUp = 0;
 
 /** Most recently used career and replay names. */
-char LastCareerName[11] __attribute__((section(".sdata"))) = "          ";
-char LastVideoName[11] __attribute__((section(".sdata"))) = "          ";
+char LastCareerName[11] PSX_SECTION(".sdata") = "          ";
+char LastVideoName[11] PSX_SECTION(".sdata") = "          ";
 
 /** Active memory-card file menu and its visible-window state. */
 VerticalMenu *pVertMenu = 0;
@@ -426,26 +426,23 @@ static int GReturnToState;
 extern "C"
 {
 /** Replay restart state, cleared until a replay header is loaded. */
-SVideoRestart GVideoRestart __attribute__((section(".data"))) = { 0, 0, 0, 0, 0 };
+SVideoRestart GVideoRestart PSX_SECTION(".data") = { 0, 0, 0, 0, 0 };
 
 /** ASCII memory-card names and the menu views built over them. */
-char ASCIIName[15][11] __attribute__((section(".data"))) = { { 0 } };
-char *VertMenuItem[15] __attribute__((section(".data"))) = { 0 };
-int VertMenuItemIndex[15] __attribute__((section(".data"))) = { 0 };
+char ASCIIName[15][11] PSX_SECTION(".data") = { { 0 } };
+char *VertMenuItem[15] PSX_SECTION(".data") = { 0 };
+int VertMenuItemIndex[15] PSX_SECTION(".data") = { 0 };
 
 /** Ten cached background captures used by the memory-card front end. */
-RFrontCachedBackground BGCache[10] __attribute__((section(".data"))) = { { 0 } };
+RFrontCachedBackground BGCache[10] PSX_SECTION(".data") = { { 0 } };
 }
 
 /** RFRONT-owned immutable memory-card status strings in target order. */
-static char RFrontNoSpaceText[] __attribute__((section(".rdata"), aligned(4))) =
-    "no space do you want to delete blah blah";
-static char RFrontLoadingVideoText[] __attribute__((section(".rdata"), aligned(4))) =
-    "loading video file";
-static char RFrontLoadingSavedGameText[] __attribute__((section(".rdata"), aligned(4))) =
-    "loading saved game";
-static char RFrontSavingReplayFormat[] __attribute__((section(".rdata"), aligned(4))) =
-    "Saving Replay %s";
+static char RFrontNoSpaceText[] PSX_SECTION_ALIGNED(".rdata",
+                                                    4) = "no space do you want to delete blah blah";
+static char RFrontLoadingVideoText[] PSX_SECTION_ALIGNED(".rdata", 4) = "loading video file";
+static char RFrontLoadingSavedGameText[] PSX_SECTION_ALIGNED(".rdata", 4) = "loading saved game";
+static char RFrontSavingReplayFormat[] PSX_SECTION_ALIGNED(".rdata", 4) = "Saving Replay %s";
 
 // === Function implementations (address order) ===
 
@@ -949,16 +946,15 @@ void Front_MemCardDisplay(void)
 }
 
 /** Mutable status text stored in RFRONT's target small-data tail. */
-static char RFrontLoadingReplayText[] __attribute__((section(".sdata"), aligned(4))) =
-    "loading replay";
-static char RFrontVideoLoadedText[] __attribute__((section(".sdata"), aligned(4))) = "Video loaded";
+static char RFrontLoadingReplayText[] PSX_SECTION_ALIGNED(".sdata", 4) = "loading replay";
+static char RFrontVideoLoadedText[] PSX_SECTION_ALIGNED(".sdata", 4) = "Video loaded";
 
 /** Rolling suffixes used when a blank replay or career name is accepted. */
-static int Video __attribute__((section(".sdata"), aligned(4))) = 0;
-static int Career __attribute__((section(".sdata"), aligned(4))) = 0;
+static int Video PSX_SECTION_ALIGNED(".sdata", 4) = 0;
+static int Career PSX_SECTION_ALIGNED(".sdata", 4) = 0;
 
 /** On-disc replay filename template; byte four is replaced by the slot letter. */
-static char RFrontDemoFileName[] __attribute__((section(".sdata"), aligned(4))) = "demoX.rec";
+static char RFrontDemoFileName[] PSX_SECTION_ALIGNED(".sdata", 4) = "demoX.rec";
 
 extern "C"
 {
@@ -967,7 +963,7 @@ ELoadAction GLoadAction = LOAD_VIDEO;
 ESaveAction GSaveAction = SAVE_VIDEO;
 
 /** Career name copied to and from the active save-name buffer. */
-char StoredCareerName[11] __attribute__((section(".sdata"))) = { 0 };
+char StoredCareerName[11] PSX_SECTION(".sdata") = { 0 };
 }
 
 

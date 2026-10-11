@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #include "BIT.h"
 #include "MESS.h"
 #include "BMR.h"
@@ -50,8 +51,8 @@ struct CBody
 #include "SVIEWPORT.h"
 #include "APOCALYPSEVIEWPORT.h"
 
-typedef char InitCItemLayout_size_must_be_0x4c[(sizeof(InitCItemLayout) == 0x4c) ? 1 : -1];
-typedef char InitCBodyPrefix_size_must_be_0x54[(sizeof(CBody) == 0x54) ? 1 : -1];
+PSX_LAYOUT_CHECK(InitCItemLayout_size_must_be_0x4c, sizeof(InitCItemLayout) == 0x4c);
+PSX_LAYOUT_CHECK(InitCBodyPrefix_size_must_be_0x54, sizeof(CBody) == 0x54);
 // Absolute-addressed globals used by the initialization owner.
 #define INIT_DECLARE_TOP_OF_CODE_ABSOLUTE_VIEW
 #include "INIT.h"
@@ -184,18 +185,18 @@ static inline unsigned int &Init_SuspendDistance(void)
  * Placeholder trigger name used before a level has supplied its real TRG
  * filename.
  */
-static char Init_DefaultTrigFileName[8] __attribute__((section(".sdata"))) = "prsn_t";
+static char Init_DefaultTrigFileName[8] PSX_SECTION(".sdata") = "prsn_t";
 
 /**
  * Debug continuation marker retained by the original initialization module.
  */
-static const char Init_ContinueTRGName[24] __attribute__((section(".rdata"))) = "********blaablaa";
+static const char Init_ContinueTRGName[24] PSX_SECTION(".rdata") = "********blaablaa";
 
 /** Active trigger filename initialized to the module's placeholder name. */
-char *TrigFileName __attribute__((section(".sdata"))) = Init_DefaultTrigFileName;
+char *TrigFileName PSX_SECTION(".sdata") = Init_DefaultTrigFileName;
 
 /** Optional trigger continuation name used by the debug continuation path. */
-char *ContinueTRG __attribute__((section(".sdata"))) = const_cast<char *>(Init_ContinueTRGName);
+char *ContinueTRG PSX_SECTION(".sdata") = const_cast<char *>(Init_ContinueTRGName);
 
 /**
  * Full-screen clear rectangle copied to the stack during boot graphics
@@ -205,12 +206,12 @@ namespace InitAddressViewOwners
 {
 extern "C"
 {
-static RECT StartupClearRect __attribute__((section(".sdata"))) = { 0, 0, 1024, 512 };
+static RECT StartupClearRect PSX_SECTION(".sdata") = { 0, 0, 1024, 512 };
 }
 }
 
 /** Number of trigger continuation requests pending at startup. */
-int NumContinues __attribute__((section(".sdata"))) = 0;
+int NumContinues PSX_SECTION(".sdata") = 0;
 
 // === Owner-local function declaration ===
 static void DeleteList(CBody *pList);

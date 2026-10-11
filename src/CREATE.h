@@ -1,3 +1,4 @@
+#include "PSX.h"
 #if defined(CREATE_TEX_LIST_LAYOUT_ONLY) && !defined(CREATE_TEX_LIST_LAYOUT)
 #error CREATE_TEX_LIST_LAYOUT_ONLY requires CREATE_TEX_LIST_LAYOUT
 #endif
@@ -66,7 +67,7 @@ struct _SCreateTexList
 
 typedef struct _SCreateTexList SCreateTexList;
 
-typedef char SCreateTexList_size_must_be_8[(sizeof(struct _SCreateTexList) == 8) ? 1 : -1];
+PSX_LAYOUT_CHECK(SCreateTexList_size_must_be_8, sizeof(struct _SCreateTexList) == 8);
 typedef char SCreateTexList_TextureName_offset_must_be_0
     [((unsigned long)&(((struct _SCreateTexList *)0)->TextureName) == 0) ? 1 : -1];
 typedef char SCreateTexList_FrontEndName_offset_must_be_4

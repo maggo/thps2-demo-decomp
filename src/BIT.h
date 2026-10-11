@@ -1,6 +1,7 @@
 // Declarations shared by the BIT particle/effect owner.
 #ifndef BIT_INC_H
 #define BIT_INC_H
+#include "PSX.h"
 
 struct SAnimFrame;
 struct SDoubleBuffer;
@@ -251,8 +252,8 @@ struct Blood
     int mAge;
 };
 
-typedef char blood_owner_size_must_be_92[(sizeof(Blood) == 92) ? 1 : -1];
-typedef char blood_bit_size_must_be_72[(sizeof(BloodBit) == 72) ? 1 : -1];
+PSX_LAYOUT_CHECK(blood_owner_size_must_be_92, sizeof(Blood) == 92);
+PSX_LAYOUT_CHECK(blood_bit_size_must_be_72, sizeof(BloodBit) == 72);
 
 #endif // BIT_BLOOD_MANAGER_LAYOUT
 
@@ -420,11 +421,11 @@ struct DustBruceLayout
     int mTerrain;
 };
 
-typedef char dust_CBit_size_must_be_72[(sizeof(CBit) == 72) ? 1 : -1];
-typedef char dust_CFT4Bit_size_must_be_96[(sizeof(CFT4Bit) == 96) ? 1 : -1];
-typedef char dust_CFlatBit_size_must_be_112[(sizeof(CFlatBit) == 112) ? 1 : -1];
-typedef char dust_owner_size_must_be_64[(sizeof(Dust) == 64) ? 1 : -1];
-typedef char dust_bruce_region_must_be_27[((int)&((DustBruceLayout *)0)->mRegion == 27) ? 1 : -1];
+PSX_LAYOUT_CHECK(dust_CBit_size_must_be_72, sizeof(CBit) == 72);
+PSX_LAYOUT_CHECK(dust_CFT4Bit_size_must_be_96, sizeof(CFT4Bit) == 96);
+PSX_LAYOUT_CHECK(dust_CFlatBit_size_must_be_112, sizeof(CFlatBit) == 112);
+PSX_LAYOUT_CHECK(dust_owner_size_must_be_64, sizeof(Dust) == 64);
+PSX_LAYOUT_CHECK(dust_bruce_region_must_be_27, (int)&((DustBruceLayout *)0)->mRegion == 27);
 typedef char
     dust_bruce_velocity_must_be_84[((int)&((DustBruceLayout *)0)->mVelocity == 84) ? 1 : -1];
 typedef char
@@ -455,12 +456,12 @@ typedef char
     SSection_Radius_offset_must_be_0[((unsigned long)&(((SSection *)0)->Radius) == 0) ? 1 : -1];
 typedef char
     SSection_PadBGR_offset_must_be_4[((unsigned long)&(((SSection *)0)->PadBGR) == 4) ? 1 : -1];
-typedef char SSection_size_must_be_8[(sizeof(SSection) == 8) ? 1 : -1];
+PSX_LAYOUT_CHECK(SSection_size_must_be_8, sizeof(SSection) == 8);
 typedef char
     SFringeQuad_Width_offset_must_be_0[((unsigned long)&(((SFringeQuad *)0)->Width) == 0) ? 1 : -1];
 typedef char
     SFringeQuad_CodeBGR_offset_must_be_4[((unsigned long)&(((SFringeQuad *)0)->CodeBGR) == 4) ? 1
                                                                                               : -1];
-typedef char SFringeQuad_size_must_be_8[(sizeof(SFringeQuad) == 8) ? 1 : -1];
+PSX_LAYOUT_CHECK(SFringeQuad_size_must_be_8, sizeof(SFringeQuad) == 8);
 
 #endif // BIT_GLOW_ELEMENT_LAYOUT

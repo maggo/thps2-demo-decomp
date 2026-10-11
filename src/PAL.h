@@ -1,3 +1,4 @@
+#include "PSX.h"
 #if !defined(PAL_SHARED_STATE_DECLARATIONS_EMITTED)
 #define PAL_SHARED_STATE_DECLARATIONS_EMITTED
 
@@ -6,7 +7,7 @@ struct tag_S_Pal;
 #ifdef PAL_OWNER_DECLARATIONS
 #define PAL_COORDINATE_DECL_ATTR
 #else
-#define PAL_COORDINATE_DECL_ATTR __attribute__((section(".data")))
+#define PAL_COORDINATE_DECL_ATTR PSX_SECTION(".data")
 #endif
 
 /** X coordinate of the shared 16-colour palette allocation area. */
@@ -70,7 +71,7 @@ struct tag_S_Pal
     struct tag_S_Pal *pPrevious;
 };
 
-typedef char tag_S_Pal_size_must_be_20[(sizeof(tag_S_Pal) == 20) ? 1 : -1];
+PSX_LAYOUT_CHECK(tag_S_Pal_size_must_be_20, sizeof(tag_S_Pal) == 20);
 typedef char
     tag_S_Pal_Clut_offset_must_be_0[((unsigned long)&(((tag_S_Pal *)0)->Clut) == 0) ? 1 : -1];
 typedef char
@@ -83,9 +84,8 @@ typedef char
     tag_S_Pal_InVRAM_offset_must_be_6[((unsigned long)&(((tag_S_Pal *)0)->InVRAM) == 6) ? 1 : -1];
 typedef char tag_S_Pal_RemapIndex_offset_must_be_7
     [((unsigned long)&(((tag_S_Pal *)0)->RemapIndex) == 7) ? 1 : -1];
-typedef char tag_S_Pal_Checksum_offset_must_be_8[((unsigned long)&(((tag_S_Pal *)0)->Checksum) == 8)
-                                                     ? 1
-                                                     : -1];
+PSX_LAYOUT_CHECK(tag_S_Pal_Checksum_offset_must_be_8,
+                 (unsigned long)&(((tag_S_Pal *)0)->Checksum) == 8);
 typedef char
     tag_S_Pal_pNext_offset_must_be_12[((unsigned long)&(((tag_S_Pal *)0)->pNext) == 12) ? 1 : -1];
 typedef char tag_S_Pal_pPrevious_offset_must_be_16

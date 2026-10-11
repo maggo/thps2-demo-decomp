@@ -1,4 +1,5 @@
 // LEVELGEN.h -- interface of LEVELGEN.cpp
+#include "PSX.h"
 #if defined(LEVELGEN_GRID_MAP_LAYOUT_ONLY) && !defined(LEVELGEN_GRID_MAP_LAYOUT)
 #error "LEVELGEN grid/map layout-only mode requires LEVELGEN_GRID_MAP_LAYOUT"
 #endif
@@ -14,7 +15,7 @@
 #ifdef LEVELGEN_OWNER_DECLARATIONS
 #define LEVELGEN_GRID_STATE_DECL_ATTR
 #else
-#define LEVELGEN_GRID_STATE_DECL_ATTR __attribute__((section(".data")))
+#define LEVELGEN_GRID_STATE_DECL_ATTR PSX_SECTION(".data")
 #endif
 
 /** Number of cells along each side of the shared editor grid. */

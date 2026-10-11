@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #define VIDEO_OWNER_DECLARATIONS
 #include "VIDEO.h"
 #undef VIDEO_OWNER_DECLARATIONS
@@ -172,7 +173,7 @@ struct CBody
     u8 _pad00D0[56];
 };
 
-typedef char Video_CBody_size_must_be_264[(sizeof(CBody) == 264) ? 1 : -1];
+PSX_LAYOUT_CHECK(Video_CBody_size_must_be_264, sizeof(CBody) == 264);
 
 /** Invoke the power-up body's collect slot through its recovered vtable. */
 static inline void Video_CollectBody(CBody *pBody)
@@ -321,10 +322,10 @@ void RestartCompFrig(void);
 /** Fixed-point vector operators provided by VECTOR.cpp. */
 #include "CVECTOROPS.h"
 
-typedef char Video_CBruce_size_must_be_5228[(sizeof(CBruce) == 5228) ? 1 : -1];
-typedef char Video_CItem_size_must_be_76[(sizeof(VideoCItemOwner) == 76) ? 1 : -1];
-typedef char Video_CSuper_size_must_be_400[(sizeof(VideoCSuperOwner) == 400) ? 1 : -1];
-typedef char Video_CTrickOb_size_must_be_24[(sizeof(CTrickOb) == 24) ? 1 : -1];
+PSX_LAYOUT_CHECK(Video_CBruce_size_must_be_5228, sizeof(CBruce) == 5228);
+PSX_LAYOUT_CHECK(Video_CItem_size_must_be_76, sizeof(VideoCItemOwner) == 76);
+PSX_LAYOUT_CHECK(Video_CSuper_size_must_be_400, sizeof(VideoCSuperOwner) == 400);
+PSX_LAYOUT_CHECK(Video_CTrickOb_size_must_be_24, sizeof(CTrickOb) == 24);
 #include "SFX.h"
 #include "M3DZONE.h"
 #include "PAD.h"
@@ -349,46 +350,46 @@ enum
 #include "VIDEOINFO.h"
 
 #include "REPLAYSOUNDLOCKOUT.h"
-int ReplaySoundLockout __attribute__((section(".sdata"))) = 0;
+int ReplaySoundLockout PSX_SECTION(".sdata") = 0;
 
 /** Primary replay stream state owned by VIDEO.CPP. */
-SVideoInfo GVInfo1 __attribute__((section(".data")));
+SVideoInfo GVInfo1 PSX_SECTION(".data");
 
 /** Secondary replay stream state used by two-player playback. */
-SVideoInfo GVInfo2 __attribute__((section(".data")));
+SVideoInfo GVInfo2 PSX_SECTION(".data");
 
 /** Position-delta widths selected by the replay prefix code. */
-static int PosBits[7] __attribute__((section(".data"))) = { 3, 4, 5, 7, 8, 16, 20 };
+static int PosBits[7] PSX_SECTION(".data") = { 3, 4, 5, 7, 8, 16, 20 };
 
 /** Euler-angle widths selected by the replay prefix code. */
-static int EulerBits[7] __attribute__((section(".data"))) = { 2, 4, 5, 6, 7, 9, 12 };
+static int EulerBits[7] PSX_SECTION(".data") = { 2, 4, 5, 6, 7, 9, 12 };
 
 /** Board-flip widths selected by the replay prefix code. */
-static int FlipAngleBits[7] __attribute__((section(".data"))) = { 0, 6, 7, 8, 12, -1, -1 };
+static int FlipAngleBits[7] PSX_SECTION(".data") = { 0, 6, 7, 8, 12, -1, -1 };
 
 /** Variable-length prefix values used by replay compression. */
-static int PrefixCode[7] __attribute__((section(".data"))) = { 0, 1, 3, 7, 15, 31, 63 };
+static int PrefixCode[7] PSX_SECTION(".data") = { 0, 1, 3, 7, 15, 31, 63 };
 
 /** Bit lengths for each replay prefix value. */
-static int PrefixBits[7] __attribute__((section(".data"))) = { 1, 2, 3, 4, 5, 6, 6 };
+static int PrefixBits[7] PSX_SECTION(".data") = { 1, 2, 3, 4, 5, 6, 6 };
 
 /** Ring buffer of sound commands embedded in a replay stream. */
-SSoundCmd SoundCmd[VideoSoundQueueCapacity] __attribute__((section(".data"))) = {};
+SSoundCmd SoundCmd[VideoSoundQueueCapacity] PSX_SECTION(".data") = {};
 
 /** Replay and highlight bookkeeping, in the original VIDEO.CPP small-data order. */
-int GVideoReplay __attribute__((section(".sdata"))) = 0;
-int HLStartCalled __attribute__((section(".sdata"))) = 0;
-static int StepCount __attribute__((section(".sdata"))) = 0;
-int FirstEntry __attribute__((section(".sdata"))) = 0;
-int LastEntry __attribute__((section(".sdata"))) = 0;
-int Splat1 __attribute__((section(".sdata"))) = 0;
-int Splat2 __attribute__((section(".sdata"))) = 0;
-int TrickOb1 __attribute__((section(".sdata"))) = 0;
-int TrickOb2 __attribute__((section(".sdata"))) = 0;
-int HighlightStartFrame __attribute__((section(".sdata"))) = 0;
-int HighlightEndFrame __attribute__((section(".sdata"))) = 0;
-int HighlightStartY __attribute__((section(".sdata"))) = 0;
-int HighlightEndY __attribute__((section(".sdata"))) = 0;
+int GVideoReplay PSX_SECTION(".sdata") = 0;
+int HLStartCalled PSX_SECTION(".sdata") = 0;
+static int StepCount PSX_SECTION(".sdata") = 0;
+int FirstEntry PSX_SECTION(".sdata") = 0;
+int LastEntry PSX_SECTION(".sdata") = 0;
+int Splat1 PSX_SECTION(".sdata") = 0;
+int Splat2 PSX_SECTION(".sdata") = 0;
+int TrickOb1 PSX_SECTION(".sdata") = 0;
+int TrickOb2 PSX_SECTION(".sdata") = 0;
+int HighlightStartFrame PSX_SECTION(".sdata") = 0;
+int HighlightEndFrame PSX_SECTION(".sdata") = 0;
+int HighlightStartY PSX_SECTION(".sdata") = 0;
+int HighlightEndY PSX_SECTION(".sdata") = 0;
 
 // === Free function declarations ===
 static long BitsRequired(long n);

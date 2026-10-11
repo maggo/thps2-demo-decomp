@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #include "PAD.h"
 #include "MAIN.h"
 #include <LIBPAD.H>
@@ -15,13 +16,13 @@ void Pad_Clear(SControl *p_pad);
 
 // MAIN-owned game-state selector used to suppress vibration in demo play.
 /** Persistent gameplay input state for the two supported controllers. */
-SControl Pad[2] __attribute__((section(".data"))) = {};
+SControl Pad[2] PSX_SECTION(".data") = {};
 
 /** Raw library receive buffers for the two physical controller ports. */
-ControllerBuffer controllers[2] __attribute__((section(".data"))) = {};
+ControllerBuffer controllers[2] PSX_SECTION(".data") = {};
 
 /** Decoded state for the four possible multitap controllers on each port. */
-ControllerData theControllers[8] __attribute__((section(".data"))) = {};
+ControllerData theControllers[8] PSX_SECTION(".data") = {};
 
 /** Calibrated analogue-stick bounds and centers. */
 int XMinL = 0;
@@ -44,7 +45,7 @@ int WarningTimer = 0;
 int Pad_IdleTime = 0;
 
 /** DualShock actuator alignment packet retained within the PAD owner. */
-static unsigned char align[6] __attribute__((section(".sdata"))) = { 0, 1, 255, 255, 255, 255 };
+static unsigned char align[6] PSX_SECTION(".sdata") = { 0, 1, 255, 255, 255, 255 };
 
 /** Whether the controller subsystem has completed initialization. */
 static int ControlSystemInitialised = 0;

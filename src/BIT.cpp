@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #define CVECTOR_COMPONENT_CTORS
 #define CCLASS_POLY_BIT_FAMILY
 #include "CCLASS_POLY.h"
@@ -300,31 +301,31 @@ struct SCalcBuffer
     int Bad;
 };
 
-typedef char Bit_Texture_size_must_be_40[(sizeof(Texture) == 40) ? 1 : -1];
-typedef char Bit_CBit_size_must_be_72[(sizeof(CBit) == 72) ? 1 : -1];
-typedef char Bit_CFT4Bit_size_must_be_96[(sizeof(CFT4Bit) == 96) ? 1 : -1];
-typedef char Bit_CQuadBit_size_must_be_156[(sizeof(CQuadBit) == 156) ? 1 : -1];
-typedef char Bit_CFlatBit_size_must_be_112[(sizeof(CFlatBit) == 112) ? 1 : -1];
-typedef char Bit_CLinked2EndedBit_size_must_be_120[(sizeof(CLinked2EndedBit) == 120) ? 1 : -1];
-typedef char Bit_CPixel_size_must_be_84[(sizeof(CPixel) == 84) ? 1 : -1];
-typedef char Bit_CSpark_size_must_be_92[(sizeof(CSpark) == 92) ? 1 : -1];
-typedef char Bit_CSimpleAnim_size_must_be_120[(sizeof(CSimpleAnim) == 120) ? 1 : -1];
-typedef char Bit_CRibbon_size_must_be_96[(sizeof(CRibbon) == 96) ? 1 : -1];
-typedef char Bit_SRibbonPoint_size_must_be_36[(sizeof(SRibbonPoint) == 36) ? 1 : -1];
-typedef char Bit_CGlow_size_must_be_104[(sizeof(CGlow) == 104) ? 1 : -1];
-typedef char Bit_CWobblyGlow_size_must_be_176[(sizeof(CWobblyGlow) == 176) ? 1 : -1];
-typedef char Bit_SLineSeg_size_must_be_16[(sizeof(SLineSeg) == 16) ? 1 : -1];
-typedef char Bit_CPolyLine_size_must_be_96[(sizeof(CPolyLine) == 96) ? 1 : -1];
-typedef char Bit_CGPolyLine_size_must_be_100[(sizeof(CGPolyLine) == 100) ? 1 : -1];
-typedef char Bit_CGLine_size_must_be_104[(sizeof(CGLine) == 104) ? 1 : -1];
-typedef char Bit_SClipLineBuf_size_must_be_0x60[(sizeof(SClipLineBuf) == 0x60) ? 1 : -1];
-typedef char Bit_CChunkBit_size_must_be_192[(sizeof(CChunkBit) == 192) ? 1 : -1];
-typedef char Bit_CSmokeTrail_size_must_be_100[(sizeof(CSmokeTrail) == 100) ? 1 : -1];
-typedef char Bit_CGenPoly_size_must_be_196[(sizeof(CGenPoly) == 196) ? 1 : -1];
-typedef char Bit_CGouraudRibbon_size_must_be_84[(sizeof(CGouraudRibbon) == 84) ? 1 : -1];
-typedef char Bit_CGlassBit_size_must_be_120[(sizeof(CGlassBit) == 120) ? 1 : -1];
-typedef char Bit_CTexturedRibbon_size_must_be_108[(sizeof(CTexturedRibbon) == 108) ? 1 : -1];
-typedef char Bit_SCalcBuffer_size_must_be_28[(sizeof(SCalcBuffer) == 28) ? 1 : -1];
+PSX_LAYOUT_CHECK(Bit_Texture_size_must_be_40, sizeof(Texture) == 40);
+PSX_LAYOUT_CHECK(Bit_CBit_size_must_be_72, sizeof(CBit) == 72);
+PSX_LAYOUT_CHECK(Bit_CFT4Bit_size_must_be_96, sizeof(CFT4Bit) == 96);
+PSX_LAYOUT_CHECK(Bit_CQuadBit_size_must_be_156, sizeof(CQuadBit) == 156);
+PSX_LAYOUT_CHECK(Bit_CFlatBit_size_must_be_112, sizeof(CFlatBit) == 112);
+PSX_LAYOUT_CHECK(Bit_CLinked2EndedBit_size_must_be_120, sizeof(CLinked2EndedBit) == 120);
+PSX_LAYOUT_CHECK(Bit_CPixel_size_must_be_84, sizeof(CPixel) == 84);
+PSX_LAYOUT_CHECK(Bit_CSpark_size_must_be_92, sizeof(CSpark) == 92);
+PSX_LAYOUT_CHECK(Bit_CSimpleAnim_size_must_be_120, sizeof(CSimpleAnim) == 120);
+PSX_LAYOUT_CHECK(Bit_CRibbon_size_must_be_96, sizeof(CRibbon) == 96);
+PSX_LAYOUT_CHECK(Bit_SRibbonPoint_size_must_be_36, sizeof(SRibbonPoint) == 36);
+PSX_LAYOUT_CHECK(Bit_CGlow_size_must_be_104, sizeof(CGlow) == 104);
+PSX_LAYOUT_CHECK(Bit_CWobblyGlow_size_must_be_176, sizeof(CWobblyGlow) == 176);
+PSX_LAYOUT_CHECK(Bit_SLineSeg_size_must_be_16, sizeof(SLineSeg) == 16);
+PSX_LAYOUT_CHECK(Bit_CPolyLine_size_must_be_96, sizeof(CPolyLine) == 96);
+PSX_LAYOUT_CHECK(Bit_CGPolyLine_size_must_be_100, sizeof(CGPolyLine) == 100);
+PSX_LAYOUT_CHECK(Bit_CGLine_size_must_be_104, sizeof(CGLine) == 104);
+PSX_LAYOUT_CHECK(Bit_SClipLineBuf_size_must_be_0x60, sizeof(SClipLineBuf) == 0x60);
+PSX_LAYOUT_CHECK(Bit_CChunkBit_size_must_be_192, sizeof(CChunkBit) == 192);
+PSX_LAYOUT_CHECK(Bit_CSmokeTrail_size_must_be_100, sizeof(CSmokeTrail) == 100);
+PSX_LAYOUT_CHECK(Bit_CGenPoly_size_must_be_196, sizeof(CGenPoly) == 196);
+PSX_LAYOUT_CHECK(Bit_CGouraudRibbon_size_must_be_84, sizeof(CGouraudRibbon) == 84);
+PSX_LAYOUT_CHECK(Bit_CGlassBit_size_must_be_120, sizeof(CGlassBit) == 120);
+PSX_LAYOUT_CHECK(Bit_CTexturedRibbon_size_must_be_108, sizeof(CTexturedRibbon) == 108);
+PSX_LAYOUT_CHECK(Bit_SCalcBuffer_size_must_be_28, sizeof(SCalcBuffer) == 28);
 
 #include "MEM.h"
 #include <LIBGPU.H>
@@ -335,7 +336,7 @@ int TotalBitUsage = 0;
 int BitCount = 0;
 
 /** Enable the transient bit-effect cache by default. */
-int UseCacheForBits __attribute__((section(".sdata"))) = 1;
+int UseCacheForBits PSX_SECTION(".sdata") = 1;
 
 // === Extern "C" global variables ===
 /*
@@ -379,18 +380,18 @@ SAnimFrame *QuickAnimLookup[6] = {
  * the original compiler, which preserves the target offsets of the scalar and
  * colour defaults that follow them.
  */
-Texture *pShadowTexture __attribute__((section(".sdata"))) = 0;
-CSVector SparkTrajectory __attribute__((section(".sdata")));
-CSVector SparkTrajectoryCone __attribute__((section(".sdata")));
-unsigned int SparkSize __attribute__((section(".sdata"))) = 1;
-void *SparkSemiTrans __attribute__((section(".sdata"))) = (void *)1;
-CVECTOR SparkRGB __attribute__((section(".sdata"))) = { 0x80, 0x80, 0x80, 0 };
-CVECTOR SparkFadeRGB __attribute__((section(".sdata"))) = { 4, 4, 4, 8 };
+Texture *pShadowTexture PSX_SECTION(".sdata") = 0;
+CSVector SparkTrajectory PSX_SECTION(".sdata");
+CSVector SparkTrajectoryCone PSX_SECTION(".sdata");
+unsigned int SparkSize PSX_SECTION(".sdata") = 1;
+void *SparkSemiTrans PSX_SECTION(".sdata") = (void *)1;
+CVECTOR SparkRGB PSX_SECTION(".sdata") = { 0x80, 0x80, 0x80, 0 };
+CVECTOR SparkFadeRGB PSX_SECTION(".sdata") = { 4, 4, 4, 8 };
 namespace BitAddressViewOwners
 {
 extern "C"
 {
-static char s_Ribbon[8] __attribute__((section(".sdata"))) = "Ribbon";
+static char s_Ribbon[8] PSX_SECTION(".sdata") = "Ribbon";
 }
 }
 

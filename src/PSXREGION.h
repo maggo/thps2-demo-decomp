@@ -1,5 +1,6 @@
 #ifndef THPS2_PSXREGION_H
 #define THPS2_PSXREGION_H
+#include "PSX.h"
 
 struct SModel;
 struct SHook;
@@ -30,16 +31,14 @@ struct SPSXRegion
     int Size;
 };
 
-typedef char SPSXRegion_size_must_be_64[(sizeof(SPSXRegion) == 64) ? 1 : -1];
+PSX_LAYOUT_CHECK(SPSXRegion_size_must_be_64, sizeof(SPSXRegion) == 64);
 typedef char
     SPSXRegion_Filename_offset_must_be_0[((unsigned long)&(((SPSXRegion *)0)->Filename) == 0) ? 1
                                                                                               : -1];
-typedef char SPSXRegion_IsSuper_offset_must_be_9[((unsigned long)&(((SPSXRegion *)0)->IsSuper) == 9)
-                                                     ? 1
-                                                     : -1];
-typedef char SPSXRegion_Usable_offset_must_be_10[((unsigned long)&(((SPSXRegion *)0)->Usable) == 10)
-                                                     ? 1
-                                                     : -1];
+PSX_LAYOUT_CHECK(SPSXRegion_IsSuper_offset_must_be_9,
+                 (unsigned long)&(((SPSXRegion *)0)->IsSuper) == 9);
+PSX_LAYOUT_CHECK(SPSXRegion_Usable_offset_must_be_10,
+                 (unsigned long)&(((SPSXRegion *)0)->Usable) == 10);
 typedef char SPSXRegion_Protected_offset_must_be_11
     [((unsigned long)&(((SPSXRegion *)0)->Protected) == 11) ? 1 : -1];
 typedef char SPSXRegion_pModelChecksums_offset_must_be_12
@@ -52,9 +51,8 @@ typedef char SPSXRegion_pAnimFile_offset_must_be_24
     [((unsigned long)&(((SPSXRegion *)0)->pAnimFile) == 24) ? 1 : -1];
 typedef char SPSXRegion_pHierarchy_offset_must_be_28
     [((unsigned long)&(((SPSXRegion *)0)->pHierarchy) == 28) ? 1 : -1];
-typedef char SPSXRegion_pHooks_offset_must_be_32[((unsigned long)&(((SPSXRegion *)0)->pHooks) == 32)
-                                                     ? 1
-                                                     : -1];
+PSX_LAYOUT_CHECK(SPSXRegion_pHooks_offset_must_be_32,
+                 (unsigned long)&(((SPSXRegion *)0)->pHooks) == 32);
 typedef char SPSXRegion_pColourTable_offset_must_be_36
     [((unsigned long)&(((SPSXRegion *)0)->pColourTable) == 36) ? 1 : -1];
 typedef char SPSXRegion_pTexWibData_offset_must_be_40

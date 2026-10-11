@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #define TRICKOB_POLYMORPHIC_LAYOUT
 #define TRICKOB_OWNER_DECLARATIONS
 #include "TRICKOB.h"
@@ -12,16 +13,16 @@
 #include "MAIN.h"
 #include "UTILS.h"
 
-typedef char trickob_owner_size_must_be_24[(sizeof(CTrickOb) == 24) ? 1 : -1];
+PSX_LAYOUT_CHECK(trickob_owner_size_must_be_24, sizeof(CTrickOb) == 24);
 #include "SPOOL.h"
 
 // === Owner-local $gp-relative globals ===
-CTrickOb *TrickObList __attribute__((section(".sdata"))) = 0;
-unsigned short DarkenTimer[3] __attribute__((section(".sdata"))) = { 1800, 600, 900 };
-static int MapX __attribute__((section(".sdata"))) = 256;
-static int MapY __attribute__((section(".sdata"))) = 220;
-static int MapScale __attribute__((section(".sdata"))) = 128;
-int Missed __attribute__((section(".sdata"))) = 0;
+CTrickOb *TrickObList PSX_SECTION(".sdata") = 0;
+unsigned short DarkenTimer[3] PSX_SECTION(".sdata") = { 1800, 600, 900 };
+static int MapX PSX_SECTION(".sdata") = 256;
+static int MapY PSX_SECTION(".sdata") = 220;
+static int MapScale PSX_SECTION(".sdata") = 128;
+int Missed PSX_SECTION(".sdata") = 0;
 
 // === Function implementations (address order) ===
 

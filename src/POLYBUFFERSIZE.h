@@ -1,5 +1,6 @@
 #ifndef POLYBUFFERSIZE_INC_H
 #define POLYBUFFERSIZE_INC_H
+#include "PSX.h"
 
 /*
  * DB physically owns the polygon-buffer byte count as a small-BSS common.
@@ -7,7 +8,7 @@
  * view of that word.
  */
 #ifdef POLYBUFFERSIZE_ABSOLUTE_DECLARATION
-#define POLYBUFFERSIZE_DECL_ATTR __attribute__((section(".data")))
+#define POLYBUFFERSIZE_DECL_ATTR PSX_SECTION(".data")
 #else
 #define POLYBUFFERSIZE_DECL_ATTR
 #endif

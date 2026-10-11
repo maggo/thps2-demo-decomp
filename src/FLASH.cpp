@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #include "FLASH.h"
 #define DB_BUFFER_LAYOUT
 #include "DB.h"
@@ -47,12 +48,12 @@ static int FadeCountdown = 0;
  * explicit small-data section preserves the original GP-relative accesses
  * without turning the names into link-visible common symbols.
  */
-static unsigned int CurrentR __attribute__((section(".sbss")));
-static unsigned int CurrentG __attribute__((section(".sbss")));
-static unsigned int CurrentB __attribute__((section(".sbss")));
-static unsigned int dR __attribute__((section(".sbss")));
-static unsigned int dG __attribute__((section(".sbss")));
-static unsigned int dB __attribute__((section(".sbss")));
+static unsigned int CurrentR PSX_SECTION(".sbss");
+static unsigned int CurrentG PSX_SECTION(".sbss");
+static unsigned int CurrentB PSX_SECTION(".sbss");
+static unsigned int dR PSX_SECTION(".sbss");
+static unsigned int dG PSX_SECTION(".sbss");
+static unsigned int dB PSX_SECTION(".sbss");
 
 // === Function implementations (address order) ===
 

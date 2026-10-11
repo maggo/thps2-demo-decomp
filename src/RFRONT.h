@@ -1,10 +1,11 @@
 #ifndef RFRONT_INC_H
 #define RFRONT_INC_H
+#include "PSX.h"
 
 #ifdef RFRONT_OWNER_DECLARATIONS
 #define RFRONT_SHARED_STATE_DECL_ATTR
 #else
-#define RFRONT_SHARED_STATE_DECL_ATTR __attribute__((section(".data")))
+#define RFRONT_SHARED_STATE_DECL_ATTR PSX_SECTION(".data")
 #endif
 
 /** Replay state restored from a saved video header. */
@@ -17,7 +18,7 @@ struct SVideoRestart
     int GGame;
 };
 
-typedef char SVideoRestart_size_must_be_20[(sizeof(SVideoRestart) == 20) ? 1 : -1];
+PSX_LAYOUT_CHECK(SVideoRestart_size_must_be_20, sizeof(SVideoRestart) == 20);
 typedef char SVideoRestart_NumSkaters_offset_must_be_0
     [((unsigned long)&(((SVideoRestart *)0)->NumSkaters) == 0) ? 1 : -1];
 typedef char SVideoRestart_Skater_offset_must_be_4

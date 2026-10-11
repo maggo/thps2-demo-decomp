@@ -1,5 +1,6 @@
 #ifndef GTAPE_INC_H
 #define GTAPE_INC_H
+#include "PSX.h"
 
 struct CTape;
 
@@ -10,7 +11,7 @@ struct CTape;
 #endif
 
 /** Tape-object slots populated by the front end for the active level. */
-GTAPE_DECL_LINKAGE CTape *GTape[5] __attribute__((section(".data")));
+GTAPE_DECL_LINKAGE CTape *GTape[5] PSX_SECTION(".data");
 
 #undef GTAPE_DECL_LINKAGE
 

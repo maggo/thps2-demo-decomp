@@ -1,12 +1,13 @@
 #ifndef TOTALVABUSAGE_INC_H
 #define TOTALVABUSAGE_INC_H
+#include "PSX.h"
 
 /*
  * SFX physically owns the sound-RAM allocation counter in initialized small
  * data. INIT retains its target-proven absolute-address import view.
  */
 #ifdef TOTALVABUSAGE_ABSOLUTE_DECLARATION
-#define TOTALVABUSAGE_DECL_ATTR __attribute__((section(".data")))
+#define TOTALVABUSAGE_DECL_ATTR PSX_SECTION(".data")
 #else
 #define TOTALVABUSAGE_DECL_ATTR
 #endif

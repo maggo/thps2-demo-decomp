@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #define CCLASS_POLY_ITEM_FAMILY
 #define CCLASS_POLY_BADDY_FAMILY
 #include "CCLASS_POLY.h"
@@ -129,12 +130,12 @@ struct CBruce : CSuper
     void Vibrate(int time, int motor, int value);
 };
 
-typedef char CItem_platform_size_check[(sizeof(struct PlatformCItemOwner) == 76) ? 1 : -1];
-typedef char Platform_SDK_SVECTOR_size_must_be_8[(sizeof(SVECTOR) == 8) ? 1 : -1];
-typedef char CPlatform_size_check[(sizeof(struct CPlatform) == 592) ? 1 : -1];
+PSX_LAYOUT_CHECK(CItem_platform_size_check, sizeof(struct PlatformCItemOwner) == 76);
+PSX_LAYOUT_CHECK(Platform_SDK_SVECTOR_size_must_be_8, sizeof(SVECTOR) == 8);
+PSX_LAYOUT_CHECK(CPlatform_size_check, sizeof(struct CPlatform) == 592);
 typedef char
     CPlatform_public_size_check[(sizeof(struct CPlatform) == PLATFORM_OBJECT_SIZE) ? 1 : -1];
-typedef char CBruce_platform_size_check[(sizeof(struct CBruce) == 5228) ? 1 : -1];
+PSX_LAYOUT_CHECK(CBruce_platform_size_check, sizeof(struct CBruce) == 5228);
 
 #include "SHATTER.h"
 #include "TRIG.h"

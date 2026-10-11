@@ -1,12 +1,13 @@
 #ifndef HIRESMODE_INC_H
 #define HIRESMODE_INC_H
+#include "PSX.h"
 
 /*
  * SHELLUTILS physically owns the high-resolution shell flag in initialized
  * small data. FRONTEND2 retains its target-proven absolute-address view.
  */
 #ifdef HIRESMODE_ABSOLUTE_DECLARATION
-#define HIRESMODE_DECL_ATTR __attribute__((section(".data")))
+#define HIRESMODE_DECL_ATTR PSX_SECTION(".data")
 #else
 #define HIRESMODE_DECL_ATTR
 #endif

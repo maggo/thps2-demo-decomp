@@ -4,8 +4,9 @@
  * OtherEnvIndex through its generated owner declarations, then reapplies the
  * target's absolute-address declaration view beside EnvModelChecksums.
  */
+#include "PSX.h"
 #ifdef SPOOLENV_ABSOLUTE_DECLARATIONS
-#define SPOOLENV_DECL_ATTR __attribute__((section(".data")))
+#define SPOOLENV_DECL_ATTR PSX_SECTION(".data")
 #else
 #define SPOOLENV_DECL_ATTR
 #endif

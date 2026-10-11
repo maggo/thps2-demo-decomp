@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #define CCLASS_POLY_ITEM_FAMILY
 #include "CCLASS_POLY.h"
 #include "CFRICTION.h"
@@ -90,8 +91,8 @@ struct CMedal : CBody
     void AI();
 };
 
-typedef char CMedal_size_must_be_300[(sizeof(CMedal) == 300) ? 1 : -1];
-typedef char CPowerUp_size_must_be_312[(sizeof(CPowerUp) == 312) ? 1 : -1];
+PSX_LAYOUT_CHECK(CMedal_size_must_be_300, sizeof(CMedal) == 300);
+PSX_LAYOUT_CHECK(CPowerUp_size_must_be_312, sizeof(CPowerUp) == 312);
 
 #include "POWERUP.h"
 #include "CAREER.h"
@@ -110,7 +111,7 @@ CPowerUp *Medal_Create(EMedalType t, int x, int y, int z, int Size, int yvel);
 /**
  * Cool white light used by the medal pickup model.
  */
-SLight Medal_DefaultLight __attribute__((section(".data"))) = {
+SLight Medal_DefaultLight PSX_SECTION(".data") = {
     {
         { 0, 4096, 0 },
         { 0, -4096, 0 },

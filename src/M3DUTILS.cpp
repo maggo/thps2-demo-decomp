@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #include "M3DUTILS.h"
 #include <INLINE_C.H>
 #include "gte_extensions.h"
@@ -116,20 +117,20 @@ void M3dUtils_InterpolateVectors(int NumVectors, int Interval, unsigned int *pAn
 /** Fixed-point vector operations provided by VECTOR.cpp. */
 #include "CVECTOROPS.h"
 
-typedef char M3dUtils_SMatrix_size_must_be_24[(sizeof(SMatrix) == 24) ? 1 : -1];
-typedef char M3dUtils_AnimInfo_size_must_be_12[(sizeof(M3dUtilsAnimInfo) == 12) ? 1 : -1];
-typedef char M3dUtils_HooksPacket_size_must_be_12[(sizeof(M3dUtilsHooksPacket) == 12) ? 1 : -1];
-typedef char M3dUtils_CItem_size_must_be_76[(sizeof(M3dUtilsCItemOwner) == 76) ? 1 : -1];
-typedef char M3dUtils_CBody_size_must_be_264[(sizeof(M3dUtilsCBodyOwner) == 264) ? 1 : -1];
-typedef char M3dUtils_MATRIX_size_must_be_32[(sizeof(MATRIX) == 32) ? 1 : -1];
+PSX_LAYOUT_CHECK(M3dUtils_SMatrix_size_must_be_24, sizeof(SMatrix) == 24);
+PSX_LAYOUT_CHECK(M3dUtils_AnimInfo_size_must_be_12, sizeof(M3dUtilsAnimInfo) == 12);
+PSX_LAYOUT_CHECK(M3dUtils_HooksPacket_size_must_be_12, sizeof(M3dUtilsHooksPacket) == 12);
+PSX_LAYOUT_CHECK(M3dUtils_CItem_size_must_be_76, sizeof(M3dUtilsCItemOwner) == 76);
+PSX_LAYOUT_CHECK(M3dUtils_CBody_size_must_be_264, sizeof(M3dUtilsCBodyOwner) == 264);
+PSX_LAYOUT_CHECK(M3dUtils_MATRIX_size_must_be_32, sizeof(MATRIX) == 32);
 typedef char M3dUtils_CSuper_transform_offset_must_be_324
     [((unsigned long)&(((CSuper *)0)->mTransform) == 324) ? 1 : -1];
 typedef char M3dUtils_CSuper_pose_buffer_offset_must_be_356
     [((unsigned long)&(((CSuper *)0)->mpPoseBuffer) == 356) ? 1 : -1];
-typedef char M3dUtils_CSuper_size_must_be_400[(sizeof(CSuper) == 400) ? 1 : -1];
+PSX_LAYOUT_CHECK(M3dUtils_CSuper_size_must_be_400, sizeof(CSuper) == 400);
 
 /** Scratch transforms produced while interpolating up to thirty model parts. */
-SMatrix TweenBuffer[M3DUTILS_MAX_TWEEN_PARTS] __attribute__((section(".data"))) = {};
+SMatrix TweenBuffer[M3DUTILS_MAX_TWEEN_PARTS] PSX_SECTION(".data") = {};
 
 /**
  * Attach the hook array from a model packet to the item's active region.

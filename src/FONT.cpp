@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #define FONT_OWNER_DECLARATIONS
 #include "FONT.h"
 #undef FONT_OWNER_DECLARATIONS
@@ -34,10 +35,10 @@ struct SDoubleBuffer
 
 #include "SCAMERA.h"
 
-typedef char Font_Texture_size_must_be_40[(sizeof(Texture) == 40) ? 1 : -1];
-typedef char Font_StringCommand_size_must_be_32[(sizeof(SString) == 32) ? 1 : -1];
+PSX_LAYOUT_CHECK(Font_Texture_size_must_be_40, sizeof(Texture) == 40);
+PSX_LAYOUT_CHECK(Font_StringCommand_size_must_be_32, sizeof(SString) == 32);
 /** Font command entries constructed by FONT.CPP at startup. */
-SString StringBuffer[100] __attribute__((section(".data")));
+SString StringBuffer[100] PSX_SECTION(".data");
 
 /**
  * Complete FONT small-data contribution in target order.
@@ -45,13 +46,13 @@ SString StringBuffer[100] __attribute__((section(".data")));
  * Defining the original globals before their users also gives ASPSX the
  * section information required to select the original GP-relative forms.
  */
-static SAnimFrame *FontAnim __attribute__((section(".sdata"))) = 0;
-SAnimFrame *BigFontAnim __attribute__((section(".sdata"))) = 0;
-static unsigned int CodeVal __attribute__((section(".sdata"))) = 0x2c000000;
-static char FontAnimName1[12] __attribute__((section(".sdata"))) = "Fontsmll";
-static char FontAnimName2[8] __attribute__((section(".sdata"))) = "Font";
-SString *BufferPos __attribute__((section(".sdata"))) = 0;
-char *pNumberStrings __attribute__((section(".sdata"))) = 0;
+static SAnimFrame *FontAnim PSX_SECTION(".sdata") = 0;
+SAnimFrame *BigFontAnim PSX_SECTION(".sdata") = 0;
+static unsigned int CodeVal PSX_SECTION(".sdata") = 0x2c000000;
+static char FontAnimName1[12] PSX_SECTION(".sdata") = "Fontsmll";
+static char FontAnimName2[8] PSX_SECTION(".sdata") = "Font";
+SString *BufferPos PSX_SECTION(".sdata") = 0;
+char *pNumberStrings PSX_SECTION(".sdata") = 0;
 
 // === External function declarations ===
 #include "SPOOL.h"
@@ -347,7 +348,7 @@ void Font_Display(void)
 
 
 /** Character-to-frame mapping for the small font. */
-unsigned char Mapping[128] __attribute__((section(".data"))) = {
+unsigned char Mapping[128] PSX_SECTION(".data") = {
     0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
     0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
     0xff, 0x1d, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x1b, 0x1e, 0x1a, 0xff,
@@ -361,7 +362,7 @@ unsigned char Mapping[128] __attribute__((section(".data"))) = {
 /** Character-to-frame mapping for the large message font. */
 #define BIGFONTMAPPING_OWNER_DECLARATION
 #include "BIGFONTMAPPING.h"
-unsigned char BigFont_Mapping[256] __attribute__((section(".data"))) = {
+unsigned char BigFont_Mapping[256] PSX_SECTION(".data") = {
     0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a,
     0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a,
     0xff, 0x2c, 0x2a, 0x2a, 0x2a, 0x02, 0x2a, 0x30, 0x2a, 0x2a, 0x2a, 0x01, 0x2a, 0x32, 0x31, 0x2a,
@@ -381,4 +382,4 @@ unsigned char BigFont_Mapping[256] __attribute__((section(".data"))) = {
 };
 
 /** Scratch storage for decimal strings queued by Font_Number. */
-char NumberStrings[512] __attribute__((section(".data"))) = {};
+char NumberStrings[512] PSX_SECTION(".data") = {};

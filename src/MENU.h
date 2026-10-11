@@ -1,5 +1,6 @@
 // Per-TU header for MENU.cpp
 // Class definitions reconstructed from This Dust Remembers MAIN.H
+#include "PSX.h"
 #ifndef MENU_ABI_DECLARATIONS_ONLY
 #ifndef MENU_INC_H
 #define MENU_INC_H
@@ -262,17 +263,17 @@ public:
     int NumItems; // 0x10C
 };
 
-typedef char menu_font_size_must_be_80[(sizeof(Font) == 80) ? 1 : -1];
-typedef char menu_properties_size_must_be_128[(sizeof(TextMenuProperties) == 128) ? 1 : -1];
-typedef char menu_item_size_must_be_40[(sizeof(MenuItem) == 40) ? 1 : -1];
-typedef char menu_vertical_item_size_must_be_44[(sizeof(VMenuItem) == 44) ? 1 : -1];
-typedef char menu_text_item_size_must_be_80[(sizeof(TextMenuItem) == 80) ? 1 : -1];
-typedef char menu_select_item_size_must_be_256[(sizeof(SelectMenuItem) == 256) ? 1 : -1];
-typedef char menu_basic_size_must_be_104[(sizeof(BasicMenu) == 104) ? 1 : -1];
-typedef char menu_vertical_size_must_be_116[(sizeof(VerticalMenu2) == 116) ? 1 : -1];
-typedef char menu_scrolling_size_must_be_184[(sizeof(ScrollingMenu2) == 184) ? 1 : -1];
-typedef char menu_wrapper_size_must_be_12[(sizeof(MenuWrapper) == 12) ? 1 : -1];
-typedef char menu_text_wrapper_size_must_be_272[(sizeof(TextMenuWrapper) == 272) ? 1 : -1];
+PSX_LAYOUT_CHECK(menu_font_size_must_be_80, sizeof(Font) == 80);
+PSX_LAYOUT_CHECK(menu_properties_size_must_be_128, sizeof(TextMenuProperties) == 128);
+PSX_LAYOUT_CHECK(menu_item_size_must_be_40, sizeof(MenuItem) == 40);
+PSX_LAYOUT_CHECK(menu_vertical_item_size_must_be_44, sizeof(VMenuItem) == 44);
+PSX_LAYOUT_CHECK(menu_text_item_size_must_be_80, sizeof(TextMenuItem) == 80);
+PSX_LAYOUT_CHECK(menu_select_item_size_must_be_256, sizeof(SelectMenuItem) == 256);
+PSX_LAYOUT_CHECK(menu_basic_size_must_be_104, sizeof(BasicMenu) == 104);
+PSX_LAYOUT_CHECK(menu_vertical_size_must_be_116, sizeof(VerticalMenu2) == 116);
+PSX_LAYOUT_CHECK(menu_scrolling_size_must_be_184, sizeof(ScrollingMenu2) == 184);
+PSX_LAYOUT_CHECK(menu_wrapper_size_must_be_12, sizeof(MenuWrapper) == 12);
+PSX_LAYOUT_CHECK(menu_text_wrapper_size_must_be_272, sizeof(TextMenuWrapper) == 272);
 
 #endif // MENU_INC_H
 #endif // MENU_ABI_DECLARATIONS_ONLY

@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #include "CCLASS_POLY.h"
 #include "CMENU.h"
 #include "RFRONT.h"
@@ -111,8 +112,8 @@ struct CCompetition : CClass
     void *mFading;
 };
 
-typedef char CJudge_size_must_be_0x08[(sizeof(CJudge) == 0x08) ? 1 : -1];
-typedef char CCompetition_size_must_be_0x130[(sizeof(CCompetition) == 0x130) ? 1 : -1];
+PSX_LAYOUT_CHECK(CJudge_size_must_be_0x08, sizeof(CJudge) == 0x08);
+PSX_LAYOUT_CHECK(CCompetition_size_must_be_0x130, sizeof(CCompetition) == 0x130);
 
 #include "GLEVEL.h"
 #define FRONTFLOWSTATE_DECLARE_ROLL_CREDITS
@@ -205,7 +206,7 @@ typedef char
     CompetitionLevelFlag_size_must_be_0x74[(sizeof(CompetitionLevelFlag) == 0x74) ? 1 : -1];
 typedef char
     Competition_SCharacterProgress_size_must_be_0x20[(sizeof(SCharacterProgress) == 0x20) ? 1 : -1];
-typedef char Competition_CBruce_size_must_be_5228[(sizeof(CBruce) == 5228) ? 1 : -1];
+PSX_LAYOUT_CHECK(Competition_CBruce_size_must_be_5228, sizeof(CBruce) == 5228);
 
 #include "MAIN.h"
 #define DB_BUFFER_LAYOUT
@@ -255,57 +256,47 @@ namespace CompetitionAddressViewOwners
 {
 extern "C"
 {
-static char s_Congratulations[] __attribute__((section(".rdata"), aligned(4))) = "Congratulations!";
+static char s_Congratulations[] PSX_SECTION_ALIGNED(".rdata", 4) = "Congratulations!";
 }
 }
-static char Competition_NextDowntown[] __attribute__((section(".rdata"), aligned(4))) =
-    "Next stop, the DOWNTOWN level.";
-static char Competition_NextSanFrancisco[] __attribute__((section(".rdata"), aligned(4))) =
-    "Next stop, SAN FRANCISCO.";
-static char Competition_AllMedalsHeading[] __attribute__((section(".rdata"), aligned(4))) =
+static char Competition_NextDowntown[] PSX_SECTION_ALIGNED(".rdata",
+                                                           4) = "Next stop, the DOWNTOWN level.";
+static char Competition_NextSanFrancisco[] PSX_SECTION_ALIGNED(".rdata",
+                                                               4) = "Next stop, SAN FRANCISCO.";
+static char Competition_AllMedalsHeading[] PSX_SECTION_ALIGNED(".rdata", 4) =
     "Congratulations! You've earned";
-static char Competition_AllMedalsBody[] __attribute__((section(".rdata"), aligned(4))) =
-    "a medal in every competition.";
-static char Competition_AllMedalsEnding[] __attribute__((section(".rdata"), aligned(4))) =
+static char Competition_AllMedalsBody[] PSX_SECTION_ALIGNED(".rdata",
+                                                            4) = "a medal in every competition.";
+static char Competition_AllMedalsEnding[] PSX_SECTION_ALIGNED(".rdata", 4) =
     "Now sit back and enjoy the show...";
 namespace CompetitionAddressViewOwners
 {
 extern "C"
 {
-static char s_YouScoredAllGolds[] __attribute__((section(".rdata"), aligned(4))) =
-    "You scored all golds!";
-static char s_YourAreTheTopProSkater[] __attribute__((section(".rdata"), aligned(4))) =
-    "Your are the top pro skater.";
-static char s_WatchThisGetOffCouch[] __attribute__((section(".rdata"), aligned(4))) =
-    "Watch this, then get off your";
-static char s_CouchAndGoSkate[] __attribute__((section(".rdata"), aligned(4))) =
-    "couch and go skate!";
-static char s_YourThirdMedal[] __attribute__((section(".rdata"), aligned(4))) =
-    "Your third medal.. Good going!";
-static char s_YouJustMightBecome[] __attribute__((section(".rdata"), aligned(4))) =
-    "You just might become";
-static char s_AnAverageSkater[] __attribute__((section(".rdata"), aligned(4))) =
-    "an average skater.";
-static char s_ProSkatersGetAllGolds[] __attribute__((section(".rdata"), aligned(4))) =
-    "pro skaters get all golds...";
-static char s_YouWinTheGold[] __attribute__((section(".rdata"), aligned(4))) = "You win the Gold!";
-static char s_YouWinTheSilver[] __attribute__((section(".rdata"), aligned(4))) =
-    "You win the Silver!";
-static char s_YouWinTheBronze[] __attribute__((section(".rdata"), aligned(4))) =
-    "You win the Bronze!";
-static char s_CompetitionStandings[] __attribute__((section(".rdata"), aligned(4))) =
-    "COMPETITION STANDINGS";
-static char s_PlaceColumnsHeader[] __attribute__((section(".rdata"), aligned(4))) =
-    "1         2         3           Total";
-static char s_JudgeScoreRowFormat[] __attribute__((section(".rdata"), aligned(4))) =
-    "JUDGE %d     %d.%d";
-static char s_HeatScoreHeaderFormat[] __attribute__((section(".rdata"), aligned(4))) =
-    "HEAT %d SCORE - ";
+static char s_YouScoredAllGolds[] PSX_SECTION_ALIGNED(".rdata", 4) = "You scored all golds!";
+static char s_YourAreTheTopProSkater[] PSX_SECTION_ALIGNED(".rdata",
+                                                           4) = "Your are the top pro skater.";
+static char s_WatchThisGetOffCouch[] PSX_SECTION_ALIGNED(".rdata",
+                                                         4) = "Watch this, then get off your";
+static char s_CouchAndGoSkate[] PSX_SECTION_ALIGNED(".rdata", 4) = "couch and go skate!";
+static char s_YourThirdMedal[] PSX_SECTION_ALIGNED(".rdata", 4) = "Your third medal.. Good going!";
+static char s_YouJustMightBecome[] PSX_SECTION_ALIGNED(".rdata", 4) = "You just might become";
+static char s_AnAverageSkater[] PSX_SECTION_ALIGNED(".rdata", 4) = "an average skater.";
+static char s_ProSkatersGetAllGolds[] PSX_SECTION_ALIGNED(".rdata",
+                                                          4) = "pro skaters get all golds...";
+static char s_YouWinTheGold[] PSX_SECTION_ALIGNED(".rdata", 4) = "You win the Gold!";
+static char s_YouWinTheSilver[] PSX_SECTION_ALIGNED(".rdata", 4) = "You win the Silver!";
+static char s_YouWinTheBronze[] PSX_SECTION_ALIGNED(".rdata", 4) = "You win the Bronze!";
+static char s_CompetitionStandings[] PSX_SECTION_ALIGNED(".rdata", 4) = "COMPETITION STANDINGS";
+static char s_PlaceColumnsHeader[] PSX_SECTION_ALIGNED(".rdata",
+                                                       4) = "1         2         3           Total";
+static char s_JudgeScoreRowFormat[] PSX_SECTION_ALIGNED(".rdata", 4) = "JUDGE %d     %d.%d";
+static char s_HeatScoreHeaderFormat[] PSX_SECTION_ALIGNED(".rdata", 4) = "HEAT %d SCORE - ";
 }
 }
 
 /** Messages displayed for the first, second, and all-medal milestones. */
-SMedalMessage MedalMessage[3] __attribute__((section(".data"))) = {
+SMedalMessage MedalMessage[3] PSX_SECTION(".data") = {
     {
         0,
         (char *)s_Congratulations,
@@ -340,24 +331,24 @@ namespace CompetitionAddressViewOwners
 {
 extern "C"
 {
-static char s_HeatTitleFormat[] __attribute__((section(".sdata"), aligned(4))) = "%s %s - HEAT %d";
-static char s_YouLose[] __attribute__((section(".sdata"), aligned(4))) = "You lose!";
-static char s_FirstPlaceFormat[] __attribute__((section(".sdata"), aligned(4))) = "%s: 1st place";
-static char s_SecondPlaceFormat[] __attribute__((section(".sdata"), aligned(4))) = "%s: 2nd place";
-static char s_ThirdPlaceFormat[] __attribute__((section(".sdata"), aligned(4))) = "%s: 3rd place";
-static char s_OrdinalFormat[] __attribute__((section(".sdata"), aligned(4))) = "%dth";
-static char s_HeatLabel[] __attribute__((section(".sdata"), aligned(4))) = "        Heat";
-static char s_StringFormat[] __attribute__((section(".sdata"), aligned(4))) = "%s";
-static char s_ScoreFormat[] __attribute__((section(".sdata"), aligned(4))) = "%d.%d";
-static char s_Dash[] __attribute__((section(".sdata"), aligned(4))) = "-";
-static char s_HeatOverBanner[] __attribute__((section(".sdata"), aligned(4))) = "HEAT %d OVER!";
-static char s_JudgesScoresTitle[] __attribute__((section(".sdata"), aligned(4))) = "JUDGES SCORES";
-static char s_JudgeNumberFormat[] __attribute__((section(".sdata"), aligned(4))) = "JUDGE %d";
+static char s_HeatTitleFormat[] PSX_SECTION_ALIGNED(".sdata", 4) = "%s %s - HEAT %d";
+static char s_YouLose[] PSX_SECTION_ALIGNED(".sdata", 4) = "You lose!";
+static char s_FirstPlaceFormat[] PSX_SECTION_ALIGNED(".sdata", 4) = "%s: 1st place";
+static char s_SecondPlaceFormat[] PSX_SECTION_ALIGNED(".sdata", 4) = "%s: 2nd place";
+static char s_ThirdPlaceFormat[] PSX_SECTION_ALIGNED(".sdata", 4) = "%s: 3rd place";
+static char s_OrdinalFormat[] PSX_SECTION_ALIGNED(".sdata", 4) = "%dth";
+static char s_HeatLabel[] PSX_SECTION_ALIGNED(".sdata", 4) = "        Heat";
+static char s_StringFormat[] PSX_SECTION_ALIGNED(".sdata", 4) = "%s";
+static char s_ScoreFormat[] PSX_SECTION_ALIGNED(".sdata", 4) = "%d.%d";
+static char s_Dash[] PSX_SECTION_ALIGNED(".sdata", 4) = "-";
+static char s_HeatOverBanner[] PSX_SECTION_ALIGNED(".sdata", 4) = "HEAT %d OVER!";
+static char s_JudgesScoresTitle[] PSX_SECTION_ALIGNED(".sdata", 4) = "JUDGES SCORES";
+static char s_JudgeNumberFormat[] PSX_SECTION_ALIGNED(".sdata", 4) = "JUDGE %d";
 }
 }
 
 /** Process-lifetime competition state, constructed by the owner initializer. */
-CCompetition theCompetition __attribute__((section(".data")));
+CCompetition theCompetition PSX_SECTION(".data");
 
 
 // === Function implementations (address order) ===

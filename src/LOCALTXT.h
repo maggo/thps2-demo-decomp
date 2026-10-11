@@ -2,6 +2,7 @@
 
 #ifndef LOCALTXT_LAYOUT_EMITTED
 #define LOCALTXT_LAYOUT_EMITTED
+#include "PSX.h"
 
 /**
  * Target-proven field layout of the localized frontend text table.
@@ -185,7 +186,7 @@ struct LocalText
 #error "LOCALTXT.h ordinary API requires the LocalText layout"
 #endif
 
-typedef char LocalText_size_must_be_652[(sizeof(LocalText) == 652) ? 1 : -1];
+PSX_LAYOUT_CHECK(LocalText_size_must_be_652, sizeof(LocalText) == 652);
 
 /**
  * Ordered frontend text pointers used by menus, prompts, and memory-card UI.

@@ -1,12 +1,13 @@
 #ifndef INIT_INC_H
 #define INIT_INC_H
+#include "PSX.h"
 
 #include "PACK.h"
 
 #ifdef INIT_OWNER_DECLARATIONS
 #define INIT_SHARED_STATE_DECL_ATTR
 #else
-#define INIT_SHARED_STATE_DECL_ATTR __attribute__((section(".data")))
+#define INIT_SHARED_STATE_DECL_ATTR PSX_SECTION(".data")
 #endif
 
 /** Active trigger filename selected for the current level. */
@@ -30,7 +31,7 @@ void Init_AtStart(void);
 
 #ifdef INIT_DECLARE_TOP_OF_CODE_ABSOLUTE_VIEW
 /** Linker-provided start address used to place the two runtime heaps. */
-extern int TopOfCode __attribute__((section(".data")));
+extern int TopOfCode PSX_SECTION(".data");
 #undef INIT_DECLARE_TOP_OF_CODE_ABSOLUTE_VIEW
 #endif
 

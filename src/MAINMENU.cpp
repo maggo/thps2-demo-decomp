@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 typedef unsigned char u8;
 
 #define SCREENTOOLS_POLYMORPHIC_LAYOUT
@@ -62,9 +63,9 @@ struct WheelElementList : ScreenElementList
     void draw(int x, int y);
 };
 
-typedef char mainmenu_wheel_size_must_be_124[(sizeof(WheelElementList) == 124) ? 1 : -1];
-typedef char mainmenu_screen_size_must_be_332[(sizeof(MainMenuScreen) == 332) ? 1 : -1];
-typedef char mainmenu_prompt_size_must_be_104[(sizeof(PromptScreenElement) == 104) ? 1 : -1];
+PSX_LAYOUT_CHECK(mainmenu_wheel_size_must_be_124, sizeof(WheelElementList) == 124);
+PSX_LAYOUT_CHECK(mainmenu_screen_size_must_be_332, sizeof(MainMenuScreen) == 332);
+PSX_LAYOUT_CHECK(mainmenu_prompt_size_must_be_104, sizeof(PromptScreenElement) == 104);
 
 #include "SFX.h"
 #include "MAIN.h"
@@ -80,20 +81,20 @@ typedef char mainmenu_prompt_size_must_be_104[(sizeof(PromptScreenElement) == 10
 #include "FRONTEND2.h"
 
 /** MAINMENU's initialized small-data contribution in original order. */
-u8 MainMenu_LastSelection __attribute__((section(".sdata"), aligned(4))) = 2;
-static char EndProcess_str[] __attribute__((section(".sdata"), aligned(4))) = "loading";
-static char MainMenuBmpName[] __attribute__((section(".sdata"), aligned(4))) = "s2bgd2.bmp";
-static char MainMenuFont1[] __attribute__((section(".sdata"), aligned(4))) = "mainf.fnt";
-static char MainMenuFont2[] __attribute__((section(".sdata"), aligned(4))) = "s2font2.fnt";
-static char MainMenuItemNames[] __attribute__((section(".sdata"), aligned(4))) = "s2prmpt4.bmp";
-static char MainMenuItemNames2[] __attribute__((section(".sdata"), aligned(4))) = "select";
-static char MainMenuBmpName2[] __attribute__((section(".sdata"), aligned(4))) = "s2prmpt1.bmp";
-static char MainMenuBmpName3[] __attribute__((section(".sdata"), aligned(4))) = "accept";
-static char WheelBmpName[] __attribute__((section(".sdata"), aligned(4))) = "s2wheel.bmp";
-static char WheelItemNames[] __attribute__((section(".sdata"), aligned(4))) = "s2arrow3.bmp";
+u8 MainMenu_LastSelection PSX_SECTION_ALIGNED(".sdata", 4) = 2;
+static char EndProcess_str[] PSX_SECTION_ALIGNED(".sdata", 4) = "loading";
+static char MainMenuBmpName[] PSX_SECTION_ALIGNED(".sdata", 4) = "s2bgd2.bmp";
+static char MainMenuFont1[] PSX_SECTION_ALIGNED(".sdata", 4) = "mainf.fnt";
+static char MainMenuFont2[] PSX_SECTION_ALIGNED(".sdata", 4) = "s2font2.fnt";
+static char MainMenuItemNames[] PSX_SECTION_ALIGNED(".sdata", 4) = "s2prmpt4.bmp";
+static char MainMenuItemNames2[] PSX_SECTION_ALIGNED(".sdata", 4) = "select";
+static char MainMenuBmpName2[] PSX_SECTION_ALIGNED(".sdata", 4) = "s2prmpt1.bmp";
+static char MainMenuBmpName3[] PSX_SECTION_ALIGNED(".sdata", 4) = "accept";
+static char WheelBmpName[] PSX_SECTION_ALIGNED(".sdata", 4) = "s2wheel.bmp";
+static char WheelItemNames[] PSX_SECTION_ALIGNED(".sdata", 4) = "s2arrow3.bmp";
 
 /** Menu-wheel angle and result mapping at its target `.data` address. */
-int RotMap[7][2] __attribute__((section(".data"), aligned(4))) = {
+int RotMap[7][2] PSX_SECTION_ALIGNED(".data", 4) = {
     { 0x0000, 0x27 }, { 0x0D6D, -1 },   { 0x0B56, 0x28 }, { 0x0934, -1 },
     { 0x06EF, -1 },   { 0x04E4, 0x22 }, { 0x02AB, -1 },
 };

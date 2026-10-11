@@ -1,6 +1,7 @@
 // POWERUP.h -- interface of POWERUP.cpp
 #ifndef POWERUP_INC_H
 #define POWERUP_INC_H
+#include "PSX.h"
 
 struct CPowerUp;
 struct CBody;
@@ -9,7 +10,7 @@ struct CVector;
 #ifdef POWERUP_OWNER_DECLARATIONS
 #define POWERUP_LIST_DECL_ATTR
 #else
-#define POWERUP_LIST_DECL_ATTR __attribute__((section(".data")))
+#define POWERUP_LIST_DECL_ATTR PSX_SECTION(".data")
 #endif
 
 /** Head of the intrusive list containing every active power-up body. */

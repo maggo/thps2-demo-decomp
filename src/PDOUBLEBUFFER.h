@@ -1,5 +1,6 @@
 #ifndef PDOUBLEBUFFER_INC_H
 #define PDOUBLEBUFFER_INC_H
+#include "PSX.h"
 
 struct SDoubleBuffer;
 
@@ -12,7 +13,7 @@ struct SDoubleBuffer;
 #ifdef PDOUBLEBUFFER_OWNER_DECLARATIONS
 #define PDOUBLEBUFFER_DECL_ATTR
 #else
-#define PDOUBLEBUFFER_DECL_ATTR __attribute__((section(".data")))
+#define PDOUBLEBUFFER_DECL_ATTR PSX_SECTION(".data")
 #endif
 
 extern SDoubleBuffer *pDoubleBuffer PDOUBLEBUFFER_DECL_ATTR;

@@ -1,5 +1,6 @@
 #ifndef THPS2_RAILINFO_H
 #define THPS2_RAILINFO_H
+#include "PSX.h"
 
 #include "globals.h"
 
@@ -25,6 +26,6 @@ struct RailInfo : CClass
     void MergeAdd(RailString *string, bool debugify);
 };
 
-typedef char RailInfo_size_must_be_12[(sizeof(RailInfo) == 12) ? 1 : -1];
+PSX_LAYOUT_CHECK(RailInfo_size_must_be_12, sizeof(RailInfo) == 12);
 
 #endif // THPS2_RAILINFO_H

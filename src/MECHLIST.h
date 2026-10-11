@@ -1,5 +1,6 @@
 #ifndef MECHLIST_INC_H
 #define MECHLIST_INC_H
+#include "PSX.h"
 
 struct CBody;
 
@@ -11,7 +12,7 @@ struct CBody;
 #ifdef MECHLIST_OWNER_DECLARATIONS
 #define MECHLIST_DECL_ATTR
 #else
-#define MECHLIST_DECL_ATTR __attribute__((section(".data")))
+#define MECHLIST_DECL_ATTR PSX_SECTION(".data")
 #endif
 
 extern CBody *MechList MECHLIST_DECL_ATTR;

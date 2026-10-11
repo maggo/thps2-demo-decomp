@@ -3,10 +3,11 @@
  * header is intentionally re-entrant so absolute-address consumers can retain
  * their original declaration points without inventing alternate C++ names.
  */
+#include "PSX.h"
 #ifdef CAMERASELECTION_GP_RELATIVE_DECLARATIONS
 #define CAMERASELECTION_DECL_ATTR
 #else
-#define CAMERASELECTION_DECL_ATTR __attribute__((section(".data")))
+#define CAMERASELECTION_DECL_ATTR PSX_SECTION(".data")
 #endif
 
 /** Index of the MikeCamera entry used by the active render pass. */

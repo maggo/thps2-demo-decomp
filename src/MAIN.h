@@ -1,6 +1,7 @@
 // MAIN.h -- interface of MAIN.cpp
 #ifndef MAIN_INC_H
 #define MAIN_INC_H
+#include "PSX.h"
 
 /** Recomputes the end of the shared polygon buffer after display-list changes. */
 void CalcPolyBufferEnd(void);
@@ -48,7 +49,7 @@ enum EEndCode
 #ifdef MAIN_OWNER_DECLARATIONS
 #define MAIN_SHARED_STATE_DECL_ATTR
 #else
-#define MAIN_SHARED_STATE_DECL_ATTR __attribute__((section(".data")))
+#define MAIN_SHARED_STATE_DECL_ATTR PSX_SECTION(".data")
 #endif
 
 /** Reason the gameplay loop should return to the front end. */
@@ -165,7 +166,7 @@ extern "C" Sprite *pBarSprite MAIN_SHARED_STATE_DECL_ATTR; // 0x800D98A8
 #undef MAIN_SHARED_STATE_DECL_ATTR
 
 /** Persistent career progress and preferences physically owned by MAIN.cpp. */
-extern "C" SCareer GCareer __attribute__((section(".data"))); // 0x800B7834
+extern "C" SCareer GCareer PSX_SECTION(".data"); // 0x800B7834
 
 #ifdef MAIN_OWNER_DECLARATIONS
 

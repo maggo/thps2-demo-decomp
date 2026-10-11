@@ -6,6 +6,7 @@
  * declarations.  Keep the block re-entrant so a TU may request the layout
  * after first including the API-only interface.
  */
+#include "PSX.h"
 #if defined(DB_BUFFER_LAYOUT) && !defined(DB_BUFFER_LAYOUT_EMITTED)
 #define DB_BUFFER_LAYOUT_EMITTED
 
@@ -34,7 +35,7 @@ struct SDoubleBuffer
     unsigned char *Polys;
 };
 
-typedef char SDoubleBuffer_size_must_be_0xAC[(sizeof(SDoubleBuffer) == 0xAC) ? 1 : -1];
+PSX_LAYOUT_CHECK(SDoubleBuffer_size_must_be_0xAC, sizeof(SDoubleBuffer) == 0xAC);
 
 #endif // DB_BUFFER_LAYOUT
 
@@ -44,7 +45,7 @@ typedef char SDoubleBuffer_size_must_be_0xAC[(sizeof(SDoubleBuffer) == 0xAC) ? 1
 #ifdef DB_OWNER_DECLARATIONS
 #define DB_SHARED_STATE_DECL_ATTR
 #else
-#define DB_SHARED_STATE_DECL_ATTR __attribute__((section(".data")))
+#define DB_SHARED_STATE_DECL_ATTR PSX_SECTION(".data")
 #endif
 
 /** Packed clear colour installed in both display-buffer draw environments. */

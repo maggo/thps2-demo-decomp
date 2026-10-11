@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #define MEM_OWNER_DECLARATIONS
 #include "MEM.h"
 #undef MEM_OWNER_DECLARATIONS
@@ -19,9 +20,9 @@ int Mem_NumDelete = 0;
 
 // MAIN.SYM records this as Bang's local `bg`, but keeping its storage here is
 // required to preserve MEM's original small-data order.
-static RECT BangRect __attribute__((section(".sdata"))) = { 100, 0, 50, 256 };
+static RECT BangRect PSX_SECTION(".sdata") = { 100, 0, 50, 256 };
 
-unsigned int HeapDefs[2][2] __attribute__((section(".sdata"))) = { { 0 } };
+unsigned int HeapDefs[2][2] PSX_SECTION(".sdata") = { { 0 } };
 int LowMemory = 0;
 
 static unsigned int CriticalBigHeapUsage = 0;
@@ -30,14 +31,14 @@ namespace MemAddressViewOwners
 {
 extern "C"
 {
-static char s_HeapSizes[] __attribute__((section(".sdata"), aligned(4))) = "Heap sizes: ";
-static char s_Newline[] __attribute__((section(".sdata"), aligned(4))) = "\n";
+static char s_HeapSizes[] PSX_SECTION_ALIGNED(".sdata", 4) = "Heap sizes: ";
+static char s_Newline[] PSX_SECTION_ALIGNED(".sdata", 4) = "\n";
 }
 }
 
 int ReturnAddress = 12345;
-int Used[2] __attribute__((section(".sdata"))) = { 0 };
-SBlockHeader *FirstFreeBlock[2] __attribute__((section(".sdata"))) = { 0 };
+int Used[2] PSX_SECTION(".sdata") = { 0 };
+SBlockHeader *FirstFreeBlock[2] PSX_SECTION(".sdata") = { 0 };
 
 /** Per-heap usage format stored in MEM's target read-only contribution. */
 struct MemHeapUsageFormat
@@ -49,8 +50,8 @@ namespace MemAddressViewOwners
 {
 extern "C"
 {
-static const MemHeapUsageFormat s_HeapUsageFormat
-    __attribute__((section(".rdata"), aligned(4))) = { "Heap %d: %ld bytes, " };
+static const MemHeapUsageFormat
+    s_HeapUsageFormat PSX_SECTION_ALIGNED(".rdata", 4) = { "Heap %d: %ld bytes, " };
 }
 }
 

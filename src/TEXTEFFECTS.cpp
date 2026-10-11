@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #define TEXTEFFECT_POLYMORPHIC_LAYOUT
 #include "CCLASS_POLY.h"
 #include "TEXTEFFECTS.h"
@@ -58,11 +59,11 @@ struct RotateSprite : Sprite2
 
 #include "IMAGE.h"
 #undef CClass
-typedef char text_effect_Image_size_must_be_28[(sizeof(Image) == 28) ? 1 : -1];
-typedef char text_effect_SlicedImage2_size_must_be_60[(sizeof(SlicedImage2) == 60) ? 1 : -1];
-typedef char text_effect_Sprite2_size_must_be_60[(sizeof(Sprite2) == 60) ? 1 : -1];
-typedef char text_effect_RotateSprite_size_must_be_64[(sizeof(RotateSprite) == 64) ? 1 : -1];
-typedef char text_effect_Font_size_must_be_80[(sizeof(Font) == 80) ? 1 : -1];
+PSX_LAYOUT_CHECK(text_effect_Image_size_must_be_28, sizeof(Image) == 28);
+PSX_LAYOUT_CHECK(text_effect_SlicedImage2_size_must_be_60, sizeof(SlicedImage2) == 60);
+PSX_LAYOUT_CHECK(text_effect_Sprite2_size_must_be_60, sizeof(Sprite2) == 60);
+PSX_LAYOUT_CHECK(text_effect_RotateSprite_size_must_be_64, sizeof(RotateSprite) == 64);
+PSX_LAYOUT_CHECK(text_effect_Font_size_must_be_80, sizeof(Font) == 80);
 
 // === Forward type declarations ===
 
@@ -79,7 +80,7 @@ struct Sprite2VTable
     void (*draw)(Sprite2 *sprite, int x, int y, int drawFirst);
 };
 
-typedef char trick_text_effect_size_must_be_24[(sizeof(TrickTextEffect) == 24) ? 1 : -1];
+PSX_LAYOUT_CHECK(trick_text_effect_size_must_be_24, sizeof(TrickTextEffect) == 24);
 
 // === Extern "C" global variable declarations ===
 /*
@@ -88,7 +89,7 @@ typedef char trick_text_effect_size_must_be_24[(sizeof(TrickTextEffect) == 24) ?
  * `.comm` records that PSYLINK allocates in `.sbss` and exports -- fabricating
  * bytes and XDEFs the original never had.
  */
-Sprite2 *FallingTextEffect::mpBloodSprite __attribute__((section(".sdata"))) = 0;
+Sprite2 *FallingTextEffect::mpBloodSprite PSX_SECTION(".sdata") = 0;
 
 
 // === Function implementations (address order) ===

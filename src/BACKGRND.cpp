@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #define CCLASS_POLY_ITEM_FAMILY
 #include "CCLASS_POLY.h"
 #include "BACKGRND.h"
@@ -20,7 +21,7 @@ struct CBackground : public CBody
     void AI();
 };
 
-typedef char CBackground_size_check[(sizeof(CBackground) == 268) ? 1 : -1];
+PSX_LAYOUT_CHECK(CBackground_size_check, sizeof(CBackground) == 268);
 
 #include "OB.h"
 #include "SPOOL.h"

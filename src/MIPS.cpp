@@ -5,6 +5,7 @@
 // The canonical link object is assembled from the independently reconstructed
 // target instructions in output/asm/Mips_*.s.
 
+#include "PSX.h"
 #include "globals.h"
 #include "MIPS.h"
 
@@ -24,11 +25,11 @@ union MipsWideValue
     } word;
 };
 
-typedef char SizesFileCommonRecordSize[sizeof(SizesFileCommonRecord) == 36 ? 1 : -1];
-typedef char SizesFileSkateRecordSize[sizeof(SizesFileSkateRecord) == 32 ? 1 : -1];
-typedef char SizesFileSchoolRecordSize[sizeof(SizesFileSchoolRecord) == 40 ? 1 : -1];
-typedef char SizesFileVansRecordSize[sizeof(SizesFileVansRecord) == 36 ? 1 : -1];
-typedef char SizesFileTableSize[sizeof(SizesFileTable) == 148 ? 1 : -1];
+PSX_LAYOUT_CHECK(SizesFileCommonRecordSize, sizeof(SizesFileCommonRecord) == 36);
+PSX_LAYOUT_CHECK(SizesFileSkateRecordSize, sizeof(SizesFileSkateRecord) == 32);
+PSX_LAYOUT_CHECK(SizesFileSchoolRecordSize, sizeof(SizesFileSchoolRecord) == 40);
+PSX_LAYOUT_CHECK(SizesFileVansRecordSize, sizeof(SizesFileVansRecord) == 36);
+PSX_LAYOUT_CHECK(SizesFileTableSize, sizeof(SizesFileTable) == 148);
 
 /**
  * File-size metadata used by the front end.
@@ -36,7 +37,7 @@ typedef char SizesFileTableSize[sizeof(SizesFileTable) == 148 ? 1 : -1];
  * The original hand-written module deliberately stored this read-only table
  * before its routines in the text section.
  */
-extern "C" const SizesFileTable SizesFile __attribute__((section(".text"))) = {
+extern "C" const SizesFileTable SizesFile PSX_SECTION(".text") = {
     { "common", { 0x800, 0x800, 0x71800, 0x7000, 0xD000, 0, 0xFFFFFFFF } },
     { "skate_t", { 0x7E800, 0x7000, 0xD000, 0x32000, 0x1800, 0xFFFFFFFF } },
     { "skschl_t", { 0x7E800, 0x7000, 0xD000, 0x52800, 0x5800, 0x76000, 0xFFFFFFFF } },
@@ -120,4 +121,4 @@ int Mips_CVecDotProd(CVector *a, CVector *b)
 /**
  * Original module-local saved global-pointer word.
  */
-static unsigned int StoredGP __attribute__((section(".rdata"))) = 0;
+static unsigned int StoredGP PSX_SECTION(".rdata") = 0;

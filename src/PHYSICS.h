@@ -1,10 +1,11 @@
 #ifndef PHYSICS_INC_H
 #define PHYSICS_INC_H
+#include "PSX.h"
 
 #ifdef PHYSICS_OWNER_DECLARATIONS
 #define PHYSICS_SHARED_SCORE_DECL_ATTR
 #else
-#define PHYSICS_SHARED_SCORE_DECL_ATTR __attribute__((section(".data")))
+#define PHYSICS_SHARED_SCORE_DECL_ATTR PSX_SECTION(".data")
 #endif
 
 /** Player-one multiplayer results. */

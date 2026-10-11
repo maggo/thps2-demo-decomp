@@ -1,6 +1,7 @@
 // Shared environment-item list physically owned by SPOOL.cpp.
 #ifndef ENVIROLIST_INC_H
 #define ENVIROLIST_INC_H
+#include "PSX.h"
 
 struct Item;
 
@@ -13,7 +14,7 @@ struct Item;
 #ifdef ENVIROLIST_OWNER_DECLARATION
 #define ENVIROLIST_DECL_ATTR
 #else
-#define ENVIROLIST_DECL_ATTR __attribute__((section(".data")))
+#define ENVIROLIST_DECL_ATTR PSX_SECTION(".data")
 #endif
 
 /** Head of the loaded environment-item chain. */

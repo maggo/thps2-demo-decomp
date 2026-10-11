@@ -2,8 +2,9 @@
  * PAL physically owns the palette-allocation counter as a four-byte common.
  * Cross-owner consumers address that word absolutely.
  */
+#include "PSX.h"
 #ifdef TOTALPALETTEUSAGE_ABSOLUTE_DECLARATION
-#define TOTALPALETTEUSAGE_DECL_ATTR __attribute__((section(".data")))
+#define TOTALPALETTEUSAGE_DECL_ATTR PSX_SECTION(".data")
 #else
 #define TOTALPALETTEUSAGE_DECL_ATTR
 #endif

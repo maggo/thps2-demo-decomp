@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #include "CCLASS_POLY.h"
 #define FONTTOOLS_POLYMORPHIC_LAYOUT
 #define FONTTOOLS_OWNER_DECLARATIONS
@@ -64,7 +65,7 @@ inline u16 FontTools_LowHalf(const int &word)
 #include "FILEIO.h"
 #include "PAL.h"
 
-typedef char FontTools_TextEffect_size_must_be_8[(sizeof(TextEffect) == 8) ? 1 : -1];
+PSX_LAYOUT_CHECK(FontTools_TextEffect_size_must_be_8, sizeof(TextEffect) == 8);
 
 #undef FONTTOOLS_OWNER_DECLARATIONS
 #include "MEM.h"
@@ -76,8 +77,8 @@ typedef char FontTools_TextEffect_size_must_be_8[(sizeof(TextEffect) == 8) ? 1 :
  * The original object places both zero-initialized tables in one contiguous
  * 160-byte `.data` contribution rather than common/BSS storage.
  */
-char FontManager::FontName[8][16] __attribute__((section(".data"))) = { { 0 } };
-Font *FontManager::FontTab[8] __attribute__((section(".data"))) = { 0 };
+char FontManager::FontName[8][16] PSX_SECTION(".data") = { { 0 } };
+Font *FontManager::FontTab[8] PSX_SECTION(".data") = { 0 };
 int FontManager::dumb = 0;
 
 // === Function implementations (address order) ===

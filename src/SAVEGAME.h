@@ -1,6 +1,7 @@
 // Shared persisted game-state and preference records.
 #ifndef SAVEGAME_INC_H
 #define SAVEGAME_INC_H
+#include "PSX.h"
 
 /** Mutable gameplay state embedded in a save-game record. */
 struct SGameState
@@ -59,15 +60,13 @@ typedef char SGameState_CurrentWeapon_offset_must_be_63
     [((unsigned long)&(((SGameState *)0)->CurrentWeapon) == 63) ? 1 : -1];
 typedef char
     SGameState_Ammo_offset_must_be_64[((unsigned long)&(((SGameState *)0)->Ammo) == 64) ? 1 : -1];
-typedef char SGameState_Health_offset_must_be_96[((unsigned long)&(((SGameState *)0)->Health) == 96)
-                                                     ? 1
-                                                     : -1];
+PSX_LAYOUT_CHECK(SGameState_Health_offset_must_be_96,
+                 (unsigned long)&(((SGameState *)0)->Health) == 96);
 typedef char SGameState_SmartBombs_offset_must_be_100
     [((unsigned long)&(((SGameState *)0)->SmartBombs) == 100) ? 1 : -1];
-typedef char SGameState_Lives_offset_must_be_104[((unsigned long)&(((SGameState *)0)->Lives) == 104)
-                                                     ? 1
-                                                     : -1];
-typedef char SGameState_size_must_be_108[(sizeof(SGameState) == 108) ? 1 : -1];
+PSX_LAYOUT_CHECK(SGameState_Lives_offset_must_be_104,
+                 (unsigned long)&(((SGameState *)0)->Lives) == 104);
+PSX_LAYOUT_CHECK(SGameState_size_must_be_108, sizeof(SGameState) == 108);
 
 typedef char SPreferences_Difficulty_offset_must_be_0
     [((unsigned long)&(((SPreferences *)0)->Difficulty) == 0) ? 1 : -1];
@@ -93,15 +92,14 @@ typedef char SPreferences_AnalogueJump_offset_must_be_22
     [((unsigned long)&(((SPreferences *)0)->AnalogueJump) == 22) ? 1 : -1];
 typedef char SPreferences_AnalogueSmartBomb_offset_must_be_23
     [((unsigned long)&(((SPreferences *)0)->AnalogueSmartBomb) == 23) ? 1 : -1];
-typedef char SPreferences_size_must_be_24[(sizeof(SPreferences) == 24) ? 1 : -1];
+PSX_LAYOUT_CHECK(SPreferences_size_must_be_24, sizeof(SPreferences) == 24);
 
-typedef char SSaveGame_Checksum_offset_must_be_0[((unsigned long)&(((SSaveGame *)0)->Checksum) == 0)
-                                                     ? 1
-                                                     : -1];
+PSX_LAYOUT_CHECK(SSaveGame_Checksum_offset_must_be_0,
+                 (unsigned long)&(((SSaveGame *)0)->Checksum) == 0);
 typedef char
     SSaveGame_State_offset_must_be_4[((unsigned long)&(((SSaveGame *)0)->State) == 4) ? 1 : -1];
 typedef char SSaveGame_Preferences_offset_must_be_112
     [((unsigned long)&(((SSaveGame *)0)->Preferences) == 112) ? 1 : -1];
-typedef char SSaveGame_size_must_be_136[(sizeof(SSaveGame) == 136) ? 1 : -1];
+PSX_LAYOUT_CHECK(SSaveGame_size_must_be_136, sizeof(SSaveGame) == 136);
 
 #endif // SAVEGAME_INC_H

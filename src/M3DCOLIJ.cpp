@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #define M3DCOLIJ_OWNER_DECLARATIONS
 #include "M3DCOLIJ.h"
 #undef M3DCOLIJ_OWNER_DECLARATIONS
@@ -21,32 +22,32 @@
 
 SHit NearestHit;
 
-typedef char M3dColij_NearestHit_size_must_be_36[(sizeof(SHit) == 36) ? 1 : -1];
+PSX_LAYOUT_CHECK(M3dColij_NearestHit_size_must_be_36, sizeof(SHit) == 36);
 
 /** Collision-query state shared by the line and face cache paths. */
-u16 Inquiry __attribute__((section(".sdata"))) = 0xffff;
-int CameraCollisionCheck __attribute__((section(".sdata"))) = 0;
-int BaddyCollisionCheck __attribute__((section(".sdata"))) = 0;
-int BulletCollisionCheck __attribute__((section(".sdata"))) = 0;
-int TriggerCollisionCheck __attribute__((section(".sdata"))) = 0;
-int LineOfSightCheck __attribute__((section(".sdata"))) = 0;
-int ItemCacheIndex __attribute__((section(".sdata"))) = 0;
-int ItemCacheStart __attribute__((section(".sdata"))) = -1;
-int FaceCacheIndex __attribute__((section(".sdata"))) = 0;
-int FaceCacheStart __attribute__((section(".sdata"))) = -1;
-int BB_Hit __attribute__((section(".sdata"))) = 0;
-int BB_Miss __attribute__((section(".sdata"))) = 0;
-int BB_PolyHit __attribute__((section(".sdata"))) = 0;
-int BB_PolyMiss __attribute__((section(".sdata"))) = 0;
-int DebugCol __attribute__((section(".sdata"))) = 0;
-u32 M3dColij_ZeroMask __attribute__((section(".sdata"))) = 0;
-u32 M3dColij_OneMask __attribute__((section(".sdata"))) = 0;
-u32 M3dColij_ZeroOneMask __attribute__((section(".sdata"))) = 0;
-CBody *pBodyHit __attribute__((section(".sdata"))) = 0;
-int CollidedTriggerModel __attribute__((section(".sdata"))) = 0;
+u16 Inquiry PSX_SECTION(".sdata") = 0xffff;
+int CameraCollisionCheck PSX_SECTION(".sdata") = 0;
+int BaddyCollisionCheck PSX_SECTION(".sdata") = 0;
+int BulletCollisionCheck PSX_SECTION(".sdata") = 0;
+int TriggerCollisionCheck PSX_SECTION(".sdata") = 0;
+int LineOfSightCheck PSX_SECTION(".sdata") = 0;
+int ItemCacheIndex PSX_SECTION(".sdata") = 0;
+int ItemCacheStart PSX_SECTION(".sdata") = -1;
+int FaceCacheIndex PSX_SECTION(".sdata") = 0;
+int FaceCacheStart PSX_SECTION(".sdata") = -1;
+int BB_Hit PSX_SECTION(".sdata") = 0;
+int BB_Miss PSX_SECTION(".sdata") = 0;
+int BB_PolyHit PSX_SECTION(".sdata") = 0;
+int BB_PolyMiss PSX_SECTION(".sdata") = 0;
+int DebugCol PSX_SECTION(".sdata") = 0;
+u32 M3dColij_ZeroMask PSX_SECTION(".sdata") = 0;
+u32 M3dColij_OneMask PSX_SECTION(".sdata") = 0;
+u32 M3dColij_ZeroOneMask PSX_SECTION(".sdata") = 0;
+CBody *pBodyHit PSX_SECTION(".sdata") = 0;
+int CollidedTriggerModel PSX_SECTION(".sdata") = 0;
 
 /** Reusable line-query record that follows the nearest-hit owner in `.data`. */
-SLineInfo GColInfo __attribute__((section(".data"))) = { 0 };
+SLineInfo GColInfo PSX_SECTION(".data") = { 0 };
 
 // === Free function declarations ===
 void NextInquiry(void);
@@ -63,9 +64,9 @@ void M3dColij_LineToThisItem(Item *pItem, SLineInfo *pInfo);
 #include "M3DCOLIJ.h"
 
 // === Source-owned collision transform and caches ===
-MATRIX Tfm __attribute__((section(".data"))) = { 0 };
-SColCache ItemCache[20] __attribute__((section(".data"))) = { { 0 } };
-SFaceCache FaceCache[500] __attribute__((section(".data"))) = { { 0 } };
+MATRIX Tfm PSX_SECTION(".data") = { 0 };
+SColCache ItemCache[20] PSX_SECTION(".data") = { { 0 } };
+SFaceCache FaceCache[500] PSX_SECTION(".data") = { { 0 } };
 
 // === Function implementations (address order) ===
 

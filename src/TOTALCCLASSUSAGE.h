@@ -2,8 +2,9 @@
  * MAIN physically owns the CClass allocation counter in initialized small
  * data. INIT retains its target-proven absolute-address import view.
  */
+#include "PSX.h"
 #ifdef TOTALCCLASSUSAGE_ABSOLUTE_DECLARATION
-#define TOTALCCLASSUSAGE_DECL_ATTR __attribute__((section(".data")))
+#define TOTALCCLASSUSAGE_DECL_ATTR PSX_SECTION(".data")
 #else
 #define TOTALCCLASSUSAGE_DECL_ATTR
 #endif

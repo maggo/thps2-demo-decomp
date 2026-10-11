@@ -1,6 +1,7 @@
 // Shared front-end service interface.
 #ifndef FRONT_INC_H
 #define FRONT_INC_H
+#include "PSX.h"
 
 struct SLevel;
 struct SPreferences;
@@ -9,7 +10,7 @@ struct SSaveGame;
 #ifdef FRONT_OWNER_DECLARATIONS
 #define FRONT_SHARED_STATE_DECL_ATTR
 #else
-#define FRONT_SHARED_STATE_DECL_ATTR __attribute__((section(".data")))
+#define FRONT_SHARED_STATE_DECL_ATTR PSX_SECTION(".data")
 #endif
 
 /** Whether gameplay is currently paused by the front end. */

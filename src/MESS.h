@@ -1,4 +1,5 @@
 // Shared message-animation layout and callable renderer interface.
+#include "PSX.h"
 #ifdef MESS_DECLARE_OWNER_STATE_VIEW
 struct Message;
 
@@ -53,7 +54,7 @@ struct SMessageProg
 #ifdef MESS_OWNER_DECLARATIONS
 #define MESS_PROGRAM_DECL_ATTR
 #else
-#define MESS_PROGRAM_DECL_ATTR __attribute__((section(".data")))
+#define MESS_PROGRAM_DECL_ATTR PSX_SECTION(".data")
 #endif
 
 /** Standard zoom-in, hold, and zoom-out message animation. */
@@ -131,13 +132,13 @@ void Mess_SetFontScale(unsigned int scale);
 /** Return the active font's 8.8 fixed-point scale. */
 int Mess_GetFontScale(void);
 
-typedef char message_program_size_must_be_32[(sizeof(SMessageProg) == 32) ? 1 : -1];
+PSX_LAYOUT_CHECK(message_program_size_must_be_32, sizeof(SMessageProg) == 32);
 
 #endif // MESS_INC_H
 
 #ifdef MESS_DECLARE_SAVED_COLOR_STATE_VIEW
 /** GP-relative access view of MESS's owner-local saved text color. */
-extern unsigned int LastFlagsBGR __attribute__((section(".sbss")));
+extern unsigned int LastFlagsBGR PSX_SECTION(".sbss");
 
 #undef MESS_DECLARE_SAVED_COLOR_STATE_VIEW
 #endif

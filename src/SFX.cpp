@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #define SFX_OWNER_DECLARATIONS
 #include "SFX.h"
 #undef SFX_OWNER_DECLARATIONS
@@ -20,18 +21,18 @@
 #include "FILEIO.h"
 // === Source-owned sound tables ===
 /** Global and level-local sound definitions populated from VAB files. */
-u32 SFXArray[192] __attribute__((section(".data"))) = { 0 };
-u16 SFXAliasArray[64] __attribute__((section(".data"))) = { 0 };
-u32 SFXLevelSpecificArray[192] __attribute__((section(".data"))) = { 0 };
-u16 SFXLevelSpecificAliasArray[64] __attribute__((section(".data"))) = { 0 };
-SFXVoiceSpatialData SFXFalloffArray[SFX_VOICE_COUNT] __attribute__((section(".data"))) = { 0 };
+u32 SFXArray[192] PSX_SECTION(".data") = { 0 };
+u16 SFXAliasArray[64] PSX_SECTION(".data") = { 0 };
+u32 SFXLevelSpecificArray[192] PSX_SECTION(".data") = { 0 };
+u16 SFXLevelSpecificAliasArray[64] PSX_SECTION(".data") = { 0 };
+SFXVoiceSpatialData SFXFalloffArray[SFX_VOICE_COUNT] PSX_SECTION(".data") = { 0 };
 
 /**
  * Source-owned sound-RAM management workspace.
  *
  * The original initialized-data image stores all 136 bytes as zero.
  */
-char SoundRamMemoryManagementTable[136] __attribute__((section(".data"))) = { 0 };
+char SoundRamMemoryManagementTable[136] PSX_SECTION(".data") = { 0 };
 
 /**
  * Complete SFX small-data state in target order.
@@ -68,10 +69,10 @@ int SFX_v = 0;
  *
  * These arrays are zero-initialized in the original SFX BSS contribution.
  */
-static u16 voicePitch[SFX_VOICE_COUNT] __attribute__((section(".bss")));
-static u16 voiceVolume[SFX_VOICE_COUNT] __attribute__((section(".bss")));
-static soundRAMentry soundRAMSlots[4] __attribute__((section(".bss")));
-static u16 pitchPriorToPause[SFX_VOICE_COUNT] __attribute__((section(".bss")));
+static u16 voicePitch[SFX_VOICE_COUNT] PSX_SECTION(".bss");
+static u16 voiceVolume[SFX_VOICE_COUNT] PSX_SECTION(".bss");
+static soundRAMentry soundRAMSlots[4] PSX_SECTION(".bss");
+static u16 pitchPriorToPause[SFX_VOICE_COUNT] PSX_SECTION(".bss");
 
 // === $gp-relative globals ===
 // nko_flag, keyon_queue, reverb_queue, keyoff_queue, voiceon_flag, exp_flag,

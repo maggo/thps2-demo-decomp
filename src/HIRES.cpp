@@ -5,6 +5,7 @@
 //
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "PSX.h"
 #include "HIRES.h"
 #include <STDDEF.H>
 #include <LIBGTE.H>
@@ -42,15 +43,15 @@ enum
 };
 
 /** Projection used while rendering the high-resolution front end. */
-SViewport HiResViewport __attribute__((section(".data"))) = {
+SViewport HiResViewport PSX_SECTION(".data") = {
     640, 480, 0, 0, 10, 30000, 0x0D55, 0, 0, 0,
 };
 
 /** Skater-region table retained by the high-resolution shell. */
-int SkaterRegion[HiresSkaterRegionCount] __attribute__((section(".data"))) = {};
+int SkaterRegion[HiresSkaterRegionCount] PSX_SECTION(".data") = {};
 
 /** Default VAB loaded while the high-resolution title screen is active. */
-static char SFXDataPath[] __attribute__((section(".sdata"))) = "shell.vab";
+static char SFXDataPath[] PSX_SECTION(".sdata") = "shell.vab";
 
 /**
  * Reserved initialization hook for high-resolution rendering.

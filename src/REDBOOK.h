@@ -1,6 +1,7 @@
 // REDBOOK.h -- interface of REDBOOK.cpp
 #ifndef REDBOOK_INC_H
 #define REDBOOK_INC_H
+#include "PSX.h"
 
 // Primitive types
 typedef unsigned char u8;
@@ -27,7 +28,7 @@ struct SONG_POS
     int sector;
 };
 
-typedef char Redbook_SongPos_size_must_be_12[sizeof(SONG_POS) == 12 ? 1 : -1];
+PSX_LAYOUT_CHECK(Redbook_SongPos_size_must_be_12, sizeof(SONG_POS) == 12);
 
 // === Variables (gp-relative in this TU) ===
 #define REDBOOKSTATE_GP_RELATIVE_DECLARATIONS

@@ -1,5 +1,6 @@
 #ifndef ZEROVECTOR_INC_H
 #define ZEROVECTOR_INC_H
+#include "PSX.h"
 
 struct CVector;
 
@@ -14,11 +15,11 @@ struct ZeroVectorDecl
     int lo;
     int hi;
 };
-extern ZeroVectorDecl ZeroVector __attribute__((section(".data")));
+extern ZeroVectorDecl ZeroVector PSX_SECTION(".data");
 #elif defined(ZEROVECTOR_SCALAR_DECLARATION)
-extern int ZeroVector __attribute__((section(".data")));
+extern int ZeroVector PSX_SECTION(".data");
 #else
-extern "C" CVector ZeroVector __attribute__((section(".data")));
+extern "C" CVector ZeroVector PSX_SECTION(".data");
 #endif
 
 #endif // ZEROVECTOR_INC_H
