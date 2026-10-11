@@ -93,9 +93,10 @@ python3 verify.py --exe /path/to/SLUS_900.86 --sym /path/to/MAIN.SYM \
 The reported 1,646-function result was reproduced with this explicit-input
 command and the pinned compiler. Six headers in the measured local include set
 (`KERNEL.H`, `LIBCD.H`, `LIBDS.H`, `LIBGTE.H`, `LIBSPU.H`, `MCGUI.H`) differ from
-the default SDK manifest. The default SDK validation remains strict; matching
-with a manifest-identical SDK has not been verified. `--include` selects a
-user-supplied header set directly.
+the Psy-Q 4.6 manifest (`tools/psyq_4_6_headers.sha256`); setup reports such
+differences as warnings, and `verify.py` reaching 1646/1646 is what proves a
+header set. Matching with a manifest-identical SDK has not been verified.
+`--include` selects a user-supplied header set directly.
 
 `--func Bit_Display__Fv` prints one function's instruction comparison.
 `src/SQRTTAB.inc` is generated: `python3 tools/generate_sqrttab.py --check`
