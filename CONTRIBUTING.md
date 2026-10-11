@@ -10,6 +10,9 @@ python3 tools/check_source.py                                          # also ru
 clang-format -i src/*.cpp src/*.h                                      # clang-format 23.1.3 (pip install clang-format==23.1.3)
 ```
 
+While iterating, `python3 verify.py --tu NAME` (one translation unit) or
+`--func MANGLED_NAME` (aligned diff of one function) take a second or two.
+
 `verify.py` needs your own disc files and Psy-Q 4.6 headers (see the README). CI
 cannot run it, so say in the pull request that you did. Changes to data
 definitions, statics or section attributes can move data even when every

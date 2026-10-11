@@ -244,13 +244,15 @@ def main():
     ap.add_argument('--out', type=Path, default=ROOT / 'out', help='scratch dir for build products')
     ap.add_argument('-j', '--jobs', type=int, default=os.cpu_count() or 1)
     ap.add_argument('--func', help='show the aligned instruction diff of one function (mangled name)')
+    ap.add_argument('--tu', action='append', metavar='NAME',
+                    help='only build and check this translation unit (e.g. DB; repeatable)')
     ap.add_argument('--report', type=Path,
                     help='refresh an existing objdiff report after a complete canonical match')
     a = ap.parse_args()
 
     if a.jobs < 1:
         ap.error('--jobs must be a positive integer')
-    if a.report and (a.func or a.skip_cc_hash):
+    if a.report and (a.func or a.tu or a.skip_cc_hash):
         ap.error('--report requires a complete run with the pinned compiler')
     if a.report and not a.report.is_file():
         ap.error(f'report template not found: {a.report}')
@@ -282,6 +284,15 @@ def main():
 
     tc = Toolchain(a)
     tus = sorted(set(a.src.glob('*.cpp')) | set(a.src.glob('*.c')))
+    if a.tu:
+        wanted = {t.upper() for t in a.tu}
+        unknown = wanted - {t.stem.upper() for t in tus}
+        if unknown:
+            sys.exit(f'unknown translation unit(s): {", ".join(sorted(unknown))}')
+        tus = [t for t in tus if t.stem.upper() in wanted]
+    if a.func:   # only the sources that can define this function
+        f = next(f for f in funcs if f['name'] == a.func)
+        tus = [t for t in tus if t in set(tu_candidates(funcs, f, a.src))]
     objs, failed = {}, {}
 
     def one(tu):
@@ -298,6 +309,8 @@ def main():
     per_tu, bad, matched = {}, [], set()
     for f in funcs:
         if a.func and f['name'] != a.func:
+            continue
+        if a.tu and os.path.splitext(f['file'].split('\\')[-1])[0].upper() not in wanted:
             continue
         got = None
         for tu in tu_candidates(funcs, f, a.src):

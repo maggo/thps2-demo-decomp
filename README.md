@@ -98,7 +98,9 @@ differences as warnings, and `verify.py` reaching 1646/1646 is what proves a
 header set. Matching with a manifest-identical SDK has not been verified.
 `--include` selects a user-supplied header set directly.
 
-`--func Bit_Display__Fv` prints one function's instruction comparison.
+`--tu DB` builds and checks only that translation unit (repeatable), and
+`--func Bit_Display__Fv` prints one function's instruction comparison; both
+rebuild only the sources involved, in a second or two.
 `src/SQRTTAB.inc` is generated: `python3 tools/generate_sqrttab.py --check`
 confirms it matches the documented formula.
 `--skip-cc-hash` permits diagnostic compiler experiments, clearly marks them
