@@ -567,8 +567,7 @@ _SCreateTexList BaggyPantsFullLeg[3]
  * using `lui`/`addiu` pairs instead of GP-relative loads.  These second
  * declarations deliberately hide the storage class from cc1plus while their
  * identifiers resolve to the same owner-local labels. Referencing the
- * definitions directly changes 338 instructions and 13 relocations in
- * CreateTex_GlobalInit.
+ * definitions directly makes CreateTex_GlobalInit use GP-relative loads.
  */
 /** Absolute address views of CREATE_TEX's GP-sized specification strings. */
 extern char CreateTex_defaultKey[];

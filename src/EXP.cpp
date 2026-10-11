@@ -229,8 +229,7 @@ void CFlatRipple::Move()
         {
             ExpTrigPair *loopTrig = reinterpret_cast<ExpTrigPair *>(
                 ((a & ExpAngleMask) << 2) + trigTableAddress);
-            // Direct typed indexing commutes the target's address operands and
-            // changes 21 instructions plus two branch relocations.
+            // Direct typed indexing commutes the original's address operands.
             SLineSeg *segment = reinterpret_cast<SLineSeg *>(
                 offset + reinterpret_cast<int>(mSegs));
             segment->End.vx =

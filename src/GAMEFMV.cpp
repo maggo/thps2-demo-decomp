@@ -29,8 +29,8 @@ typedef char GameFMV_cd_file_size_must_be_24[
 /**
  * Reads the packed byte through an aliasing view that preserves the target's
  * load schedule when the remaining movie fields are copied as one group. A
- * direct field read and an inline-function wrapper each changed 18 instructions
- * and four relocations in `GameFMV_SetStartTrack`.
+ * direct field read or an inline-function wrapper reorders the loads in
+ * `GameFMV_SetStartTrack`.
  */
 #define GameFMV_Read24BitFlag(movie_) \
     (*reinterpret_cast<const u8 *>(&(movie_).is24bit))

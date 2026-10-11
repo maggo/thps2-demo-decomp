@@ -44,8 +44,8 @@ struct M3dUtilsHooksPacket {
 static inline M3dUtilsAnimInfo *M3dUtils_GetAnimInfo(
     unsigned int *pAnimFile, unsigned int Anim) {
     // Keeping offset + base in this order preserves the target's `addu`
-    // operand order. Byte-pointer, word-pointer, and reversed typed-pointer
-    // forms were each measured at one real mismatch in all four callers.
+    // operand order; byte-pointer, word-pointer and reversed typed-pointer
+    // forms swap the operands in all four callers.
     return reinterpret_cast<M3dUtilsAnimInfo *>(
         Anim * M3DUTILS_ANIM_DIRECTORY_STRIDE +
         reinterpret_cast<int>(pAnimFile));
@@ -247,8 +247,7 @@ void M3dUtils_GetDynamicHookPosition(VECTOR * pResult, CSuper * pSuper, SHook * 
         pAnimTransform = &pSuper->mpPoseBuffer[Part];
     } else {
         // The named interval keeps the metadata load live across this branch;
-        // repeating the typed expression changes 60 instructions and a call
-        // relocation under the original compiler.
+        // repeating the typed expression reloads it.
         Interval = M3dUtils_GetAnimInfo(pAnimFile, Anim)->Interval;
         if (Interval) {
             M3dUtils_InterpolateVectors(

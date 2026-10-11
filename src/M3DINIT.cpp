@@ -117,8 +117,7 @@ static inline STexWibItemInfo *M3dInit_GetNextWibItem(
 /**
  * Absolute-address views of globals physically owned by M3D's small-data
  * contribution.  Without these per-TU addressing attributes, InitAtStart,
- * SetFoggingParams, and ParsePSX regress by 38+1, 40+0, and 284+2
- * real/relocation mismatches respectively.
+ * SetFoggingParams and ParsePSX use different address formation.
  */
 #define DPQGLOBALS_DECLARE_SHIFT
 #include "DPQGLOBALS.h"

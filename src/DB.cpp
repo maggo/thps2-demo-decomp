@@ -96,7 +96,7 @@ void Db_UpdateSky(void)
     else
     {
         // These cursors keep one array base live across the component stores;
-        // direct indexing changes fifteen of this function's 23 instructions.
+        // direct indexing compiles differently.
         SDoubleBuffer *buffers = DoubleBuffer;
         buffers[0].Draw.isbg = 1;
         buffers[0].Draw.r0 = skyColor >> 16;
@@ -162,8 +162,8 @@ void Db_Vblank(void)
                 unsigned int currentVblanks;
                 // Vblanks and these flags are interrupt-shared. Preserve both
                 // counter samples and publish the post-call state in this order.
-                // Folding either local changes 5-101 instructions because it
-                // shortens the buffer-address lifetimes across PutDispEnv.
+                // Folding either local shortens the buffer-address lifetimes
+                // across PutDispEnv.
                 currentVblanks = Vblanks;
                 PutDispEnv(&DoubleBuffer[1 - i].Disp);
                 currentVblanks = Vblanks;

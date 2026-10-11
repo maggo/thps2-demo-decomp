@@ -373,8 +373,8 @@ void M3dZone_SetZone(int EnvIndex, unsigned int *pPack)
     Zones[EnvIndex].xMax = *pPack++;
     Zones[EnvIndex].zMax = *pPack++;
     // GCC 2.91's cast-as-lvalue extension keeps the target's single packet
-    // cursor. A typed halfword cursor and a typed union each changed 114 of
-    // 119 instructions; an inline reference view changed 113 plus one reloc.
+    // cursor; typed halfword cursors, unions and reference views compile
+    // differently.
     Zones[EnvIndex].Width = *((unsigned short *)pPack)++;
     Zones[EnvIndex].Height = *((unsigned short *)pPack)++;
     Zones[EnvIndex].Flags = 1;

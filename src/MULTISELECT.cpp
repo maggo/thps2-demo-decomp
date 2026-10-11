@@ -364,7 +364,7 @@ int MultiSelectScreen::GetGameMode() {
  * Address:   0x8008A248
  * Mangled:   InitEndProcess__17MultiSelectScreeni
  * Demangled: MultiSelectScreen::InitEndProcess(int)
- *            If key == 1, calls BeginLoad. Always sets unk164 = 1
+ *            Starts the preloader when press == 1, then sets mFinishUp.
  *
  * @param press  Button press code.
  */
@@ -383,9 +383,9 @@ void MultiSelectScreen::InitEndProcess(int press) {
  * Address:   0x8008A288
  * Mangled:   EndProcess__17MultiSelectScreen
  * Demangled: MultiSelectScreen::EndProcess(void)
- *            If unk164 != 0, calls DoneLoading on preloader at +0x130
+ *            Once mFinishUp is set, reports whether mFrontPreLoader is done.
  *
- * @return 0
+ * @return 0 until mFinishUp is set, then the preloader's DoneLoading result.
  */
 int MultiSelectScreen::EndProcess() {
     if (mFinishUp == 0) return 0;

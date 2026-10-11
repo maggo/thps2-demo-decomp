@@ -1189,8 +1189,8 @@ struct FrontSinCos
 int GetUpDown(void);
 void Competition_Init(void);
 // A scalar source view retains the target's gp-relative address formation;
-// referencing the typed owner object directly changes Front_Update by
-// 1,873 instructions and 47 relocations under GCC 2.91.
+// referencing the typed owner object directly changes Front_Update's
+// address formation.
 #define PAUSEDSONGPOS_DECLARE_SCALAR_ADDRESS_VIEW
 #include "PAUSEDSONGPOS.h"
 

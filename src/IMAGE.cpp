@@ -192,10 +192,10 @@ int Load8BitBMP_2(
     transparent_color = 0;
     if (colors != 0) {
         // Keeping the opaque-black sentinel named hoists it once outside the
-        // palette loop; an inline literal produces three real mismatches.
+        // palette loop, as the original does.
         unsigned short opaqueBlack = 0x8000;
         // The recovered advancing palette pointer is also load-bearing;
-        // indexing colorTab by i produces two real mismatches.
+        // indexing colorTab by i compiles differently.
         unsigned short *pal = colorTab;
         do {
             unsigned short r = IMAGE_BMP_COLOR(pColor).r;
@@ -240,7 +240,7 @@ int Load8BitBMP_2(
 
     // Calculate padding: round width up to multiple of 4
     // The temporary keeps signed rounding in v0 before `pad` takes over in
-    // s0; folding it into pad causes four real and one reloc mismatch.
+    // s0; folding it into pad changes the register use.
     int t = w;
     if (w < 0) {
         t = w + 3;
@@ -596,8 +596,7 @@ void SlicedImage2::repack() {
             short colLimit = SliceCountX;
             // The original reuses this scalar first as a zero-extended column
             // count and then as the slice-table address.  Splitting those
-            // roles into typed locals regresses this function by 35 real and
-            // two relocation mismatches.
+            // roles into typed locals changes this function's register use.
             int tilePtr = (unsigned short)SliceCountX;
             if (colLimit > 0) {
                 do {

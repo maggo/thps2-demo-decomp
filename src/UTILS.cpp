@@ -837,8 +837,7 @@ void Utils_SetVisibilityInBox(const CVector &min, const CVector &max, bool visib
     while (p_item != 0)
     {
         // Keeping the region cursor retains the target's single-base
-        // relocation identity; direct indexing is instruction-exact but adds
-        // two relocation mismatches.
+        // relocation; direct indexing changes the relocations.
         SPSXRegion *region = &PSXRegion[p_item->Region];
         if (region->Usable != 0)
         {
@@ -995,7 +994,7 @@ unsigned int Utils_CalculateSpatialAttenuation(const CVector &pos, int near, int
     CVector cam_pos;
     cam_pos.vx = MikeCamera[Camera_CurrentMikeCamera].Position.vx << 12;
     // This assignment cursor reproduces the inlined CVector assignment's
-    // target lifetime; direct fields change 148 of 157 instructions.
+    // original lifetime; direct field access compiles differently.
     CVector *camera_position = &cam_pos;
     camera_position->vy = MikeCamera[Camera_CurrentMikeCamera].Position.vy << 12;
     camera_position->vz = MikeCamera[Camera_CurrentMikeCamera].Position.vz << 12;

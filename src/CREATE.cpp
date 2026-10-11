@@ -3897,7 +3897,7 @@ CharacterEditor::~CharacterEditor()
 void CharacterEditor::update(void)
 {
     // MAIN.SYM names an optimized-out SVECTOR `RotAngle`; materializing that
-    // declaration preserves words but introduces 12 relocation mismatches.
+    // declaration changes the relocations, so it is left out.
     reinterpret_cast<CBody *>(mpBuildSkater)->InterleaveAI();
 
     if (Pad[0].LeftOne.Pressed != 0)

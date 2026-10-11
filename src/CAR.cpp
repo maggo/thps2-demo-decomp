@@ -64,8 +64,8 @@ struct CGrindSpark;
 
 /**
  * Access the five packed words consumed by the PSYQ GTE rotation registers.
- * A shared pointer cursor changes 329 instructions and 14 relocations, so the
- * cast stays centralized while each target load remains independently shaped.
+ * The original loads each word independently; a shared pointer cursor compiles
+ * differently, so the cast stays centralized in this macro.
  */
 #define CAR_ROTATION_WORD(matrix, index) (((const int *)&(matrix))[index])
 
@@ -566,7 +566,7 @@ static void CollideWithSkater(CCar *pCar, CBruce *pSkater, const MATRIX &tm, sho
     }
     case 1:
     {
-        // Folding this load changes 69 instructions and 14 relocations.
+        // The original loads the velocity into its own local before use.
         int carVelX = pCar->mVel.vx;
         skater->mVel.vy = -CAR_SIDE_Y_IMPULSE;
         skater->mVel.vx = -carVelX >> 2;
@@ -662,8 +662,7 @@ static void HonkAtSkaters(CCar *pCar, CVector Front)
     int Skater = 0;
     if (GNumberOfPlayers > 0)
     {
-        // Indexing GSkater instead changes 93 instructions and four relocs;
-        // the target advances this pointer cursor directly.
+        // The original advances this pointer cursor rather than indexing GSkater.
         CBruce **ppSkater = GSkater;
         for (; Skater < GNumberOfPlayers; ppSkater++, Skater++)
         {
@@ -754,8 +753,8 @@ void CCar::AI()
 
     if (mLoopingSoundUpdate != -1)
     {
-        // Reloading the member at the call changes 284 instructions and
-        // three relocations by disrupting the method's register allocation.
+        // The original keeps the member in a local; reloading it at the call
+        // changes the method's register allocation.
         unsigned int loopingSound = mLoopingSound;
         if (loopingSound != 0)
         {
