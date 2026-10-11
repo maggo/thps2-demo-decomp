@@ -224,9 +224,7 @@ void Utils_VblankProcessing(void)
 /** Advance frame timing and run the per-vblank game callbacks. */
 void MyVSync(void)
 {
-    // FIXME(match): register pin — forces the Vblanks load/add into $v1 (unpinned picks $v0, 3 insns off); tried: Vblanks++, += 1, local temps, split load/add, two locals.
-    register unsigned int vblanks asm("$3") = Vblanks;
-    Vblanks = vblanks + 1;
+    Vblanks++;
     Db_Vblank();
     SFX_ProcessingPerFrame();
     if (!GamePaused && !GameFrozen)

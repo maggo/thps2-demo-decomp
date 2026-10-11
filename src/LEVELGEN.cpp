@@ -1260,7 +1260,8 @@ void LevelGenerator::LoadRails(char *file)
     pModelChecksums = Spool_SkipPackets(PSXRegion[SourceRegion].pPSX);
     Trig_LoadTRG(file);
 
-    for (node = 0; node < NumNodes;)
+    node = 0;
+    while (node < NumNodes)
     {
         short num_links;
         int trickob;
@@ -1270,7 +1271,11 @@ void LevelGenerator::LoadRails(char *file)
         RailString *string;
         unsigned short linked_node;
 
-        if (Rail_IsRailNode(node))
+        if (!Rail_IsRailNode(node))
+        {
+            node++;
+            continue;
+        }
         {
             short i;
 
@@ -1340,12 +1345,7 @@ void LevelGenerator::LoadRails(char *file)
                 string->MakeCCW();
             }
         }
-        // FIXME(match): register pin ($v0 for node+1) + asm barrier (node) — the pin picks $v0 over $v1 for the node increment and the barrier keeps the andi before the NumNodes load; stripped = score 3 (pin) / 23 (barrier); tried: node++, node += 1, int next temp, for(;;node++) loop form.
-        {
-            register int next asm("$2") = node + 1;
-            node = (unsigned short)next;
-        }
-        asm volatile("" : "+r"(node));
+        node++;
     }
 
     Trig_DeleteTrigFile();

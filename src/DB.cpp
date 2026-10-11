@@ -150,7 +150,7 @@ void Db_CallBack(void)
 /**
  * Flip ready buffers and begin eligible GPU submissions during vertical blank.
  */
-void Db_Vblank(void)
+int Db_Vblank(void)
 {
     {
         int i;
@@ -237,8 +237,7 @@ void Db_Render(void)
     CompactOTagR(pDoubleBuffer->PanelOT, Db_OTSize());
 
     {
-        // FIXME(match): register pin — keeps the DoubleBuffer base in $v1 (unpinned: base lands in $a0, 10 insns off); tried: unpinned, 3 declaration orders, if/else and direct DoubleBuffer[i] rewrites.
-        register SDoubleBuffer *buffers asm("$3") = DoubleBuffer;
+        SDoubleBuffer *buffers = DoubleBuffer;
         SDoubleBuffer *nextBuffer = buffers;
         SDoubleBuffer *activeBuffer = pDoubleBuffer;
         activeBuffer->RenderNow = 1;
@@ -395,9 +394,7 @@ void Db_DisplayDraw(void)
 after_bg:
     CompactOTagR(pDoubleBuffer->PanelOT, Db_OTSize());
 
-    // FIXME(match): register pin — keeps the Db_Background reload in $v1 (unpinned: $v0, 2 insns off); tried: unpinned, direct condition, one local reused for both tests.
-    register int bg2 asm("$3") = Db_Background;
-    if (bg2 != 0)
+    if (Db_Background != 0)
     {
         DrawSync(0);
     }

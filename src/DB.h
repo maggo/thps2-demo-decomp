@@ -58,7 +58,9 @@ extern unsigned int *pPoly DB_SHARED_STATE_DECL_ATTR; // 0x800DA344
 
 int Db_OTSize(void);
 void Db_UpdateSky(void);
-void Db_Vblank(void);
+/** Per-vblank game callback. Declared int as in the original (MyVSync's register
+ * allocation depends on it); it returns no value and callers ignore the result. */
+int Db_Vblank(void);
 void Db_WaitRender(void);
 void Db_Render(void);
 void Db_InitAtStart(void);

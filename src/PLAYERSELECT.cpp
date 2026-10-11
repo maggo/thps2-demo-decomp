@@ -2704,8 +2704,9 @@ unsigned int *SkaterScreenElement::GetReducedPSXFile(char *modelFile)
 
 void Spool_StripAnimFile(char *pPSX)
 {
+    char *pAnim;
     char *pDest;
-    u32 *pAnim;
+    u32 *pStuff;
     u32 NumModels;
     u32 count;
     int i;
@@ -2713,7 +2714,7 @@ void Spool_StripAnimFile(char *pPSX)
     {
         // FIXME(match): register pin — $16 for dataOffset so the load lands in $s0 with `addu s0,s2,s0` operand order (unpinned: temp goes to $v0, score 8; single-pseudo pDest form gives swapped addu operands, score 3); tried: pDest as single pseudo, add reorderings/casts, moving the statement, scoped temp.
         register u32 dataOffset asm("$16") = ((PlayerSelectAnimFileHeader *)pPSX)->DataOffset;
-        pDest = pPSX + dataOffset;
+        pAnim = pPSX + dataOffset;
     }
 
     NumModels =
@@ -2724,12 +2725,11 @@ void Spool_StripAnimFile(char *pPSX)
             .BlockCount;
 
     /* Skip packets to get to animation data */
-    pAnim = Spool_SkipPackets((u32 *)pPSX);
+    pStuff = Spool_SkipPackets((u32 *)pPSX);
 
     /* Write sentinel */
-    // FIXME(match): register pin — $2 so the -1 constant lands in $v0 not $v1 (score 2 without); tried: (u32)-1/~0u forms, reusing count/i/j for the constant, 5 local declaration orders.
-    register u32 sentinel asm("$2") = (u32)-1;
-    *(u32 *)pDest = sentinel;
+    pDest = pAnim;
+    *(u32 *)pDest = (u32)-1;
     pDest += 4;
 
     /* Block 1: copy NumModels words (unsigned comparison) */
@@ -2738,16 +2738,16 @@ void Spool_StripAnimFile(char *pPSX)
     {
         do
         {
-            *(u32 *)pDest = *pAnim;
-            pAnim++;
+            *(u32 *)pDest = *pStuff;
+            pStuff++;
             i++;
             pDest += 4;
         } while ((u32)i < NumModels);
     }
 
     /* Block 2: read count, copy count words (signed comparison) */
-    count = *pAnim;
-    pAnim++;
+    count = *pStuff;
+    pStuff++;
     *(u32 *)pDest = count;
     pDest += 4;
 
@@ -2756,16 +2756,16 @@ void Spool_StripAnimFile(char *pPSX)
     {
         do
         {
-            *(u32 *)pDest = *pAnim;
-            pAnim++;
+            *(u32 *)pDest = *pStuff;
+            pStuff++;
             i++;
             pDest += 4;
         } while (i < (s32)count);
     }
 
     /* Block 3: read count, then count × 9 words per entry (bone rotations) */
-    count = *pAnim;
-    pAnim++;
+    count = *pStuff;
+    pStuff++;
     *(u32 *)pDest = count;
     pDest += 4;
 
@@ -2775,16 +2775,16 @@ void Spool_StripAnimFile(char *pPSX)
         i = 0;
         do
         {
-            *(u32 *)pDest = *pAnim;
-            pAnim++;
+            *(u32 *)pDest = *pStuff;
+            pStuff++;
             i++;
             pDest += 4;
         } while (i < 9 || (j++, i = 0, j < (s32)count));
     }
 
     /* Block 4: read count, then count × 129 words per entry (extended bone data) */
-    count = *pAnim;
-    pAnim++;
+    count = *pStuff;
+    pStuff++;
     *(u32 *)pDest = count;
     pDest += 4;
 
@@ -2794,16 +2794,16 @@ void Spool_StripAnimFile(char *pPSX)
         i = 0;
         do
         {
-            *(u32 *)pDest = *pAnim;
-            pAnim++;
+            *(u32 *)pDest = *pStuff;
+            pStuff++;
             i++;
             pDest += 4;
         } while (i < 0x81 || (j++, i = 0, j < (s32)count));
     }
 
     /* Block 5: read count, then count pointer-relocated words */
-    count = *pAnim;
-    pAnim++;
+    count = *pStuff;
+    pStuff++;
     *(u32 *)pDest = count;
     pDest += 4;
 
@@ -2812,9 +2812,9 @@ void Spool_StripAnimFile(char *pPSX)
     {
         do
         {
-            u32 reloc = (u32)((char *)pAnim - pDest);
-            u32 value = *pAnim;
-            pAnim++;
+            u32 reloc = (u32)((char *)pStuff - pDest);
+            u32 value = *pStuff;
+            pStuff++;
             i++;
             *(u32 *)pDest = value - reloc;
             pDest += 4;
@@ -2836,30 +2836,30 @@ void Spool_StripAnimFile(char *pPSX)
                 int pixelSize;
 
                 /* Copy 5 header words (20 bytes) */
-                word0 = *pAnim;
-                pAnim++;
+                word0 = *pStuff;
+                pStuff++;
                 *(u32 *)pDest = word0;
                 pDest += 4;
-                word1 = *pAnim;
-                pAnim++;
+                word1 = *pStuff;
+                pStuff++;
                 *(u32 *)pDest = word1;
                 pDest += 4;
-                word2 = *pAnim;
-                pAnim++;
+                word2 = *pStuff;
+                pStuff++;
                 *(u32 *)pDest = word2;
                 pDest += 4;
-                word3 = *pAnim;
-                pAnim++;
+                word3 = *pStuff;
+                pStuff++;
                 *(u32 *)pDest = word3;
                 pDest += 4;
-                word4 = *pAnim;
+                word4 = *pStuff;
                 *(u32 *)pDest = word4;
 
                 /* Extract dimensions from word4: upper 16 = width, lower 16 = height */
                 width = (word4 & mask) >> 16;
                 height = word4 & 0xFFFF;
                 pixelSize = width * height;
-                pAnim++;
+                pStuff++;
                 pDest += 4;
 
                 /* If type == 0x10 (4-bit texture), halve the pixel data size */
@@ -2879,8 +2879,8 @@ void Spool_StripAnimFile(char *pPSX)
                     int j = 0;
                     while (j < pixelSize / 4 - 1)
                     {
-                        *(u32 *)pDest = *pAnim;
-                        pAnim++;
+                        *(u32 *)pDest = *pStuff;
+                        pStuff++;
                         pDest += 4;
                         j++;
                     }
