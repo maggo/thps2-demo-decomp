@@ -67,9 +67,7 @@ int Mem_GetBlockSize(void *p);
  * order and address class proven for their translation unit.
  */
 #if defined(MEM_HEAP_SCALARS_DECLARATION) || defined(MEM_HEAP_SCALARS_ABSOLUTE_DECLARATION)
-#if defined(MEM_HEAP_SCALARS_DECLARATION) && defined(MEM_HEAP_SCALARS_ABSOLUTE_DECLARATION)
-#error "Select only one MEM heap-scalar declaration view"
-#elif defined(MEM_HEAP_SCALARS_ABSOLUTE_DECLARATION)
+#ifdef MEM_HEAP_SCALARS_ABSOLUTE_DECLARATION
 #define MEM_HEAP_SCALAR_DECL_ATTR __attribute__((section(".data")))
 #else
 #define MEM_HEAP_SCALAR_DECL_ATTR

@@ -38,7 +38,6 @@ typedef char Redbook_SongPos_size_must_be_12[sizeof(SONG_POS) == 12 ? 1 : -1];
 #include "REDBOOKSTATE.h"
 
 // === Variables (absolute in this TU) ===
-#define GAMEFMVSTATE_ABSOLUTE_DECLARATION
 #define GAMEFMVSTATE_DECLARE_ACTIVE
 #include "GAMEFMVSTATE.h"
 #define SPOOLPOS_ABSOLUTE_DECLARATION

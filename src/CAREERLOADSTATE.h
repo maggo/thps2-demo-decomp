@@ -10,11 +10,6 @@
 #define CAREERLOADSTATE_DECL_ATTR
 #endif
 
-#if !defined(CAREERLOADSTATE_DECLARE_HAS_CAREER_LOADED) && \
-    !defined(CAREERLOADSTATE_DECLARE_LOADED_CAREER_IS_SAVED)
-#error "Select at least one career-load state symbol"
-#endif
-
 #ifdef CAREERLOADSTATE_DECLARE_HAS_CAREER_LOADED
 /** Whether a career has been loaded into the front end. */
 extern int GHasCareerLoaded CAREERLOADSTATE_DECL_ATTR;

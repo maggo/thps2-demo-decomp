@@ -442,7 +442,6 @@ s16 SkaterHooks[14][10] __attribute__((section(".data"))) = {
     {},
 };
 
-#define HEADBLOODATFRAME_OWNER_DECLARATION
 #include "HEADBLOODATFRAME.h"
 
 /** Animation frame that emits head blood for each skater model. */

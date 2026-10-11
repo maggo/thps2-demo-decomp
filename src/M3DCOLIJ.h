@@ -197,7 +197,6 @@ extern "C" int ItemCacheStart; // 0x800DC540
 extern "C" CBody *pBodyHit; // 0x800DC56C
 
 // === Variables (absolute in this TU) ===
-#define ENVIROLIST_ABSOLUTE_DECLARATION
 #include "ENVIROLIST.h"
 #define BODYLISTS_DECLARE_ENVIRONMENTAL_OBJECT_LIST
 #include "BODYLISTS.h"

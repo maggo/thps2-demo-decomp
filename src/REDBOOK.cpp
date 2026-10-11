@@ -23,7 +23,6 @@ struct Redbook_CdResponse
 
 typedef char Redbook_CdResponse_size_must_be_9[sizeof(Redbook_CdResponse) == 9 ? 1 : -1];
 
-#define SPOOLQUEUE_CONSUMER_DECLARATION
 #include "SPOOLQUEUE.h"
 
 /** Locate the CdlLOC payload embedded in a CD command response. */

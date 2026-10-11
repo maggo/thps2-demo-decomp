@@ -115,7 +115,6 @@ extern "C"
 {
 #define SAVEACTION_WITHIN_C_LINKAGE
 #include "SAVEACTION.h"
-#define CARDSTATUS_WITHIN_C_LINKAGE
 #include "CARDSTATUS.h"
 }
 

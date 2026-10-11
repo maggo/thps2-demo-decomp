@@ -225,5 +225,4 @@ namespace CreateCollaboratorConstructorAbi
 extern "C" Font *__4Font(FontStorage *storage);
 }
 
-#undef FONTTOOLS_DECLARE_STORAGE_CONSTRUCTOR_ABI
 #endif

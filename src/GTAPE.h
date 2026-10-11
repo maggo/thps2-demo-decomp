@@ -13,6 +13,5 @@ struct CTape;
 GTAPE_DECL_LINKAGE CTape *GTape[5] __attribute__((section(".data")));
 
 #undef GTAPE_DECL_LINKAGE
-#undef GTAPE_WITHIN_C_LINKAGE
 
 #endif // GTAPE_INC_H

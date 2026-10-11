@@ -124,7 +124,6 @@ static inline short Utils_Cosine(int heading)
     return Utils_TrigEntries()[heading & 0xFFF].Cos;
 }
 #include "CAMERASELECTION.h"
-#define ENVIROLIST_ABSOLUTE_DECLARATION
 #include "ENVIROLIST.h"
 #define BODYLISTS_DECLARE_SUSPENDED_LIST
 #include "BODYLISTS.h"

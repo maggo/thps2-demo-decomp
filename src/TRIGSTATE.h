@@ -9,11 +9,6 @@
 #define TRIGSTATE_DECL_ATTR
 #endif
 
-#if !defined(TRIGSTATE_DECLARE_TRIG_FILE) && !defined(TRIGSTATE_DECLARE_OFFSET_LIST) && \
-    !defined(TRIGSTATE_DECLARE_NUM_NODES) && !defined(TRIGSTATE_DECLARE_FILE_SIZE)
-#error "Select at least one TRIG state declaration"
-#endif
-
 #ifdef TRIGSTATE_DECLARE_NUM_NODES
 /** Number of nodes in the active trigger file. */
 extern int NumNodes TRIGSTATE_DECL_ATTR;

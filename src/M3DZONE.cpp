@@ -43,7 +43,6 @@ typedef char M3dZone_zone_size_must_be_1632[(sizeof(SZone) == 1632) ? 1 : -1];
 #include "M3DCOLIJMASKS.h"
 #define BODYLISTS_DECLARE_ENVIRONMENTAL_OBJECT_LIST
 #include "BODYLISTS.h"
-#define ENVREGIONS_ABSOLUTE_DECLARATION
 #define ENVREGIONS_WITHIN_C_LINKAGE
 #include "ENVREGIONS.h"
 

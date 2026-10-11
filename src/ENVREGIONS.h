@@ -3,13 +3,11 @@
 
 /*
  * SPOOL physically owns the two environment-region indices in small data.
- * Most consumers import the complete array at its absolute address; M3D keeps
- * the target-proven scalar first-word view used by its pointer arithmetic.
+ * Consumers import the complete array at its absolute address by default; M3D
+ * opts into ENVREGIONS_SCALAR_ABSOLUTE_DECLARATION for the target-proven scalar
+ * first-word view used by its pointer arithmetic.
  */
-#if (defined(ENVREGIONS_OWNER_DECLARATION) + defined(ENVREGIONS_ABSOLUTE_DECLARATION) + \
-     defined(ENVREGIONS_SCALAR_ABSOLUTE_DECLARATION)) != 1
-#error "Select exactly one EnvRegions declaration view"
-#elif defined(ENVREGIONS_OWNER_DECLARATION)
+#ifdef ENVREGIONS_OWNER_DECLARATION
 #define ENVREGIONS_DECL_ATTR
 #else
 #define ENVREGIONS_DECL_ATTR __attribute__((section(".data")))
@@ -32,7 +30,6 @@ ENVREGIONS_DECL_LINKAGE int EnvRegions[2] ENVREGIONS_DECL_ATTR;
 #undef ENVREGIONS_DECL_LINKAGE
 #undef ENVREGIONS_DECL_ATTR
 #undef ENVREGIONS_SCALAR_ABSOLUTE_DECLARATION
-#undef ENVREGIONS_ABSOLUTE_DECLARATION
 #undef ENVREGIONS_OWNER_DECLARATION
 #undef ENVREGIONS_WITHIN_C_LINKAGE
 

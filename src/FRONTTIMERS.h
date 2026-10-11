@@ -4,23 +4,6 @@
  * This header is intentionally re-entrant so each timer stays at its original
  * declaration point.
  */
-#if defined(FRONTTIMERS_TITLE_TIMEOUT_OWNER_DECLARATION) && \
-    defined(FRONTTIMERS_TITLE_TIMEOUT_ABSOLUTE_DECLARATION)
-#error "Select only one TitleTimeout declaration view"
-#endif
-
-#if defined(FRONTTIMERS_LEFT_RIGHT_TIMER_OWNER_DECLARATION) && \
-    defined(FRONTTIMERS_LEFT_RIGHT_TIMER_ABSOLUTE_DECLARATION)
-#error "Select only one LeftRightAutoRepeatTimer declaration view"
-#endif
-
-#if !defined(FRONTTIMERS_TITLE_TIMEOUT_OWNER_DECLARATION) && \
-    !defined(FRONTTIMERS_TITLE_TIMEOUT_ABSOLUTE_DECLARATION) && \
-    !defined(FRONTTIMERS_LEFT_RIGHT_TIMER_OWNER_DECLARATION) && \
-    !defined(FRONTTIMERS_LEFT_RIGHT_TIMER_ABSOLUTE_DECLARATION)
-#error "Select a FRONT timer declaration view"
-#endif
-
 #if defined(FRONTTIMERS_TITLE_TIMEOUT_OWNER_DECLARATION)
 #define FRONTTIMERS_TITLE_TIMEOUT_DECL_ATTR
 #elif defined(FRONTTIMERS_TITLE_TIMEOUT_ABSOLUTE_DECLARATION)

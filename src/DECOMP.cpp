@@ -60,7 +60,6 @@ typedef char DecompCBodyOwner_size_must_be_0x108[(sizeof(DecompCBodyOwner) == 0x
 typedef char DecompCSuper_size_must_be_0x190[(sizeof(CSuper) == 0x190) ? 1 : -1];
 
 /** Animation data owned by M3DUTILS and shared with the decompressor. */
-#define TWEENBUFFER_CONSUMER_DECLARATION
 #include "TWEENBUFFER.h"
 
 /** Build a Y-X-Z rotation matrix from the packed Euler angles. */

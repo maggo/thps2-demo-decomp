@@ -348,7 +348,6 @@ enum
 #define VIDEOINFO_DECLARE_GVINFO2
 #include "VIDEOINFO.h"
 
-#define REPLAYSOUNDLOCKOUT_OWNER_DECLARATION
 #include "REPLAYSOUNDLOCKOUT.h"
 int ReplaySoundLockout __attribute__((section(".sdata"))) = 0;
 

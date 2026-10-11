@@ -116,7 +116,6 @@ void ExtraAnims_AddSkatersAnims(void);
  * filename strings and EnvModelChecksums.  HashIndex and pCurrentTex form the
  * complete owner-local .sbss contribution.
  */
-#define SPOOLQUEUE_OWNER_DECLARATION
 #define SPOOLQUEUE_WITHIN_C_LINKAGE
 #include "SPOOLQUEUE.h"
 SQueue SpoolQ[20] __attribute__((section(".data"))) = {};

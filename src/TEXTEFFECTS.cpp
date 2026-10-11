@@ -7,9 +7,7 @@
 
 #define TEXTEFFECT_POLYMORPHIC_LAYOUT
 #include "CCLASS_POLY.h"
-#define TEXTEFFECTS_OWNER_DECLARATIONS
 #include "TEXTEFFECTS.h"
-#undef TEXTEFFECTS_OWNER_DECLARATIONS
 // The shared headers below model CClass as the bare vtable-pointer holder
 // (`x->CClass.vtable`), so they see globals.h's data view of it.
 #define CClass CClassData

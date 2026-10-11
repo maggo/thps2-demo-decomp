@@ -299,7 +299,6 @@ extern "C" SViewport BottomViewport; // 0x800B77D0
 #include "CAMERALIST.h"
 #define DEMOTIMER_ABSOLUTE_DECLARATION
 #include "DEMOTIMER.h"
-#define ENVIROLIST_ABSOLUTE_DECLARATION
 #include "ENVIROLIST.h"
 #include "GLEVEL.h"
 #define VIDEOINFO_DECLARE_GVINFO2

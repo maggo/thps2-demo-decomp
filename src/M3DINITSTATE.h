@@ -11,11 +11,6 @@ struct SRotatedVertex;
 #define M3DINITSTATE_DECL_ATTR
 #endif
 
-#if !defined(M3DINITSTATE_DECLARE_DEFAULT_LOD_DISTANCE) && \
-    !defined(M3DINITSTATE_DECLARE_ROTATED_VERTICES)
-#error "Select at least one M3DINIT state symbol"
-#endif
-
 #ifdef M3DINITSTATE_DECLARE_DEFAULT_LOD_DISTANCE
 /** Default far depth assigned to models without an explicit LOD distance. */
 extern s16 M3d_DefaultLODDistance M3DINITSTATE_DECL_ATTR;

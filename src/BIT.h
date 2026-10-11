@@ -146,7 +146,6 @@ extern int __vt_9CGlassBit;
 extern int __vt_5CGlow;
 extern int __vt_7CRibbon;
 extern int __vt_11CWobblyGlow;
-#undef BIT_DECLARE_VTABLE_ADDRESSES
 #endif
 
 #if defined(BIT_DECLARE_BASE_CONSTRUCTOR)
@@ -156,7 +155,6 @@ namespace BitConstructorABI
 /** Construct the common transient-bit base in caller-provided storage. */
 extern "C" CBit *__4CBit(CBit *bit);
 }
-#undef BIT_DECLARE_BASE_CONSTRUCTOR
 #endif
 
 #if defined(BIT_DECLARE_FT4_CONSTRUCTOR)
@@ -166,7 +164,6 @@ namespace BitConstructorABI
 /** Construct the common textured-quad bit base. */
 extern "C" CFT4Bit *__7CFT4Bit(CFT4Bit *bit);
 }
-#undef BIT_DECLARE_FT4_CONSTRUCTOR
 #endif
 
 #if defined(BIT_DECLARE_LINKED_2_ENDED_CONSTRUCTOR)
@@ -176,7 +173,6 @@ namespace BitConstructorABI
 /** Construct a linked two-ended transient bit. */
 extern "C" CLinked2EndedBit *__16CLinked2EndedBit(CLinked2EndedBit *bit);
 }
-#undef BIT_DECLARE_LINKED_2_ENDED_CONSTRUCTOR
 #endif
 
 #if defined(BIT_DECLARE_RIBBON_BIT_CONSTRUCTOR)
@@ -186,7 +182,6 @@ namespace BitConstructorABI
 /** Construct the common ribbon-bit base. */
 extern "C" CRibbonBit *__10CRibbonBit(CRibbonBit *bit);
 }
-#undef BIT_DECLARE_RIBBON_BIT_CONSTRUCTOR
 #endif
 
 #if defined(BIT_DECLARE_MOTION_BLUR_CONSTRUCTOR)

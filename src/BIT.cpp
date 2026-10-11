@@ -367,7 +367,6 @@ struct SSinCos
 static char *AnimNames[6] = {
     "SHADOW", "SMOKE", "orbit", "ribbon", "smtile", "Buttons",
 };
-#define QUICKANIMLOOKUP_OWNER_DECLARATION
 #include "QUICKANIMLOOKUP.h"
 SAnimFrame *QuickAnimLookup[6] = {
     0, 0, 0, 0, 0, 0,

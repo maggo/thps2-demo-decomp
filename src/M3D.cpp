@@ -27,7 +27,6 @@ struct CBody;
 #include "SCAMERA.h"
 #include "TRIG.h"
 
-#define VERTICES_OWNER_DECLARATION
 #include "VERTICES.h"
 
 /** Pulsing-colour keyframe entry. */
@@ -50,7 +49,6 @@ struct STexWibFaceInfo
 
 #define ENVREGIONS_SCALAR_ABSOLUTE_DECLARATION
 #include "ENVREGIONS.h"
-#define ENVIROLIST_ABSOLUTE_DECLARATION
 #include "ENVIROLIST.h"
 #include "GLEVEL.h"
 
@@ -198,7 +196,6 @@ SLight M3d_DefaultLight = {
 /** Shared transformed-vertex workspace initialized by M3dInit. */
 SVertex Vertices[800] = {};
 
-#define WIBBLETABLES_OWNER_DECLARATION
 #include "WIBBLETABLES.h"
 
 /** Per-depth texture-wibble lookup rows initialized at runtime. */
@@ -260,7 +257,6 @@ int Dewibble = 0;
 int BasePhase = 0;
 
 // Shared animation-frame lookup owned by BIT.
-#define QUICKANIMLOOKUP_CONSUMER_DECLARATION
 #include "QUICKANIMLOOKUP.h"
 
 #include "M3DASM.h"

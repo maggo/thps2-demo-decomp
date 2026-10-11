@@ -157,9 +157,7 @@ struct MapCell
 #endif
 
 // === Variables (absolute in this TU) ===
-#define ENVREGIONS_ABSOLUTE_DECLARATION
 #include "ENVREGIONS.h"
-#define ENVIROLIST_ABSOLUTE_DECLARATION
 #include "ENVIROLIST.h"
 #define M3DCOLOURSTATE_DECLARE_FADE_COLOUR
 #include "M3DCOLOURSTATE.h"

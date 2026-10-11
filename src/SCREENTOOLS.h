@@ -203,14 +203,12 @@ typedef char
 struct ScreenElement;
 extern "C" ScreenElement *__13ScreenElementiiii(ScreenElement *element, int homeX, int homeY,
                                                 int screenX, int screenY);
-#undef SCREENTOOLS_DECLARE_SCREEN_ELEMENT_CONSTRUCTOR
 #endif
 
 #if defined(SCREENTOOLS_DECLARE_SCREEN_ELEMENT_LIST_CONSTRUCTOR)
 struct ScreenElementList;
 extern "C" ScreenElementList *__17ScreenElementListiiii(ScreenElementList *list, int homeX,
                                                         int homeY, int screenX, int screenY);
-#undef SCREENTOOLS_DECLARE_SCREEN_ELEMENT_LIST_CONSTRUCTOR
 #endif
 
 #if defined(SCREENTOOLS_DECLARE_TEXT_MENU_PROPERTIES_CONSTRUCTOR)
@@ -253,7 +251,6 @@ extern "C" TextScreenElement *__17TextScreenElementPcP4Fontiiii(TextScreenElemen
                                                                 char *text, Font *font, int homeX,
                                                                 int homeY, int screenX,
                                                                 int screenY);
-#undef SCREENTOOLS_DECLARE_TEXT_SCREEN_ELEMENT_CONSTRUCTOR
 #endif
 
 #if defined(SCREENTOOLS_DECLARE_SPRITE_SCREEN_ELEMENT_CONSTRUCTOR)
@@ -262,7 +259,6 @@ extern "C" SpriteScreenElement *__19SpriteScreenElementPciiiiii(SpriteScreenElem
                                                                 char *fileName, int homeX,
                                                                 int homeY, int screenX, int screenY,
                                                                 int justY, int justX);
-#undef SCREENTOOLS_DECLARE_SPRITE_SCREEN_ELEMENT_CONSTRUCTOR
 #endif
 
 #ifndef SCREENTOOLS_AGGREGATE_LAYOUT_ONLY

@@ -17,7 +17,6 @@
 #include <LIBGTE.H>
 #include "SMODEL.h"
 
-#define ENVIROLIST_ABSOLUTE_DECLARATION
 #include "ENVIROLIST.h"
 
 /** Base particle state embedded in a polyline effect. */
