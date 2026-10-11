@@ -11,7 +11,8 @@
 #include "CFRICTION.h"
 
 /** Background body plus the monotonically assigned background-list index. */
-struct CBackground : public CBody {
+struct CBackground : public CBody
+{
     unsigned short mIndex;
 
     CBackground(unsigned int checksum, const CSVector &ang_vel);
@@ -28,7 +29,8 @@ typedef char CBackground_size_check[(sizeof(CBackground) == 268) ? 1 : -1];
 CBody *BackgroundList = 0; // gp+0x3D88
 static u16 CurrentIndex = 0; // gp+0x3D8C
 
-enum {
+enum
+{
     BACKGROUND_DISABLED_FLAG = 1,
     BACKGROUND_ITEM_FLAGS_CLEARED_ON_INIT = 2,
     BACKGROUND_BODY_FLAGS_CLEARED_ON_INIT = 6
@@ -47,10 +49,13 @@ enum {
  *
  * @param index  Background-object index.
  */
-void Backgrnd_On(unsigned short index) {
+void Backgrnd_On(unsigned short index)
+{
     CBackground *p_back = static_cast<CBackground *>(BackgroundList);
-    while (p_back != 0) {
-        if (p_back->mIndex == index) {
+    while (p_back != 0)
+    {
+        if (p_back->mIndex == index)
+        {
             p_back->mFlags &= ~BACKGROUND_DISABLED_FLAG;
             return;
         }
@@ -68,10 +73,13 @@ void Backgrnd_On(unsigned short index) {
  *
  * @param index  Background-object index.
  */
-void Backgrnd_Off(unsigned short index) {
+void Backgrnd_Off(unsigned short index)
+{
     CBackground *p_back = static_cast<CBackground *>(BackgroundList);
-    while (p_back != 0) {
-        if (p_back->mIndex == index) {
+    while (p_back != 0)
+    {
+        if (p_back->mIndex == index)
+        {
             p_back->mFlags |= BACKGROUND_DISABLED_FLAG;
             return;
         }
@@ -91,7 +99,8 @@ void Backgrnd_Off(unsigned short index) {
  * @param checksum  Asset hash for content lookup.
  * @param ang_vel  Reserved angular-velocity argument; not read here.
  */
-CBackground::CBackground(unsigned int checksum, const CSVector &ang_vel) {
+CBackground::CBackground(unsigned int checksum, const CSVector &ang_vel)
+{
     char *pName = pCurrentObjFile;
     InitItem(pName);
     mModel = Spool_GetModel(checksum, mRegion);
@@ -112,7 +121,8 @@ CBackground::CBackground(unsigned int checksum, const CSVector &ang_vel) {
  * GCC 2.x supplies the hidden in-charge flag and invokes the class allocator
  * when destruction also owns the object's storage.
  */
-CBackground::~CBackground() {
+CBackground::~CBackground()
+{
     DeleteFrom(&BackgroundList);
     CurrentIndex--;
 }
@@ -126,6 +136,7 @@ CBackground::~CBackground() {
  * Demangled: CBackground::AI(void)
  *            Advances the object's angles by its angular velocity.
  */
-void CBackground::AI() {
+void CBackground::AI()
+{
     mAngles += mAngVel;
 }

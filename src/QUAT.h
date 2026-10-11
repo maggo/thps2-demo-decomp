@@ -29,7 +29,8 @@ typedef unsigned char undefined3[3];
 // CClass — Base class with vtable pointer
 
 /** Fixed-point quaternion with the original CClass vtable prefix. */
-struct CQuat {
+struct CQuat
+{
     struct CClass CClass;
     int x;
     int y;

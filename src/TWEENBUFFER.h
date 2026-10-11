@@ -7,8 +7,7 @@ struct SMatrix;
  * MAIN.SYM's complete thirty-element type while address-only consumers keep
  * the original incomplete array declaration emitted by their object.
  */
-#if defined(TWEENBUFFER_OWNER_DECLARATION) && \
-    defined(TWEENBUFFER_CONSUMER_DECLARATION)
+#if defined(TWEENBUFFER_OWNER_DECLARATION) && defined(TWEENBUFFER_CONSUMER_DECLARATION)
 #error "Select only one TweenBuffer declaration view"
 #elif defined(TWEENBUFFER_OWNER_DECLARATION)
 #define TWEENBUFFER_DECL_BOUND 30

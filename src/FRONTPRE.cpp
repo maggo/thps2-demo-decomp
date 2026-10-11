@@ -27,7 +27,8 @@ _FrontPreInfo preInfo[FrontPreInfoCount] = {
 #include "SPOOLER.h"
 #undef SPOOLER_ABSOLUTE_MANAGER_DECLARATION
 
-enum {
+enum
+{
     FrontPreInitialTimeout = 3,
     FrontPreFadeStep = 8,
     FrontPreMaximumFade = 255,
@@ -73,8 +74,7 @@ int FrontPreLoader::BeginLoad(int whichScreen)
     _FrontPreInfo *pInfo = preInfo;
     while (*pInfo->pFileName != '\0')
     {
-        if (whichScreen == pInfo->whichScreen)
-            break;
+        if (whichScreen == pInfo->whichScreen) break;
         pInfo++;
     }
 
@@ -111,8 +111,7 @@ int FrontPreLoader::DoneLoading()
 
     if (mActive == 0)
     {
-        if (mTimeout > 0)
-            mTimeout--;
+        if (mTimeout > 0) mTimeout--;
         return mTimeout == 0;
     }
 
@@ -121,11 +120,9 @@ int FrontPreLoader::DoneLoading()
     setPolyF4(Poly);
 
     mFade += FrontPreFadeStep;
-    if (mFade > FrontPreMaximumFade)
-        mFade = FrontPreMaximumFade;
+    if (mFade > FrontPreMaximumFade) mFade = FrontPreMaximumFade;
 
-    setRGB0(Poly, mFade / FrontPreRedFadeDivisor,
-            mFade / FrontPreGreenFadeDivisor, mFade);
+    setRGB0(Poly, mFade / FrontPreRedFadeDivisor, mFade / FrontPreGreenFadeDivisor, mFade);
     setXYWH(Poly, 0, 0, FrontPreScreenWidth, FrontPreScreenHeight);
 
     setSemiTrans(Poly, 1);
@@ -140,9 +137,8 @@ int FrontPreLoader::DoneLoading()
 
     if (Spooler::SpoolMgr->IsFileLoaded(mSpoolID))
     {
-        PREMgr->spoolPREData(
-            reinterpret_cast<char *>(Spooler::SpoolMgr->GetFile(mSpoolID)),
-            mFileName);
+        PREMgr->spoolPREData(reinterpret_cast<char *>(Spooler::SpoolMgr->GetFile(mSpoolID)),
+                             mFileName);
         return 1;
     }
     return 0;

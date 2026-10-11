@@ -24,29 +24,25 @@
 #if defined(FRONTTIMERS_TITLE_TIMEOUT_OWNER_DECLARATION)
 #define FRONTTIMERS_TITLE_TIMEOUT_DECL_ATTR
 #elif defined(FRONTTIMERS_TITLE_TIMEOUT_ABSOLUTE_DECLARATION)
-#define FRONTTIMERS_TITLE_TIMEOUT_DECL_ATTR \
-    __attribute__((section(".data")))
+#define FRONTTIMERS_TITLE_TIMEOUT_DECL_ATTR __attribute__((section(".data")))
 #endif
 
 #if defined(FRONTTIMERS_TITLE_TIMEOUT_OWNER_DECLARATION) || \
     defined(FRONTTIMERS_TITLE_TIMEOUT_ABSOLUTE_DECLARATION)
 /** Frames allowed for the front-end title transition. */
-extern int TitleTimeout
-    FRONTTIMERS_TITLE_TIMEOUT_DECL_ATTR;
+extern int TitleTimeout FRONTTIMERS_TITLE_TIMEOUT_DECL_ATTR;
 #endif
 
 #if defined(FRONTTIMERS_LEFT_RIGHT_TIMER_OWNER_DECLARATION)
 #define FRONTTIMERS_LEFT_RIGHT_TIMER_DECL_ATTR
 #elif defined(FRONTTIMERS_LEFT_RIGHT_TIMER_ABSOLUTE_DECLARATION)
-#define FRONTTIMERS_LEFT_RIGHT_TIMER_DECL_ATTR \
-    __attribute__((section(".data")))
+#define FRONTTIMERS_LEFT_RIGHT_TIMER_DECL_ATTR __attribute__((section(".data")))
 #endif
 
 #if defined(FRONTTIMERS_LEFT_RIGHT_TIMER_OWNER_DECLARATION) || \
     defined(FRONTTIMERS_LEFT_RIGHT_TIMER_ABSOLUTE_DECLARATION)
 /** Horizontal menu-input repeat timer shared with RFRONT. */
-extern int LeftRightAutoRepeatTimer
-    FRONTTIMERS_LEFT_RIGHT_TIMER_DECL_ATTR;
+extern int LeftRightAutoRepeatTimer FRONTTIMERS_LEFT_RIGHT_TIMER_DECL_ATTR;
 #endif
 
 #undef FRONTTIMERS_TITLE_TIMEOUT_DECL_ATTR

@@ -172,8 +172,7 @@ struct EditorOutModel
     /** Removes hidden faces shared with neighboring generated models. */
     void RemoveAllHiddenFaces();
     /** Restores or hides shared faces against one neighboring side. */
-    void UnhideSharedFaces(
-        bool unhide, EditorOutModel *wire_model, unsigned char against);
+    void UnhideSharedFaces(bool unhide, EditorOutModel *wire_model, unsigned char against);
 
     struct CClassData CClass;
     void *DeleteModelRequest;
@@ -255,8 +254,7 @@ public:
     static void UnloadOutPSX(bool killBuffers);
     static void LoadMap(char *load_name);
     static void SetMapTheme(int theme);
-    int RemoveModelFromMap(int xmap, int zmap, int *no_lower_than,
-                           EditorInModel **ret_model);
+    int RemoveModelFromMap(int xmap, int zmap, int *no_lower_than, EditorInModel **ret_model);
     u32 *CreatePSX(int *ret_region, bool refresh_models);
     int CreateZonePacket(int *at);
     void CreateRails(void);
@@ -278,12 +276,9 @@ namespace LevelGenConstructorABI
 #define GENOBJS_LEVELGEN_EDITOR_OUT_MODEL_TYPE EditorOutModel
 #include "GENOBJS.h"
 }
-#define LevelGen_InitEditorPolyBuffer \
-    LevelGenConstructorABI::InitPolyBuf__13EditorInModelb
-#define LevelGen_SetEditorModelDataSize \
-    LevelGenConstructorABI::SetModelDataSize__14EditorOutModelb
-#define LevelGen_CreateEditorModelData \
-    LevelGenConstructorABI::CreateModelData__14EditorOutModelPcb
+#define LevelGen_InitEditorPolyBuffer LevelGenConstructorABI::InitPolyBuf__13EditorInModelb
+#define LevelGen_SetEditorModelDataSize LevelGenConstructorABI::SetModelDataSize__14EditorOutModelb
+#define LevelGen_CreateEditorModelData LevelGenConstructorABI::CreateModelData__14EditorOutModelPcb
 
 // Natural C++ spellings for free-function imports used only by this owner.
 #include "SPOOL.h"
@@ -291,16 +286,15 @@ namespace LevelGenConstructorABI
 #include "PAL.h"
 #include "FILEIO.h"
 
-typedef char LevelGen_FakeTriggerNode_size_must_be_24[
-    (sizeof(LevelGen_FakeTriggerNode) == 24) ? 1 : -1];
-typedef char LevelGen_ModelBounds_size_must_be_12[
-    (sizeof(LevelGenModelBounds) == 12) ? 1 : -1];
-typedef char LevelGen_TextureUsage_view_size_must_be_20[
-    (sizeof(LevelGenTextureUsageView) == 20) ? 1 : -1];
-typedef char LevelGen_ZonePacketHeader_size_must_be_28[
-    (sizeof(LevelGenZonePacketHeader) == 28) ? 1 : -1];
-typedef char LevelGen_TriggerFileHeader_size_must_be_12[
-    (sizeof(LevelGenTriggerFileHeader) == 12) ? 1 : -1];
+typedef char
+    LevelGen_FakeTriggerNode_size_must_be_24[(sizeof(LevelGen_FakeTriggerNode) == 24) ? 1 : -1];
+typedef char LevelGen_ModelBounds_size_must_be_12[(sizeof(LevelGenModelBounds) == 12) ? 1 : -1];
+typedef char
+    LevelGen_TextureUsage_view_size_must_be_20[(sizeof(LevelGenTextureUsageView) == 20) ? 1 : -1];
+typedef char
+    LevelGen_ZonePacketHeader_size_must_be_28[(sizeof(LevelGenZonePacketHeader) == 28) ? 1 : -1];
+typedef char
+    LevelGen_TriggerFileHeader_size_must_be_12[(sizeof(LevelGenTriggerFileHeader) == 12) ? 1 : -1];
 typedef char LevelGen_RailInfo_size_must_be_12[(sizeof(RailInfo) == 12) ? 1 : -1];
 typedef char LevelGen_EditorInModel_size_must_be_68[(sizeof(EditorInModel) == 68) ? 1 : -1];
 typedef char LevelGen_RailPoint_size_must_be_28[(sizeof(RailPoint) == 28) ? 1 : -1];
@@ -326,16 +320,12 @@ namespace LevelGenAddressViewOwners
 {
 extern "C"
 {
-static char s_EditOutputRegionName[8]
-    __attribute__((section(".sdata"))) = "edit";
+static char s_EditOutputRegionName[8] __attribute__((section(".sdata"))) = "edit";
 }
 }
-int LevelGenerator::OutRegion
-    __attribute__((section(".sdata"))) = 0;
-int LevelGenerator::GridCellHeight
-    __attribute__((section(".sdata"))) = 0;
-int LevelGenerator::GridCellWidth
-    __attribute__((section(".sdata"))) = 0;
+int LevelGenerator::OutRegion __attribute__((section(".sdata"))) = 0;
+int LevelGenerator::GridCellHeight __attribute__((section(".sdata"))) = 0;
+int LevelGenerator::GridCellWidth __attribute__((section(".sdata"))) = 0;
 
 // The original compilation addresses this fixed name as an ordinary object,
 // rather than through the small-data base used for the surrounding globals.
@@ -343,7 +333,7 @@ int LevelGenerator::GridCellWidth
 #include "LEVELGEN.h"
 
 /** Model-placement grid cleared by LevelGenerator::Init. */
-GridCell LevelGenerator::GridTab[24][24] = {{{0}}};
+GridCell LevelGenerator::GridTab[24][24] = { { { 0 } } };
 
 // === Function implementations (address order) ===
 
@@ -484,8 +474,7 @@ void LevelGenerator::LoadModels(char *file)
 
     pPSX = PSXRegion[SourceRegion].pPSX;
     num_items = pPSX[2];
-    ppModels = (SModel **)(num_items * sizeof(Item) +
-                           (unsigned int)pPSX + 16);
+    ppModels = (SModel **)(num_items * sizeof(Item) + (unsigned int)pPSX + 16);
     NumSourceModels = *((unsigned int *)ppModels - 1);
 
     {
@@ -598,8 +587,7 @@ void LevelGenerator::ProcessGrid(void)
                 FloorTab[j][i].rot[slot] = 0;
                 if (slot < LevelGenerator::GridTab[j][i].numUsedSlots)
                 {
-                    FloorTab[j][i].modelIndex[slot] =
-                        (short)Floor1X1Piece[slot];
+                    FloorTab[j][i].modelIndex[slot] = (short)Floor1X1Piece[slot];
                 }
             }
         }
@@ -618,11 +606,9 @@ void LevelGenerator::ProcessGrid(void)
         {
             for (int i = 0; i < 24; i++)
             {
-                if (slot <
-                    LevelGenerator::GridTab[j][i].numUsedSlots)
+                if (slot < LevelGenerator::GridTab[j][i].numUsedSlots)
                 {
-                    int piece_num =
-                        LevelGenerator::GridTab[j][i].modelIndex[slot];
+                    int piece_num = LevelGenerator::GridTab[j][i].modelIndex[slot];
                     if (piece_num != -1)
                     {
                         int w;
@@ -632,16 +618,16 @@ void LevelGenerator::ProcessGrid(void)
 
                         switch (LevelGenerator::GridTab[j][i].rot[slot])
                         {
-                        case 0:
-                        case 2:
-                            w = SourceModelTab[piece_num].w;
-                            l = SourceModelTab[piece_num].l;
-                            break;
-                        case 1:
-                        case 3:
-                            w = SourceModelTab[piece_num].l;
-                            l = SourceModelTab[piece_num].w;
-                            break;
+                            case 0:
+                            case 2:
+                                w = SourceModelTab[piece_num].w;
+                                l = SourceModelTab[piece_num].l;
+                                break;
+                            case 1:
+                            case 3:
+                                w = SourceModelTab[piece_num].l;
+                                l = SourceModelTab[piece_num].w;
+                                break;
                         }
 
                         h = SourceModelTab[piece_num].h;
@@ -654,8 +640,7 @@ void LevelGenerator::ProcessGrid(void)
                                 {
                                     for (int s = start_level; s < h; s++)
                                     {
-                                        FloorTab[z][x]
-                                            .modelIndex[slot + s] = -1;
+                                        FloorTab[z][x].modelIndex[slot + s] = -1;
                                     }
                                 }
                             }
@@ -670,8 +655,7 @@ void LevelGenerator::ProcessGrid(void)
                                 }
                             }
                         }
-                        if (GameBuild != 0 &&
-                            (SourceModelTab[piece_num].flags & 0x04) != 0 &&
+                        if (GameBuild != 0 && (SourceModelTab[piece_num].flags & 0x04) != 0 &&
                             slot > 0)
                         {
                             for (int z = j; z < j + l; z++)
@@ -705,13 +689,11 @@ void LevelGenerator::ProcessGrid(void)
             for (int i = 0; i < 24; i += 2)
             {
                 short piece = FloorTab[j][i].modelIndex[slot];
-                if (piece == Floor1X1Piece[slot] &&
-                    FloorTab[j][i + 1].modelIndex[slot] == piece &&
+                if (piece == Floor1X1Piece[slot] && FloorTab[j][i + 1].modelIndex[slot] == piece &&
                     FloorTab[j + 1][i].modelIndex[slot] == piece &&
                     FloorTab[j + 1][i + 1].modelIndex[slot] == piece)
                 {
-                    FloorTab[j][i].modelIndex[slot] =
-                        (short)Floor2X2Piece[slot];
+                    FloorTab[j][i].modelIndex[slot] = (short)Floor2X2Piece[slot];
                     FloorTab[j][i + 1].modelIndex[slot] = -1;
                     FloorTab[j + 1][i].modelIndex[slot] = -1;
                     FloorTab[j + 1][i + 1].modelIndex[slot] = -1;
@@ -730,25 +712,17 @@ void LevelGenerator::ProcessGrid(void)
         {
             for (int i = 0; i < 24; i++)
             {
-                if (i < 23 &&
-                    FloorTab[j][i].modelIndex[slot] ==
-                        Floor1X1Piece[slot] &&
-                    FloorTab[j][i + 1].modelIndex[slot] ==
-                        FloorTab[j][i].modelIndex[slot])
+                if (i < 23 && FloorTab[j][i].modelIndex[slot] == Floor1X1Piece[slot] &&
+                    FloorTab[j][i + 1].modelIndex[slot] == FloorTab[j][i].modelIndex[slot])
                 {
-                    FloorTab[j][i].modelIndex[slot] =
-                        (short)Floor1X2Piece[slot];
+                    FloorTab[j][i].modelIndex[slot] = (short)Floor1X2Piece[slot];
                     FloorTab[j][i + 1].modelIndex[slot] = -1;
                     FloorTab[j][i].rot[slot] = 0;
                 }
-                else if (j < 23 &&
-                         FloorTab[j][i].modelIndex[slot] ==
-                             Floor1X1Piece[slot] &&
-                         FloorTab[j + 1][i].modelIndex[slot] ==
-                             FloorTab[j][i].modelIndex[slot])
+                else if (j < 23 && FloorTab[j][i].modelIndex[slot] == Floor1X1Piece[slot] &&
+                         FloorTab[j + 1][i].modelIndex[slot] == FloorTab[j][i].modelIndex[slot])
                 {
-                    FloorTab[j][i].modelIndex[slot] =
-                        (short)Floor1X2Piece[slot];
+                    FloorTab[j][i].modelIndex[slot] = (short)Floor1X2Piece[slot];
                     FloorTab[j + 1][i].modelIndex[slot] = -1;
                     FloorTab[j][i].rot[slot] = 3;
                 }
@@ -774,8 +748,7 @@ void LevelGenerator::ClearOutModels(void)
         if (model != 0)
         {
             typedef void (*EditorOutModelDestructor)(EditorOutModel *, int);
-            EditorOutModelDestructor destroy =
-                (EditorOutModelDestructor)model->CClass.vtable[2];
+            EditorOutModelDestructor destroy = (EditorOutModelDestructor)model->CClass.vtable[2];
             destroy(model, 3);
         }
         model = next_model;
@@ -831,70 +804,54 @@ void LevelGenerator::GenerateOutModels(void)
                             int xoff;
                             int zoff;
 
-                            if (LevelGenerator::GridTab[j][i]
-                                        .modelIndex[slot] == -1 ||
-                                slot >= LevelGenerator::GridTab[j][i]
-                                            .numUsedSlots)
+                            if (LevelGenerator::GridTab[j][i].modelIndex[slot] == -1 ||
+                                slot >= LevelGenerator::GridTab[j][i].numUsedSlots)
                             {
                                 y -= LevelGenerator::GridCellHeight;
                             }
                             else
                             {
                                 in_model =
-                                    &SourceModelTab[
-                                        LevelGenerator::GridTab[j][i]
-                                            .modelIndex[slot]];
+                                    &SourceModelTab[LevelGenerator::GridTab[j][i].modelIndex[slot]];
                                 out_model = static_cast<EditorOutModel *>(
-                                    ::CClass::operator new(
-                                        sizeof(EditorOutModel)));
+                                    ::CClass::operator new(sizeof(EditorOutModel)));
                                 if (out_model != 0)
                                 {
-                                    out_model = ::new (out_model)
-                                        EditorOutModel(
-                                            in_model, j * 100 + i);
+                                    out_model =
+                                        ::new (out_model) EditorOutModel(in_model, j * 100 + i);
                                 }
 
-                                switch (LevelGenerator::GridTab[j][i]
-                                            .rot[slot])
+                                switch (LevelGenerator::GridTab[j][i].rot[slot])
                                 {
-                                case 0:
-                                    xoff = in_model->xleft;
-                                    zoff = in_model->ztop;
-                                    out_model->WCell =
-                                        (unsigned char)in_model->w;
-                                    out_model->LCell =
-                                        (unsigned char)in_model->l;
-                                    break;
-                                case 1:
-                                    xoff = in_model->ztop;
-                                    zoff = in_model->xright;
-                                    out_model->WCell =
-                                        (unsigned char)in_model->l;
-                                    out_model->LCell =
-                                        (unsigned char)in_model->w;
-                                    break;
-                                case 2:
-                                    xoff = in_model->xright;
-                                    zoff = in_model->zbottom;
-                                    out_model->WCell =
-                                        (unsigned char)in_model->w;
-                                    out_model->LCell =
-                                        (unsigned char)in_model->l;
-                                    break;
-                                case 3:
-                                    xoff = in_model->zbottom;
-                                    zoff = in_model->xleft;
-                                    out_model->WCell =
-                                        (unsigned char)in_model->l;
-                                    out_model->LCell =
-                                        (unsigned char)in_model->w;
-                                    break;
+                                    case 0:
+                                        xoff = in_model->xleft;
+                                        zoff = in_model->ztop;
+                                        out_model->WCell = (unsigned char)in_model->w;
+                                        out_model->LCell = (unsigned char)in_model->l;
+                                        break;
+                                    case 1:
+                                        xoff = in_model->ztop;
+                                        zoff = in_model->xright;
+                                        out_model->WCell = (unsigned char)in_model->l;
+                                        out_model->LCell = (unsigned char)in_model->w;
+                                        break;
+                                    case 2:
+                                        xoff = in_model->xright;
+                                        zoff = in_model->zbottom;
+                                        out_model->WCell = (unsigned char)in_model->w;
+                                        out_model->LCell = (unsigned char)in_model->l;
+                                        break;
+                                    case 3:
+                                        xoff = in_model->zbottom;
+                                        zoff = in_model->xleft;
+                                        out_model->WCell = (unsigned char)in_model->l;
+                                        out_model->LCell = (unsigned char)in_model->w;
+                                        break;
                                 }
 
                                 int positioned_x = x;
                                 positioned_x += xoff;
-                                unsigned char height =
-                                    (unsigned char)in_model->h;
+                                unsigned char height = (unsigned char)in_model->h;
                                 out_model->Z = (short)(z - zoff);
                                 out_model->X = (short)positioned_x;
                                 out_model->Y = (short)y;
@@ -902,29 +859,19 @@ void LevelGenerator::GenerateOutModels(void)
                                 out_model->YCell = (unsigned char)slot;
                                 out_model->ZCell = (unsigned char)j;
                                 out_model->HCell = height;
-                                out_model->Rot =
-                                    LevelGenerator::GridTab[j][i]
-                                        .rot[slot];
+                                out_model->Rot = LevelGenerator::GridTab[j][i].rot[slot];
 
                                 {
                                     int n;
-                                    for (n = j;
-                                         n < j + out_model->LCell;
-                                         n++)
+                                    for (n = j; n < j + out_model->LCell; n++)
                                     {
                                         int m;
-                                        for (m = i;
-                                             m < i + out_model->WCell;
-                                             m++)
+                                        for (m = i; m < i + out_model->WCell; m++)
                                         {
                                             int s;
-                                            for (s = 0;
-                                                 s < out_model->HCell;
-                                                 s++)
+                                            for (s = 0; s < out_model->HCell; s++)
                                             {
-                                                OutModelMap[n][m]
-                                                    .modelInSlot[slot + s] =
-                                                    out_model;
+                                                OutModelMap[n][m].modelInSlot[slot + s] = out_model;
                                             }
                                         }
                                     }
@@ -973,10 +920,8 @@ void LevelGenerator::RemoveDeletedModels(void)
         {
             if (model)
             {
-                typedef void (*EditorOutModelDestructor)(
-                    EditorOutModel *, int);
-                EditorOutModelDestructor dtor =
-                    (EditorOutModelDestructor)model->CClass.vtable[2];
+                typedef void (*EditorOutModelDestructor)(EditorOutModel *, int);
+                EditorOutModelDestructor dtor = (EditorOutModelDestructor)model->CClass.vtable[2];
                 dtor(model, 3);
             }
             if (prev)
@@ -1127,8 +1072,7 @@ void LevelGenerator::ClearFloorModels(void)
             if (model != 0)
             {
                 typedef void (*DestroyFunc)(EditorOutModel *, int);
-                DestroyFunc func =
-                    (DestroyFunc)model->CClass.vtable[2];
+                DestroyFunc func = (DestroyFunc)model->CClass.vtable[2];
                 func(model, 3);
             }
             model = next_model;
@@ -1195,58 +1139,46 @@ void LevelGenerator::GenerateFloorModels(void)
                             }
                             else
                             {
-                                in_model = &SourceModelTab[
-                                    FloorTab[j][i].modelIndex[slot]];
+                                in_model = &SourceModelTab[FloorTab[j][i].modelIndex[slot]];
                                 out_model = static_cast<EditorOutModel *>(
-                                    ::CClass::operator new(
-                                        sizeof(EditorOutModel)));
+                                    ::CClass::operator new(sizeof(EditorOutModel)));
                                 if (out_model != 0)
                                 {
-                                    out_model = ::new (out_model)
-                                        EditorOutModel(
-                                            in_model, j * 100 + i);
+                                    out_model =
+                                        ::new (out_model) EditorOutModel(in_model, j * 100 + i);
                                 }
 
                                 switch (FloorTab[j][i].rot[slot])
                                 {
-                                case 0:
-                                    xoff = in_model->xleft;
-                                    zoff = in_model->ztop;
-                                    out_model->WCell =
-                                        (unsigned char)in_model->w;
-                                    out_model->LCell =
-                                        (unsigned char)in_model->l;
-                                    break;
-                                case 1:
-                                    xoff = in_model->ztop;
-                                    zoff = in_model->xright;
-                                    out_model->WCell =
-                                        (unsigned char)in_model->l;
-                                    out_model->LCell =
-                                        (unsigned char)in_model->w;
-                                    break;
-                                case 2:
-                                    xoff = in_model->xright;
-                                    zoff = in_model->zbottom;
-                                    out_model->WCell =
-                                        (unsigned char)in_model->w;
-                                    out_model->LCell =
-                                        (unsigned char)in_model->l;
-                                    break;
-                                case 3:
-                                    xoff = in_model->zbottom;
-                                    zoff = in_model->xleft;
-                                    out_model->WCell =
-                                        (unsigned char)in_model->l;
-                                    out_model->LCell =
-                                        (unsigned char)in_model->w;
-                                    break;
+                                    case 0:
+                                        xoff = in_model->xleft;
+                                        zoff = in_model->ztop;
+                                        out_model->WCell = (unsigned char)in_model->w;
+                                        out_model->LCell = (unsigned char)in_model->l;
+                                        break;
+                                    case 1:
+                                        xoff = in_model->ztop;
+                                        zoff = in_model->xright;
+                                        out_model->WCell = (unsigned char)in_model->l;
+                                        out_model->LCell = (unsigned char)in_model->w;
+                                        break;
+                                    case 2:
+                                        xoff = in_model->xright;
+                                        zoff = in_model->zbottom;
+                                        out_model->WCell = (unsigned char)in_model->w;
+                                        out_model->LCell = (unsigned char)in_model->l;
+                                        break;
+                                    case 3:
+                                        xoff = in_model->zbottom;
+                                        zoff = in_model->xleft;
+                                        out_model->WCell = (unsigned char)in_model->l;
+                                        out_model->LCell = (unsigned char)in_model->w;
+                                        break;
                                 }
 
                                 int positioned_x = x;
                                 positioned_x += xoff;
-                                unsigned char height =
-                                    (unsigned char)in_model->h;
+                                unsigned char height = (unsigned char)in_model->h;
                                 out_model->Z = (short)(z - zoff);
                                 out_model->X = (short)positioned_x;
                                 out_model->Y = (short)y;
@@ -1254,23 +1186,16 @@ void LevelGenerator::GenerateFloorModels(void)
                                 out_model->YCell = (unsigned char)slot;
                                 out_model->ZCell = (unsigned char)j;
                                 out_model->HCell = height;
-                                out_model->Rot =
-                                    FloorTab[j][i].rot[slot];
+                                out_model->Rot = FloorTab[j][i].rot[slot];
 
                                 {
                                     int n;
-                                    for (n = j;
-                                         n < j + out_model->LCell;
-                                         n++)
+                                    for (n = j; n < j + out_model->LCell; n++)
                                     {
                                         int m;
-                                        for (m = i;
-                                             m < i + out_model->WCell;
-                                             m++)
+                                        for (m = i; m < i + out_model->WCell; m++)
                                         {
-                                            FloorModelMap[n][m]
-                                                .modelInSlot[slot] =
-                                                out_model;
+                                            FloorModelMap[n][m].modelInSlot[slot] = out_model;
                                         }
                                     }
                                 }
@@ -1334,7 +1259,7 @@ void LevelGenerator::LoadRails(char *file)
     pModelChecksums = Spool_SkipPackets(PSXRegion[SourceRegion].pPSX);
     Trig_LoadTRG(file);
 
-    for (node = 0; node < NumNodes; )
+    for (node = 0; node < NumNodes;)
     {
         short num_links;
         int trickob;
@@ -1390,19 +1315,15 @@ void LevelGenerator::LoadRails(char *file)
                         pMaterial = Trig_GetPosition(loc, linked_node);
                         // FIXME(match): asm barrier — keeps the pMaterial move ahead of `li $a0,0x1C` for CClass::operator new; stripped = score 4 (with the other two sites also stripped, 25); tried: plain/unsigned short/`+= 1` forms.
                         asm volatile("" : "+r"(pMaterial));
-                        point = static_cast<RailPoint *>(
-                            ::CClass::operator new(sizeof(RailPoint)));
+                        point = static_cast<RailPoint *>(::CClass::operator new(sizeof(RailPoint)));
                         if (point != 0)
                         {
                             point = ::new (point) RailPoint();
                         }
 
-                        point->Pos.vx = (loc.vx >> 12) -
-                                        (short)SourceModelTab[model].railXOff;
-                        point->Pos.vy = (loc.vy >> 12) -
-                                        (short)SourceModelTab[model].railYOff;
-                        point->Pos.vz = (loc.vz >> 12) -
-                                        (short)SourceModelTab[model].railZOff;
+                        point->Pos.vx = (loc.vx >> 12) - (short)SourceModelTab[model].railXOff;
+                        point->Pos.vy = (loc.vy >> 12) - (short)SourceModelTab[model].railYOff;
+                        point->Pos.vz = (loc.vz >> 12) - (short)SourceModelTab[model].railZOff;
                         point->Material = pMaterial[3];
 
                         linked_node = Rail_NextNode(linked_node);
@@ -1483,8 +1404,7 @@ void LevelGenerator::LoadMap(char *load_name)
                 if (loaded_grid[i].modelIndex[slot] != empty)
                 {
                     loaded_grid[i].modelIndex[slot] =
-                        (short)EditorPieces_TranslatePieceIn(
-                            loaded_grid[i].modelIndex[slot]);
+                        (short)EditorPieces_TranslatePieceIn(loaded_grid[i].modelIndex[slot]);
                 }
                 slot++;
             } while (slot < loaded_grid[i].numUsedSlots);
@@ -1503,8 +1423,7 @@ void LevelGenerator::LoadMap(char *load_name)
         out_grid[i].numUsedSlots = loaded_grid[i].numUsedSlots;
     }
 
-    if (buf != 0)
-        Mem_Delete(buf);
+    if (buf != 0) Mem_Delete(buf);
 }
 
 /**
@@ -1576,7 +1495,8 @@ void LevelGenerator::SetMapTheme(int theme)
  * @param ret_model Receives the source model for the removed placement.
  * @return One when a model was removed; otherwise zero.
  */
-int LevelGenerator::RemoveModelFromMap(int xmap, int zmap, int *no_lower_than, EditorInModel **ret_model)
+int LevelGenerator::RemoveModelFromMap(int xmap, int zmap, int *no_lower_than,
+                                       EditorInModel **ret_model)
 {
     int slot;
     EditorOutModel *model;
@@ -1640,13 +1560,11 @@ int LevelGenerator::RemoveModelFromMap(int xmap, int zmap, int *no_lower_than, E
         {
             for (int s = 0; s < model->HCell; s++)
             {
-                EditorOutModel *mod =
-                    OutModelMap[z][x].modelInSlot[slot + s];
+                EditorOutModel *mod = OutModelMap[z][x].modelInSlot[slot + s];
                 if (mod != 0)
                 {
                     KillModel(x, z, slot + s);
-                    LevelGenerator::GridTab[z][x].numUsedSlots =
-                        (unsigned char)(slot + 1);
+                    LevelGenerator::GridTab[z][x].numUsedSlots = (unsigned char)(slot + 1);
                 }
             }
         }
@@ -1659,8 +1577,7 @@ int LevelGenerator::RemoveModelFromMap(int xmap, int zmap, int *no_lower_than, E
             for (int s = 0; s < 5; s++)
             {
                 EditorOutModel *mod = OutModelMap[z][x].modelInSlot[s];
-                if (mod != 0 && x >= 0 && x < 24 &&
-                    z >= 0 && z < 24)
+                if (mod != 0 && x >= 0 && x < 24 && z >= 0 && z < 24)
                 {
                     mod->FaceRemovalRequest = 2;
                     mod->RestoreFacesRequest = (void *)1;
@@ -1730,8 +1647,7 @@ u32 *LevelGenerator::CreatePSX(int *ret_region, bool refresh_models)
     }
 
     ClearRegion(LevelGenerator::OutRegion, 0, 0);
-    __builtin_memcpy(PSXRegion[LevelGenerator::OutRegion].Filename,
-                     s_EditOutputRegionName, 5);
+    __builtin_memcpy(PSXRegion[LevelGenerator::OutRegion].Filename, s_EditOutputRegionName, 5);
     *ret_region = LevelGenerator::OutRegion;
 
     pSourcePSX = PSXRegion[SourceRegion].pPSX;
@@ -1746,15 +1662,13 @@ u32 *LevelGenerator::CreatePSX(int *ret_region, bool refresh_models)
     GenerateFloorModels();
 
     FaceRemoval_Setup();
-    for (out_model = OutModelList; out_model != 0;
-         out_model = out_model->Next)
+    for (out_model = OutModelList; out_model != 0; out_model = out_model->Next)
     {
         out_model->RemoveAllHiddenFaces();
     }
     FaceRemoval_Cleanup();
 
-    for (out_model = OutModelList; out_model != 0;
-         out_model = out_model->Next)
+    for (out_model = OutModelList; out_model != 0; out_model = out_model->Next)
     {
         out_model->FaceRemovalRequest = 0;
     }
@@ -1775,8 +1689,7 @@ u32 *LevelGenerator::CreatePSX(int *ret_region, bool refresh_models)
         while (out_model != 0)
         {
             num_ed_models++;
-            model_data_size += LevelGen_SetEditorModelDataSize(
-                out_model, (void *)GameBuild);
+            model_data_size += LevelGen_SetEditorModelDataSize(out_model, (void *)GameBuild);
             out_model = out_model->Next;
         }
     }
@@ -1784,8 +1697,7 @@ u32 *LevelGenerator::CreatePSX(int *ret_region, bool refresh_models)
     FirstShellModel = num_ed_models;
     pShellPSX = PSXRegion[ShellRegion].pPSX;
     NumShellModels = pShellPSX[2];
-    ppShellModels =
-        (SModel **)((Item *)(pShellPSX + 3) + NumShellModels) + 1;
+    ppShellModels = (SModel **)((Item *)(pShellPSX + 3) + NumShellModels) + 1;
     pShellPacket = (u32 *)((char *)pShellPSX + pShellPSX[1]);
     shell_model_data_size = (char *)pShellPacket - (char *)ppShellModels[0];
     num_models = num_ed_models + NumShellModels;
@@ -1795,22 +1707,18 @@ u32 *LevelGenerator::CreatePSX(int *ret_region, bool refresh_models)
 
     int packet_data_size = CreateZonePacket(0) + 4;
 
-    u32 *pSourceTextures =
-        Spool_SkipPackets(pSourcePSX) + NumSourceModels + 1;
+    u32 *pSourceTextures = Spool_SkipPackets(pSourcePSX) + NumSourceModels + 1;
     u32 num_ed_textures = pSourceTextures[-1];
-    u32 *pShellTextures =
-        Spool_SkipPackets(pShellPSX) + NumShellModels + 1;
+    u32 *pShellTextures = Spool_SkipPackets(pShellPSX) + NumShellModels + 1;
     u32 num_shell_textures = pShellTextures[-1];
     u32 num_textures = num_ed_textures + num_shell_textures;
 
     int texture_checksum_size = num_textures * 4 + 4;
     item_table_size += 12;
 
-    u32 *pHeader = (u32 *)Mem_New(
-        item_table_size + model_table_size + model_data_size +
-            packet_data_size + num_models * 4 +
-            texture_checksum_size,
-        1, 1);
+    u32 *pHeader = (u32 *)Mem_New(item_table_size + model_table_size + model_data_size +
+                                      packet_data_size + num_models * 4 + texture_checksum_size,
+                                  1, 1);
 
     pHeader[0] = 0x20004;
     pHeader[1] = item_table_size + model_table_size + model_data_size;
@@ -1893,8 +1801,7 @@ u32 *LevelGenerator::CreatePSX(int *ret_region, bool refresh_models)
         while (out_model != 0)
         {
             pModelTable[i] = (u32)pModelData;
-            LevelGen_CreateEditorModelData(
-                out_model, pModelData, (void *)GameBuild);
+            LevelGen_CreateEditorModelData(out_model, pModelData, (void *)GameBuild);
             pModelData += out_model->Size;
             out_model = out_model->Next;
             i++;
@@ -1915,8 +1822,7 @@ u32 *LevelGenerator::CreatePSX(int *ret_region, bool refresh_models)
             }
             else
             {
-                model_size = (char *)ppShellModels[i + 1] -
-                             (char *)ppShellModels[i];
+                model_size = (char *)ppShellModels[i + 1] - (char *)ppShellModels[i];
             }
             Mem_Copy(pModelData, ppShellModels[i], model_size);
             pModelData += model_size;
@@ -1924,8 +1830,7 @@ u32 *LevelGenerator::CreatePSX(int *ret_region, bool refresh_models)
     }
 
     CreateZonePacket((int *)pModelData);
-    u32 *pModelChecksums =
-        (u32 *)(((packet_data_size >> 2) << 2) + (u32)pModelData);
+    u32 *pModelChecksums = (u32 *)(((packet_data_size >> 2) << 2) + (u32)pModelData);
     pModelChecksums[-1] = 0xffffffff;
 
     u32 *pTexture = pModelChecksums + num_models + 1;
@@ -1934,8 +1839,7 @@ u32 *LevelGenerator::CreatePSX(int *ret_region, bool refresh_models)
         int i;
         for (i = 0; (u32)i < num_ed_textures; i++)
         {
-            LevelGenTextureUsageView *texture =
-                (LevelGenTextureUsageView *)pSourceTextures[i];
+            LevelGenTextureUsageView *texture = (LevelGenTextureUsageView *)pSourceTextures[i];
             pTexture[i] = (u32)texture;
             texture->Usage++;
         }
@@ -1945,18 +1849,15 @@ u32 *LevelGenerator::CreatePSX(int *ret_region, bool refresh_models)
         for (i = 0; (u32)i < num_shell_textures; i++)
         {
             int num = num_ed_textures + i;
-            LevelGenTextureUsageView *texture =
-                (LevelGenTextureUsageView *)pShellTextures[i];
+            LevelGenTextureUsageView *texture = (LevelGenTextureUsageView *)pShellTextures[i];
             pTexture[num] = (u32)texture;
             texture->Usage++;
         }
     }
 
     PSXRegion[LevelGenerator::OutRegion].pPSX = pHeader;
-    PSXRegion[LevelGenerator::OutRegion].ppModels =
-        (SModel **)pModelTable;
-    PSXRegion[LevelGenerator::OutRegion].pModelChecksums =
-        pModelChecksums;
+    PSXRegion[LevelGenerator::OutRegion].ppModels = (SModel **)pModelTable;
+    PSXRegion[LevelGenerator::OutRegion].pModelChecksums = pModelChecksums;
     PSXRegion[LevelGenerator::OutRegion].TexturesInRAM = 1;
     PSXRegion[LevelGenerator::OutRegion].IsSuper = 0;
     PSXRegion[LevelGenerator::OutRegion].pTexWibData = 0;
@@ -1971,14 +1872,12 @@ u32 *LevelGenerator::CreatePSX(int *ret_region, bool refresh_models)
     {
         int i;
 
-        u32 *const new_colour_table =
-            (u32 *)Mem_New(0x400, 1, 1);
+        u32 *const new_colour_table = (u32 *)Mem_New(0x400, 1, 1);
         const int out_region_index = LevelGenerator::OutRegion;
         PSXRegion[out_region_index].pColourTable = new_colour_table;
         for (i = 0; i < 0x100; i++)
         {
-            PSXRegion[out_region_index].pColourTable[i] =
-                i * 0x10101;
+            PSXRegion[out_region_index].pColourTable[i] = i * 0x10101;
         }
     }
 
@@ -2008,7 +1907,10 @@ u32 *LevelGenerator::CreatePSX(int *ret_region, bool refresh_models)
  * @param at Optional output buffer; null performs the sizing pass only.
  * @return Number of bytes required by the zone packet.
  */
-static inline ZoneCell *ZC(ZoneCell **t,int z,int x){return &t[z][x];}
+static inline ZoneCell *ZC(ZoneCell **t, int z, int x)
+{
+    return &t[z][x];
+}
 int LevelGenerator::CreateZonePacket(int *at)
 {
     /*
@@ -2024,8 +1926,7 @@ int LevelGenerator::CreateZonePacket(int *at)
         ZoneTab = (ZoneCell **)Mem_New(20 * sizeof(ZoneCell *), 1, 1);
         for (i = 0; i < 20; i++)
         {
-            ZoneTab[i] = (ZoneCell *)Mem_New(
-                20 * sizeof(ZoneCell), 1, 1);
+            ZoneTab[i] = (ZoneCell *)Mem_New(20 * sizeof(ZoneCell), 1, 1);
         }
     }
 
@@ -2048,16 +1949,17 @@ int LevelGenerator::CreateZonePacket(int *at)
     /* Pass one over the placed models, then over the floor pieces. */
     for (i = 0; i < 2; i++)
     {
-        EditorOutModel *model =
-            (i == 0) ? OutModelList : FloorModelList;
+        EditorOutModel *model = (i == 0) ? OutModelList : FloorModelList;
         for (; model != 0; model = model->Next)
         {
             int ix0 = (model->XCell * LevelGenerator::GridCellWidth) / zone_length;
             int iz0 = (model->ZCell * LevelGenerator::GridCellWidth) / zone_length;
-            int ix1 = ((model->XCell + model->WCell) * LevelGenerator::GridCellWidth +
-                       zone_length - 1) / zone_length;
-            int iz1 = ((model->ZCell + model->LCell) * LevelGenerator::GridCellWidth +
-                       zone_length - 1) / zone_length;
+            int ix1 =
+                ((model->XCell + model->WCell) * LevelGenerator::GridCellWidth + zone_length - 1) /
+                zone_length;
+            int iz1 =
+                ((model->ZCell + model->LCell) * LevelGenerator::GridCellWidth + zone_length - 1) /
+                zone_length;
             int zz1 = 20 - iz0;
             int zz0 = 18 - iz1;
 
@@ -2066,8 +1968,7 @@ int LevelGenerator::CreateZonePacket(int *at)
                 for (int zz = zz0; zz < zz1; zz++)
                 {
                     /* This pure temporary preserves the original branch scheduling. */
-                    bool valid_cell =
-                        zx >= 0 && zz >= 0 && zx < 20 && 20 > zz;
+                    bool valid_cell = zx >= 0 && zz >= 0 && zx < 20 && 20 > zz;
                     if (zx >= 0 && zz >= 0 && zx < 20 && 20 > zz)
                     {
                         if (actual_create)
@@ -2085,42 +1986,33 @@ int LevelGenerator::CreateZonePacket(int *at)
 
     /* Pass two over the shell models, which carry their own bounding boxes. */
     u32 *pShellPSX = PSXRegion[ShellRegion].pPSX;
-    SModel **ppShellModels =
-        (SModel **)((Item *)(pShellPSX + 3) + NumShellModels) + 1;
+    SModel **ppShellModels = (SModel **)((Item *)(pShellPSX + 3) + NumShellModels) + 1;
     int start_x = -(LevelGenerator::GridCellWidth * 12);
     for (i = 0; i < NumShellModels; i++)
     {
         int *entry = (int *)(pShellPSX + i * 9 + 4);
 
-        int x0 = (entry[0] >> 12) +
-                 ((LevelGenModelBounds *)&ppShellModels[i]->Box)->half[1] - start_x;
-        int x1 = (entry[0] >> 12) +
-                 ((LevelGenModelBounds *)&ppShellModels[i]->Box)->half[0] - start_x;
-        int z0 = (entry[2] >> 12) +
-                 ((LevelGenModelBounds *)&ppShellModels[i]->Box)->half[5] - start_x;
-        int z1 = (entry[2] >> 12) +
-                 ((LevelGenModelBounds *)&ppShellModels[i]->Box)->half[4] - start_x;
+        int x0 =
+            (entry[0] >> 12) + ((LevelGenModelBounds *)&ppShellModels[i]->Box)->half[1] - start_x;
+        int x1 =
+            (entry[0] >> 12) + ((LevelGenModelBounds *)&ppShellModels[i]->Box)->half[0] - start_x;
+        int z0 =
+            (entry[2] >> 12) + ((LevelGenModelBounds *)&ppShellModels[i]->Box)->half[5] - start_x;
+        int z1 =
+            (entry[2] >> 12) + ((LevelGenModelBounds *)&ppShellModels[i]->Box)->half[4] - start_x;
 
         int zx0 = x0 / zone_length;
-        if (zx0 < 0)
-            zx0 = 0;
-        if (zx0 > 19)
-            zx0 = 19;
+        if (zx0 < 0) zx0 = 0;
+        if (zx0 > 19) zx0 = 19;
         int zx1 = x1 / zone_length;
-        if (zx1 < 0)
-            zx1 = 0;
-        if (zx1 > 19)
-            zx1 = 19;
+        if (zx1 < 0) zx1 = 0;
+        if (zx1 > 19) zx1 = 19;
         int zz0 = z0 / zone_length;
-        if (zz0 < 0)
-            zz0 = 0;
-        if (zz0 > 19)
-            zz0 = 19;
+        if (zz0 < 0) zz0 = 0;
+        if (zz0 > 19) zz0 = 19;
         int zz1 = z1 / zone_length;
-        if (zz1 < 0)
-            zz1 = 0;
-        if (zz1 > 19)
-            zz1 = 19;
+        if (zz1 < 0) zz1 = 0;
+        if (zz1 > 19) zz1 = 19;
 
         for (int zx = zx0; zx <= zx1; zx++)
         {
@@ -2136,7 +2028,8 @@ int LevelGenerator::CreateZonePacket(int *at)
         }
     }
 
-    ZoneBytes = zone_item_count * sizeof(int) + (20 * ((20 * 4) * sizeof(int)) + sizeof(LevelGenZonePacketHeader));
+    ZoneBytes = zone_item_count * sizeof(int) +
+                (20 * ((20 * 4) * sizeof(int)) + sizeof(LevelGenZonePacketHeader));
 
     if (!actual_create)
     {
@@ -2149,7 +2042,7 @@ int LevelGenerator::CreateZonePacket(int *at)
     at[3] = at[2];
     at[4] = LevelGenerator::GridCellWidth * 0xC000;
     at[5] = at[4];
-    
+
 
     /* Each cell reserves two words before its count; the count and trailing
      * zero make the four fixed words included in ZoneBytes. */
@@ -2199,22 +2092,19 @@ void LevelGenerator::CreateRails(void)
         RailString *in_string = in_model->railInfo->StringList;
         goto inner_test;
     inner_loop:
-    {
-        RailString *out_string =
-            static_cast<RailString *>(
-                ::CClass::operator new(sizeof(RailString)));
-        if (out_string != 0)
         {
-            out_string = ::new (out_string) RailString();
+            RailString *out_string =
+                static_cast<RailString *>(::CClass::operator new(sizeof(RailString)));
+            if (out_string != 0)
+            {
+                out_string = ::new (out_string) RailString();
+            }
+            out_string->CopyString(in_string, model->X, model->Y, model->Z, model->Rot);
+            OutRails.MergeAdd(out_string, false);
+            in_string = in_string->Next;
         }
-        out_string->CopyString(
-            in_string, model->X, model->Y, model->Z, model->Rot);
-        OutRails.MergeAdd(out_string, false);
-        in_string = in_string->Next;
-    }
     inner_test:
-        if (in_string != 0)
-            goto inner_loop;
+        if (in_string != 0) goto inner_loop;
         model = model->Next;
     }
 }
@@ -2241,8 +2131,7 @@ int GenerateRailNode(short *pData, RailPoint *point, RailPoint *next_point, int 
     int trailer = pad + 2;
     int size = num_links + trailer + 11;
 
-    if (!pData)
-        return size;
+    if (!pData) return size;
 
     int n = 2;
     pData[0] = 10;
@@ -2254,8 +2143,7 @@ int GenerateRailNode(short *pData, RailPoint *point, RailPoint *next_point, int 
         n = 3;
     }
 
-    if (pad)
-        n++;
+    if (pad) n++;
     int *pos = (int *)((n << 1) + (int)pData);
     n += 6;
 
@@ -2299,8 +2187,7 @@ void LevelGenerator::FakeTrig(void)
         {
             do
             {
-                rail_nodes_size += GenerateRailNode(
-                    0, point, point->Next, 0);
+                rail_nodes_size += GenerateRailNode(0, point, point->Next, 0);
                 point = point->Next;
                 i++;
             } while (i < string->NumPoints);
@@ -2309,14 +2196,12 @@ void LevelGenerator::FakeTrig(void)
 
     rail_nodes_size *= sizeof(short);
     NumNodes = num_rail_points + 2;
-    TrigFile = (unsigned short *)Mem_New(
-        rail_nodes_size + NumNodes * sizeof(short *) +
-            sizeof(LevelGenTriggerFileHeader) +
-            sizeof(LevelGen_FakeTriggerNode) + 4 * sizeof(short),
-        1, 1);
+    TrigFile = (unsigned short *)Mem_New(rail_nodes_size + NumNodes * sizeof(short *) +
+                                             sizeof(LevelGenTriggerFileHeader) +
+                                             sizeof(LevelGen_FakeTriggerNode) + 4 * sizeof(short),
+                                         1, 1);
     unsigned short *trigFile = TrigFile;
-    LevelGenTriggerFileHeader *trig_header =
-        (LevelGenTriggerFileHeader *)trigFile;
+    LevelGenTriggerFileHeader *trig_header = (LevelGenTriggerFileHeader *)trigFile;
 
     short **offsetList = (short **)(trigFile + 6);
     *(unsigned int *)trigFile = 0x4752545f;
@@ -2370,13 +2255,11 @@ void LevelGenerator::FakeTrig(void)
                 if ((i < string->NumPoints - 1) || !string->IsLoop)
                 {
                     node_count++;
-                    size = GenerateRailNode(
-                        pNode, point, point->Next, node_count);
+                    size = GenerateRailNode(pNode, point, point->Next, node_count);
                 }
                 else
                 {
-                    size = GenerateRailNode(
-                        pNode, point, point->Next, first_node);
+                    size = GenerateRailNode(pNode, point, point->Next, first_node);
                     node_count++;
                 }
 
@@ -2428,8 +2311,7 @@ void LevelGenerator::UnhideFaces(EditorOutModel *das_model, bool on)
             {
                 if (OutModelMap[n][m].modelInSlot[s] != 0)
                 {
-                    OutModelMap[n][m].modelInSlot[s]->UnhideSharedFaces(
-                        on, das_model, 0);
+                    OutModelMap[n][m].modelInSlot[s]->UnhideSharedFaces(on, das_model, 0);
                 }
             }
         }
@@ -2441,8 +2323,7 @@ void LevelGenerator::UnhideFaces(EditorOutModel *das_model, bool on)
             {
                 if (OutModelMap[n][m].modelInSlot[s] != 0)
                 {
-                    OutModelMap[n][m].modelInSlot[s]->UnhideSharedFaces(
-                        on, das_model, 2);
+                    OutModelMap[n][m].modelInSlot[s]->UnhideSharedFaces(on, das_model, 2);
                 }
             }
         }
@@ -2454,8 +2335,7 @@ void LevelGenerator::UnhideFaces(EditorOutModel *das_model, bool on)
             {
                 if (OutModelMap[n][m].modelInSlot[s] != 0)
                 {
-                    OutModelMap[n][m].modelInSlot[s]->UnhideSharedFaces(
-                        on, das_model, 1);
+                    OutModelMap[n][m].modelInSlot[s]->UnhideSharedFaces(on, das_model, 1);
                 }
             }
         }
@@ -2467,8 +2347,7 @@ void LevelGenerator::UnhideFaces(EditorOutModel *das_model, bool on)
             {
                 if (OutModelMap[n][m].modelInSlot[s] != 0)
                 {
-                    OutModelMap[n][m].modelInSlot[s]->UnhideSharedFaces(
-                        on, das_model, 3);
+                    OutModelMap[n][m].modelInSlot[s]->UnhideSharedFaces(on, das_model, 3);
                 }
             }
         }
@@ -2588,8 +2467,7 @@ void LevelGenerator::AddModel(int x, int z, int slot, int rot, int index)
     in_model = &SourceModelTab[index];
     LevelGenerator::GridTab[z][x].rot[slot] = (unsigned char)rot;
 
-    out_model = static_cast<EditorOutModel *>(
-        ::CClass::operator new(sizeof(EditorOutModel)));
+    out_model = static_cast<EditorOutModel *>(::CClass::operator new(sizeof(EditorOutModel)));
     if (out_model != 0)
     {
         out_model = ::new (out_model) EditorOutModel(in_model, 0);
@@ -2611,30 +2489,30 @@ void LevelGenerator::AddModel(int x, int z, int slot, int rot, int index)
 
     switch (rot)
     {
-    case 0:
-        xoff = in_model->xleft;
-        zoff = in_model->ztop;
-        out_model->WCell = in_model->w;
-        out_model->LCell = in_model->l;
-        break;
-    case 1:
-        xoff = in_model->ztop;
-        zoff = in_model->xright;
-        out_model->WCell = in_model->l;
-        out_model->LCell = in_model->w;
-        break;
-    case 2:
-        xoff = in_model->xright;
-        zoff = in_model->zbottom;
-        out_model->WCell = in_model->w;
-        out_model->LCell = in_model->l;
-        break;
-    case 3:
-        xoff = in_model->zbottom;
-        zoff = in_model->xleft;
-        out_model->WCell = in_model->l;
-        out_model->LCell = in_model->w;
-        break;
+        case 0:
+            xoff = in_model->xleft;
+            zoff = in_model->ztop;
+            out_model->WCell = in_model->w;
+            out_model->LCell = in_model->l;
+            break;
+        case 1:
+            xoff = in_model->ztop;
+            zoff = in_model->xright;
+            out_model->WCell = in_model->l;
+            out_model->LCell = in_model->w;
+            break;
+        case 2:
+            xoff = in_model->xright;
+            zoff = in_model->zbottom;
+            out_model->WCell = in_model->w;
+            out_model->LCell = in_model->l;
+            break;
+        case 3:
+            xoff = in_model->zbottom;
+            zoff = in_model->xleft;
+            out_model->WCell = in_model->l;
+            out_model->LCell = in_model->w;
+            break;
     }
 
     out_model->HCell = in_model->h;

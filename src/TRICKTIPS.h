@@ -8,13 +8,15 @@ struct CBody;
 struct SVideoInfo;
 
 /** Scheduling class used by each recovered trick-tip descriptor. */
-enum ETipOccurance {
+enum ETipOccurance
+{
     START_TIP = 0,
     BAIL_TIP = 1,
     ANYTIME_TIP = 2,
 };
 
-struct CTrickTipText {
+struct CTrickTipText
+{
     ETipOccurance mOccurance;
     unsigned char mLineCount;
     char *mLine1;
@@ -23,7 +25,8 @@ struct CTrickTipText {
 };
 
 /** Persistent counters and display state for the trick-tip system. */
-struct CTrickTipMonitor {
+struct CTrickTipMonitor
+{
     struct CClass CClass;
     int mShowAsNeededQueue[6];
     int mShowAsNeededIndex;

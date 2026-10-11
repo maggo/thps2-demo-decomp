@@ -36,153 +36,154 @@ extern "C" SONG_POS Paused_SongPos;
 #include "VIDEO.h"
 #include "STATS.h"
 
-    // Primitive types
-    typedef unsigned char u8;
-    typedef unsigned short u16;
-    typedef unsigned int u32;
-    typedef signed char s8;
-    typedef signed short s16;
-    typedef signed int s32;
-    typedef unsigned char uchar;
-    typedef unsigned short ushort;
-    typedef unsigned int uint;
-    typedef unsigned char byte;
-    typedef int undefined;
-    typedef char undefined1;
-    typedef short undefined2;
-    typedef int undefined4;
-    typedef unsigned long ulong;
-    typedef unsigned char undefined3[3];
+// Primitive types
+typedef unsigned char u8;
+typedef unsigned short u16;
+typedef unsigned int u32;
+typedef signed char s8;
+typedef signed short s16;
+typedef signed int s32;
+typedef unsigned char uchar;
+typedef unsigned short ushort;
+typedef unsigned int uint;
+typedef unsigned char byte;
+typedef int undefined;
+typedef char undefined1;
+typedef short undefined2;
+typedef int undefined4;
+typedef unsigned long ulong;
+typedef unsigned char undefined3[3];
 
-    // Small front-end records are defined below or in FRONT.cpp's owner-local layout block.
+// Small front-end records are defined below or in FRONT.cpp's owner-local layout block.
 
-    // Forward declarations for large/opaque types
-    struct SAnimFrame;
-    struct CBody;
-    struct CSuper;
-    struct EditorOutModel;
-    struct EditorInModel;
-    struct LevelGenerator;
-    struct CBruce;
-    struct CBaddy;
-    struct SModel;
-    struct SHook;
-    struct CPowerUp;
-    struct GamePreferences;
-    struct SCareer;
-    struct SVideoInfo;
-    struct SDoubleBuffer;
-    struct CMenu;
-    struct Sprite;
+// Forward declarations for large/opaque types
+struct SAnimFrame;
+struct CBody;
+struct CSuper;
+struct EditorOutModel;
+struct EditorInModel;
+struct LevelGenerator;
+struct CBruce;
+struct CBaddy;
+struct SModel;
+struct SHook;
+struct CPowerUp;
+struct GamePreferences;
+struct SCareer;
+struct SVideoInfo;
+struct SDoubleBuffer;
+struct CMenu;
+struct Sprite;
 
-    // Save-game and front-end preference records are defined below.
+// Save-game and front-end preference records are defined below.
 
-    // Front-end memcard enums and local helper layout
-    enum EMemCardState
-    {
-        SVSTATUS_CHECKINGCARDPAUSE = 0,
-        SVSTATUS_CHECKINGCARD = 1,
-        SVSTATUS_ENTERNAME = 2,
-        SVSTATUS_OKTOOVERWRITE = 3,
-        SVSTATUS_SAVING = 4,
-        SVSTATUS_SAVING2 = 5,
-        SVSTATUS_SAVEFAILED = 6,
-        SVSTATUS_SAVECOMPLETED = 7,
-        SVSTATUS_CARDFULL = 8,
-        SVSTATUS_INSERTCARD = 9,
-        SVSTATUS_UNFORMATTEDCARD = 10,
-        SVSTATUS_FORMATTING = 11,
-        SVSTATUS_FORMATFAILED = 12,
-        SVSTATUS_FORMATSUCCEEDED = 13,
-        SVSTATUS_DELETEQUERY = 14,
-        LVSTATUS_CHECKINGCARDPAUSE = 15,
-        LVSTATUS_CHECKINGCARD = 16,
-        LVSTATUS_INSERTCARD = 17,
-        LVSTATUS_UNFORMATTEDCARD = 18,
-        LVSTATUS_NOFILES = 19,
-        LVSTATUS_SELECTFILE = 20,
-        LVSTATUS_LOADING = 21,
-        LVSTATUS_LOADFAILED = 22,
-        LVSTATUS_LOADCOMPLETED = 23,
-        LVSTATUS_FULLCARDCHECK = 24,
-        LVSTATUS_FULLCARDWARNING = 25,
-        LVSTATUS_HIRESREFRESH1 = 26,
-        LVSTATUS_HIRESREFRESH2 = 27,
-        LVSTATUS_HIRESREFRESH3 = 28,
-        LVSTATUS_BUILDMENU = 29,
-        LCSTATUS_CHECKINGCARDPAUSE = 30,
-        LCSTATUS_CHECKINGCARD = 31,
-        LCSTATUS_INSERTCARD = 32,
-        LCSTATUS_NOFILES = 33,
-        LCSTATUS_SELECTFILE = 34,
-        LCSTATUS_LOADING = 35,
-        LCSTATUS_LOADFAILED = 36,
-        LCSTATUS_LOADCOMPLETED = 37,
-    };
+// Front-end memcard enums and local helper layout
+enum EMemCardState
+{
+    SVSTATUS_CHECKINGCARDPAUSE = 0,
+    SVSTATUS_CHECKINGCARD = 1,
+    SVSTATUS_ENTERNAME = 2,
+    SVSTATUS_OKTOOVERWRITE = 3,
+    SVSTATUS_SAVING = 4,
+    SVSTATUS_SAVING2 = 5,
+    SVSTATUS_SAVEFAILED = 6,
+    SVSTATUS_SAVECOMPLETED = 7,
+    SVSTATUS_CARDFULL = 8,
+    SVSTATUS_INSERTCARD = 9,
+    SVSTATUS_UNFORMATTEDCARD = 10,
+    SVSTATUS_FORMATTING = 11,
+    SVSTATUS_FORMATFAILED = 12,
+    SVSTATUS_FORMATSUCCEEDED = 13,
+    SVSTATUS_DELETEQUERY = 14,
+    LVSTATUS_CHECKINGCARDPAUSE = 15,
+    LVSTATUS_CHECKINGCARD = 16,
+    LVSTATUS_INSERTCARD = 17,
+    LVSTATUS_UNFORMATTEDCARD = 18,
+    LVSTATUS_NOFILES = 19,
+    LVSTATUS_SELECTFILE = 20,
+    LVSTATUS_LOADING = 21,
+    LVSTATUS_LOADFAILED = 22,
+    LVSTATUS_LOADCOMPLETED = 23,
+    LVSTATUS_FULLCARDCHECK = 24,
+    LVSTATUS_FULLCARDWARNING = 25,
+    LVSTATUS_HIRESREFRESH1 = 26,
+    LVSTATUS_HIRESREFRESH2 = 27,
+    LVSTATUS_HIRESREFRESH3 = 28,
+    LVSTATUS_BUILDMENU = 29,
+    LCSTATUS_CHECKINGCARDPAUSE = 30,
+    LCSTATUS_CHECKINGCARD = 31,
+    LCSTATUS_INSERTCARD = 32,
+    LCSTATUS_NOFILES = 33,
+    LCSTATUS_SELECTFILE = 34,
+    LCSTATUS_LOADING = 35,
+    LCSTATUS_LOADFAILED = 36,
+    LCSTATUS_LOADCOMPLETED = 37,
+};
 
-    enum EPausedStatus
-    {
-        STATUS_NORMAL = 0,
-        STATUS_PAUSEDMENU = 1,
-        STATUS_SKIPTORESTART = 2,
-        STATUS_REALLYQUIT = 3,
-        STATUS_PADUNPLUGGED = 4,
-        STATUS_SAVEGAME = 5,
-        STATUS_QUITSAVE = 6,
-        STATUS_MEDALSAVE = 7,
-        STATUS_ENDLEVELFADESCREEN = 8,
-        STATUS_DOSAVEFADESCREEN = 9,
-        STATUS_NOSAVEFADESCREEN = 10,
-        STATUS_GOTTAPE = 11,
-        STATUS_TAPESAVE = 12,
-        STATUS_STATS = 13,
-        STATUS_ENDINGSCREEN = 14,
-        STATUS_VIDEOSCREEN = 15,
-        STATUS_VIDEOSCREEN2 = 16,
-        STATUS_REALLYMAINMENU = 17,
-        STATUS_MEMCARDMENUS = 18,
-        STATUS_ENDHEAT = 19,
-        STATUS_ENDHEATREPLAY = 20,
-        STATUS_ENDHEATJUDGES = 21,
-        STATUS_ENDHEATLADDER = 22,
-        STATUS_ENDHEATWINLOSE = 23,
-        STATUS_ENDHEATMENU = 24,
-        STATUS_ENDHEATVIDEOMENU = 25,
-        STATUS_BEGINHEAT = 26,
-        STATUS_MPC_BEGIN = 27,
-        STATUS_MPC_BEGINHEAT = 28,
-        STATUS_MPC_JUDGES = 29,
-        STATUS_MPC_LADDER = 30,
-        STATUS_MPC_LADDERFINAL = 31,
-        STATUS_MPC_SWITCH = 32,
-        STATUS_MPC_ENDHEAT = 33,
-        STATUS_MPC_WINNER = 34,
-        STATUS_ENDGAME = 35,
-        STATUS_ENDGAMEALLGOLD = 36,
-        STATUS_ENDGAMEPLAYERMOVIE = 37,
-        STATUS_ENDGAMEBAILMOVIE = 38,
-        STATUS_ENDGAMESAVE = 39,
-        STATUS_ENDGAMECREDITS = 40,
-        STATUS_STARTHORSE = 41,
-        STATUS_CHANGEHORSEWORD = 42,
-        STATUS_LOADSUCCESS = 43,
-        STATUS_LOADFAILED = 44,
-        STATUS_HIGHSCORE = 45,
-        STATUS_SETSOUNDLEVELS = 46,
-        STATUS_DUMMY = 47,
-    };
+enum EPausedStatus
+{
+    STATUS_NORMAL = 0,
+    STATUS_PAUSEDMENU = 1,
+    STATUS_SKIPTORESTART = 2,
+    STATUS_REALLYQUIT = 3,
+    STATUS_PADUNPLUGGED = 4,
+    STATUS_SAVEGAME = 5,
+    STATUS_QUITSAVE = 6,
+    STATUS_MEDALSAVE = 7,
+    STATUS_ENDLEVELFADESCREEN = 8,
+    STATUS_DOSAVEFADESCREEN = 9,
+    STATUS_NOSAVEFADESCREEN = 10,
+    STATUS_GOTTAPE = 11,
+    STATUS_TAPESAVE = 12,
+    STATUS_STATS = 13,
+    STATUS_ENDINGSCREEN = 14,
+    STATUS_VIDEOSCREEN = 15,
+    STATUS_VIDEOSCREEN2 = 16,
+    STATUS_REALLYMAINMENU = 17,
+    STATUS_MEMCARDMENUS = 18,
+    STATUS_ENDHEAT = 19,
+    STATUS_ENDHEATREPLAY = 20,
+    STATUS_ENDHEATJUDGES = 21,
+    STATUS_ENDHEATLADDER = 22,
+    STATUS_ENDHEATWINLOSE = 23,
+    STATUS_ENDHEATMENU = 24,
+    STATUS_ENDHEATVIDEOMENU = 25,
+    STATUS_BEGINHEAT = 26,
+    STATUS_MPC_BEGIN = 27,
+    STATUS_MPC_BEGINHEAT = 28,
+    STATUS_MPC_JUDGES = 29,
+    STATUS_MPC_LADDER = 30,
+    STATUS_MPC_LADDERFINAL = 31,
+    STATUS_MPC_SWITCH = 32,
+    STATUS_MPC_ENDHEAT = 33,
+    STATUS_MPC_WINNER = 34,
+    STATUS_ENDGAME = 35,
+    STATUS_ENDGAMEALLGOLD = 36,
+    STATUS_ENDGAMEPLAYERMOVIE = 37,
+    STATUS_ENDGAMEBAILMOVIE = 38,
+    STATUS_ENDGAMESAVE = 39,
+    STATUS_ENDGAMECREDITS = 40,
+    STATUS_STARTHORSE = 41,
+    STATUS_CHANGEHORSEWORD = 42,
+    STATUS_LOADSUCCESS = 43,
+    STATUS_LOADFAILED = 44,
+    STATUS_HIGHSCORE = 45,
+    STATUS_SETSOUNDLEVELS = 46,
+    STATUS_DUMMY = 47,
+};
 
-    struct SRECT
-    {
-        short x;
-        short w;
-        short y;
-        short h;
-    };
+struct SRECT
+{
+    short x;
+    short w;
+    short y;
+    short h;
+};
 
 #include "STARTUPGAMESTATE.h"
 
-struct SFrontBackground {
+struct SFrontBackground
+{
     char *pLibName;
     char *pEnvName;
     char *pSizesName;
@@ -348,8 +349,8 @@ struct FrontLoadingGaugeState
     RECT Progress;
 };
 
-typedef char Front_LoadingGaugeState_size_must_be_28[
-    (sizeof(struct FrontLoadingGaugeState) == 28) ? 1 : -1];
+typedef char
+    Front_LoadingGaugeState_size_must_be_28[(sizeof(struct FrontLoadingGaugeState) == 28) ? 1 : -1];
 
 typedef char Front_CClass_size_must_be_4[(sizeof(CClass) == 4) ? 1 : -1];
 typedef char Front_SControl_size_must_be_364[(sizeof(SControl) == 0x16c) ? 1 : -1];
@@ -359,14 +360,13 @@ typedef char Front_SVideoInfo_size_must_be_192[(sizeof(SVideoInfo) == 0xc0) ? 1 
 typedef char Front_CTape_size_must_be_368[(sizeof(CTape) == 0x170) ? 1 : -1];
 typedef char Front_CBodyView_size_must_be_264[(sizeof(CBodyFrontView) == 0x108) ? 1 : -1];
 typedef char Front_CSuperView_size_must_be_400[(sizeof(CSuperFrontView) == 0x190) ? 1 : -1];
-typedef char Front_CPanelDataView_size_must_be_2276[
-    (sizeof(CPanelDataFrontView) == 0x8e4) ? 1 : -1];
+typedef char
+    Front_CPanelDataView_size_must_be_2276[(sizeof(CPanelDataFrontView) == 0x8e4) ? 1 : -1];
 typedef char Front_CBruce_size_must_be_5228[(sizeof(CBruce) == 0x146c) ? 1 : -1];
 typedef char Front_SEntry_size_must_be_24[(sizeof(SEntry) == 0x18) ? 1 : -1];
-typedef char Front_SDK_VECTOR_size_must_be_16[
-    (sizeof(VECTOR) == 16) ? 1 : -1];
-typedef char Front_SFrontBackground_focus_offset_must_be_12[
-    ((unsigned long)&(((SFrontBackground *)0)->Focus) == 12) ? 1 : -1];
+typedef char Front_SDK_VECTOR_size_must_be_16[(sizeof(VECTOR) == 16) ? 1 : -1];
+typedef char Front_SFrontBackground_focus_offset_must_be_12
+    [((unsigned long)&(((SFrontBackground *)0)->Focus) == 12) ? 1 : -1];
 typedef char Front_SFrontBackground_size_must_be_36[(sizeof(SFrontBackground) == 0x24) ? 1 : -1];
 
 #include "SFX.h"
@@ -415,8 +415,7 @@ inline void *operator new(unsigned int, void *p)
 
 // === Forward type declarations ===
 
-typedef char Front_CMenu_size_must_be_384[
-    (sizeof(CMenu) == 0x180) ? 1 : -1];
+typedef char Front_CMenu_size_must_be_384[(sizeof(CMenu) == 0x180) ? 1 : -1];
 
 /**
  * Deleting-destructor prefix used by the composed tape view in this owner.
@@ -434,8 +433,7 @@ struct FrontCMenuVTable
 };
 
 
-typedef char Front_CMenu_vtable_size_must_be_28[
-    (sizeof(FrontCMenuVTable) == 28) ? 1 : -1];
+typedef char Front_CMenu_vtable_size_must_be_28[(sizeof(FrontCMenuVTable) == 28) ? 1 : -1];
 
 /** Invoke the deleting-destructor slot shared by front-end menu objects. */
 static inline void Front_DestroyMenu(CMenu *menu)
@@ -453,7 +451,8 @@ static inline void Front_DestroyTape(CTape *tape)
 struct Sprite2;
 
 /** Original Sprite2 virtual-table slots used by the front-end. */
-struct Sprite2VTable {
+struct Sprite2VTable
+{
     int _vf0;
     int _vf1;
     void (*Delete)(Sprite2 *self, int flags);
@@ -463,7 +462,8 @@ struct Sprite2VTable {
 };
 
 /** Pointer-only Sprite2 view exposing the original virtual-table slots. */
-struct Sprite2 {
+struct Sprite2
+{
     Sprite2VTable *vtable;
     void *Transparent;
     void *Shaded;
@@ -477,31 +477,20 @@ struct Sprite2 {
     int Scale;
     unsigned char reserved_1c[0x20];
 
-    static void *operator new(unsigned int size) throw()
-    {
-        return ::CClass::operator new(size);
-    }
+    static void *operator new(unsigned int size) throw() { return ::CClass::operator new(size); }
     /** Build a sprite from a bitmap file. */
     Sprite2(char *name, int pack, int sliceWidth, int sliceHeight);
 
-    void Display(int x, int y, int flags)
-    {
-        vtable->Display(this, x, y, flags);
-    }
+    void Display(int x, int y, int flags) { vtable->Display(this, x, y, flags); }
 
-    void Delete(int flags)
-    {
-        vtable->Delete(this, flags);
-    }
+    void Delete(int flags) { vtable->Delete(this, flags); }
 };
 
-typedef char Front_Sprite2_size_must_be_60[
-    (sizeof(Sprite2) == 0x3c) ? 1 : -1];
+typedef char Front_Sprite2_size_must_be_60[(sizeof(Sprite2) == 0x3c) ? 1 : -1];
 
 #include "SPRITE.h"
 
-typedef char Front_Sprite_size_must_be_24[
-    (sizeof(Sprite) == 0x18) ? 1 : -1];
+typedef char Front_Sprite_size_must_be_24[(sizeof(Sprite) == 0x18) ? 1 : -1];
 
 #include "PROMPTSCREENELEMENT.h"
 
@@ -528,33 +517,30 @@ struct FrontPolymorphicView
 
 static inline void Front_DestroyPolymorphic(void *object)
 {
-    FrontPolymorphicView *view =
-        reinterpret_cast<FrontPolymorphicView *>(object);
+    FrontPolymorphicView *view = reinterpret_cast<FrontPolymorphicView *>(object);
     view->vtable->Destroy(object, 3);
 }
 
-static inline void Front_DisplayPolymorphic(
-    void *object, int x, int y)
+static inline void Front_DisplayPolymorphic(void *object, int x, int y)
 {
-    FrontPolymorphicView *view =
-        reinterpret_cast<FrontPolymorphicView *>(object);
+    FrontPolymorphicView *view = reinterpret_cast<FrontPolymorphicView *>(object);
     view->vtable->Display(object, x, y);
 }
 
 /** Display-buffer slice needed to append front-end cursor primitives. */
-struct SDoubleBuffer {
+struct SDoubleBuffer
+{
     RECT DrawClip;
     char reserved_008[0x7c];
     unsigned int *PanelOT;
 };
 
-typedef char Front_SDoubleBuffer_size_must_be_at_least_136[
-    (sizeof(SDoubleBuffer) == 0x88) ? 1 : -1];
+typedef char
+    Front_SDoubleBuffer_size_must_be_at_least_136[(sizeof(SDoubleBuffer) == 0x88) ? 1 : -1];
 
 #include "GAMEPREFERENCES.h"
 
-typedef char Front_SFrontBackground_size_must_be_36[
-    (sizeof(SFrontBackground) == 36) ? 1 : -1];
+typedef char Front_SFrontBackground_size_must_be_36[(sizeof(SFrontBackground) == 36) ? 1 : -1];
 /*
  * Declare the initialized small-data prefix before its users. String arrays
  * with unknown extent keep their original absolute address formation with
@@ -562,7 +548,9 @@ typedef char Front_SFrontBackground_size_must_be_36[
  * order, ahead of the compiler-emitted CMenu tables and zero-state tail.
  */
 /** Front-end loading-screen entrypoint. */
-void LoadingScreen_Main(void) {}
+void LoadingScreen_Main(void)
+{
+}
 
 extern int GHorseContinue __attribute__((section(".sdata")));
 extern int MIDILEVEL __attribute__((section(".sdata")));
@@ -576,18 +564,22 @@ extern int GHighScoreLineIndex __attribute__((section(".sdata")));
 extern int GHighScoreInitialCursorPos __attribute__((section(".sdata")));
 extern int GSoftResetEnabled __attribute__((section(".sdata")));
 extern EPausedStatus Status __attribute__((section(".sdata")));
-namespace { extern "C++" {
+namespace
+{
+extern "C++"
+{
 extern int DemoFlashTimer __attribute__((section(".sdata")));
-extern char DemoString[]
-    __attribute__((section(".sdata"), aligned(4)));
-extern char HorseLabel1[]
-    __attribute__((section(".sdata"), aligned(4)));
-extern char HorseLabel2[]
-    __attribute__((section(".sdata"), aligned(4)));
-} }
+extern char DemoString[] __attribute__((section(".sdata"), aligned(4)));
+extern char HorseLabel1[] __attribute__((section(".sdata"), aligned(4)));
+extern char HorseLabel2[] __attribute__((section(".sdata"), aligned(4)));
+}
+}
 extern int CurrentFrontBackground __attribute__((section(".sdata")));
 
-namespace { extern "C++" {
+namespace
+{
+extern "C++"
+{
 extern char FrontRoofLib[] __attribute__((section(".sdata"), aligned(4)));
 extern char FrontRoofEnv[] __attribute__((section(".sdata"), aligned(4)));
 extern char FrontRoofSizes[] __attribute__((section(".sdata"), aligned(4)));
@@ -595,16 +587,21 @@ extern char FrontSewerLib[] __attribute__((section(".sdata"), aligned(4)));
 extern char FrontSewerEnv[] __attribute__((section(".sdata"), aligned(4)));
 extern char FrontSewerSizes[] __attribute__((section(".sdata"), aligned(4)));
 extern char FrontNoBackground[] __attribute__((section(".sdata"), aligned(4)));
-} }
+}
+}
 
 extern const unsigned int *pSizeData __attribute__((section(".sdata")));
 extern int GamePaused __attribute__((section(".sdata")));
 
-namespace { extern "C++" {
+namespace
+{
+extern "C++"
+{
 extern int WobbleAmplitude __attribute__((section(".sdata")));
 extern int WobbleT __attribute__((section(".sdata")));
 extern int UpDownAutoRepeatTimer __attribute__((section(".sdata")));
-} }
+}
+}
 
 #define FRONTTIMERS_LEFT_RIGHT_TIMER_OWNER_DECLARATION
 #include "FRONTTIMERS.h"
@@ -630,302 +627,461 @@ namespace FrontAddressViewOwners
 {
 extern "C"
 {
-namespace { extern "C++" {
-extern RECT Db_SkyColorBak[]
-    __attribute__((section(".sdata")));
-} }
+namespace
+{
+extern "C++"
+{
+extern RECT Db_SkyColorBak[] __attribute__((section(".sdata")));
+}
+}
 }
 }
 
-namespace { extern "C++" {
+namespace
+{
+extern "C++"
+{
 extern int GaugeOn __attribute__((section(".sdata")));
 extern unsigned int TotalProgress __attribute__((section(".sdata")));
 extern unsigned int TotalSize __attribute__((section(".sdata")));
-extern FrontLoadingGaugeState FrontLoadingGauge
-    __attribute__((section(".sdata")));
-} }
+extern FrontLoadingGaugeState FrontLoadingGauge __attribute__((section(".sdata")));
+}
+}
 
 extern "C"
 {
-    namespace { extern "C++" {
+namespace
+{
+extern "C++"
+{
 extern CMenu *pPausedMenu __attribute__((section(".sdata")));
-} }
-    namespace { extern "C++" {
+}
+}
+namespace
+{
+extern "C++"
+{
 extern CMenu *pRestartsMenu __attribute__((section(".sdata")));
-} }
+}
+}
 
-    namespace FrontAddressViewOwners
-    {
-    namespace { extern "C++" {
-extern char GrafLabel1[]
-        __attribute__((section(".sdata"), aligned(4)));
-} }
-    namespace { extern "C++" {
-extern char GrafLabel2[]
-        __attribute__((section(".sdata"), aligned(4)));
-} }
-    namespace { extern "C++" {
-extern char GrafLabel3[]
-        __attribute__((section(".sdata"), aligned(4)));
-} }
-    namespace { extern "C++" {
-extern char GrafLabel4[]
-        __attribute__((section(".sdata"), aligned(4)));
-} }
-    namespace { extern "C++" {
-extern char GrafLabel5[]
-        __attribute__((section(".sdata"), aligned(4)));
-} }
-    namespace { extern "C++" {
-extern char GrafLabel6[]
-        __attribute__((section(".sdata"), aligned(4)));
-} }
-    }
+namespace FrontAddressViewOwners
+{
+namespace
+{
+extern "C++"
+{
+extern char GrafLabel1[] __attribute__((section(".sdata"), aligned(4)));
+}
+}
+namespace
+{
+extern "C++"
+{
+extern char GrafLabel2[] __attribute__((section(".sdata"), aligned(4)));
+}
+}
+namespace
+{
+extern "C++"
+{
+extern char GrafLabel3[] __attribute__((section(".sdata"), aligned(4)));
+}
+}
+namespace
+{
+extern "C++"
+{
+extern char GrafLabel4[] __attribute__((section(".sdata"), aligned(4)));
+}
+}
+namespace
+{
+extern "C++"
+{
+extern char GrafLabel5[] __attribute__((section(".sdata"), aligned(4)));
+}
+}
+namespace
+{
+extern "C++"
+{
+extern char GrafLabel6[] __attribute__((section(".sdata"), aligned(4)));
+}
+}
+}
 
-    /**
+/**
      * FRONT's compiler-coalesced display-string pool.
      *
      * Fixed-width fields name the original strings while retaining every
      * target padding byte and every existing offset-based access.
      */
-    struct FrontDisplayStringPool
-    {
-        char Score[4];
-        char Player1Match[16];
-        char Player2Match[16];
-        char Separator[4];
-        char StringFormat[4];
-        char TimeUp[12];
-        char GameOver[12];
-        char CountFormat[12];
-        char LongFormat[4];
-        char TrickFont[16];
-        char PasscodeFormat[16];
-        char Tie[4];
-        char Player2Wins[16];
-        char Player1Wins[16];
-        char ScoreSetFormat[16];
-        char GoingForFormat[16];
-        char YouScoredFormat[16];
-        char Push[8];
-        char YouAreAn[12];
-        char YouAreA[12];
-        char Switch[8];
-        char Player1ScoreFormat[16];
-        char Player2ScoreFormat[16];
-        char Draw[8];
-        char GameStateFormat[12];
-    };
+struct FrontDisplayStringPool
+{
+    char Score[4];
+    char Player1Match[16];
+    char Player2Match[16];
+    char Separator[4];
+    char StringFormat[4];
+    char TimeUp[12];
+    char GameOver[12];
+    char CountFormat[12];
+    char LongFormat[4];
+    char TrickFont[16];
+    char PasscodeFormat[16];
+    char Tie[4];
+    char Player2Wins[16];
+    char Player1Wins[16];
+    char ScoreSetFormat[16];
+    char GoingForFormat[16];
+    char YouScoredFormat[16];
+    char Push[8];
+    char YouAreAn[12];
+    char YouAreA[12];
+    char Switch[8];
+    char Player1ScoreFormat[16];
+    char Player2ScoreFormat[16];
+    char Draw[8];
+    char GameStateFormat[12];
+};
 
-    namespace FrontAddressViewOwners
-    {
-    namespace { extern "C++" {
-extern char GrafFmt[]
-        __attribute__((section(".sdata"), aligned(4)));
-} }
-    }
-    namespace { extern "C++" {
-extern char Front_GrafPlayer1Match[]
-        __attribute__((section(".sdata"), aligned(4)));
-} }
-    namespace { extern "C++" {
-extern char Front_GrafPlayer2Match[]
-        __attribute__((section(".sdata"), aligned(4)));
-} }
-    namespace { extern "C++" {
-extern char Front_GrafSeparator[4]
-        __attribute__((section(".sdata"), aligned(4)));
-} }
-    namespace { extern "C++" {
-extern char Front_GrafStringFormat[4]
-        __attribute__((section(".sdata"), aligned(4)));
-} }
-    namespace { extern "C++" {
-extern char Front_GrafTimeUp[]
-        __attribute__((section(".sdata"), aligned(4)));
-} }
-    namespace { extern "C++" {
-extern char Front_GrafGameOver[]
-        __attribute__((section(".sdata"), aligned(4)));
-} }
-    namespace { extern "C++" {
-extern char Front_GrafCountFormat[]
-        __attribute__((section(".sdata"), aligned(4)));
-} }
-    namespace { extern "C++" {
-extern char Front_GrafLongFormat[4]
-        __attribute__((section(".sdata"), aligned(4)));
-} }
-    namespace { extern "C++" {
-extern char Front_GrafTrickFont[]
-        __attribute__((section(".sdata"), aligned(4)));
-} }
-    namespace { extern "C++" {
-extern char Front_GrafPasscodeFormat[]
-        __attribute__((section(".sdata"), aligned(4)));
-} }
-    namespace { extern "C++" {
-extern char Front_GrafTie[4]
-        __attribute__((section(".sdata"), aligned(4)));
-} }
-    namespace { extern "C++" {
-extern char Front_GrafPlayer2Wins[]
-        __attribute__((section(".sdata"), aligned(4)));
-} }
-    namespace { extern "C++" {
-extern char Front_GrafPlayer1Wins[]
-        __attribute__((section(".sdata"), aligned(4)));
-} }
-    namespace { extern "C++" {
-extern char Front_GrafScoreSetFormat[]
-        __attribute__((section(".sdata"), aligned(4)));
-} }
-    namespace { extern "C++" {
-extern char Front_GrafGoingForFormat[]
-        __attribute__((section(".sdata"), aligned(4)));
-} }
-    namespace { extern "C++" {
-extern char Front_GrafYouScoredFormat[]
-        __attribute__((section(".sdata"), aligned(4)));
-} }
-    namespace { extern "C++" {
-extern char Front_GrafPush[8]
-        __attribute__((section(".sdata"), aligned(4)));
-} }
-    namespace { extern "C++" {
-extern char Front_GrafYouAreAn[]
-        __attribute__((section(".sdata"), aligned(4)));
-} }
-    namespace { extern "C++" {
-extern char Front_GrafYouAreA[]
-        __attribute__((section(".sdata"), aligned(4)));
-} }
-    namespace { extern "C++" {
-extern char Front_GrafSwitch[8]
-        __attribute__((section(".sdata"), aligned(4)));
-} }
-    namespace { extern "C++" {
-extern char Front_GrafPlayer1ScoreFormat[]
-        __attribute__((section(".sdata"), aligned(4)));
-} }
-    namespace { extern "C++" {
-extern char Front_GrafPlayer2ScoreFormat[]
-        __attribute__((section(".sdata"), aligned(4)));
-} }
-    namespace { extern "C++" {
-extern char Front_GrafDraw[8]
-        __attribute__((section(".sdata"), aligned(4)));
-} }
-    namespace { extern "C++" {
-extern char Front_GrafGameStateFormat[]
-        __attribute__((section(".sdata"), aligned(4)));
-} }
-
-    namespace FrontAddressViewOwners
-    {
-    namespace { extern "C++" {
-extern char _restart_comp_string[]
-        __attribute__((section(".sdata"), aligned(4)));
-} }
-    }
+namespace FrontAddressViewOwners
+{
+namespace
+{
+extern "C++"
+{
+extern char GrafFmt[] __attribute__((section(".sdata"), aligned(4)));
+}
+}
+}
+namespace
+{
+extern "C++"
+{
+extern char Front_GrafPlayer1Match[] __attribute__((section(".sdata"), aligned(4)));
+}
+}
+namespace
+{
+extern "C++"
+{
+extern char Front_GrafPlayer2Match[] __attribute__((section(".sdata"), aligned(4)));
+}
+}
+namespace
+{
+extern "C++"
+{
+extern char Front_GrafSeparator[4] __attribute__((section(".sdata"), aligned(4)));
+}
+}
+namespace
+{
+extern "C++"
+{
+extern char Front_GrafStringFormat[4] __attribute__((section(".sdata"), aligned(4)));
+}
+}
+namespace
+{
+extern "C++"
+{
+extern char Front_GrafTimeUp[] __attribute__((section(".sdata"), aligned(4)));
+}
+}
+namespace
+{
+extern "C++"
+{
+extern char Front_GrafGameOver[] __attribute__((section(".sdata"), aligned(4)));
+}
+}
+namespace
+{
+extern "C++"
+{
+extern char Front_GrafCountFormat[] __attribute__((section(".sdata"), aligned(4)));
+}
+}
+namespace
+{
+extern "C++"
+{
+extern char Front_GrafLongFormat[4] __attribute__((section(".sdata"), aligned(4)));
+}
+}
+namespace
+{
+extern "C++"
+{
+extern char Front_GrafTrickFont[] __attribute__((section(".sdata"), aligned(4)));
+}
+}
+namespace
+{
+extern "C++"
+{
+extern char Front_GrafPasscodeFormat[] __attribute__((section(".sdata"), aligned(4)));
+}
+}
+namespace
+{
+extern "C++"
+{
+extern char Front_GrafTie[4] __attribute__((section(".sdata"), aligned(4)));
+}
+}
+namespace
+{
+extern "C++"
+{
+extern char Front_GrafPlayer2Wins[] __attribute__((section(".sdata"), aligned(4)));
+}
+}
+namespace
+{
+extern "C++"
+{
+extern char Front_GrafPlayer1Wins[] __attribute__((section(".sdata"), aligned(4)));
+}
+}
+namespace
+{
+extern "C++"
+{
+extern char Front_GrafScoreSetFormat[] __attribute__((section(".sdata"), aligned(4)));
+}
+}
+namespace
+{
+extern "C++"
+{
+extern char Front_GrafGoingForFormat[] __attribute__((section(".sdata"), aligned(4)));
+}
+}
+namespace
+{
+extern "C++"
+{
+extern char Front_GrafYouScoredFormat[] __attribute__((section(".sdata"), aligned(4)));
+}
+}
+namespace
+{
+extern "C++"
+{
+extern char Front_GrafPush[8] __attribute__((section(".sdata"), aligned(4)));
+}
+}
+namespace
+{
+extern "C++"
+{
+extern char Front_GrafYouAreAn[] __attribute__((section(".sdata"), aligned(4)));
+}
+}
+namespace
+{
+extern "C++"
+{
+extern char Front_GrafYouAreA[] __attribute__((section(".sdata"), aligned(4)));
+}
+}
+namespace
+{
+extern "C++"
+{
+extern char Front_GrafSwitch[8] __attribute__((section(".sdata"), aligned(4)));
+}
+}
+namespace
+{
+extern "C++"
+{
+extern char Front_GrafPlayer1ScoreFormat[] __attribute__((section(".sdata"), aligned(4)));
+}
+}
+namespace
+{
+extern "C++"
+{
+extern char Front_GrafPlayer2ScoreFormat[] __attribute__((section(".sdata"), aligned(4)));
+}
+}
+namespace
+{
+extern "C++"
+{
+extern char Front_GrafDraw[8] __attribute__((section(".sdata"), aligned(4)));
+}
+}
+namespace
+{
+extern "C++"
+{
+extern char Front_GrafGameStateFormat[] __attribute__((section(".sdata"), aligned(4)));
+}
 }
 
-namespace { extern "C++" {
-extern int StartSelectPressed
-    __attribute__((section(".sdata")));
-extern unsigned int VblanksWhenStartSelectFirstPressed
-    __attribute__((section(".sdata")));
-extern char FrontEditorPrefix[]
-    __attribute__((section(".sdata"), aligned(4)));
-} }
+namespace FrontAddressViewOwners
+{
+namespace
+{
+extern "C++"
+{
+extern char _restart_comp_string[] __attribute__((section(".sdata"), aligned(4)));
+}
+}
+}
+}
+
+namespace
+{
+extern "C++"
+{
+extern int StartSelectPressed __attribute__((section(".sdata")));
+extern unsigned int VblanksWhenStartSelectFirstPressed __attribute__((section(".sdata")));
+extern char FrontEditorPrefix[] __attribute__((section(".sdata"), aligned(4)));
+}
+}
 
 extern "C"
 {
-    namespace FrontAddressViewOwners
-    {
-    namespace { extern "C++" {
-extern char s_S2Demo2Bmp[]
-        __attribute__((section(".sdata"), aligned(4)));
-} }
-    namespace { extern "C++" {
-extern char s_Skate2Vab[]
-        __attribute__((section(".sdata"), aligned(4)));
-} }
-    namespace { extern "C++" {
-extern char s_ScorepBmp[]
-        __attribute__((section(".sdata"), aligned(4)));
-} }
-    namespace { extern "C++" {
-extern char s_SpecialBmp[]
-        __attribute__((section(".sdata"), aligned(4)));
-} }
-    namespace { extern "C++" {
-extern char s_SpecBarBmp[]
-        __attribute__((section(".sdata"), aligned(4)));
-} }
-    namespace { extern "C++" {
-extern char s_PausedBmp[]
-        __attribute__((section(".sdata"), aligned(4)));
-} }
-    namespace { extern "C++" {
-extern char s_Bits[]
-        __attribute__((section(".sdata"), aligned(4)));
-} }
-    namespace { extern "C++" {
-extern char s_Items[]
-        __attribute__((section(".sdata"), aligned(4)));
-} }
-    namespace { extern "C++" {
-extern char s_SkMedals[]
-        __attribute__((section(".sdata"), aligned(4)));
-} }
-    namespace { extern "C++" {
-extern char s_Sk2Anim[]
-        __attribute__((section(".sdata"), aligned(4)));
-} }
-    namespace { extern "C++" {
-extern char s_SkEdThemeFmt[]
-        __attribute__((section(".sdata"), aligned(4)));
-} }
-    }
-    /*
+namespace FrontAddressViewOwners
+{
+namespace
+{
+extern "C++"
+{
+extern char s_S2Demo2Bmp[] __attribute__((section(".sdata"), aligned(4)));
+}
+}
+namespace
+{
+extern "C++"
+{
+extern char s_Skate2Vab[] __attribute__((section(".sdata"), aligned(4)));
+}
+}
+namespace
+{
+extern "C++"
+{
+extern char s_ScorepBmp[] __attribute__((section(".sdata"), aligned(4)));
+}
+}
+namespace
+{
+extern "C++"
+{
+extern char s_SpecialBmp[] __attribute__((section(".sdata"), aligned(4)));
+}
+}
+namespace
+{
+extern "C++"
+{
+extern char s_SpecBarBmp[] __attribute__((section(".sdata"), aligned(4)));
+}
+}
+namespace
+{
+extern "C++"
+{
+extern char s_PausedBmp[] __attribute__((section(".sdata"), aligned(4)));
+}
+}
+namespace
+{
+extern "C++"
+{
+extern char s_Bits[] __attribute__((section(".sdata"), aligned(4)));
+}
+}
+namespace
+{
+extern "C++"
+{
+extern char s_Items[] __attribute__((section(".sdata"), aligned(4)));
+}
+}
+namespace
+{
+extern "C++"
+{
+extern char s_SkMedals[] __attribute__((section(".sdata"), aligned(4)));
+}
+}
+namespace
+{
+extern "C++"
+{
+extern char s_Sk2Anim[] __attribute__((section(".sdata"), aligned(4)));
+}
+}
+namespace
+{
+extern "C++"
+{
+extern char s_SkEdThemeFmt[] __attribute__((section(".sdata"), aligned(4)));
+}
+}
+}
+/*
      * The derived owner-local aliases currently point at unrelated target addresses,
      * so retain their proven bytes under owner-local names without publishing
      * misleading native-link definitions.
      */
-    struct FrontEditorLevelSuffixBytes
-    {
-        char Text[4];
-    };
-    namespace FrontAddressViewOwners
-    {
-    namespace { extern "C++" {
-extern FrontEditorLevelSuffixBytes s_AckSuffix
-        __attribute__((section(".sdata")));
-} }
-    }
-    namespace FrontAddressViewOwners
-    {
-    namespace { extern "C++" {
-extern char s_S2Prmpt1Bmp[]
-        __attribute__((section(".sdata"), aligned(4)));
-} }
-    namespace { extern "C++" {
-extern char s_ToContinue[]
-        __attribute__((section(".sdata"), aligned(4)));
-} }
-    }
-    namespace FrontAddressViewOwners
-    {
-    namespace { extern "C++" {
-extern int s_PromptClipRectLo
-        __attribute__((section(".sdata")));
-} }
-    namespace { extern "C++" {
-extern int s_PromptClipRectHi
-        __attribute__((section(".sdata")));
-} }
-    }
+struct FrontEditorLevelSuffixBytes
+{
+    char Text[4];
+};
+namespace FrontAddressViewOwners
+{
+namespace
+{
+extern "C++"
+{
+extern FrontEditorLevelSuffixBytes s_AckSuffix __attribute__((section(".sdata")));
+}
+}
+}
+namespace FrontAddressViewOwners
+{
+namespace
+{
+extern "C++"
+{
+extern char s_S2Prmpt1Bmp[] __attribute__((section(".sdata"), aligned(4)));
+}
+}
+namespace
+{
+extern "C++"
+{
+extern char s_ToContinue[] __attribute__((section(".sdata"), aligned(4)));
+}
+}
+}
+namespace FrontAddressViewOwners
+{
+namespace
+{
+extern "C++"
+{
+extern int s_PromptClipRectLo __attribute__((section(".sdata")));
+}
+}
+namespace
+{
+extern "C++"
+{
+extern int s_PromptClipRectHi __attribute__((section(".sdata")));
+}
+}
+}
 }
 
 /*
@@ -946,8 +1102,7 @@ int NextHorsePlayer;
 int NextHorseScore;
 int NextHorseRestart;
 int NextHorseLetters[2];
-SONG_POS Paused_SongPos
-    __attribute__((section(".sdata")));
+SONG_POS Paused_SongPos __attribute__((section(".sdata")));
 int Front_OnTime;
 int StatsMode;
 int GStart1;
@@ -956,8 +1111,7 @@ unsigned int JudgeTimer;
 unsigned int LadderTimer;
 unsigned int WinLoseTimer;
 
-typedef char Front_GrafFmt_size_must_be_292[
-    (sizeof(FrontDisplayStringPool) == 292) ? 1 : -1];
+typedef char Front_GrafFmt_size_must_be_292[(sizeof(FrontDisplayStringPool) == 292) ? 1 : -1];
 
 /**
  * Messages retained in FRONT's original read-only literal pool.
@@ -980,8 +1134,8 @@ struct FrontReadOnlyLiteralPool
     char LoadingSprites[28];
 };
 
-typedef char Front_ReadOnlyLiteralPool_size_must_be_312[
-    (sizeof(FrontReadOnlyLiteralPool) == 312) ? 1 : -1];
+typedef char
+    Front_ReadOnlyLiteralPool_size_must_be_312[(sizeof(FrontReadOnlyLiteralPool) == 312) ? 1 : -1];
 
 /** Exact-sized owner wrapper for the public default save-game symbol. */
 struct FrontDefaultGameStateOwner
@@ -989,12 +1143,12 @@ struct FrontDefaultGameStateOwner
     SSaveGame State;
 };
 
-typedef char Front_DefaultGameStateOwner_size_must_be_136[
-    (sizeof(FrontDefaultGameStateOwner) == 136) ? 1 : -1];
+typedef char
+    Front_DefaultGameStateOwner_size_must_be_136[(sizeof(FrontDefaultGameStateOwner) == 136) ? 1
+                                                                                             : -1];
 
-typedef char Front_ReadOnlyContribution_size_must_be_448[
-    (sizeof(FrontDefaultGameStateOwner) +
-     sizeof(FrontReadOnlyLiteralPool) == 448) ? 1 : -1];
+typedef char Front_ReadOnlyContribution_size_must_be_448
+    [(sizeof(FrontDefaultGameStateOwner) + sizeof(FrontReadOnlyLiteralPool) == 448) ? 1 : -1];
 
 /**
  * Default state followed by FRONT's original source-literal contribution.
@@ -1007,43 +1161,41 @@ namespace FrontReadOnlyPrefixOwner
 {
 extern "C"
 {
-FrontDefaultGameStateOwner DefaultGameState
-    __attribute__((section(".rdata"))) = {
-  {
-    0,
+FrontDefaultGameStateOwner DefaultGameState __attribute__((section(".rdata"))) = {
     {
-        "skul_t",
-        "Re_Start_School",
         0,
-        0,
-        0,
-        1,
-        0,
-        {0, 0, 0, 0, 0, 0, 0, 0},
-        100,
-        3,
-        5,
+        {
+            "skul_t",
+            "Re_Start_School",
+            0,
+            0,
+            0,
+            1,
+            0,
+            { 0, 0, 0, 0, 0, 0, 0, 0 },
+            100,
+            3,
+            5,
+        },
+        {
+            1,
+            0x2000,
+            0x30,
+            0xb4,
+            1,
+            4,
+            8,
+            2,
+            1,
+            4,
+            8,
+            2,
+        },
     },
-    {
-        1,
-        0x2000,
-        0x30,
-        0xb4,
-        1,
-        4,
-        8,
-        2,
-        1,
-        4,
-        8,
-        2,
-    },
-  },
 };
 }
 
-static FrontReadOnlyLiteralPool DefaultGameStateLiterals
-    __attribute__((section(".rdata"))) = {
+static FrontReadOnlyLiteralPool DefaultGameStateLiterals __attribute__((section(".rdata"))) = {
     "PLAYER 1 SET SCORE",
     "PLAYER 2 SET SCORE",
     "You didn't make the cut...",
@@ -1060,29 +1212,25 @@ static FrontReadOnlyLiteralPool DefaultGameStateLiterals
 /** Address one FRONT literal through the public state symbol and full addend. */
 static inline char *Front_Player1SetScoreText()
 {
-    return reinterpret_cast<char *>(
-        &FrontReadOnlyPrefixOwner::DefaultGameState) + 136;
+    return reinterpret_cast<char *>(&FrontReadOnlyPrefixOwner::DefaultGameState) + 136;
 }
 
 /** Address one FRONT literal through the public state symbol and full addend. */
 static inline char *Front_Player2SetScoreText()
 {
-    return reinterpret_cast<char *>(
-        &FrontReadOnlyPrefixOwner::DefaultGameState) + 156;
+    return reinterpret_cast<char *>(&FrontReadOnlyPrefixOwner::DefaultGameState) + 156;
 }
 
 /** Address one FRONT literal through the public state symbol and full addend. */
 static inline char *Front_NoScoreSwitchText()
 {
-    return reinterpret_cast<char *>(
-        &FrontReadOnlyPrefixOwner::DefaultGameState) + 400;
+    return reinterpret_cast<char *>(&FrontReadOnlyPrefixOwner::DefaultGameState) + 400;
 }
 
 /** Address one FRONT literal through the public state symbol and full addend. */
 static inline char *Front_LoadingSpritesText()
 {
-    return reinterpret_cast<char *>(
-        &FrontReadOnlyPrefixOwner::DefaultGameState) + 420;
+    return reinterpret_cast<char *>(&FrontReadOnlyPrefixOwner::DefaultGameState) + 420;
 }
 
 /** Typed state view of the read-only prefix's public leading symbol. */
@@ -1099,31 +1247,31 @@ static inline char *Front_LoadingSpritesText()
 CTape *GTape[5] = {};
 FallingTextEffect GHorseFallingText;
 SFrontBackground FrontBackgrounds[3] = {
-        {
-            FrontRoofLib,
-            FrontRoofEnv,
-            FrontRoofSizes,
-            {0x1cce, -0x49d, 0x14d4, 0},
-            0x6d0,
-            0x300,
-        },
-        {
-            FrontSewerLib,
-            FrontSewerEnv,
-            FrontSewerSizes,
-            {-0x2c10, 0x2ab2, 0x150fd, 0},
-            0xdd0,
-            0x900,
-        },
-        {
-            FrontNoBackground,
-            FrontNoBackground,
-            FrontNoBackground,
-            {0, 0, 0, 0},
-            0,
-            0,
-        },
-    };
+    {
+        FrontRoofLib,
+        FrontRoofEnv,
+        FrontRoofSizes,
+        { 0x1cce, -0x49d, 0x14d4, 0 },
+        0x6d0,
+        0x300,
+    },
+    {
+        FrontSewerLib,
+        FrontSewerEnv,
+        FrontSewerSizes,
+        { -0x2c10, 0x2ab2, 0x150fd, 0 },
+        0xdd0,
+        0x900,
+    },
+    {
+        FrontNoBackground,
+        FrontNoBackground,
+        FrontNoBackground,
+        { 0, 0, 0, 0 },
+        0,
+        0,
+    },
+};
 SSaveGame LastGameState = {};
 SSaveGame StartupGameState = {};
 #define DEMONAME_OWNER_DECLARATION
@@ -1153,7 +1301,8 @@ extern "C"
 {
 static void PrintPaused(void);
 }
-int Graffiti_Stats(CBruce *pSkater, int x, int y, int r, int g, int b, int Win, int Lose, int Streak, int High);
+int Graffiti_Stats(CBruce *pSkater, int x, int y, int r, int g, int b, int Win, int Lose,
+                   int Streak, int High);
 static void CommonSwitchOnMenuCode(void);
 void RestartCompFrig(void);
 
@@ -1196,8 +1345,7 @@ void Competition_Init(void);
 
 static inline SONG_POS *Front_PausedSongPosition()
 {
-    return reinterpret_cast<SONG_POS *>(
-        &FrontPausedSongPositionAddressView::Paused_SongPos);
+    return reinterpret_cast<SONG_POS *>(&FrontPausedSongPositionAddressView::Paused_SongPos);
 }
 void Competition_JudgeLogic(void);
 void Competition_LadderLogic(void);
@@ -1260,9 +1408,13 @@ extern char s_Bits[];
 extern char s_Items[];
 extern char s_Sk2Anim[];
 extern char s_SkEdThemeFmt[];
-namespace { extern "C++" {
+namespace
+{
+extern "C++"
+{
 extern FrontEditorLevelSuffixBytes s_AckSuffix[];
-} }
+}
+}
 extern RECT FrontPromptClipRect[];
 
 // === Function implementations (address order) ===
@@ -1489,7 +1641,9 @@ static void InitStatsSwisch(void)
         *left = val;
         // This boundary keeps the left cursor increment in the loop branch's
         // delay slot; removing it changes four instructions.
-        left++; ; i++;
+        left++;
+        ;
+        i++;
     } while (8 > i);
 }
 
@@ -1504,10 +1658,8 @@ static void InitStatsSwisch(void)
  */
 int InCompetition(void)
 {
-    if (Levels[GLevel].isCompetition == 0)
-        goto zero;
-    if (GGame == 1)
-        return 1;
+    if (Levels[GLevel].isCompetition == 0) goto zero;
+    if (GGame == 1) return 1;
 zero:
     return 0;
 }
@@ -1547,7 +1699,9 @@ CMenu::CMenu(int x, int y, unsigned char Justification, int HiScale, int LowScal
 }
 
 /** Destroy a menu through its natural polymorphic base. */
-CMenu::~CMenu() {}
+CMenu::~CMenu()
+{
+}
 
 /** Centers the visible menu entries vertically on the 240-line display. */
 void CMenu::CentreY()
@@ -1601,18 +1755,15 @@ void CMenu::SetLine(unsigned char Line)
 int CMenu::FindEntry(const char *pString)
 {
     int i = 0;
-    if (mNumLines == 0)
-        return 0;
+    if (mNumLines == 0) return 0;
     do
     {
-        if (Utils_CompareStrings(pString, mEntry[i].pString,
-                                 static_cast<unsigned int>(-1)) != 0)
+        if (Utils_CompareStrings(pString, mEntry[i].pString, static_cast<unsigned int>(-1)) != 0)
         {
             return i;
         }
         i++;
-        if (i >= mNumLines)
-            break;
+        if (i >= mNumLines) break;
     } while (1);
     return 0;
 }
@@ -1673,8 +1824,7 @@ int CMenu::IsEntryOn(const char *pString)
  */
 int CMenu::ChoiceIs(const char *pString)
 {
-    return Utils_CompareStrings(
-        pString, mEntry[mLine].pString, static_cast<unsigned int>(-1));
+    return Utils_CompareStrings(pString, mEntry[mLine].pString, static_cast<unsigned int>(-1));
 }
 
 /** Renders the visible entries and highlights the current selection. */
@@ -1693,8 +1843,7 @@ void CMenu::Display()
                 Mess_SetScale(mEntry[i].CurrentScale);
                 if (i == mLine)
                 {
-                    Mess_SetRGB(mEntry[i].HiR, mEntry[i].HiG,
-                        mEntry[i].HiB, 0);
+                    Mess_SetRGB(mEntry[i].HiR, mEntry[i].HiG, mEntry[i].HiB, 0);
                     mEntry[i].FadeUpCounter = 0;
                 }
                 else
@@ -1703,36 +1852,28 @@ void CMenu::Display()
                         mEntry[i].FadeUpCounter = 0x80;
                     else
                         mEntry[i].FadeUpCounter = 0x40;
-                    Mess_SetRGB(
-                        static_cast<u8>((mEntry[i].LowR *
-                                         mEntry[i].FadeUpCounter) >> 7),
-                        static_cast<u8>((mEntry[i].LowG *
-                                         mEntry[i].FadeUpCounter) >> 7),
-                        static_cast<u8>((mEntry[i].LowB *
-                                         mEntry[i].FadeUpCounter) >> 7), 0);
+                    Mess_SetRGB(static_cast<u8>((mEntry[i].LowR * mEntry[i].FadeUpCounter) >> 7),
+                                static_cast<u8>((mEntry[i].LowG * mEntry[i].FadeUpCounter) >> 7),
+                                static_cast<u8>((mEntry[i].LowB * mEntry[i].FadeUpCounter) >> 7),
+                                0);
 
                     mEntry[i].FadeUpCounter += 0x3c;
-                    if (mEntry[i].FadeUpCounter > 0x80)
-                        mEntry[i].FadeUpCounter = 0x80;
+                    if (mEntry[i].FadeUpCounter > 0x80) mEntry[i].FadeUpCounter = 0x80;
                 }
 
                 if (mEntry[i].CurrentScale > mEntry[i].LowScale)
                     Mess_SetSort(0);
                 else
                     Mess_SetSort(1);
-                int length = Mess_DrawText(mX, y, mEntry[i].pString,
-                    0, 0, 0, 0);
-                if (mHasCursor != 0 && i == mCursorLine &&
-                    mJustification == 0)
+                int length = Mess_DrawText(mX, y, mEntry[i].pString, 0, 0, 0, 0);
+                if (mHasCursor != 0 && i == mCursorLine && mJustification == 0)
                 {
                     int off =
-                        length * mEntry[i].CurrentScale / 512 +
-                        mEntry[i].CurrentScale * 14 / 256;
+                        length * mEntry[i].CurrentScale / 512 + mEntry[i].CurrentScale * 14 / 256;
 
                     POLY_F3 *leftpoly = reinterpret_cast<POLY_F3 *>(pPoly);
                     POLY_F3 *rightpoly = leftpoly + 1;
-                    unsigned char *newppoly =
-                        reinterpret_cast<unsigned char *>(rightpoly + 1);
+                    unsigned char *newppoly = reinterpret_cast<unsigned char *>(rightpoly + 1);
                     if (newppoly <= PolyBufferEnd)
                     {
                         pPoly = reinterpret_cast<unsigned int *>(newppoly);
@@ -1779,15 +1920,16 @@ void CMenu::Update()
         mEntry[mLine].TargetScale = mEntry[mLine].LowScale;
         mEntry[mLine].CurrentScale = mEntry[mLine].LowScale;
         mLine++;
-        if (mNumLines <= mLine)
-            mLine = 0;
+        if (mNumLines <= mLine) mLine = 0;
         mEntry[mLine].TargetScale = mEntry[mLine].HiScale;
         mEntry[mLine].CurrentScale = mEntry[mLine].LowScale;
     }
 
-    if (Pad[0].Up.Pressed != 0 || Pad[0].Down.Pressed != 0 || Pad[1].Up.Pressed != 0 || Pad[1].Down.Pressed != 0)
+    if (Pad[0].Up.Pressed != 0 || Pad[0].Down.Pressed != 0 || Pad[1].Up.Pressed != 0 ||
+        Pad[1].Down.Pressed != 0)
     {
-        if (UpDownAutoRepeatTimer == 0 || (UpDownAutoRepeatTimer > 0xf && (UpDownAutoRepeatTimer & 3) == 0))
+        if (UpDownAutoRepeatTimer == 0 ||
+            (UpDownAutoRepeatTimer > 0xf && (UpDownAutoRepeatTimer & 3) == 0))
         {
             if (Pad[0].Up.Pressed != 0 || Pad[1].Up.Pressed != 0)
             {
@@ -1813,8 +1955,7 @@ void CMenu::Update()
                 do
                 {
                     mLine++;
-                    if (mNumLines <= mLine)
-                        mLine = 0;
+                    if (mNumLines <= mLine) mLine = 0;
                 } while (mEntry[mLine].Visible == 0 || mEntry[mLine].Enabled == 0);
                 mEntry[mLine].TargetScale = mEntry[mLine].HiScale;
                 SFX_PlayX(6, 0x2000, 0);
@@ -1922,10 +2063,8 @@ void Front_Init(void)
 
     pESMenu = new CMenu(0x100, 0, 0, 0x14f, 0x100, 0x16);
     pESMenu->AddEntry(GameText.pUpdateSaveFile);
-    pESMenu->AddEntry(
-        ((Levels[GLevel].isCompetition != 0) && (GGame == 1))
-            ? GameText.pRestart
-            : GameText.pRetry);
+    pESMenu->AddEntry(((Levels[GLevel].isCompetition != 0) && (GGame == 1)) ? GameText.pRestart
+                                                                            : GameText.pRetry);
     pESMenu->AddEntry(GameText.pLevelHints);
     pESMenu->AddEntry(GameText.pSelectLevel);
     pESMenu->AddEntry(GameText.pEquipmentSelect);
@@ -1950,10 +2089,9 @@ void Front_Init(void)
     pESMenu->EntryOff(GameText.pUpdateSaveFile);
     pESMenu->EntryOff(GameText.pSelectLevel);
     pESMenu->CentreY();
-    pESMenu->SetLine(pESMenu->FindEntry(
-        ((Levels[GLevel].isCompetition != 0) && (GGame == 1))
-            ? GameText.pRestart
-            : GameText.pRetry));
+    pESMenu->SetLine(pESMenu->FindEntry(((Levels[GLevel].isCompetition != 0) && (GGame == 1))
+                                            ? GameText.pRestart
+                                            : GameText.pRetry));
 
     pVSMenu = new CMenu(0x100, 0, 0, 0x14f, 0x100, 0x16);
     pVSMenu->AddEntry(GameText.pFullReplay);
@@ -2006,8 +2144,7 @@ void Front_Init(void)
 void PrintPaused(void)
 {
     OT_entry = 1;
-    reinterpret_cast<Sprite2 *>(pPausedSprite)->Display(
-        0x100, 0x28, 0);
+    reinterpret_cast<Sprite2 *>(pPausedSprite)->Display(0x100, 0x28, 0);
 }
 
 /**
@@ -2109,7 +2246,8 @@ void Front_PrintCentredPrompt(const char *Text)
  * @param Streak current win streak
  * @param High highest tag count
  */
-int Graffiti_Stats(CBruce *pSkater, int x, int y, int r, int g, int b, int Win, int Lose, int Streak, int High)
+int Graffiti_Stats(CBruce *pSkater, int x, int y, int r, int g, int b, int Win, int Lose,
+                   int Streak, int High)
 {
     char N[16];
     int scale = 0x100;
@@ -2186,65 +2324,59 @@ void Front_Display(void)
     {
         int Level;
 
-    case STATUS_MEMCARDMENUS:
-        Front_MemCardDisplay();
-        break;
-    case STATUS_PAUSEDMENU:
-        PrintPaused();
-        if (Cheat_GameInfo != 0)
-        {
-            Front_PrintSelect();
-        }
-        else
-        {
-            Front_PrintGoBackSelect();
-        }
-        {
-            if (WobbleAmplitude != 0)
+        case STATUS_MEMCARDMENUS: Front_MemCardDisplay(); break;
+        case STATUS_PAUSEDMENU:
+            PrintPaused();
+            if (Cheat_GameInfo != 0)
             {
-                WobbleAmplitude -= 2;
-                WobbleT += 0x2b2;
-                if (WobbleAmplitude < 0)
-                {
-                    WobbleAmplitude = 0;
-                    WobbleT = 0;
-                }
+                Front_PrintSelect();
             }
-            pPausedMenu->mX =
-                WobbleAmplitude *
-                    (&rcossin_tbl)[WobbleT & 0xfff].Cos /
-                    0x1000 +
-                0x100;
-            pPausedMenu->Display();
-        }
-        break;
-    case STATUS_SKIPTORESTART:
-        if (pRestartsMenu != 0)
-        {
-            pRestartsMenu->Display();
-        }
-        break;
-    case STATUS_REALLYQUIT:
-        PrintPaused();
-        Front_PrintGoBackSelect();
-        Mess_SetRGB(0x96, 0x64, 0x19, 0);
-        Mess_DrawText(0x100, 0x5f, GameText.pReallyQuit, 0, 0, 0x100, 0);
-        pYesNoMenu->mY = 0x87;
-        pYesNoMenu->Display();
-        break;
-    case STATUS_PADUNPLUGGED:
-        PrintPaused();
-        Mess_SetRGB(0xb4, 0x0a, 0x0a, 0);
-        if (((TTime / 10) & 1) != 0)
-        {
-            Mess_DrawText(0x100, 0xb8, GameText.pPleaseReinsertController, 0, 0, 0x100, 0);
-        }
-        break;
-    case STATUS_ENDLEVELFADESCREEN:
-    case STATUS_DOSAVEFADESCREEN:
-    case STATUS_NOSAVEFADESCREEN:
-        break;
-    case STATUS_GOTTAPE:
+            else
+            {
+                Front_PrintGoBackSelect();
+            }
+            {
+                if (WobbleAmplitude != 0)
+                {
+                    WobbleAmplitude -= 2;
+                    WobbleT += 0x2b2;
+                    if (WobbleAmplitude < 0)
+                    {
+                        WobbleAmplitude = 0;
+                        WobbleT = 0;
+                    }
+                }
+                pPausedMenu->mX =
+                    WobbleAmplitude * (&rcossin_tbl)[WobbleT & 0xfff].Cos / 0x1000 + 0x100;
+                pPausedMenu->Display();
+            }
+            break;
+        case STATUS_SKIPTORESTART:
+            if (pRestartsMenu != 0)
+            {
+                pRestartsMenu->Display();
+            }
+            break;
+        case STATUS_REALLYQUIT:
+            PrintPaused();
+            Front_PrintGoBackSelect();
+            Mess_SetRGB(0x96, 0x64, 0x19, 0);
+            Mess_DrawText(0x100, 0x5f, GameText.pReallyQuit, 0, 0, 0x100, 0);
+            pYesNoMenu->mY = 0x87;
+            pYesNoMenu->Display();
+            break;
+        case STATUS_PADUNPLUGGED:
+            PrintPaused();
+            Mess_SetRGB(0xb4, 0x0a, 0x0a, 0);
+            if (((TTime / 10) & 1) != 0)
+            {
+                Mess_DrawText(0x100, 0xb8, GameText.pPleaseReinsertController, 0, 0, 0x100, 0);
+            }
+            break;
+        case STATUS_ENDLEVELFADESCREEN:
+        case STATUS_DOSAVEFADESCREEN:
+        case STATUS_NOSAVEFADESCREEN: break;
+        case STATUS_GOTTAPE:
         {
             int NumTapes = GSkater[0]->mSessionTapes;
             if (GTape[0] == 0)
@@ -2252,71 +2384,41 @@ void Front_Display(void)
                 SFX_PlayX(0x13, 0x2000, 0);
                 switch (NumTapes)
                 {
-                case 1:
-                    GTape[0] = Tape_Create(
-                        0, 0, 0x8c, 0x900,
-                        -0x50, 0, 0x8c, 0x400);
-                    break;
-                case 2:
-                    GTape[0] = Tape_Create(
-                        -0x32, 0, 0x8c, 0x880,
-                        -0x50, -0x19, 0x8c, 0x400);
-                    GTape[1] = Tape_Create(
-                        0x32, 0, 0x8c, 0x880,
-                        -0x50, 0x19, 0x8c, 0x400);
-                    break;
-                case 3:
-                    GTape[0] = Tape_Create(
-                        0, 0, 0x8c, 0x900,
-                        -0x50, -0x28, 0x8c, 0x400);
-                    GTape[1] = Tape_Create(
-                        -0x3c, 0, 0x8c, 0x700,
-                        -0x50, 0, 0x8c, 0x400);
-                    GTape[2] = Tape_Create(
-                        0x3c, 0, 0x8c, 0x700,
-                        -0x50, 0x28, 0x8c, 0x400);
-                    break;
-                case 4:
-                    GTape[0] = Tape_Create(
-                        -0x2d, -0x19, 0x8c, 0x700,
-                        -0x50, -0x32, 0x8c, 0x400);
-                    GTape[1] = Tape_Create(
-                        0x2d, -0x19, 0x8c, 0x700,
-                        -0x46, -0x14, 0x8c, 0x400);
-                    GTape[2] = Tape_Create(
-                        -0x2d, 0x19, 0x8c, 0x700,
-                        -0x50, 0x0a, 0x8c, 0x400);
-                    GTape[3] = Tape_Create(
-                        0x2d, 0x19, 0x8c, 0x700,
-                        -0x46, 0x28, 0x8c, 0x400);
-                    break;
-                case 5:
-                    GTape[0] = Tape_Create(
-                        0, 0, 0x8c, 0x900,
-                        -0x50, -0x32, 0x8c, 0x400);
-                    GTape[1] = Tape_Create(
-                        -0x37, -0x19, 0x8c, 0x600,
-                        -0x46, -0x19, 0x8c, 0x400);
-                    GTape[2] = Tape_Create(
-                        0x37, -0x19, 0x8c, 0x600,
-                        -0x50, 0, 0x8c, 0x400);
-                    GTape[3] = Tape_Create(
-                        -0x37, 0x19, 0x8c, 0x600,
-                        -0x46, 0x19, 0x8c, 0x400);
-                    GTape[4] = Tape_Create(
-                        0x37, 0x19, 0x8c, 0x600,
-                        -0x50, 0x32, 0x8c, 0x400);
-                    break;
+                    case 1: GTape[0] = Tape_Create(0, 0, 0x8c, 0x900, -0x50, 0, 0x8c, 0x400); break;
+                    case 2:
+                        GTape[0] = Tape_Create(-0x32, 0, 0x8c, 0x880, -0x50, -0x19, 0x8c, 0x400);
+                        GTape[1] = Tape_Create(0x32, 0, 0x8c, 0x880, -0x50, 0x19, 0x8c, 0x400);
+                        break;
+                    case 3:
+                        GTape[0] = Tape_Create(0, 0, 0x8c, 0x900, -0x50, -0x28, 0x8c, 0x400);
+                        GTape[1] = Tape_Create(-0x3c, 0, 0x8c, 0x700, -0x50, 0, 0x8c, 0x400);
+                        GTape[2] = Tape_Create(0x3c, 0, 0x8c, 0x700, -0x50, 0x28, 0x8c, 0x400);
+                        break;
+                    case 4:
+                        GTape[0] =
+                            Tape_Create(-0x2d, -0x19, 0x8c, 0x700, -0x50, -0x32, 0x8c, 0x400);
+                        GTape[1] = Tape_Create(0x2d, -0x19, 0x8c, 0x700, -0x46, -0x14, 0x8c, 0x400);
+                        GTape[2] = Tape_Create(-0x2d, 0x19, 0x8c, 0x700, -0x50, 0x0a, 0x8c, 0x400);
+                        GTape[3] = Tape_Create(0x2d, 0x19, 0x8c, 0x700, -0x46, 0x28, 0x8c, 0x400);
+                        break;
+                    case 5:
+                        GTape[0] = Tape_Create(0, 0, 0x8c, 0x900, -0x50, -0x32, 0x8c, 0x400);
+                        GTape[1] =
+                            Tape_Create(-0x37, -0x19, 0x8c, 0x600, -0x46, -0x19, 0x8c, 0x400);
+                        GTape[2] = Tape_Create(0x37, -0x19, 0x8c, 0x600, -0x50, 0, 0x8c, 0x400);
+                        GTape[3] = Tape_Create(-0x37, 0x19, 0x8c, 0x600, -0x46, 0x19, 0x8c, 0x400);
+                        GTape[4] = Tape_Create(0x37, 0x19, 0x8c, 0x600, -0x50, 0x32, 0x8c, 0x400);
+                        break;
                 }
             }
             for (int i = 0; i < 5; i++)
             {
                 if (GTape[i] != 0)
                 {
-                    GTape[i]->mTapeNum =
-                        reinterpret_cast<SCareerOwner *>(&GCareer)->CharacterProgress[
-                            GSkater[0]->mSkaterType].NumTapes -
-                        (NumTapes - i);
+                    GTape[i]->mTapeNum = reinterpret_cast<SCareerOwner *>(&GCareer)
+                                             ->CharacterProgress[GSkater[0]->mSkaterType]
+                                             .NumTapes -
+                                         (NumTapes - i);
                     GTape[i]->mSessionTapeNum = i;
                 }
             }
@@ -2324,10 +2426,10 @@ void Front_Display(void)
             {
                 if (GTape[i] != 0)
                 {
-                    GTape[i]->AI(
-                        reinterpret_cast<SCareerOwner *>(&GCareer)->CharacterProgress[
-                            GSkater[0]->mSkaterType].NumTapes -
-                            (NumTapes - i));
+                    GTape[i]->AI(reinterpret_cast<SCareerOwner *>(&GCareer)
+                                     ->CharacterProgress[GSkater[0]->mSkaterType]
+                                     .NumTapes -
+                                 (NumTapes - i));
                 }
             }
             Mess_SetScale(0x100);
@@ -2336,16 +2438,13 @@ void Front_Display(void)
             {
                 if (NumTapes == 1)
                 {
-                    Mess_DrawText(0x100, 0x28,
-                                  GameText.pYouGotATape,
-                                  0, 0, 0x100, 0);
+                    Mess_DrawText(0x100, 0x28, GameText.pYouGotATape, 0, 0, 0x100, 0);
                 }
                 else
                 {
                     static char GotATape[25];
                     sprintf(GotATape, GameText.pYouGotNTapes, NumTapes);
-                    Mess_DrawText(0x100, 0x28, GotATape,
-                                  0, 0, 0x100, 0);
+                    Mess_DrawText(0x100, 0x28, GotATape, 0, 0, 0x100, 0);
                 }
             }
             if (CTape::DisplayContinueButton() != 0)
@@ -2354,62 +2453,62 @@ void Front_Display(void)
             }
         }
         break;
-    case STATUS_QUITSAVE:
-    case STATUS_MEDALSAVE:
-    case STATUS_TAPESAVE:
-        Mess_SetRGB(0x96, 0x64, 0x19, 0);
-        Mess_DrawText(0x100, 0x50, GameText.pSaveCareerQM, 0, 0, 0x100, 0);
-        pYesNoMenu->mY = 0x82;
-        pYesNoMenu->Display();
-        Front_PrintCentredPrompt(GameText.pToSelect);
-        break;
-    case STATUS_REALLYMAINMENU:
-        Mess_SetRGB(0x96, 0x64, 0x19, 0);
-        Mess_DrawText(0x100, 0x50, GameText.pAreYouSure, 0, 0, 0x100, 0);
-        pYesNoMenu->mY = 0x82;
-        pYesNoMenu->Display();
-        Front_PrintCentredPrompt(GameText.pToSelect);
-        break;
-    case STATUS_ENDINGSCREEN:
-        if ((GRollCredits == 0) && (Front_OnTime >= 0xb))
-        {
-            pESMenu->Display();
+        case STATUS_QUITSAVE:
+        case STATUS_MEDALSAVE:
+        case STATUS_TAPESAVE:
+            Mess_SetRGB(0x96, 0x64, 0x19, 0);
+            Mess_DrawText(0x100, 0x50, GameText.pSaveCareerQM, 0, 0, 0x100, 0);
+            pYesNoMenu->mY = 0x82;
+            pYesNoMenu->Display();
             Front_PrintCentredPrompt(GameText.pToSelect);
-        }
-        break;
-    case STATUS_VIDEOSCREEN:
-        if (Front_OnTime >= 0xb)
-        {
-            if (GNumberOfPlayers == 2)
+            break;
+        case STATUS_REALLYMAINMENU:
+            Mess_SetRGB(0x96, 0x64, 0x19, 0);
+            Mess_DrawText(0x100, 0x50, GameText.pAreYouSure, 0, 0, 0x100, 0);
+            pYesNoMenu->mY = 0x82;
+            pYesNoMenu->Display();
+            Front_PrintCentredPrompt(GameText.pToSelect);
+            break;
+        case STATUS_ENDINGSCREEN:
+            if ((GRollCredits == 0) && (Front_OnTime >= 0xb))
             {
-                pVSMenu->EntryOff(GameText.pHighlights);
+                pESMenu->Display();
+                Front_PrintCentredPrompt(GameText.pToSelect);
             }
-            else
+            break;
+        case STATUS_VIDEOSCREEN:
+            if (Front_OnTime >= 0xb)
             {
-                pVSMenu->EntryOn(GameText.pHighlights);
+                if (GNumberOfPlayers == 2)
+                {
+                    pVSMenu->EntryOff(GameText.pHighlights);
+                }
+                else
+                {
+                    pVSMenu->EntryOn(GameText.pHighlights);
+                }
+                pVSMenu->CentreY();
+                pVSMenu->Display();
+                Front_PrintGoBackSelect();
             }
-            pVSMenu->CentreY();
-            pVSMenu->Display();
-            Front_PrintGoBackSelect();
-        }
-        break;
-    case STATUS_VIDEOSCREEN2:
-        if (Front_OnTime >= 0xb)
-        {
-            if (GNumberOfPlayers == 2)
+            break;
+        case STATUS_VIDEOSCREEN2:
+            if (Front_OnTime >= 0xb)
             {
-                pVS2Menu->EntryOff(GameText.pHighlights);
+                if (GNumberOfPlayers == 2)
+                {
+                    pVS2Menu->EntryOff(GameText.pHighlights);
+                }
+                else
+                {
+                    pVS2Menu->EntryOn(GameText.pHighlights);
+                }
+                pVS2Menu->CentreY();
+                pVS2Menu->Display();
+                Front_PrintGoBackSelect();
             }
-            else
-            {
-                pVS2Menu->EntryOn(GameText.pHighlights);
-            }
-            pVS2Menu->CentreY();
-            pVS2Menu->Display();
-            Front_PrintGoBackSelect();
-        }
-        break;
-    case STATUS_CHANGEHORSEWORD:
+            break;
+        case STATUS_CHANGEHORSEWORD:
         {
             char horseBuf[2];
             int termFound = 0;
@@ -2440,71 +2539,61 @@ void Front_Display(void)
                 }
                 if (termFound == 0)
                 {
-                    Mess_DrawText(i * 0x14 + 0x9c, 0x78, horseBuf,
-                                  0, 0, 0x100, 0);
+                    Mess_DrawText(i * 0x14 + 0x9c, 0x78, horseBuf, 0, 0, 0x100, 0);
                 }
                 horseBuf[0] = '_';
                 Mess_SetScale(0x100);
-                Mess_DrawText(i * 0x14 + 0x9c, 0x82, horseBuf,
-                              0, 0, 0x100, 0);
+                Mess_DrawText(i * 0x14 + 0x9c, 0x82, horseBuf, 0, 0, 0x100, 0);
             }
             Front_PrintCentredPrompt(GameText.pToAccept);
         }
         break;
-    case STATUS_STARTHORSE:
-        Mess_SetScale(0x100);
-        {
-            if (GHorsePlayer == 0)
-            {
-                Mess_SetRGB(0x50, 0x50, 0x80, 0);
-            }
-            else
-            {
-                Mess_SetRGB(0x80, 0x50, 0x50, 0);
-            }
-            if (GHorseMode == 0)
+        case STATUS_STARTHORSE:
+            Mess_SetScale(0x100);
             {
                 if (GHorsePlayer == 0)
                 {
-                    Mess_DrawText(0x100, 0x78,
-                                  Front_Player1SetScoreText(),
-                                  0, 0, 0x100, 0);
+                    Mess_SetRGB(0x50, 0x50, 0x80, 0);
                 }
                 else
                 {
-                    Mess_DrawText(0x100, 0x78,
-                                  Front_Player2SetScoreText(),
-                                  0, 0, 0x100, 0);
+                    Mess_SetRGB(0x80, 0x50, 0x50, 0);
                 }
-            }
-            else
-            {
-                char Score[10];
-                if (GHorsePlayer == 0)
+                if (GHorseMode == 0)
                 {
-                    Mess_DrawText(0x100, 0x78,
-                                  FrontAddressViewOwners::GrafFmt + 4,
-                                  0, 0, 0x100, 0);
+                    if (GHorsePlayer == 0)
+                    {
+                        Mess_DrawText(0x100, 0x78, Front_Player1SetScoreText(), 0, 0, 0x100, 0);
+                    }
+                    else
+                    {
+                        Mess_DrawText(0x100, 0x78, Front_Player2SetScoreText(), 0, 0, 0x100, 0);
+                    }
                 }
                 else
                 {
-                    Mess_DrawText(0x100, 0x78,
-                                  FrontAddressViewOwners::GrafFmt + 0x14,
-                                  0, 0, 0x100, 0);
+                    char Score[10];
+                    if (GHorsePlayer == 0)
+                    {
+                        Mess_DrawText(0x100, 0x78, FrontAddressViewOwners::GrafFmt + 4, 0, 0, 0x100,
+                                      0);
+                    }
+                    else
+                    {
+                        Mess_DrawText(0x100, 0x78, FrontAddressViewOwners::GrafFmt + 0x14, 0, 0,
+                                      0x100, 0);
+                    }
+                    sprintf(Score, FrontAddressViewOwners::GrafFmt, GHorseScore);
+                    Mess_DrawText(0x100, 0x8c, Score, 0, 0, 0x100, 0);
                 }
-                sprintf(Score, FrontAddressViewOwners::GrafFmt, GHorseScore);
-                Mess_DrawText(0x100, 0x8c, Score,
-                              0, 0, 0x100, 0);
-            }
 
-            Horse_DisplayWords(GHorseLetters);
-            Front_PrintCentredPrompt(GameText.pContinue);
-        }
-        break;
-    case STATUS_LOADSUCCESS:
-    case STATUS_LOADFAILED:
-        break;
-    case STATUS_HIGHSCORE:
+                Horse_DisplayWords(GHorseLetters);
+                Front_PrintCentredPrompt(GameText.pContinue);
+            }
+            break;
+        case STATUS_LOADSUCCESS:
+        case STATUS_LOADFAILED: break;
+        case STATUS_HIGHSCORE:
         {
             static char highScoreBuf[64];
             int i;
@@ -2553,8 +2642,7 @@ void Front_Display(void)
                     reinterpret_cast<SCareerOwner *>(&GCareer)->HighScore[Level][i].Name[0];
                 highScoreBuf[1] = 0;
                 Mess_SetTextJustify(0);
-                if ((i == GHighScoreLineIndex) &&
-                    (GHighScoreInitialCursorPos == 0))
+                if ((i == GHighScoreLineIndex) && (GHighScoreInitialCursorPos == 0))
                 {
                     Mess_SetScale(SizeUp * 6 + 0x100);
                 }
@@ -2562,16 +2650,14 @@ void Front_Display(void)
                 {
                     Mess_SetScale(0x100);
                 }
-                Mess_DrawText(StatsLeft[i] - 0x50,
-                              (i + 1) * 0x13 + 0x28, highScoreBuf,
-                              0, 0, 0x100, 0);
+                Mess_DrawText(StatsLeft[i] - 0x50, (i + 1) * 0x13 + 0x28, highScoreBuf, 0, 0, 0x100,
+                              0);
 
                 Mess_SetScale(0x100);
                 highScoreBuf[0] =
                     reinterpret_cast<SCareerOwner *>(&GCareer)->HighScore[Level][i].Name[1];
                 Mess_SetTextJustify(0);
-                if ((i == GHighScoreLineIndex) &&
-                    (GHighScoreInitialCursorPos == 1))
+                if ((i == GHighScoreLineIndex) && (GHighScoreInitialCursorPos == 1))
                 {
                     Mess_SetScale(SizeUp * 6 + 0x100);
                 }
@@ -2579,16 +2665,14 @@ void Front_Display(void)
                 {
                     Mess_SetScale(0x100);
                 }
-                Mess_DrawText(StatsLeft[i] - 0x3c,
-                              (i + 1) * 0x13 + 0x28, highScoreBuf,
-                              0, 0, 0x100, 0);
+                Mess_DrawText(StatsLeft[i] - 0x3c, (i + 1) * 0x13 + 0x28, highScoreBuf, 0, 0, 0x100,
+                              0);
 
                 Mess_SetScale(0x100);
                 highScoreBuf[0] =
                     reinterpret_cast<SCareerOwner *>(&GCareer)->HighScore[Level][i].Name[2];
                 Mess_SetTextJustify(0);
-                if ((i == GHighScoreLineIndex) &&
-                    (GHighScoreInitialCursorPos == 2))
+                if ((i == GHighScoreLineIndex) && (GHighScoreInitialCursorPos == 2))
                 {
                     Mess_SetScale(SizeUp * 6 + 0x100);
                 }
@@ -2596,28 +2680,23 @@ void Front_Display(void)
                 {
                     Mess_SetScale(0x100);
                 }
-                Mess_DrawText(StatsLeft[i] - 0x28,
-                              (i + 1) * 0x13 + 0x28, highScoreBuf,
-                              0, 0, 0x100, 0);
+                Mess_DrawText(StatsLeft[i] - 0x28, (i + 1) * 0x13 + 0x28, highScoreBuf, 0, 0, 0x100,
+                              0);
 
                 Mess_SetScale(0x100);
-                if ((i == GHighScoreLineIndex) &&
-                    (((TTime / 10) & 1) != 0))
+                if ((i == GHighScoreLineIndex) && (((TTime / 10) & 1) != 0))
                 {
-                    sprintf(highScoreBuf,
-                            FrontAddressViewOwners::GrafFmt + 0x24);
+                    sprintf(highScoreBuf, FrontAddressViewOwners::GrafFmt + 0x24);
                     Mess_SetTextJustify(0);
-                    int cursorOffset =
-                        GHighScoreInitialCursorPos * 0x14 - 0x50;
-                    Mess_DrawText(StatsLeft[i] + cursorOffset,
-                                  (i + 1) * 0x13 + 0x30,
-                                  highScoreBuf, 0, 0, 0x100, 0);
+                    int cursorOffset = GHighScoreInitialCursorPos * 0x14 - 0x50;
+                    Mess_DrawText(StatsLeft[i] + cursorOffset, (i + 1) * 0x13 + 0x30, highScoreBuf,
+                                  0, 0, 0x100, 0);
                 }
 
-                sprintf(highScoreBuf,
-                        FrontAddressViewOwners::GrafFmt + 0x28,
-                        Stats[static_cast<unsigned char>(
-                                  reinterpret_cast<SCareerOwner *>(&GCareer)->HighScore[Level][i].Skater)]
+                sprintf(highScoreBuf, FrontAddressViewOwners::GrafFmt + 0x28,
+                        Stats[static_cast<unsigned char>(reinterpret_cast<SCareerOwner *>(&GCareer)
+                                                             ->HighScore[Level][i]
+                                                             .Skater)]
                             .Name);
                 char *p = highScoreBuf;
                 while (*p != 0)
@@ -2631,9 +2710,7 @@ void Front_Display(void)
                 }
 
                 Mess_SetTextJustify(1);
-                Mess_DrawText(StatsLeft[i],
-                              (i + 1) * 0x13 + 0x28, highScoreBuf,
-                              0, 0, 0x100, 0);
+                Mess_DrawText(StatsLeft[i], (i + 1) * 0x13 + 0x28, highScoreBuf, 0, 0, 0x100, 0);
 
                 sprintf(highScoreBuf, FrontAddressViewOwners::GrafFmt,
                         reinterpret_cast<SCareerOwner *>(&GCareer)->HighScore[Level][i].Score);
@@ -2645,39 +2722,34 @@ void Front_Display(void)
                     Mess_SetTextJustify(0);
                     int scoreLength = strlen(highScoreBuf);
                     int charactersToRight = j + 1;
-                    Mess_DrawText(StatsRight[i] -
-                                      (scoreLength - charactersToRight) * 0x12,
-                                  (i + 1) * 0x13 + 0x28, temp,
-                                  0, 0, 0x100, 0);
+                    Mess_DrawText(StatsRight[i] - (scoreLength - charactersToRight) * 0x12,
+                                  (i + 1) * 0x13 + 0x28, temp, 0, 0, 0x100, 0);
                 }
             }
 
             Front_PrintCentredPrompt(GameText.pToAccept);
         }
         break;
-    case STATUS_STATS:
+        case STATUS_STATS:
         {
             Mess_SetScale(0x100);
             if (GNumberOfPlayers == 1)
             {
                 Mess_SetRGB(0xb6, 0x84, 0x24, 0);
-                Mess_DrawText(0x100, 0x28, GameText.pStatistics,
-                              0, 0, 0x100, 0);
+                Mess_DrawText(0x100, 0x28, GameText.pStatistics, 0, 0, 0x100, 0);
             }
             else
             {
                 Mess_SetRGB(0xb6, 0x84, 0x24, 0);
                 if (GGame == 7)
                 {
-                    Mess_DrawText(0x100, 0x28,
-                                  FrontAddressViewOwners::GrafFmt + 0x2c,
-                                  0, 0, 0x100, 0);
+                    Mess_DrawText(0x100, 0x28, FrontAddressViewOwners::GrafFmt + 0x2c, 0, 0, 0x100,
+                                  0);
                 }
                 else
                 {
-                    Mess_DrawText(0x100, 0x28,
-                                  FrontAddressViewOwners::GrafFmt + 0x38,
-                                  0, 0, 0x100, 0);
+                    Mess_DrawText(0x100, 0x28, FrontAddressViewOwners::GrafFmt + 0x38, 0, 0, 0x100,
+                                  0);
                 }
             }
 
@@ -2703,23 +2775,17 @@ void Front_Display(void)
                     Level = GLevel;
                 }
 
-                Mess_DrawText(StatsLeft[0], 0x3c, GameText.pTotalScore,
-                              0, 0, 0x100, 0);
+                Mess_DrawText(StatsLeft[0], 0x3c, GameText.pTotalScore, 0, 0, 0x100, 0);
                 Line = 2;
-                Mess_DrawText(StatsLeft[1], 0x4e, GameText.pHighScore,
-                              0, 0, 0x100, 0);
+                Mess_DrawText(StatsLeft[1], 0x4e, GameText.pHighScore, 0, 0, 0x100, 0);
                 if (GGame == 1)
                 {
                     Line = 3;
-                    Mess_DrawText(StatsLeft[2], 0x60,
-                                  GameText.pTapesCollected,
-                                  0, 0, 0x100, 0);
+                    Mess_DrawText(StatsLeft[2], 0x60, GameText.pTapesCollected, 0, 0, 0x100, 0);
                 }
-                Mess_DrawText(StatsLeft[3], Line++ * 0x12 + 0x3c,
-                              GameText.pTricksLanded,
-                              0, 0, 0x100, 0);
-                Mess_DrawText(StatsLeft[4], Line * 0x12 + 0x3c,
-                              GameText.pBails, 0, 0, 0x100, 0);
+                Mess_DrawText(StatsLeft[3], Line++ * 0x12 + 0x3c, GameText.pTricksLanded, 0, 0,
+                              0x100, 0);
+                Mess_DrawText(StatsLeft[4], Line * 0x12 + 0x3c, GameText.pBails, 0, 0, 0x100, 0);
 
                 Mess_SetTextJustify(0);
                 pMan = reinterpret_cast<CBruce *>(MechList);
@@ -2733,43 +2799,29 @@ void Front_Display(void)
                     }
                 }
 
-                sprintf(Score1, FrontAddressViewOwners::GrafFmt,
-                        pMan->mPanelData.mTotalScore);
+                sprintf(Score1, FrontAddressViewOwners::GrafFmt, pMan->mPanelData.mTotalScore);
                 Line = 2;
-                Mess_DrawText(StatsRight[0], 0x3c, Score1,
-                              0, 0, 0x100, 0);
+                Mess_DrawText(StatsRight[0], 0x3c, Score1, 0, 0, 0x100, 0);
 
                 sprintf(Score2, FrontAddressViewOwners::GrafFmt,
                         reinterpret_cast<SCareerOwner *>(&GCareer)->HighScore[Level][0].Score);
-                Mess_DrawText(StatsRight[1], 0x4e, Score2,
-                              0, 0, 0x100, 0);
+                Mess_DrawText(StatsRight[1], 0x4e, Score2, 0, 0, 0x100, 0);
 
                 if (GGame == 1)
                 {
                     Line = 3;
                     int NumTapes = Career_LevelTapes(GLevel);
-                    sprintf(Tapes,
-                            Front_GrafCountFormat,
-                            NumTapes, 5);
-                    Mess_DrawText(StatsRight[2], 0x60, Tapes,
-                                  0, 0, 0x100, 0);
+                    sprintf(Tapes, Front_GrafCountFormat, NumTapes, 5);
+                    Mess_DrawText(StatsRight[2], 0x60, Tapes, 0, 0, 0x100, 0);
                 }
 
-                sprintf(Tricks,
-                        Front_GrafCountFormat + 0xc,
-                        static_cast<unsigned int>(
-                            pMan->mPanelData.mNumTricksLanded));
-                Mess_DrawText(StatsRight[3], Line++ * 0x12 + 0x3c,
-                              Tricks,
-                              0, 0, 0x100, 0);
+                sprintf(Tricks, Front_GrafCountFormat + 0xc,
+                        static_cast<unsigned int>(pMan->mPanelData.mNumTricksLanded));
+                Mess_DrawText(StatsRight[3], Line++ * 0x12 + 0x3c, Tricks, 0, 0, 0x100, 0);
 
-                sprintf(Bails,
-                        Front_GrafCountFormat + 0xc,
-                        static_cast<unsigned int>(
-                            pMan->mPanelData.mNumBails));
-                Mess_DrawText(StatsRight[4],
-                              Line * 0x12 + 0x3c, Bails,
-                              0, 0, 0x100, 0);
+                sprintf(Bails, Front_GrafCountFormat + 0xc,
+                        static_cast<unsigned int>(pMan->mPanelData.mNumBails));
+                Mess_DrawText(StatsRight[4], Line * 0x12 + 0x3c, Bails, 0, 0, 0x100, 0);
 
                 if (StatsLeft[0] == 0x5a)
                 {
@@ -2777,45 +2829,34 @@ void Front_Display(void)
                     if (pMan->mPanelData.mBestComboScore == 0)
                     {
                         Mess_SetScale(0xdc);
-                        Mess_DrawText(0x100, 0x97, GameText.pBestCombo,
-                                      0, 0, 0x100, 0);
+                        Mess_DrawText(0x100, 0x97, GameText.pBestCombo, 0, 0, 0x100, 0);
                         Mess_SetScale(0x100);
-                        Mess_DrawText(0x100, 0xa8, GameText.pNone,
-                                      0, 0, 0x100, 0);
+                        Mess_DrawText(0x100, 0xa8, GameText.pNone, 0, 0, 0x100, 0);
                     }
                     else
                     {
                         if (pMan->mPanelData.mNumTricksInCombo == 1)
                         {
-                            sprintf(
-                                BestCombo,
-                                GameText.pBestComboNTrickNPoints,
-                                pMan->mPanelData.mNumTricksInCombo,
-                                pMan->mPanelData.mBestComboScore);
+                            sprintf(BestCombo, GameText.pBestComboNTrickNPoints,
+                                    pMan->mPanelData.mNumTricksInCombo,
+                                    pMan->mPanelData.mBestComboScore);
                         }
                         else
                         {
-                            sprintf(
-                                BestCombo,
-                                GameText.pBestComboNTricksNPoints,
-                                pMan->mPanelData.mNumTricksInCombo,
-                                pMan->mPanelData.mBestComboScore);
+                            sprintf(BestCombo, GameText.pBestComboNTricksNPoints,
+                                    pMan->mPanelData.mNumTricksInCombo,
+                                    pMan->mPanelData.mBestComboScore);
                         }
                         FrontDisplayFontStorage Font1;
 
                         Mess_SetScale(0xdc);
-                        Mess_DrawText(0x100, 0x97, BestCombo,
-                                      0, 0, 0x100, 0);
+                        Mess_DrawText(0x100, 0x97, BestCombo, 0, 0, 0x100, 0);
                         Mess_SetScale(0xbc);
-                        Mess_DrawText(0x100, 0xa6,
-                                      pMan->mPanelData.mBestComboName,
-                                      0, 0, 0x100, 0);
-                        Mess_DrawText(0x100, 0xb4,
-                                      pMan->mPanelData.mBestComboName2,
-                                      0, 0, 0x100, 0);
-                        Mess_DrawText(0x100, 0xc2,
-                                      pMan->mPanelData.mBestComboName3,
-                                      0, 0, 0x100, 0);
+                        Mess_DrawText(0x100, 0xa6, pMan->mPanelData.mBestComboName, 0, 0, 0x100, 0);
+                        Mess_DrawText(0x100, 0xb4, pMan->mPanelData.mBestComboName2, 0, 0, 0x100,
+                                      0);
+                        Mess_DrawText(0x100, 0xc2, pMan->mPanelData.mBestComboName3, 0, 0, 0x100,
+                                      0);
                     }
                 }
             }
@@ -2833,307 +2874,255 @@ void Front_Display(void)
                 {
                     char Score[40];
 
-                case 8:
-                    if (GSkater[1]->mTags == GSkater[0]->mTags)
-                    {
-                        Mess_DrawText(0x100, 0x40,
-                                      FrontAddressViewOwners::GrafFmt + 0x74,
-                                      0, 0, 0x100, 0);
-                    }
-                    else if (GSkater[0]->mTags < GSkater[1]->mTags)
-                    {
-                        Mess_DrawText(0x100, 0x40,
-                                      Front_GrafPlayer2Wins,
-                                      0, 0, 0x100, 0);
-                    }
-                    else
-                    {
-                        Mess_DrawText(0x100, 0x40,
-                                      Front_GrafPlayer1Wins,
-                                      0, 0, 0x100, 0);
-                    }
-                    Mess_SetScale(0xe0);
-                    Graffiti_Stats(GSkater[0], 0x1e, 0x56,
-                                   0x20, 0x20, 0x80,
-                                   GWins1, GLosses1,
-                                   GStreak1, GHighTags1);
-                    Graffiti_Stats(GSkater[1], 0x11e, 0x56,
-                                   0x80, 0x20, 0x20,
-                                   GWins2, GLosses2,
-                                   GStreak2, GHighTags2);
-                    break;
-                case 7:
-                    NextHorseMode = GHorseMode;
-                    NextHorsePlayer = GHorsePlayer;
-                    NextHorseScore = GHorseScore;
-                    NextHorseRestart = GHorseRestart;
-                    NextHorseLetters[0] = GHorseLetters[0];
-                    NextHorseLetters[1] = GHorseLetters[1];
-
-                    {
-                        Line = 0;
-                        if (GHorsePlayer == 0)
+                    case 8:
+                        if (GSkater[1]->mTags == GSkater[0]->mTags)
                         {
-                            Mess_SetRGB(0x50, 0x50, 0x80, 0);
+                            Mess_DrawText(0x100, 0x40, FrontAddressViewOwners::GrafFmt + 0x74, 0, 0,
+                                          0x100, 0);
+                        }
+                        else if (GSkater[0]->mTags < GSkater[1]->mTags)
+                        {
+                            Mess_DrawText(0x100, 0x40, Front_GrafPlayer2Wins, 0, 0, 0x100, 0);
                         }
                         else
                         {
-                            Mess_SetRGB(0x80, 0x50, 0x50, 0);
+                            Mess_DrawText(0x100, 0x40, Front_GrafPlayer1Wins, 0, 0, 0x100, 0);
                         }
-                        // FIXME(match): asm barrier — keeps the dead `Line = 0` alive so `move $s2,$0` fills the delay slot (without it flow deletes it, 4 insns off); tried: moving Line = 0, adding real uses (0x50 + Line, Line++) — all deleted.
-                        asm volatile("" : : "r"(Line));
-                    }
+                        Mess_SetScale(0xe0);
+                        Graffiti_Stats(GSkater[0], 0x1e, 0x56, 0x20, 0x20, 0x80, GWins1, GLosses1,
+                                       GStreak1, GHighTags1);
+                        Graffiti_Stats(GSkater[1], 0x11e, 0x56, 0x80, 0x20, 0x20, GWins2, GLosses2,
+                                       GStreak2, GHighTags2);
+                        break;
+                    case 7:
+                        NextHorseMode = GHorseMode;
+                        NextHorsePlayer = GHorsePlayer;
+                        NextHorseScore = GHorseScore;
+                        NextHorseRestart = GHorseRestart;
+                        NextHorseLetters[0] = GHorseLetters[0];
+                        NextHorseLetters[1] = GHorseLetters[1];
 
-                    if (GHorseMode == 0)
-                    {
-                        GHorseScore = GSkater[0]->mPanelData.mLandedTotal;
-                        if (GHorseScore)
                         {
-                            sprintf(Score,
-                                    Front_GrafScoreSetFormat,
-                                    GHorseScore);
-                            Mess_DrawText(0x100, 0x50, Score,
-                                          0, 0, 0x100, 0);
-                            NextHorseMode ^= 1;
-                            NextHorsePlayer ^= 1;
-                        }
-                        else
-                        {
-                            Mess_DrawText(
-                                0x100, 0x50,
-                                Front_NoScoreSwitchText(),
-                                0, 0, 0x100, 0);
-                            NextHorsePlayer = NextHorsePlayerAlias ^ 1;
-                        }
-                    }
-                    else
-                    {
-                        sprintf(Score, Front_GrafGoingForFormat,
-                                GHorseScore);
-                        Mess_DrawText(0x100, 0x50, Score,
-                                      0, 0, 0x100, 0);
-
-                        sprintf(Score, Front_GrafYouScoredFormat,
-                                GSkater[0]->mPanelData.mLandedTotal);
-                        Mess_DrawText(0x100, 0x68, Score,
-                                      0, 0, 0x100, 0);
-
-                        if (GSkater[0]->mPanelData.mLandedTotal ==
-                            static_cast<unsigned int>(GHorseScore))
-                        {
-                            Mess_DrawText(0x100, 0x80,
-                                          FrontAddressViewOwners::GrafFmt + 0xc8,
-                                          0, 0, 0x100, 0);
-                            NextHorsePlayer ^= 1;
-                        }
-                        else if (GSkater[0]->mPanelData.mLandedTotal <
-                                 static_cast<unsigned int>(GHorseScore))
-                        {
-                            NextHorseLetters[GHorsePlayer]++;
-                            if (NextHorseLetters[GHorsePlayer] ==
-                                reinterpret_cast<SCareerOwner *>(&GCareer)->Options.HorseLen)
+                            Line = 0;
+                            if (GHorsePlayer == 0)
                             {
-                                char YouAre[40];
-                                char firstLetter =
-                                    reinterpret_cast<SCareerOwner *>(&GCareer)->Options.HorseWord[0];
-                                if ((firstLetter == 'A') ||
-                                    (firstLetter == 'E') ||
-                                    (firstLetter == 'I') ||
-                                    (firstLetter == 'O') ||
-                                    (firstLetter == 'U'))
-                                {
-                                    sprintf(YouAre,
-                                            Front_GrafYouAreAn);
-                                }
-                                else
-                                {
-                                    sprintf(YouAre,
-                                            Front_GrafYouAreA);
-                                }
-
-                                if (GHorseContinue == 0)
-                                {
-                                    GHorseScale += 0x20;
-                                    if (GHorseScale > 0x200)
-                                    {
-                                        Mess_SetRGB(0xff, 0x30, 0x30, 0);
-                                        GHorseScale = 0x200;
-                                    }
-
-                                    Mess_SetScale(GHorseScale);
-                                    Mess_DrawText(0x100, 0x98, YouAre,
-                                                  0, 0, 0x100, 0);
-
-                                    Mess_SetScale(
-                                        GHorseScale < 0x201
-                                            ? GHorseScale
-                                            : 0x200);
-                                    Mess_DrawText(
-                                        0x100, 0xbc,
-                                        reinterpret_cast<SCareerOwner *>(&GCareer)->Options.HorseWord,
-                                        0, 0, 0x100, 0);
-                                    GHorseWaitTime = 0x2d;
-                                    Front_PrintCentredPrompt(
-                                        GameText.pContinue);
-                                }
-                                else
-                                {
-                                    if (GHorseSounded == 0)
-                                    {
-                                        SFX_PlayX(0x2a, 0x2000, 0);
-                                        GHorseSounded = 1;
-                                    }
-
-                                    Front_HorseFallingText().update();
-                                    Front_HorseFallingText().bind(
-                                        &GSkater[0]->mPanelData.mTrickFont);
-                                    GSkater[0]->mPanelData.mTrickFont.Scale = 0x2000;
-                                    GSkater[0]->mPanelData.mTrickFont.draw(
-                                            0x100, 0x98, YouAre, 0);
-                                    if (Front_HorseFallingText()
-                                            .handleComplete() == 0)
-                                    {
-                                        GHorseWaitTime = 0x2d;
-                                    }
-                                    Front_HorseFallingText().TextEffect.unbind(
-                                        &GSkater[0]->mPanelData.mTrickFont);
-
-                                    Front_HorseFallingText().bind(
-                                        &GSkater[0]->mPanelData.mTrickFont);
-                                    GSkater[0]->mPanelData.mTrickFont.draw(
-                                            0x100, 0xbc,
-                                            reinterpret_cast<SCareerOwner *>(&GCareer)->Options.HorseWord,
-                                            0);
-                                    Front_HorseFallingText().TextEffect.unbind(
-                                        &GSkater[0]->mPanelData.mTrickFont);
-                                }
-                                NextHorseMode = 2;
+                                Mess_SetRGB(0x50, 0x50, 0x80, 0);
                             }
                             else
                             {
-                                char buf[32];
-                                buf[0] =
-                                    reinterpret_cast<SCareerOwner *>(&GCareer)->Options.HorseWord[
-                                        NextHorseLetters[GHorsePlayer] - 1];
-                                buf[1] = 0;
+                                Mess_SetRGB(0x80, 0x50, 0x50, 0);
+                            }
+                            // FIXME(match): asm barrier — keeps the dead `Line = 0` alive so `move $s2,$0` fills the delay slot (without it flow deletes it, 4 insns off); tried: moving Line = 0, adding real uses (0x50 + Line, Line++) — all deleted.
+                            asm volatile("" : : "r"(Line));
+                        }
 
-                                if (GHorseScale < 0x200)
-                                {
-                                    GHorseScale += 0x20;
-                                    if (GHorseScale > 0x200)
-                                    {
-                                        GHorseScale = 0x200;
-                                    }
-
-                                    Mess_SetScale(
-                                        GHorseScale < 0x181
-                                            ? GHorseScale
-                                            : 0x180);
-                                    Mess_DrawText(
-                                        0x100, 0x98,
-                                        GameText.pYouGetTheLetter,
-                                        0, 0, 0x100, 0);
-
-                                    Mess_SetScale(
-                                        GHorseScale < 0x201
-                                            ? GHorseScale
-                                            : 0x200);
-                                    Mess_DrawText(0x100, 0xbc, buf,
-                                                  0, 0, 0x100, 0);
-                                    GHorseWaitTime = 0x2d;
-                                }
-                                else
-                                {
-                                    if (GHorseSounded == 0)
-                                    {
-                                        SFX_PlayX(0x2a, 0x2000, 0);
-                                        GHorseSounded = 1;
-                                    }
-
-                                    Front_HorseFallingText().update();
-                                    GSkater[0]->mPanelData.mTrickFont.Scale = 0x1800;
-                                    Front_HorseFallingText().bind(
-                                        &GSkater[0]->mPanelData.mTrickFont);
-                                    GSkater[0]->mPanelData.mTrickFont.draw(
-                                            0x100, 0x98,
-                                            GameText.pYouGetTheLetter,
-                                            0);
-                                    if (Front_HorseFallingText()
-                                            .handleComplete() == 0)
-                                    {
-                                        GHorseWaitTime = 0x2d;
-                                    }
-                                    Front_HorseFallingText().TextEffect.unbind(
-                                        &GSkater[0]->mPanelData.mTrickFont);
-
-                                    GSkater[0]->mPanelData.mTrickFont.Scale = 0x2000;
-                                    Front_HorseFallingText().bind(
-                                        &GSkater[0]->mPanelData.mTrickFont);
-                                    GSkater[0]->mPanelData.mTrickFont.draw(
-                                            0x100, 0xbc, buf, 0);
-                                    Front_HorseFallingText().TextEffect.unbind(
-                                        &GSkater[0]->mPanelData.mTrickFont);
-                                }
-
-                                NextHorseRestart++;
-                                if (NextHorseRestart ==
-                                    NumHorseRestarts)
-                                {
-                                    NextHorseRestart = 0;
-                                }
-                                NextHorsePlayer ^= 1;
+                        if (GHorseMode == 0)
+                        {
+                            GHorseScore = GSkater[0]->mPanelData.mLandedTotal;
+                            if (GHorseScore)
+                            {
+                                sprintf(Score, Front_GrafScoreSetFormat, GHorseScore);
+                                Mess_DrawText(0x100, 0x50, Score, 0, 0, 0x100, 0);
                                 NextHorseMode ^= 1;
+                                NextHorsePlayer ^= 1;
+                            }
+                            else
+                            {
+                                Mess_DrawText(0x100, 0x50, Front_NoScoreSwitchText(), 0, 0, 0x100,
+                                              0);
+                                NextHorsePlayer = NextHorsePlayerAlias ^ 1;
                             }
                         }
                         else
                         {
-                            Mess_DrawText(0x100, 0x80,
-                                      FrontAddressViewOwners::GrafFmt + 0xe8,
-                                          0, 0, 0x100, 0);
-                            NextHorseScore =
-                                GSkater[0]->mPanelData.mLandedTotal;
-                            NextHorsePlayer ^= 1;
+                            sprintf(Score, Front_GrafGoingForFormat, GHorseScore);
+                            Mess_DrawText(0x100, 0x50, Score, 0, 0, 0x100, 0);
+
+                            sprintf(Score, Front_GrafYouScoredFormat,
+                                    GSkater[0]->mPanelData.mLandedTotal);
+                            Mess_DrawText(0x100, 0x68, Score, 0, 0, 0x100, 0);
+
+                            if (GSkater[0]->mPanelData.mLandedTotal ==
+                                static_cast<unsigned int>(GHorseScore))
+                            {
+                                Mess_DrawText(0x100, 0x80, FrontAddressViewOwners::GrafFmt + 0xc8,
+                                              0, 0, 0x100, 0);
+                                NextHorsePlayer ^= 1;
+                            }
+                            else if (GSkater[0]->mPanelData.mLandedTotal <
+                                     static_cast<unsigned int>(GHorseScore))
+                            {
+                                NextHorseLetters[GHorsePlayer]++;
+                                if (NextHorseLetters[GHorsePlayer] ==
+                                    reinterpret_cast<SCareerOwner *>(&GCareer)->Options.HorseLen)
+                                {
+                                    char YouAre[40];
+                                    char firstLetter = reinterpret_cast<SCareerOwner *>(&GCareer)
+                                                           ->Options.HorseWord[0];
+                                    if ((firstLetter == 'A') || (firstLetter == 'E') ||
+                                        (firstLetter == 'I') || (firstLetter == 'O') ||
+                                        (firstLetter == 'U'))
+                                    {
+                                        sprintf(YouAre, Front_GrafYouAreAn);
+                                    }
+                                    else
+                                    {
+                                        sprintf(YouAre, Front_GrafYouAreA);
+                                    }
+
+                                    if (GHorseContinue == 0)
+                                    {
+                                        GHorseScale += 0x20;
+                                        if (GHorseScale > 0x200)
+                                        {
+                                            Mess_SetRGB(0xff, 0x30, 0x30, 0);
+                                            GHorseScale = 0x200;
+                                        }
+
+                                        Mess_SetScale(GHorseScale);
+                                        Mess_DrawText(0x100, 0x98, YouAre, 0, 0, 0x100, 0);
+
+                                        Mess_SetScale(GHorseScale < 0x201 ? GHorseScale : 0x200);
+                                        Mess_DrawText(0x100, 0xbc,
+                                                      reinterpret_cast<SCareerOwner *>(&GCareer)
+                                                          ->Options.HorseWord,
+                                                      0, 0, 0x100, 0);
+                                        GHorseWaitTime = 0x2d;
+                                        Front_PrintCentredPrompt(GameText.pContinue);
+                                    }
+                                    else
+                                    {
+                                        if (GHorseSounded == 0)
+                                        {
+                                            SFX_PlayX(0x2a, 0x2000, 0);
+                                            GHorseSounded = 1;
+                                        }
+
+                                        Front_HorseFallingText().update();
+                                        Front_HorseFallingText().bind(
+                                            &GSkater[0]->mPanelData.mTrickFont);
+                                        GSkater[0]->mPanelData.mTrickFont.Scale = 0x2000;
+                                        GSkater[0]->mPanelData.mTrickFont.draw(0x100, 0x98, YouAre,
+                                                                               0);
+                                        if (Front_HorseFallingText().handleComplete() == 0)
+                                        {
+                                            GHorseWaitTime = 0x2d;
+                                        }
+                                        Front_HorseFallingText().TextEffect.unbind(
+                                            &GSkater[0]->mPanelData.mTrickFont);
+
+                                        Front_HorseFallingText().bind(
+                                            &GSkater[0]->mPanelData.mTrickFont);
+                                        GSkater[0]->mPanelData.mTrickFont.draw(
+                                            0x100, 0xbc,
+                                            reinterpret_cast<SCareerOwner *>(&GCareer)
+                                                ->Options.HorseWord,
+                                            0);
+                                        Front_HorseFallingText().TextEffect.unbind(
+                                            &GSkater[0]->mPanelData.mTrickFont);
+                                    }
+                                    NextHorseMode = 2;
+                                }
+                                else
+                                {
+                                    char buf[32];
+                                    buf[0] =
+                                        reinterpret_cast<SCareerOwner *>(&GCareer)
+                                            ->Options.HorseWord[NextHorseLetters[GHorsePlayer] - 1];
+                                    buf[1] = 0;
+
+                                    if (GHorseScale < 0x200)
+                                    {
+                                        GHorseScale += 0x20;
+                                        if (GHorseScale > 0x200)
+                                        {
+                                            GHorseScale = 0x200;
+                                        }
+
+                                        Mess_SetScale(GHorseScale < 0x181 ? GHorseScale : 0x180);
+                                        Mess_DrawText(0x100, 0x98, GameText.pYouGetTheLetter, 0, 0,
+                                                      0x100, 0);
+
+                                        Mess_SetScale(GHorseScale < 0x201 ? GHorseScale : 0x200);
+                                        Mess_DrawText(0x100, 0xbc, buf, 0, 0, 0x100, 0);
+                                        GHorseWaitTime = 0x2d;
+                                    }
+                                    else
+                                    {
+                                        if (GHorseSounded == 0)
+                                        {
+                                            SFX_PlayX(0x2a, 0x2000, 0);
+                                            GHorseSounded = 1;
+                                        }
+
+                                        Front_HorseFallingText().update();
+                                        GSkater[0]->mPanelData.mTrickFont.Scale = 0x1800;
+                                        Front_HorseFallingText().bind(
+                                            &GSkater[0]->mPanelData.mTrickFont);
+                                        GSkater[0]->mPanelData.mTrickFont.draw(
+                                            0x100, 0x98, GameText.pYouGetTheLetter, 0);
+                                        if (Front_HorseFallingText().handleComplete() == 0)
+                                        {
+                                            GHorseWaitTime = 0x2d;
+                                        }
+                                        Front_HorseFallingText().TextEffect.unbind(
+                                            &GSkater[0]->mPanelData.mTrickFont);
+
+                                        GSkater[0]->mPanelData.mTrickFont.Scale = 0x2000;
+                                        Front_HorseFallingText().bind(
+                                            &GSkater[0]->mPanelData.mTrickFont);
+                                        GSkater[0]->mPanelData.mTrickFont.draw(0x100, 0xbc, buf, 0);
+                                        Front_HorseFallingText().TextEffect.unbind(
+                                            &GSkater[0]->mPanelData.mTrickFont);
+                                    }
+
+                                    NextHorseRestart++;
+                                    if (NextHorseRestart == NumHorseRestarts)
+                                    {
+                                        NextHorseRestart = 0;
+                                    }
+                                    NextHorsePlayer ^= 1;
+                                    NextHorseMode ^= 1;
+                                }
+                            }
+                            else
+                            {
+                                Mess_DrawText(0x100, 0x80, FrontAddressViewOwners::GrafFmt + 0xe8,
+                                              0, 0, 0x100, 0);
+                                NextHorseScore = GSkater[0]->mPanelData.mLandedTotal;
+                                NextHorsePlayer ^= 1;
+                            }
                         }
-                    }
 
-                    Horse_DisplayWords(NextHorseLetters);
-                    break;
-                case 0:
-                case 1:
-                case 2:
-                case 3:
-                case 4:
-                case 5:
-                case 6:
-                default:
-                    sprintf(Score1, Front_GrafPlayer1ScoreFormat,
-                            s1);
-                    sprintf(Score2, Front_GrafPlayer2ScoreFormat,
-                            s2);
-                    Mess_DrawText(0x100, 0x4b, Score1,
-                                  0, 0, 0x100, 0);
-                    Mess_DrawText(0x100, 0x63, Score2,
-                                  0, 0, 0x100, 0);
+                        Horse_DisplayWords(NextHorseLetters);
+                        break;
+                    case 0:
+                    case 1:
+                    case 2:
+                    case 3:
+                    case 4:
+                    case 5:
+                    case 6:
+                    default:
+                        sprintf(Score1, Front_GrafPlayer1ScoreFormat, s1);
+                        sprintf(Score2, Front_GrafPlayer2ScoreFormat, s2);
+                        Mess_DrawText(0x100, 0x4b, Score1, 0, 0, 0x100, 0);
+                        Mess_DrawText(0x100, 0x63, Score2, 0, 0, 0x100, 0);
 
-                    if (s1 > s2)
-                    {
-                        Mess_DrawText(0x100, 0x7b,
-                                      Front_GrafPlayer1Wins,
-                                      0, 0, 0x100, 0);
-                    }
-                    else if (s2 > s1)
-                    {
-                        Mess_DrawText(0x100, 0x7b,
-                                      Front_GrafPlayer2Wins,
-                                      0, 0, 0x100, 0);
-                    }
-                    else
-                    {
-                        Mess_DrawText(0x100, 0x7b,
-                                      FrontAddressViewOwners::GrafFmt + 0x110,
-                                      0, 0, 0x100, 0);
-                    }
-                    break;
+                        if (s1 > s2)
+                        {
+                            Mess_DrawText(0x100, 0x7b, Front_GrafPlayer1Wins, 0, 0, 0x100, 0);
+                        }
+                        else if (s2 > s1)
+                        {
+                            Mess_DrawText(0x100, 0x7b, Front_GrafPlayer2Wins, 0, 0, 0x100, 0);
+                        }
+                        else
+                        {
+                            Mess_DrawText(0x100, 0x7b, FrontAddressViewOwners::GrafFmt + 0x110, 0,
+                                          0, 0x100, 0);
+                        }
+                        break;
                 }
             }
 
@@ -3143,71 +3132,61 @@ void Front_Display(void)
             }
         }
         break;
-    case STATUS_SAVEGAME:
-        Mess_SetRGB(0x96, 0x64, 0x19, 0);
-        Mess_DrawText(0x100, 0x67, GameText.pSave, 0, 0, 0x100, 0);
-        pYesNoMenu->mY = 0x8f;
-        pYesNoMenu->Display();
-        Front_PrintCentredPrompt(GameText.pToSelect);
-        break;
-    case STATUS_ENDHEATMENU:
-        if (Front_OnTime >= 0xb)
-        {
-            pEHMenu->Display();
+        case STATUS_SAVEGAME:
+            Mess_SetRGB(0x96, 0x64, 0x19, 0);
+            Mess_DrawText(0x100, 0x67, GameText.pSave, 0, 0, 0x100, 0);
+            pYesNoMenu->mY = 0x8f;
+            pYesNoMenu->Display();
             Front_PrintCentredPrompt(GameText.pToSelect);
-        }
-        break;
-    case STATUS_ENDHEATVIDEOMENU:
-        if (Front_OnTime >= 0xb)
-        {
-            if (GNumberOfPlayers == 2)
+            break;
+        case STATUS_ENDHEATMENU:
+            if (Front_OnTime >= 0xb)
             {
-                pVS3Menu->EntryOff(GameText.pHighlights);
+                pEHMenu->Display();
+                Front_PrintCentredPrompt(GameText.pToSelect);
             }
-            else
+            break;
+        case STATUS_ENDHEATVIDEOMENU:
+            if (Front_OnTime >= 0xb)
             {
-                pVS3Menu->EntryOn(GameText.pHighlights);
+                if (GNumberOfPlayers == 2)
+                {
+                    pVS3Menu->EntryOff(GameText.pHighlights);
+                }
+                else
+                {
+                    pVS3Menu->EntryOn(GameText.pHighlights);
+                }
+                pVS3Menu->CentreY();
+                pVS3Menu->Display();
+                Front_PrintGoBackSelect();
             }
-            pVS3Menu->CentreY();
-            pVS3Menu->Display();
-            Front_PrintGoBackSelect();
-        }
-        break;
-    case STATUS_ENDGAME:
-        Competition_EndGameDisplay();
-        break;
-    case STATUS_ENDHEATWINLOSE:
-    case STATUS_MPC_WINNER:
-        Competition_WinLoseDisplay();
-        break;
-    case STATUS_ENDHEATLADDER:
-    case STATUS_MPC_LADDER:
-    case STATUS_MPC_LADDERFINAL:
-        Competition_LadderDisplay();
-        break;
-    case STATUS_ENDHEATREPLAY:
-    case STATUS_MPC_JUDGES:
-        Competition_JudgeDisplay();
-        break;
-    case STATUS_ENDHEAT:
-    case STATUS_ENDHEATJUDGES:
-    case STATUS_BEGINHEAT:
-    case STATUS_MPC_BEGIN:
-    case STATUS_MPC_BEGINHEAT:
-    case STATUS_MPC_SWITCH:
-    case STATUS_MPC_ENDHEAT:
-    case STATUS_ENDGAMEALLGOLD:
-    case STATUS_ENDGAMEPLAYERMOVIE:
-    case STATUS_ENDGAMEBAILMOVIE:
-    case STATUS_ENDGAMESAVE:
-    case STATUS_ENDGAMECREDITS:
-        break;
-    case STATUS_SETSOUNDLEVELS:
-        pSoundMenu->Display();
-        Front_PrintCentredPrompt(GameText.pToSelect);
-        break;
-    default:
-        break;
+            break;
+        case STATUS_ENDGAME: Competition_EndGameDisplay(); break;
+        case STATUS_ENDHEATWINLOSE:
+        case STATUS_MPC_WINNER: Competition_WinLoseDisplay(); break;
+        case STATUS_ENDHEATLADDER:
+        case STATUS_MPC_LADDER:
+        case STATUS_MPC_LADDERFINAL: Competition_LadderDisplay(); break;
+        case STATUS_ENDHEATREPLAY:
+        case STATUS_MPC_JUDGES: Competition_JudgeDisplay(); break;
+        case STATUS_ENDHEAT:
+        case STATUS_ENDHEATJUDGES:
+        case STATUS_BEGINHEAT:
+        case STATUS_MPC_BEGIN:
+        case STATUS_MPC_BEGINHEAT:
+        case STATUS_MPC_SWITCH:
+        case STATUS_MPC_ENDHEAT:
+        case STATUS_ENDGAMEALLGOLD:
+        case STATUS_ENDGAMEPLAYERMOVIE:
+        case STATUS_ENDGAMEBAILMOVIE:
+        case STATUS_ENDGAMESAVE:
+        case STATUS_ENDGAMECREDITS: break;
+        case STATUS_SETSOUNDLEVELS:
+            pSoundMenu->Display();
+            Front_PrintCentredPrompt(GameText.pToSelect);
+            break;
+        default: break;
     }
 
     return;
@@ -3227,130 +3206,126 @@ void Front_Display(void)
  */
 void Front_GetButtons(int &Activated, int &GoBack, int &AnyButton, int &Start)
 {
-    if (Cheat_ScreenShots == 0)
-        goto check_back;
-    if (GameFrozen != 0)
-        goto frozen;
+    if (Cheat_ScreenShots == 0) goto check_back;
+    if (GameFrozen != 0) goto frozen;
 
 check_back:
-{
-    // Folding this result into Start changes sixteen instructions and one
-    // relocation, so retain the target's separately live boolean value.
-    int back = 0;
-    if (Pad[0].Start.Triggered != 0 || Pad[1].Start.Triggered != 0)
     {
-        back = 1;
+        // Folding this result into Start changes sixteen instructions and one
+        // relocation, so retain the target's separately live boolean value.
+        int back = 0;
+        if (Pad[0].Start.Triggered != 0 || Pad[1].Start.Triggered != 0)
+        {
+            back = 1;
+        }
+        Start = back;
+        // Directly spelling the two trigger loads at their stores changes 142
+        // instructions and three relocations across this heavily scheduled block.
+        int s1 = Pad[0].Start.Triggered;
+        GStart1 = s1;
+        if (s1 == 0)
+        {
+            int s2 = Pad[1].Start.Triggered;
+            GStart2 = s2;
+        }
+        else
+        {
+            GStart2 = 0;
+        }
+        Pad[0].Start.Triggered = 0;
+        Pad[1].Start.Triggered = 0;
+        goto check_up;
     }
-    Start = back;
-    // Directly spelling the two trigger loads at their stores changes 142
-    // instructions and three relocations across this heavily scheduled block.
-    int s1 = Pad[0].Start.Triggered;
-    GStart1 = s1;
-    if (s1 == 0)
-    {
-        int s2 = Pad[1].Start.Triggered;
-        GStart2 = s2;
-    }
-    else
-    {
-        GStart2 = 0;
-    }
-    Pad[0].Start.Triggered = 0;
-    Pad[1].Start.Triggered = 0;
-    goto check_up;
-}
 
 frozen:
     Start = 0;
 
 check_up:
-{
-    Activated = Pad[0].X.Triggered != 0 ||
-                Pad[1].X.Triggered != 0 || Start != 0;
-    Pad[0].X.Triggered = 0;
-    Pad[1].X.Triggered = 0;
-    GoBack = Pad[0].Triangle.Triggered != 0 ||
-             Pad[1].Triangle.Triggered != 0;
-    Pad[0].Triangle.Triggered = 0;
-    Pad[1].Triangle.Triggered = 0;
-    AnyButton = GoBack | Activated;
+    {
+        Activated = Pad[0].X.Triggered != 0 || Pad[1].X.Triggered != 0 || Start != 0;
+        Pad[0].X.Triggered = 0;
+        Pad[1].X.Triggered = 0;
+        GoBack = Pad[0].Triangle.Triggered != 0 || Pad[1].Triangle.Triggered != 0;
+        Pad[0].Triangle.Triggered = 0;
+        Pad[1].Triangle.Triggered = 0;
+        AnyButton = GoBack | Activated;
 
-    if (Pad[0].Square.Triggered != 0)
-    {
-        Pad[0].Square.Triggered = 0;
-        AnyButton = 1;
-    }
-    if (Pad[0].Circle.Triggered != 0)
-    {
-        Pad[0].Circle.Triggered = 0;
-        AnyButton = 1;
-    }
-    if (Pad[0].Select.Triggered != 0)
-    {
-        Pad[0].Select.Triggered = 0;
-        AnyButton = 1;
-    }
-    if (Pad[0].LeftOne.Triggered != 0)
-    {
-        Pad[0].LeftOne.Triggered = 0;
-        AnyButton = 1;
-    }
-    if (Pad[0].LeftTwo.Triggered != 0)
-    {
-        Pad[0].LeftTwo.Triggered = 0;
-        AnyButton = 1;
-    }
-    if (Pad[0].RightOne.Triggered != 0)
-    {
-        Pad[0].RightOne.Triggered = 0;
-        AnyButton = 1;
-    }
-    if (Pad[0].RightTwo.Triggered != 0)
-    {
-        Pad[0].RightTwo.Triggered = 0;
-        AnyButton = 1;
-    }
-    if (Pad[1].Square.Triggered != 0)
-    {
-        Pad[1].Square.Triggered = 0;
-        AnyButton = 1;
-    }
-    if (Pad[1].Circle.Triggered != 0)
-    {
-        Pad[1].Circle.Triggered = 0;
-        AnyButton = 1;
-    }
-    if (Pad[1].Select.Triggered != 0)
-    {
-        Pad[1].Select.Triggered = 0;
-        AnyButton = 1;
-    }
-    if (Pad[1].LeftOne.Triggered != 0)
-    {
-        Pad[1].LeftOne.Triggered = 0;
-        AnyButton = 1;
-    }
-    if (Pad[1].LeftTwo.Triggered != 0)
-    {
-        Pad[1].LeftTwo.Triggered = 0;
-        AnyButton = 1;
-    }
-    if (Pad[1].RightOne.Triggered != 0)
-    {
-        Pad[1].RightOne.Triggered = 0;
-        AnyButton = 1;
-    }
-    if (Pad[1].RightTwo.Triggered != 0)
-    {
-        Pad[1].RightTwo.Triggered = 0;
-        AnyButton = 1;
-    }
+        if (Pad[0].Square.Triggered != 0)
+        {
+            Pad[0].Square.Triggered = 0;
+            AnyButton = 1;
+        }
+        if (Pad[0].Circle.Triggered != 0)
+        {
+            Pad[0].Circle.Triggered = 0;
+            AnyButton = 1;
+        }
+        if (Pad[0].Select.Triggered != 0)
+        {
+            Pad[0].Select.Triggered = 0;
+            AnyButton = 1;
+        }
+        if (Pad[0].LeftOne.Triggered != 0)
+        {
+            Pad[0].LeftOne.Triggered = 0;
+            AnyButton = 1;
+        }
+        if (Pad[0].LeftTwo.Triggered != 0)
+        {
+            Pad[0].LeftTwo.Triggered = 0;
+            AnyButton = 1;
+        }
+        if (Pad[0].RightOne.Triggered != 0)
+        {
+            Pad[0].RightOne.Triggered = 0;
+            AnyButton = 1;
+        }
+        if (Pad[0].RightTwo.Triggered != 0)
+        {
+            Pad[0].RightTwo.Triggered = 0;
+            AnyButton = 1;
+        }
+        if (Pad[1].Square.Triggered != 0)
+        {
+            Pad[1].Square.Triggered = 0;
+            AnyButton = 1;
+        }
+        if (Pad[1].Circle.Triggered != 0)
+        {
+            Pad[1].Circle.Triggered = 0;
+            AnyButton = 1;
+        }
+        if (Pad[1].Select.Triggered != 0)
+        {
+            Pad[1].Select.Triggered = 0;
+            AnyButton = 1;
+        }
+        if (Pad[1].LeftOne.Triggered != 0)
+        {
+            Pad[1].LeftOne.Triggered = 0;
+            AnyButton = 1;
+        }
+        if (Pad[1].LeftTwo.Triggered != 0)
+        {
+            Pad[1].LeftTwo.Triggered = 0;
+            AnyButton = 1;
+        }
+        if (Pad[1].RightOne.Triggered != 0)
+        {
+            Pad[1].RightOne.Triggered = 0;
+            AnyButton = 1;
+        }
+        if (Pad[1].RightTwo.Triggered != 0)
+        {
+            Pad[1].RightTwo.Triggered = 0;
+            AnyButton = 1;
+        }
 
-    if (Activated != 0)
-    {
-        GoBack = 0;
+        if (Activated != 0)
+        {
+            GoBack = 0;
+        }
     }
-}
 }
 
 /**
@@ -3366,8 +3341,7 @@ static void CommonSwitchOnMenuCode(void)
     Pad_ClearTriggers(&Pad[0]);
     Pad_ClearTriggers(&Pad[1]);
     GamePaused = 1;
-    int idx = pYesNoMenu->FindEntry(
-        reinterpret_cast<const char *>(GameText.pNo));
+    int idx = pYesNoMenu->FindEntry(reinterpret_cast<const char *>(GameText.pNo));
     pYesNoMenu->SetLine(idx & 0xff);
     Mess_DeleteAll();
     Pad_ActuatorOff(0, 0);
@@ -3391,8 +3365,7 @@ void Front_SwitchOnEndHeat(void)
     JudgeTimer = 0;
     LadderTimer = 0;
     WinLoseTimer = 0;
-    CBruce *pSkater2 =
-        reinterpret_cast<CBruce *>(pSkater->CSuper.CBody.mNextItem);
+    CBruce *pSkater2 = reinterpret_cast<CBruce *>(pSkater->CSuper.CBody.mNextItem);
     if (GVInfo1.VideoMode != 0)
     {
         Video_Stop(pSkater);
@@ -3408,8 +3381,7 @@ void Front_SwitchOnEndHeat(void)
     Pad_ClearTriggers(&Pad[0]);
     Pad_ClearTriggers(&Pad[1]);
     GamePaused = 1;
-    int idx = pYesNoMenu->FindEntry(
-        reinterpret_cast<const char *>(GameText.pNo));
+    int idx = pYesNoMenu->FindEntry(reinterpret_cast<const char *>(GameText.pNo));
     pYesNoMenu->SetLine(idx & 0xff);
     Mess_DeleteAll();
     Pad_ActuatorOff(0, 0);
@@ -3435,21 +3407,17 @@ void Front_SwitchOnEndLevelMenu(void)
         u8 reserved[3];
         u8 Region;
     };
-    unsigned int palFlag =
-        reinterpret_cast<HardwareRegion *>(0x1F000000)->Region ==
-        0x1F;
+    unsigned int palFlag = reinterpret_cast<HardwareRegion *>(0x1F000000)->Region == 0x1F;
 
     GState = 0;
 
     printf(FrontAddressViewOwners::_restart_comp_string - 0xC, palFlag);
-    CheckSum_Encode(GSkater[0]->mPanelData.mTotalScore,
-                    static_cast<u8>(Rnd(0xff) + 1), palFlag);
+    CheckSum_Encode(GSkater[0]->mPanelData.mTotalScore, static_cast<u8>(Rnd(0xff) + 1), palFlag);
 
     if (Status != STATUS_GOTTAPE && Status != STATUS_STATS)
     {
         CBruce *pSkater = reinterpret_cast<CBruce *>(MechList);
-        CBruce *pSkater2 =
-            reinterpret_cast<CBruce *>(pSkater->CSuper.CBody.mNextItem);
+        CBruce *pSkater2 = reinterpret_cast<CBruce *>(pSkater->CSuper.CBody.mNextItem);
 
         if (GVInfo1.VideoMode != 0)
         {
@@ -3491,17 +3459,28 @@ void Front_SwitchOnEndLevelMenu(void)
                     Level = GLevel;
                 }
 
-                if ((u32)reinterpret_cast<SCareerOwner *>(&GCareer)->HighScore[Level][i].Score <= (u32)score)
+                if ((u32) reinterpret_cast<SCareerOwner *>(&GCareer)->HighScore[Level][i].Score <=
+                    (u32)score)
                 {
                     if (i < 7)
                     {
                         for (int j = 7; i < j; j--)
                         {
-                            reinterpret_cast<SCareerOwner *>(&GCareer)->HighScore[Level][j].Score = reinterpret_cast<SCareerOwner *>(&GCareer)->HighScore[Level][j - 1].Score;
-                            reinterpret_cast<SCareerOwner *>(&GCareer)->HighScore[Level][j].Skater = reinterpret_cast<SCareerOwner *>(&GCareer)->HighScore[Level][j - 1].Skater;
-                            char *dst = reinterpret_cast<SCareerOwner *>(&GCareer)->HighScore[Level][j].Name;
+                            reinterpret_cast<SCareerOwner *>(&GCareer)->HighScore[Level][j].Score =
+                                reinterpret_cast<SCareerOwner *>(&GCareer)
+                                    ->HighScore[Level][j - 1]
+                                    .Score;
+                            reinterpret_cast<SCareerOwner *>(&GCareer)->HighScore[Level][j].Skater =
+                                reinterpret_cast<SCareerOwner *>(&GCareer)
+                                    ->HighScore[Level][j - 1]
+                                    .Skater;
+                            char *dst = reinterpret_cast<SCareerOwner *>(&GCareer)
+                                            ->HighScore[Level][j]
+                                            .Name;
                             int k = 3;
-                            char *src = reinterpret_cast<SCareerOwner *>(&GCareer)->HighScore[Level][j - 1].Name;
+                            char *src = reinterpret_cast<SCareerOwner *>(&GCareer)
+                                            ->HighScore[Level][j - 1]
+                                            .Name;
                             for (; k != -1; k--)
                             {
                                 *dst = *src;
@@ -3513,9 +3492,10 @@ void Front_SwitchOnEndLevelMenu(void)
                     reinterpret_cast<SCareerOwner *>(&GCareer)->HighScore[Level][i].Score =
                         pSkater->mPanelData.mTotalScore;
                     reinterpret_cast<SCareerOwner *>(&GCareer)->HighScore[Level][i].Skater =
-                        *reinterpret_cast<unsigned char *>(
-                            &GSkater[0]->mSkaterType);
-                    sprintf(reinterpret_cast<SCareerOwner *>(&GCareer)->HighScore[Level][i].Name, reinterpret_cast<SCareerOwner *>(&GCareer)->Options.LastHighScoreInitials);
+                        *reinterpret_cast<unsigned char *>(&GSkater[0]->mSkaterType);
+                    sprintf(
+                        reinterpret_cast<SCareerOwner *>(&GCareer)->HighScore[Level][i].Name,
+                        reinterpret_cast<SCareerOwner *>(&GCareer)->Options.LastHighScoreInitials);
                     GHighScoreLineIndex = i;
                     i = 8;
                 }
@@ -3534,7 +3514,6 @@ void Front_SwitchOnEndLevelMenu(void)
         CommonSwitchOnMenuCode();
         InitStatsSwisch();
     }
-
 }
 
 /**
@@ -3578,16 +3557,14 @@ void Front_PrintHorseLetters(void)
 void Front_SwitchOnVideoScreen(void)
 {
     EPausedStatus VideoScreenMode;
-    if (GVideoRestart.NumSkaters == 0 &&
-        Levels[GLevel].isCompetition != 0 && GGame == 1 &&
+    if (GVideoRestart.NumSkaters == 0 && Levels[GLevel].isCompetition != 0 && GGame == 1 &&
         Competition_IsOver() == 0)
     {
         VideoScreenMode = STATUS_ENDHEATVIDEOMENU;
     }
     else
     {
-        VideoScreenMode = GVideoRestart.NumSkaters == 0
-            ? STATUS_VIDEOSCREEN : STATUS_VIDEOSCREEN2;
+        VideoScreenMode = GVideoRestart.NumSkaters == 0 ? STATUS_VIDEOSCREEN : STATUS_VIDEOSCREEN2;
     }
     Status = VideoScreenMode;
     CommonSwitchOnMenuCode();
@@ -3640,18 +3617,15 @@ void Front_Update(void)
     }
 
     // Both pads participate in the start/select soft-reset chord.
-    if (((GSoftResetEnabled != 0) && (Pad[0].Select.Pressed != 0) &&
-         (Pad[0].Start.Pressed != 0)) ||
+    if (((GSoftResetEnabled != 0) && (Pad[0].Select.Pressed != 0) && (Pad[0].Start.Pressed != 0)) ||
         ((Pad[1].Select.Pressed != 0) && (Pad[1].Start.Pressed != 0)))
     {
         if (StartSelectPressed == 0)
         {
             StartSelectPressed = 1;
-            VblanksWhenStartSelectFirstPressed =
-                Vblanks;
+            VblanksWhenStartSelectFirstPressed = Vblanks;
         }
-        if ((Vblanks -
-             VblanksWhenStartSelectFirstPressed) >= 0x79u)
+        if ((Vblanks - VblanksWhenStartSelectFirstPressed) >= 0x79u)
         {
             StartSelectPressed = 0;
             EndCode = ENDCODE_PLAYERQUIT;
@@ -3667,337 +3641,344 @@ void Front_Update(void)
     GSoftResetEnabled = 1;
     switch (Status)
     {
-    case STATUS_MEMCARDMENUS:
-    {
-        Status = Front_MemCardUpdate();
-        break;
-    }
-
-    case STATUS_NORMAL:
-    {
+        case STATUS_MEMCARDMENUS:
         {
-            CBruce *pSkater = reinterpret_cast<CBruce *>(MechList);
-            CBruce *pSkater2 =
-                reinterpret_cast<CBruce *>(pSkater->CSuper.CBody.mNextItem);
-            SVideoInfo *VInfo = &GVInfo1;
-            if (VInfo->VideoMode == 2 && Activated != 0)
-            {
-                VInfo->PlaybackFrozen = 0;
-                GameFrozen = 0;
-                Video_Stop(pSkater);
-                if (pSkater2 != 0)
-                {
-                    Video_Stop(pSkater2);
-                }
-                Front_SwitchOnVideoScreen();
-                break;
-            }
-        }
-        if ((((Start != 0) || (Pad[0].Type == 0)) ||
-             ((GNumberOfPlayers == 2) && (Pad[1].Type == 0))) &&
-            (DemoTimer != 0) && (GState != 1))
-        {
-            {
-                CBruce *pSkater = GSkater[0];
-                pSkater->mJumpInhibit = XFrames;
-                GamePaused = 1;
-                CBruce *pSkater2 = GSkater[1];
-                if (pSkater2 != 0)
-                {
-                    pSkater2->mJumpInhibit = XFrames;
-                }
-            }
-            {
-                CBruce *pSkater = GSkater[0];
-                pSkater->mRailInhibit = XFrames;
-                CBruce *pSkater2 = GSkater[1];
-                if (pSkater2 != 0)
-                {
-                    pSkater2->mRailInhibit = XFrames;
-                }
-            }
-            Mess_DeleteAll();
-            Pad_ClearTriggers(Pad);
-            Pad_ClearTriggers(&Pad[1]);
-            WobbleAmplitude = 0;
-            SFX_Pause();
-            SFX_PlayX(2, 0x1000, 0);
-            Pad_ActuatorOff(0, 0);
-            Pad_ActuatorOff(0, 1);
-
-            pPausedMenu = new CMenu(0x100, 0, 0, 0x14f, 0x100, 0x16);
-
-            pPausedMenu->AddEntry(GameText.pContinue);
-            pPausedMenu->AddEntry(
-                ((Levels[GLevel].isCompetition != 0) && (GGame == 1))
-                    ? GameText.pRestart
-                    : GameText.pRetry);
-            pPausedMenu->AddEntry(GameText.pSkipToRestart);
-            if (Cheat_RestartSkip == 0)
-            {
-                pPausedMenu->EntryOff(GameText.pSkipToRestart);
-            }
-            pPausedMenu->AddEntry(GameText.pChangeSoundLevels);
-            if (GGame == 7)
-            {
-                pPausedMenu->AddEntry(GameText.pEndGame);
-            }
-            else
-            {
-                pPausedMenu->AddEntry(GameText.pEndRun);
-            }
-            pPausedMenu->CentreY();
-            pPausedMenu->mY += 0xd;
-
-            if ((Pad[0].Type != 0) &&
-                ((GNumberOfPlayers == 1) || (Pad[1].Type != 0)))
-            {
-                Status = STATUS_PAUSEDMENU;
-                if ((GStart1 != 0) && (GStart2 != 0))
-                {
-                    GClear1 = 0;
-                    GClear2 = 0;
-                }
-                else if (GGame != 7)
-                {
-                    GClear1 = GStart2;
-                    GClear2 = GStart1;
-                }
-            }
-            else
-            {
-                Status = STATUS_PADUNPLUGGED;
-            }
-        }
-        break;
-    }
-
-    case STATUS_PAUSEDMENU:
-    {
-        if (GamePaused == 0)
-        {
-            SwitchOffPauseMode = 1;
-        }
-        if ((Pad[0].Type == 0) || ((GNumberOfPlayers == 2) && (Pad[1].Type == 0)))
-        {
-            Status = STATUS_PADUNPLUGGED;
-        }
-        if (Pad[0].LeftOne.Pressed != 0)
-        {
-            if (Shell_DoCheatProcessing() != 0)
-            {
-                WobbleAmplitude = 0x20;
-                WobbleT = 0;
-            }
-            Pad_ClearTriggers(Pad);
-            Pad_ClearTriggers(&Pad[1]);
+            Status = Front_MemCardUpdate();
             break;
         }
 
-        CheatCheck = 0;
-        if (Cheat_RestartSkip != 0)
+        case STATUS_NORMAL:
         {
-            pPausedMenu->EntryOn(GameText.pSkipToRestart);
-        }
-        else
-        {
-            pPausedMenu->EntryOff(GameText.pSkipToRestart);
-        }
-
-        pPausedMenu->Update();
-        if (Activated != 0)
-        {
-            LocalText *menuText = &GameText;
-            if (pPausedMenu->ChoiceIs(menuText->pEndRun) != 0)
             {
-                SoundEffect = 5;
-                Game_Over();
-                SwitchOffPauseMode = 1;
-                GState = 1;
-                GSpin = 1;
-            }
-            if (pPausedMenu->ChoiceIs(menuText->pContinue) != 0)
-            {
-                SoundEffect = 5;
-                SwitchOffPauseMode = 1;
-            }
-
-            if (pPausedMenu->ChoiceIs(
-                    ((Levels[GLevel].isCompetition != 0) && (GGame == 1))
-                        ? menuText->pRestart
-                        : GameText.pRetry) != 0)
-            {
-                SwitchOffPauseMode = 1;
-                Horse_Reset();
-                EndCode = ENDCODE_TWEAKJUMP;
-                Competition_Init();
-            }
-            menuText = &GameText;
-            if (pPausedMenu->ChoiceIs(menuText->pSkipToRestart) != 0)
-            {
-                SoundEffect = 5;
-                Status = STATUS_SKIPTORESTART;
-            }
-            if (pPausedMenu->ChoiceIs(menuText->pQuit) != 0)
-            {
-                SoundEffect = 5;
-                pYesNoMenu->SetLine(pYesNoMenu->FindEntry(menuText->pNo));
-                Status = STATUS_REALLYQUIT;
-            }
-            if (pPausedMenu->ChoiceIs(menuText->pChangeSoundLevels) != 0)
-            {
-                Status = STATUS_SETSOUNDLEVELS;
-                SoundEffect = 5;
-                Redbook_XARemember(Front_PausedSongPosition());
-            }
-            if (pPausedMenu->ChoiceIs(menuText->pEndGame) != 0)
-            {
-                SoundEffect = 5;
-                Front_OnTime = 0;
-                GHorseClearInput2 = 0;
-                Status = STATUS_ENDINGSCREEN;
-            }
-        }
-        if (GoBack != 0)
-        {
-            SoundEffect = 5;
-            SwitchOffPauseMode = 1;
-        }
-        SFX_PlayX(SoundEffect, 0x1000, 0);
-        break;
-    }
-
-    case STATUS_SKIPTORESTART:
-    {
-        if (pRestartsMenu == 0)
-        {
-            pRestartsMenu = new CMenu(0x100, 0, 0, 0x14f, 0x100, 0x16);
-            pRestartsMenu->mLineSep = 0x12;
-
-            int i = 0;
-            if (i < NumCheatRestarts)
-            {
-                do
+                CBruce *pSkater = reinterpret_cast<CBruce *>(MechList);
+                CBruce *pSkater2 = reinterpret_cast<CBruce *>(pSkater->CSuper.CBody.mNextItem);
+                SVideoInfo *VInfo = &GVInfo1;
+                if (VInfo->VideoMode == 2 && Activated != 0)
                 {
-                    char head[4];
-                    head[0] = CheatRestarts[i][0];
-                    head[1] = CheatRestarts[i][1];
-                    head[2] = CheatRestarts[i][2];
-                    head[3] = 0;
-                    if (Utils_CompareStrings(
-                            head,
-                            FrontAddressViewOwners::_restart_comp_string + 0x18,
-                            0xffffffff) == 0)
+                    VInfo->PlaybackFrozen = 0;
+                    GameFrozen = 0;
+                    Video_Stop(pSkater);
+                    if (pSkater2 != 0)
                     {
-                        pRestartsMenu->AddEntry(CheatRestarts[i]);
+                        Video_Stop(pSkater2);
                     }
-                    i++;
-                } while (i < NumCheatRestarts);
+                    Front_SwitchOnVideoScreen();
+                    break;
+                }
             }
-            pRestartsMenu->CentreY();
+            if ((((Start != 0) || (Pad[0].Type == 0)) ||
+                 ((GNumberOfPlayers == 2) && (Pad[1].Type == 0))) &&
+                (DemoTimer != 0) && (GState != 1))
+            {
+                {
+                    CBruce *pSkater = GSkater[0];
+                    pSkater->mJumpInhibit = XFrames;
+                    GamePaused = 1;
+                    CBruce *pSkater2 = GSkater[1];
+                    if (pSkater2 != 0)
+                    {
+                        pSkater2->mJumpInhibit = XFrames;
+                    }
+                }
+                {
+                    CBruce *pSkater = GSkater[0];
+                    pSkater->mRailInhibit = XFrames;
+                    CBruce *pSkater2 = GSkater[1];
+                    if (pSkater2 != 0)
+                    {
+                        pSkater2->mRailInhibit = XFrames;
+                    }
+                }
+                Mess_DeleteAll();
+                Pad_ClearTriggers(Pad);
+                Pad_ClearTriggers(&Pad[1]);
+                WobbleAmplitude = 0;
+                SFX_Pause();
+                SFX_PlayX(2, 0x1000, 0);
+                Pad_ActuatorOff(0, 0);
+                Pad_ActuatorOff(0, 1);
+
+                pPausedMenu = new CMenu(0x100, 0, 0, 0x14f, 0x100, 0x16);
+
+                pPausedMenu->AddEntry(GameText.pContinue);
+                pPausedMenu->AddEntry(((Levels[GLevel].isCompetition != 0) && (GGame == 1))
+                                          ? GameText.pRestart
+                                          : GameText.pRetry);
+                pPausedMenu->AddEntry(GameText.pSkipToRestart);
+                if (Cheat_RestartSkip == 0)
+                {
+                    pPausedMenu->EntryOff(GameText.pSkipToRestart);
+                }
+                pPausedMenu->AddEntry(GameText.pChangeSoundLevels);
+                if (GGame == 7)
+                {
+                    pPausedMenu->AddEntry(GameText.pEndGame);
+                }
+                else
+                {
+                    pPausedMenu->AddEntry(GameText.pEndRun);
+                }
+                pPausedMenu->CentreY();
+                pPausedMenu->mY += 0xd;
+
+                if ((Pad[0].Type != 0) && ((GNumberOfPlayers == 1) || (Pad[1].Type != 0)))
+                {
+                    Status = STATUS_PAUSEDMENU;
+                    if ((GStart1 != 0) && (GStart2 != 0))
+                    {
+                        GClear1 = 0;
+                        GClear2 = 0;
+                    }
+                    else if (GGame != 7)
+                    {
+                        GClear1 = GStart2;
+                        GClear2 = GStart1;
+                    }
+                }
+                else
+                {
+                    Status = STATUS_PADUNPLUGGED;
+                }
+            }
+            break;
         }
 
-        pRestartsMenu->Update();
-        if (Activated != 0)
+        case STATUS_PAUSEDMENU:
         {
-            Trig_SetRestart(
-                pRestartsMenu->mEntry[pRestartsMenu->mLine].pString);
-            if (pRestartsMenu != 0)
+            if (GamePaused == 0)
             {
-                Front_DestroyMenu(pRestartsMenu);
-            }
-            SwitchOffPauseMode = 1;
-            pRestartsMenu = 0;
-            EndCode = ENDCODE_TWEAKJUMP;
-            SFX_PlayX(5, 0x2000, 0);
-        }
-        if (GoBack != 0)
-        {
-            if (pRestartsMenu != 0)
-            {
-                Front_DestroyMenu(pRestartsMenu);
-            }
-            pRestartsMenu = 0;
-            Status = STATUS_PAUSEDMENU;
-            SFX_PlayX(2, 0x2000, 0);
-        }
-        break;
-    }
-
-    case STATUS_REALLYQUIT:
-    {
-        pYesNoMenu->Update();
-        if (Activated != 0)
-        {
-            char *yesText = GameText.pYes;
-            if (pYesNoMenu->ChoiceIs(yesText) != 0)
-            {
-                EndCode = ENDCODE_PLAYERQUIT;
                 SwitchOffPauseMode = 1;
-                Horse_Reset();
-                SFX_PlayX(5, 0x2000, 0);
+            }
+            if ((Pad[0].Type == 0) || ((GNumberOfPlayers == 2) && (Pad[1].Type == 0)))
+            {
+                Status = STATUS_PADUNPLUGGED;
+            }
+            if (Pad[0].LeftOne.Pressed != 0)
+            {
+                if (Shell_DoCheatProcessing() != 0)
+                {
+                    WobbleAmplitude = 0x20;
+                    WobbleT = 0;
+                }
+                Pad_ClearTriggers(Pad);
+                Pad_ClearTriggers(&Pad[1]);
+                break;
+            }
+
+            CheatCheck = 0;
+            if (Cheat_RestartSkip != 0)
+            {
+                pPausedMenu->EntryOn(GameText.pSkipToRestart);
             }
             else
             {
+                pPausedMenu->EntryOff(GameText.pSkipToRestart);
+            }
+
+            pPausedMenu->Update();
+            if (Activated != 0)
+            {
+                LocalText *menuText = &GameText;
+                if (pPausedMenu->ChoiceIs(menuText->pEndRun) != 0)
+                {
+                    SoundEffect = 5;
+                    Game_Over();
+                    SwitchOffPauseMode = 1;
+                    GState = 1;
+                    GSpin = 1;
+                }
+                if (pPausedMenu->ChoiceIs(menuText->pContinue) != 0)
+                {
+                    SoundEffect = 5;
+                    SwitchOffPauseMode = 1;
+                }
+
+                if (pPausedMenu->ChoiceIs(((Levels[GLevel].isCompetition != 0) && (GGame == 1))
+                                              ? menuText->pRestart
+                                              : GameText.pRetry) != 0)
+                {
+                    SwitchOffPauseMode = 1;
+                    Horse_Reset();
+                    EndCode = ENDCODE_TWEAKJUMP;
+                    Competition_Init();
+                }
+                menuText = &GameText;
+                if (pPausedMenu->ChoiceIs(menuText->pSkipToRestart) != 0)
+                {
+                    SoundEffect = 5;
+                    Status = STATUS_SKIPTORESTART;
+                }
+                if (pPausedMenu->ChoiceIs(menuText->pQuit) != 0)
+                {
+                    SoundEffect = 5;
+                    pYesNoMenu->SetLine(pYesNoMenu->FindEntry(menuText->pNo));
+                    Status = STATUS_REALLYQUIT;
+                }
+                if (pPausedMenu->ChoiceIs(menuText->pChangeSoundLevels) != 0)
+                {
+                    Status = STATUS_SETSOUNDLEVELS;
+                    SoundEffect = 5;
+                    Redbook_XARemember(Front_PausedSongPosition());
+                }
+                if (pPausedMenu->ChoiceIs(menuText->pEndGame) != 0)
+                {
+                    SoundEffect = 5;
+                    Front_OnTime = 0;
+                    GHorseClearInput2 = 0;
+                    Status = STATUS_ENDINGSCREEN;
+                }
+            }
+            if (GoBack != 0)
+            {
+                SoundEffect = 5;
+                SwitchOffPauseMode = 1;
+            }
+            SFX_PlayX(SoundEffect, 0x1000, 0);
+            break;
+        }
+
+        case STATUS_SKIPTORESTART:
+        {
+            if (pRestartsMenu == 0)
+            {
+                pRestartsMenu = new CMenu(0x100, 0, 0, 0x14f, 0x100, 0x16);
+                pRestartsMenu->mLineSep = 0x12;
+
+                int i = 0;
+                if (i < NumCheatRestarts)
+                {
+                    do
+                    {
+                        char head[4];
+                        head[0] = CheatRestarts[i][0];
+                        head[1] = CheatRestarts[i][1];
+                        head[2] = CheatRestarts[i][2];
+                        head[3] = 0;
+                        if (Utils_CompareStrings(
+                                head, FrontAddressViewOwners::_restart_comp_string + 0x18,
+                                0xffffffff) == 0)
+                        {
+                            pRestartsMenu->AddEntry(CheatRestarts[i]);
+                        }
+                        i++;
+                    } while (i < NumCheatRestarts);
+                }
+                pRestartsMenu->CentreY();
+            }
+
+            pRestartsMenu->Update();
+            if (Activated != 0)
+            {
+                Trig_SetRestart(pRestartsMenu->mEntry[pRestartsMenu->mLine].pString);
+                if (pRestartsMenu != 0)
+                {
+                    Front_DestroyMenu(pRestartsMenu);
+                }
+                SwitchOffPauseMode = 1;
+                pRestartsMenu = 0;
+                EndCode = ENDCODE_TWEAKJUMP;
+                SFX_PlayX(5, 0x2000, 0);
+            }
+            if (GoBack != 0)
+            {
+                if (pRestartsMenu != 0)
+                {
+                    Front_DestroyMenu(pRestartsMenu);
+                }
+                pRestartsMenu = 0;
                 Status = STATUS_PAUSEDMENU;
                 SFX_PlayX(2, 0x2000, 0);
             }
+            break;
         }
-        if (GoBack != 0)
-        {
-            SFX_PlayX(2, 0x2000, 0);
-            Status = STATUS_PAUSEDMENU;
-        }
-        break;
-    }
 
-    case STATUS_PADUNPLUGGED:
-    {
-        if ((Pad[0].Type != 0) && ((GNumberOfPlayers == 1) || (Pad[1].Type != 0)))
+        case STATUS_REALLYQUIT:
         {
-            Status = STATUS_PAUSEDMENU;
-        }
-        break;
-    }
-
-    case STATUS_QUITSAVE:
-    {
-        pYesNoMenu->Update();
-        if (Activated != 0)
-        {
-            if (pYesNoMenu->ChoiceIs(GameText.pYes) != 0)
+            pYesNoMenu->Update();
+            if (Activated != 0)
             {
-                SFX_PlayX(5, 0x2000, 0);
-                Front_SetSaveAction(SAVE_GAME);
-                Front_InitMemCardMenus(
-                    0x200, SVSTATUS_CHECKINGCARDPAUSE, STATUS_ENDINGSCREEN);
-                Status = STATUS_MEMCARDMENUS;
+                char *yesText = GameText.pYes;
+                if (pYesNoMenu->ChoiceIs(yesText) != 0)
+                {
+                    EndCode = ENDCODE_PLAYERQUIT;
+                    SwitchOffPauseMode = 1;
+                    Horse_Reset();
+                    SFX_PlayX(5, 0x2000, 0);
+                }
+                else
+                {
+                    Status = STATUS_PAUSEDMENU;
+                    SFX_PlayX(2, 0x2000, 0);
+                }
             }
-            else
+            if (GoBack != 0)
             {
-                Status = STATUS_ENDLEVELFADESCREEN;
                 SFX_PlayX(2, 0x2000, 0);
+                Status = STATUS_PAUSEDMENU;
             }
+            break;
         }
-        if (GoBack != 0)
-        {
-            SFX_PlayX(2, 0x2000, 0);
-            Status = STATUS_ENDINGSCREEN;
-        }
-        break;
-    }
 
-    case STATUS_REALLYMAINMENU:
-    {
-        pYesNoMenu->Update();
-        if (Activated != 0)
+        case STATUS_PADUNPLUGGED:
         {
-            if (pYesNoMenu->ChoiceIs(GameText.pYes) != 0)
+            if ((Pad[0].Type != 0) && ((GNumberOfPlayers == 1) || (Pad[1].Type != 0)))
             {
-                Status = STATUS_ENDLEVELFADESCREEN;
-                SFX_PlayX(5, 0x2000, 0);
+                Status = STATUS_PAUSEDMENU;
             }
-            else
+            break;
+        }
+
+        case STATUS_QUITSAVE:
+        {
+            pYesNoMenu->Update();
+            if (Activated != 0)
+            {
+                if (pYesNoMenu->ChoiceIs(GameText.pYes) != 0)
+                {
+                    SFX_PlayX(5, 0x2000, 0);
+                    Front_SetSaveAction(SAVE_GAME);
+                    Front_InitMemCardMenus(0x200, SVSTATUS_CHECKINGCARDPAUSE, STATUS_ENDINGSCREEN);
+                    Status = STATUS_MEMCARDMENUS;
+                }
+                else
+                {
+                    Status = STATUS_ENDLEVELFADESCREEN;
+                    SFX_PlayX(2, 0x2000, 0);
+                }
+            }
+            if (GoBack != 0)
+            {
+                SFX_PlayX(2, 0x2000, 0);
+                Status = STATUS_ENDINGSCREEN;
+            }
+            break;
+        }
+
+        case STATUS_REALLYMAINMENU:
+        {
+            pYesNoMenu->Update();
+            if (Activated != 0)
+            {
+                if (pYesNoMenu->ChoiceIs(GameText.pYes) != 0)
+                {
+                    Status = STATUS_ENDLEVELFADESCREEN;
+                    SFX_PlayX(5, 0x2000, 0);
+                }
+                else
+                {
+                    SFX_PlayX(2, 0x2000, 0);
+                    if ((InCompetition() & (Competition_IsOver() ^ 1)) != 0)
+                    {
+                        Status = STATUS_ENDHEATMENU;
+                        pEHMenu->SetLine(pEHMenu->FindEntry(GameText.pNextHeat));
+                    }
+                    else
+                    {
+                        Status = STATUS_ENDINGSCREEN;
+                    }
+                }
+            }
+            if (GoBack != 0)
             {
                 SFX_PlayX(2, 0x2000, 0);
                 if ((InCompetition() & (Competition_IsOver() ^ 1)) != 0)
@@ -4010,1028 +3991,1042 @@ void Front_Update(void)
                     Status = STATUS_ENDINGSCREEN;
                 }
             }
+            break;
         }
-        if (GoBack != 0)
-        {
-            SFX_PlayX(2, 0x2000, 0);
-            if ((InCompetition() & (Competition_IsOver() ^ 1)) != 0)
-            {
-                Status = STATUS_ENDHEATMENU;
-                pEHMenu->SetLine(pEHMenu->FindEntry(GameText.pNextHeat));
-            }
-            else
-            {
-                Status = STATUS_ENDINGSCREEN;
-            }
-        }
-        break;
-    }
 
-    case STATUS_ENDINGSCREEN:
-    {
-        if (GRollCredits != 0)
+        case STATUS_ENDINGSCREEN:
         {
-            Status = STATUS_ENDLEVELFADESCREEN;
-            break;
-        }
-        if (Front_OnTime < 0xb)
-        {
-            Front_OnTime++;
-            break;
-        }
-        pESMenu->Update();
-        if (Activated == 0)
-        {
-            break;
-        }
-        SFX_PlayX(5, 0x2000, 0);
-        Flash_Fade(0x10, 1);
-        if (pESMenu->ChoiceIs(GameText.pQuit) != 0)
-        {
-            if ((Levels[GLevel].isCompetition != 0) ||
-                (pESMenu->IsEntryOn(GameText.pSaveCareer) == 0) ||
-                (GLoadedCareerIsSaved != 0))
+            if (GRollCredits != 0)
             {
-                Status = STATUS_REALLYMAINMENU;
-            }
-            else
-            {
-                Status = STATUS_QUITSAVE;
-                pYesNoMenu->SetLine(
-                    pYesNoMenu->FindEntry(GameText.pYes));
-            }
-        }
-        else if (pESMenu->ChoiceIs(
-                     ((Levels[GLevel].isCompetition != 0) && (GGame == 1))
-                         ? GameText.pRestart
-                         : GameText.pRetry) != 0)
-        {
-            EndCode = ENDCODE_TWEAKJUMP;
-            SwitchOffPauseMode = 1;
-            Competition_Init();
-            Horse_Reset();
-        }
-        else if (pESMenu->ChoiceIs(GameText.pWatchReplay) != 0)
-        {
-            Status = STATUS_VIDEOSCREEN;
-        }
-        else if ((pESMenu->ChoiceIs(GameText.pSaveCareer) != 0) ||
-                 (pESMenu->ChoiceIs(
-                      GameText.pUpdateSaveFile) != 0))
-        {
-            pYesNoMenu->SetLine(
-                pYesNoMenu->FindEntry(GameText.pYes));
-            Status = STATUS_SAVEGAME;
-        }
-        else
-        {
-            if (pESMenu->ChoiceIs(
-                    GameText.pSelectLevel) != 0)
-            {
-                StartScreen = 1;
                 Status = STATUS_ENDLEVELFADESCREEN;
+                break;
             }
-            else if (pESMenu->ChoiceIs(
-                         GameText.pEquipmentSelect) != 0)
+            if (Front_OnTime < 0xb)
             {
-                StartScreen = 2;
-                Status = STATUS_ENDLEVELFADESCREEN;
+                Front_OnTime++;
+                break;
             }
-            else if (pESMenu->ChoiceIs(
-                         GameText.pLevelHints) != 0)
-            {
-                StartScreen = 6;
-                Status = STATUS_ENDLEVELFADESCREEN;
-            }
-            else
+            pESMenu->Update();
+            if (Activated == 0)
             {
                 break;
             }
-        }
-        break;
-    }
-
-    case STATUS_VIDEOSCREEN:
-    {
-        if (Front_OnTime < 0xb)
-        {
-            Front_OnTime++;
-            break;
-        }
-        Front_SetSaveAction(SAVE_VIDEO);
-        pVSMenu->Update();
-        if (Activated != 0)
-        {
-            GVideoReplay = 0;
             SFX_PlayX(5, 0x2000, 0);
-            Flash_Fade(0x20, 1);
-            if (pVSMenu->ChoiceIs(GameText.pExit) != 0)
+            Flash_Fade(0x10, 1);
+            if (pESMenu->ChoiceIs(GameText.pQuit) != 0)
             {
-                Video_Cleanup();
-                Status = STATUS_ENDINGSCREEN;
-            }
-            else
-            {
-                if (pVSMenu->ChoiceIs(GameText.pFullReplay) != 0)
+                if ((Levels[GLevel].isCompetition != 0) ||
+                    (pESMenu->IsEntryOn(GameText.pSaveCareer) == 0) || (GLoadedCareerIsSaved != 0))
                 {
-                    GVideoReplay = -1;
-                    SwitchOffPauseMode = 1;
-                    EndCode = ENDCODE_TWEAKJUMP;
-                    Video_SortAndMerge();
-                }
-                else if (pVSMenu->ChoiceIs(GameText.pHighlights) != 0)
-                {
-                    GVideoReplay = 1;
-                    SwitchOffPauseMode = 1;
-                    EndCode = ENDCODE_TWEAKJUMP;
-                    Video_SortAndMerge();
-                }
-                else if (pVSMenu->ChoiceIs(GameText.pSaveVideo) != 0)
-                {
-                    Front_InitMemCardMenus(
-                        0x200, SVSTATUS_CHECKINGCARDPAUSE, STATUS_VIDEOSCREEN);
-                    Status = STATUS_MEMCARDMENUS;
-                }
-            }
-        }
-        if (GoBack != 0)
-        {
-            SFX_PlayX(2, 0x2000, 0);
-            Status = STATUS_ENDINGSCREEN;
-        }
-        break;
-    }
-
-    case STATUS_VIDEOSCREEN2:
-    {
-        if (DemoTimer == 0)
-        {
-            Video_Cleanup();
-            Status = STATUS_ENDLEVELFADESCREEN;
-        }
-        if (Front_OnTime < 0xb)
-        {
-            Front_OnTime++;
-            break;
-        }
-        Front_SetSaveAction(SAVE_VIDEO);
-        pVS2Menu->Update();
-        if (Activated != 0)
-        {
-            GVideoReplay = 0;
-            SFX_PlayX(5, 0x2000, 0);
-            Flash_Fade(0x20, 1);
-            if (pVS2Menu->ChoiceIs(GameText.pExit) != 0)
-            {
-                Video_Cleanup();
-                Status = STATUS_ENDLEVELFADESCREEN;
-            }
-            else
-            {
-                if (pVS2Menu->ChoiceIs(GameText.pFullReplay) != 0)
-                {
-                    GVideoReplay = -1;
-                    SwitchOffPauseMode = 1;
-                    EndCode = ENDCODE_TWEAKJUMP;
-                    Video_SortAndMerge();
-                }
-                else if (pVS2Menu->ChoiceIs(GameText.pHighlights) != 0)
-                {
-                    GVideoReplay = 1;
-                    SwitchOffPauseMode = 1;
-                    EndCode = ENDCODE_TWEAKJUMP;
-                    Video_SortAndMerge();
-                }
-            }
-        }
-        if (GoBack != 0)
-        {
-            SFX_PlayX(2, 0x2000, 0);
-            Video_Cleanup();
-            Status = STATUS_ENDLEVELFADESCREEN;
-        }
-        break;
-    }
-
-    case STATUS_ENDHEATVIDEOMENU:
-    {
-        if (Front_OnTime < 0xb)
-        {
-            Front_OnTime++;
-            break;
-        }
-        Front_SetSaveAction(SAVE_VIDEO);
-        pVS3Menu->Update();
-        if (Activated != 0)
-        {
-            GVideoReplay = 0;
-            SFX_PlayX(5, 0x2000, 0);
-            Flash_Fade(0x20, 1);
-            if (pVS3Menu->ChoiceIs(GameText.pReturnToCompetition) != 0)
-            {
-                Video_Cleanup();
-                Status = STATUS_ENDHEATMENU;
-                pEHMenu->SetLine(pEHMenu->FindEntry(GameText.pNextHeat));
-            }
-            else
-            {
-                if (pVS3Menu->ChoiceIs(GameText.pFullReplay) != 0)
-                {
-                    GVideoReplay = -1;
-                    SwitchOffPauseMode = 1;
-                    EndCode = ENDCODE_TWEAKJUMP;
-                    Video_SortAndMerge();
-                }
-                else if (pVS3Menu->ChoiceIs(GameText.pHighlights) != 0)
-                {
-                    GVideoReplay = 1;
-                    SwitchOffPauseMode = 1;
-                    EndCode = ENDCODE_TWEAKJUMP;
-                    Video_SortAndMerge();
-                }
-                else if (pVS3Menu->ChoiceIs(GameText.pSaveVideo) != 0)
-                {
-                    Front_InitMemCardMenus(
-                        0x200, SVSTATUS_CHECKINGCARDPAUSE,
-                        STATUS_ENDHEATVIDEOMENU);
-                    Status = STATUS_MEMCARDMENUS;
-                }
-            }
-        }
-        if (GoBack != 0)
-        {
-            SFX_PlayX(2, 0x2000, 0);
-            Status = STATUS_ENDHEATMENU;
-            pEHMenu->SetLine(pEHMenu->FindEntry(GameText.pNextHeat));
-        }
-        break;
-    }
-
-    case STATUS_GOTTAPE:
-    {
-        if (Front_OnTime < 0xb)
-        {
-            Front_OnTime++;
-            break;
-        }
-        if (Activated == 0 || CTape::DisplayContinueButton() == 0)
-        {
-            break;
-        }
-        SFX_PlayX(5, 0x2000, 0);
-        int i = 0;
-        do
-        {
-            if (GTape[i] != 0)
-            {
-                Front_DestroyTape(GTape[i]);
-            }
-            GTape[i] = 0;
-            i++;
-        } while (i < 5);
-        Status = STATUS_TAPESAVE;
-        pYesNoMenu->SetLine(pYesNoMenu->FindEntry(GameText.pYes));
-        break;
-    }
-
-    case STATUS_CHANGEHORSEWORD:
-    {
-        GHorseClearInput2 = 0;
-        int UpDown = GetUpDown();
-        char lastAlpha = 'Z';
-        char firstAlpha = 'A';
-        if ((reinterpret_cast<SCareerOwner *>(&GCareer)->Options.HorseLen - 1 <= GHorseCursorPos) &&
-            (reinterpret_cast<SCareerOwner *>(&GCareer)->Options.HorseLen > 3))
-        {
-            lastAlpha = ' ';
-            firstAlpha = ' ';
-        }
-        if (UpDown == -1)
-        {
-            SizeUp = 0x10;
-            SFX_PlayX(0x11, 0x2000, 0);
-            if ((reinterpret_cast<SCareerOwner *>(&GCareer)->Options.HorseWord[GHorseCursorPos] == ' ') ||
-                (reinterpret_cast<SCareerOwner *>(&GCareer)->Options.HorseWord[GHorseCursorPos] == 0))
-            {
-                reinterpret_cast<SCareerOwner *>(&GCareer)->Options.HorseWord[GHorseCursorPos] = 'A';
-            }
-            else
-            {
-                reinterpret_cast<SCareerOwner *>(&GCareer)->Options.HorseWord[GHorseCursorPos]++;
-                if (static_cast<unsigned char>(
-                        reinterpret_cast<SCareerOwner *>(&GCareer)->Options.HorseWord[GHorseCursorPos]) > 'Z')
-                {
-                    reinterpret_cast<SCareerOwner *>(&GCareer)->Options.HorseWord[GHorseCursorPos] = firstAlpha;
-                }
-            }
-        }
-        if (UpDown == 1)
-        {
-            SizeUp = 0x10;
-            SFX_PlayX(0x11, 0x2000, 0);
-            if ((reinterpret_cast<SCareerOwner *>(&GCareer)->Options.HorseWord[GHorseCursorPos] == ' ') ||
-                (reinterpret_cast<SCareerOwner *>(&GCareer)->Options.HorseWord[GHorseCursorPos] == 0))
-            {
-                reinterpret_cast<SCareerOwner *>(&GCareer)->Options.HorseWord[GHorseCursorPos] = 'Z';
-            }
-            else
-            {
-                reinterpret_cast<SCareerOwner *>(&GCareer)->Options.HorseWord[GHorseCursorPos]--;
-                if (static_cast<unsigned char>(
-                        reinterpret_cast<SCareerOwner *>(&GCareer)->Options.HorseWord[GHorseCursorPos]) < 'A')
-                {
-                    reinterpret_cast<SCareerOwner *>(&GCareer)->Options.HorseWord[GHorseCursorPos] = lastAlpha;
-                }
-            }
-        }
-
-        reinterpret_cast<SCareerOwner *>(&GCareer)->Options.HorseLen = 10;
-        for (int i = 0; i < 10; i++)
-        {
-            if ((reinterpret_cast<SCareerOwner *>(&GCareer)->Options.HorseWord[i] == ' ') ||
-                (reinterpret_cast<SCareerOwner *>(&GCareer)->Options.HorseWord[i] == 0))
-            {
-                reinterpret_cast<SCareerOwner *>(&GCareer)->Options.HorseLen = i;
-                break;
-            }
-        }
-
-        if ((Pad[0].Left.Triggered != 0) || (Pad[1].Left.Triggered != 0))
-        {
-            SizeUp = 0x10;
-            SFX_PlayX(5, 0x2000, 0);
-            Pad[0].Left.Triggered = 0;
-            Pad[1].Left.Triggered = 0;
-            GHorseCursorPos--;
-            if (GHorseCursorPos < 0)
-            {
-                GHorseCursorPos = reinterpret_cast<SCareerOwner *>(&GCareer)->Options.HorseLen;
-            }
-            if (GHorseCursorPos > 9)
-            {
-                GHorseCursorPos = 9;
-            }
-        }
-        if ((Pad[0].Right.Triggered != 0) || (Pad[1].Right.Triggered != 0))
-        {
-            SizeUp = 0x10;
-            SFX_PlayX(5, 0x2000, 0);
-            Pad[0].Right.Triggered = 0;
-            Pad[1].Right.Triggered = 0;
-            GHorseCursorPos++;
-            if (reinterpret_cast<SCareerOwner *>(&GCareer)->Options.HorseLen < GHorseCursorPos)
-            {
-                GHorseCursorPos = 0;
-            }
-            if (GHorseCursorPos > 9)
-            {
-                GHorseCursorPos = 0;
-            }
-        }
-        if (Activated != 0)
-        {
-            int i = 0;
-            while (i < 10)
-            {
-                if (reinterpret_cast<SCareerOwner *>(&GCareer)->Options.HorseWord[i] == ' ')
-                {
-                    reinterpret_cast<SCareerOwner *>(&GCareer)->Options.HorseWord[i] = 0;
-                    break;
-                }
-                i++;
-            }
-            sprintf(GPreferences.Options.HorseWord, reinterpret_cast<SCareerOwner *>(&GCareer)->Options.HorseWord);
-            GHorseWordChosen = 1;
-            GHorseDoneStart = 0;
-            GPreferences.Options.HorseLen = reinterpret_cast<SCareerOwner *>(&GCareer)->Options.HorseLen;
-            SFX_PlayX(5, 0x2000, 0);
-        }
-        break;
-    }
-
-    case STATUS_STARTHORSE:
-    {
-        CBruce *pSkater = GSkater[0];
-        GHorseClearInput2 = 1;
-        pSkater->mJumpInhibit = XFrames;
-        if (Activated != 0)
-        {
-            SwitchOffPauseMode = 1;
-        }
-        break;
-    }
-
-    case STATUS_TAPESAVE:
-    {
-        pYesNoMenu->Update();
-        if (Activated != 0)
-        {
-            SFX_PlayX(5, 0x2000, 0);
-            Flash_Fade(0x20, 1);
-            if (pYesNoMenu->ChoiceIs(GameText.pYes) != 0)
-            {
-                Front_SetSaveAction(SAVE_GAME);
-                Front_InitMemCardMenus(
-                    0x200, SVSTATUS_CHECKINGCARDPAUSE, STATUS_STATS);
-                Status = STATUS_MEMCARDMENUS;
-            }
-            else
-            {
-                Status = STATUS_STATS;
-            }
-        }
-        if (GoBack != 0)
-        {
-            SFX_PlayX(2, 0x2000, 0);
-            Status = STATUS_GOTTAPE;
-        }
-        break;
-    }
-
-    case STATUS_HIGHSCORE:
-    {
-        if (Front_OnTime > 10)
-        {
-            if (GHighScoreLineIndex != -1)
-            {
-                int Level = 8;
-                if (GenerateLevel == 0)
-                {
-                    Level = GLevel;
-                }
-                int UpDown = GetUpDown();
-                if (UpDown == -1)
-                {
-                    SizeUp = 0x10;
-                    SFX_PlayX(0x11, 0x2000, 0);
-                    if ((reinterpret_cast<SCareerOwner *>(&GCareer)->HighScore[Level][GHighScoreLineIndex].Name[GHighScoreInitialCursorPos] == ' ') ||
-                        (reinterpret_cast<SCareerOwner *>(&GCareer)->HighScore[Level][GHighScoreLineIndex].Name[GHighScoreInitialCursorPos] == 0))
-                    {
-                        reinterpret_cast<SCareerOwner *>(&GCareer)->HighScore[Level][GHighScoreLineIndex].Name[GHighScoreInitialCursorPos] = 'A';
-                    }
-                    else
-                    {
-                        reinterpret_cast<SCareerOwner *>(&GCareer)->HighScore[Level][GHighScoreLineIndex].Name[GHighScoreInitialCursorPos]++;
-                        if (static_cast<unsigned char>(reinterpret_cast<SCareerOwner *>(&GCareer)->HighScore[Level][GHighScoreLineIndex].Name[GHighScoreInitialCursorPos]) > 'Z')
-                        {
-                            reinterpret_cast<SCareerOwner *>(&GCareer)->HighScore[Level][GHighScoreLineIndex].Name[GHighScoreInitialCursorPos] = ' ';
-                        }
-                    }
-                }
-                if (UpDown == 1)
-                {
-                    SizeUp = 0x10;
-                    SFX_PlayX(0x11, 0x2000, 0);
-                    if ((reinterpret_cast<SCareerOwner *>(&GCareer)->HighScore[Level][GHighScoreLineIndex].Name[GHighScoreInitialCursorPos] == ' ') ||
-                        (reinterpret_cast<SCareerOwner *>(&GCareer)->HighScore[Level][GHighScoreLineIndex].Name[GHighScoreInitialCursorPos] == 0))
-                    {
-                        reinterpret_cast<SCareerOwner *>(&GCareer)->HighScore[Level][GHighScoreLineIndex].Name[GHighScoreInitialCursorPos] = 'Z';
-                    }
-                    else
-                    {
-                        reinterpret_cast<SCareerOwner *>(&GCareer)->HighScore[Level][GHighScoreLineIndex].Name[GHighScoreInitialCursorPos]--;
-                        if (static_cast<unsigned char>(reinterpret_cast<SCareerOwner *>(&GCareer)->HighScore[Level][GHighScoreLineIndex].Name[GHighScoreInitialCursorPos]) < 'A')
-                        {
-                            reinterpret_cast<SCareerOwner *>(&GCareer)->HighScore[Level][GHighScoreLineIndex].Name[GHighScoreInitialCursorPos] = ' ';
-                        }
-                    }
-                }
-                if ((Pad[0].Left.Triggered != 0) || (Pad[1].Left.Triggered != 0))
-                {
-                    SizeUp = 0x10;
-                    SFX_PlayX(5, 0x2000, 0);
-                    Pad[0].Left.Triggered = 0;
-                    Pad[1].Left.Triggered = 0;
-                    GHighScoreInitialCursorPos--;
-                    if (GHighScoreInitialCursorPos < 0)
-                    {
-                        GHighScoreInitialCursorPos = 2;
-                    }
-                }
-                if ((Pad[0].Right.Triggered != 0) || (Pad[1].Right.Triggered != 0))
-                {
-                    SizeUp = 0x10;
-                    SFX_PlayX(5, 0x2000, 0);
-                    Pad[0].Right.Triggered = 0;
-                    Pad[1].Right.Triggered = 0;
-                    GHighScoreInitialCursorPos++;
-                    if (GHighScoreInitialCursorPos > 2)
-                    {
-                        GHighScoreInitialCursorPos = 0;
-                    }
-                }
-            }
-            if (Activated != 0)
-            {
-                SFX_PlayX(0x12, 0x2000, 0);
-                int Level = 8;
-                if (GenerateLevel == 0)
-                {
-                    Level = GLevel;
-                }
-                sprintf(reinterpret_cast<SCareerOwner *>(&GCareer)->Options.LastHighScoreInitials,
-                        reinterpret_cast<SCareerOwner *>(&GCareer)->HighScore[Level][GHighScoreLineIndex].Name);
-                GHighScoreLineIndex = -1;
-                Status = STATUS_ENDINGSCREEN;
-            }
-        }
-        break;
-    }
-
-    case STATUS_STATS:
-    {
-        if (Front_OnTime < 0xb)
-        {
-            Front_OnTime++;
-            break;
-        }
-        if (GGame == 7)
-        {
-            GHorseClearInput2 = 0;
-            GHorseWaitTime--;
-            if ((GHorseWaitTime < 1) && (NextHorseMode != 2))
-            {
-                Activated = 1;
-            }
-            if ((NextHorseMode == 2) && (GHorseContinue != 0) &&
-                (Front_HorseFallingText().handleComplete() != 0))
-            {
-                Front_OnTime = 0;
-                Status = STATUS_ENDINGSCREEN;
-            }
-        }
-
-        if (Activated == 0)
-        {
-            break;
-        }
-        GCompoSounded = 0;
-        SFX_PlayX(5, 0x2000, 0);
-        int game = GGame;
-        GHorseSounded = 0;
-        if (GGame == 7)
-        {
-            if (NextHorseMode == 2)
-            {
-                GHorseContinue = 1;
-                GHorseRestart = 0;
-                Trig_SetRestart(HorseRestarts[0]);
-            }
-            else
-            {
-                GHorseMode = NextHorseMode;
-                GHorseRestart = NextHorseRestart;
-                GHorseScore = NextHorseScore;
-                GHorsePlayer = NextHorsePlayer;
-                GHorseLetters[0] = NextHorseLetters[0];
-                GHorseLetters[1] = NextHorseLetters[1];
-                Trig_SetRestart(HorseRestarts[NextHorseRestart]);
-                SwitchOffPauseMode = 1;
-                EndCode = static_cast<EEndCode>(game);
-            }
-            break;
-        }
-        if (GHighScoreLineIndex != -1)
-        {
-            Status = STATUS_HIGHSCORE;
-            InitStatsSwisch();
-            break;
-        }
-        Status = STATUS_ENDINGSCREEN;
-        break;
-    }
-
-    case STATUS_ENDHEATMENU:
-    {
-        if (Front_OnTime < 0xb)
-        {
-            Front_OnTime++;
-            break;
-        }
-        pEHMenu->Update();
-        if (Activated == 0)
-        {
-            break;
-        }
-        SFX_PlayX(5, 0x2000, 0);
-        Flash_Fade(0x20, 1);
-        if (pEHMenu->ChoiceIs(GameText.pQuit) != 0)
-        {
-            Status = STATUS_REALLYMAINMENU;
-        }
-        else if (pEHMenu->ChoiceIs(GameText.pNextHeat) != 0)
-        {
-            SwitchOffPauseMode = 1;
-            EndCode = ENDCODE_TWEAKJUMP;
-        }
-        else if (pEHMenu->ChoiceIs(GameText.pEndComp) != 0)
-        {
-            Status = STATUS_ENDHEATWINLOSE;
-        }
-        else if (pEHMenu->ChoiceIs(GameText.pWatchReplay) != 0)
-        {
-            Status = STATUS_ENDHEATVIDEOMENU;
-        }
-        break;
-    }
-
-    case STATUS_ENDGAME:
-    {
-        Competition_EndGameLogic(Status, Activated);
-        break;
-    }
-
-    case STATUS_ENDHEATWINLOSE:
-    {
-        Competition_WinLoseLogic(Status, Activated);
-        break;
-    }
-
-    case STATUS_MEDALSAVE:
-    {
-        pYesNoMenu->Update();
-        if (Activated != 0)
-        {
-            SFX_PlayX(5, 0x2000, 0);
-            Flash_Fade(0x20, 1);
-            if (pYesNoMenu->ChoiceIs(GameText.pYes) != 0)
-            {
-                Front_SetSaveAction(SAVE_GAME);
-                Front_InitMemCardMenus(
-                    0x200, SVSTATUS_CHECKINGCARDPAUSE, STATUS_ENDINGSCREEN);
-                Status = STATUS_MEMCARDMENUS;
-                break;
-            }
-            Status = STATUS_ENDINGSCREEN;
-        }
-        break;
-    }
-
-    case STATUS_ENDHEATLADDER:
-    {
-        Competition_LadderLogic();
-        if (Activated == 0)
-        {
-            break;
-        }
-        if (Competition_LadderFullyDisplayed() != 0)
-        {
-            Video_Stop(reinterpret_cast<CBruce *>(MechList));
-            GamePaused = 1;
-            SFX_StopAll();
-            if (Competition_NewHeat() != 0)
-            {
-                Status = STATUS_ENDHEATMENU;
-                pEHMenu->SetLine(pEHMenu->FindEntry(GameText.pNextHeat));
-            }
-            else
-            {
-                Status = STATUS_ENDHEATWINLOSE;
-            }
-            break;
-        }
-        Competition_FullyDisplayLadder();
-        SFX_PlayX(0x34, 0x2000, 0);
-        break;
-    }
-
-    case STATUS_ENDHEATREPLAY:
-    {
-        Competition_JudgeLogic();
-        if (Front_OnTime >= 0xb)
-        {
-            if (Activated != 0)
-            {
-                if (Competition_JudgeFullyDisplayed() != 0)
-                {
-                    SFX_PlayX(5, 0x2000, 0);
-                    Status = STATUS_ENDHEATLADDER;
-                    GVideoReplay = -1;
-                    RestartCompFrig();
-                    if (pPausedMenu != 0)
-                    {
-                        Front_DestroyMenu(pPausedMenu);
-                    }
-                    pPausedMenu = 0;
-                    if ((EndCode != ENDCODE_PLAYERQUIT) &&
-                        (EndCode != ENDCODE_ENDLEVELDOSAVE) &&
-                        (EndCode != ENDCODE_ENDLEVELNOSAVE))
-                    {
-                        SFX_Unpause();
-                    }
-                    Video_SortAndMerge();
-                    if (GVInfo1.NumFrames > 0x5a)
-                    {
-                        CBruce *pSkater =
-                            reinterpret_cast<CBruce *>(MechList);
-                        CBruce *pSkater2 =
-                            reinterpret_cast<CBruce *>(
-                                pSkater->CSuper.CBody.mNextItem);
-                        GamePaused = 0;
-                        GVideoReplay = 0;
-                        GVInfo1.ReplayHighlight = 0;
-                        GVInfo2.ReplayHighlight = 0;
-                        Video_Start(
-                            pSkater, VIDEO_PLAYBACK, 1, 0x7fffffff);
-                        if (pSkater2 != 0)
-                        {
-                            Video_Start(
-                                pSkater2, VIDEO_PLAYBACK, 1, 0x7fffffff);
-                    }
-                    GState = 0;
-                    Flash_Reset();
-                    {
-                        CBruce *pSkater =
-                            reinterpret_cast<CBruce *>(MechList);
-                        CBruce *pSkater2 =
-                            reinterpret_cast<CBruce *>(
-                                pSkater->CSuper.CBody.mNextItem);
-                        pSkater->mPlayTime = Xblanks + 0x34bde;
-                        if (pSkater2 != 0)
-                        {
-                            pSkater2->mPlayTime = Xblanks + 0x34bde;
-                        }
-                    }
-                }
+                    Status = STATUS_REALLYMAINMENU;
                 }
                 else
                 {
-                    Competition_FullyDisplayJudge();
-                    SFX_PlayX(0x34, 0x2000, 0);
+                    Status = STATUS_QUITSAVE;
+                    pYesNoMenu->SetLine(pYesNoMenu->FindEntry(GameText.pYes));
                 }
             }
-        }
-        else
-        {
-            Front_OnTime++;
-        }
-        break;
-    }
-
-    case STATUS_ENDHEAT:
-    {
-        Status = STATUS_ENDHEATREPLAY;
-        Front_OnTime++;
-        break;
-    }
-
-    case STATUS_SAVEGAME:
-    {
-        pYesNoMenu->Update();
-        if (Activated != 0)
-        {
-            SFX_PlayX(5, 0x2000, 0);
-            Flash_Fade(0x20, 1);
-            if (pYesNoMenu->ChoiceIs(GameText.pYes) != 0)
+            else if (pESMenu->ChoiceIs(((Levels[GLevel].isCompetition != 0) && (GGame == 1))
+                                           ? GameText.pRestart
+                                           : GameText.pRetry) != 0)
             {
-                Front_SetSaveAction(SAVE_GAME);
-                Front_InitMemCardMenus(
-                    0x200, SVSTATUS_CHECKINGCARDPAUSE, STATUS_ENDINGSCREEN);
-                Status = STATUS_MEMCARDMENUS;
+                EndCode = ENDCODE_TWEAKJUMP;
+                SwitchOffPauseMode = 1;
+                Competition_Init();
+                Horse_Reset();
+            }
+            else if (pESMenu->ChoiceIs(GameText.pWatchReplay) != 0)
+            {
+                Status = STATUS_VIDEOSCREEN;
+            }
+            else if ((pESMenu->ChoiceIs(GameText.pSaveCareer) != 0) ||
+                     (pESMenu->ChoiceIs(GameText.pUpdateSaveFile) != 0))
+            {
+                pYesNoMenu->SetLine(pYesNoMenu->FindEntry(GameText.pYes));
+                Status = STATUS_SAVEGAME;
             }
             else
             {
+                if (pESMenu->ChoiceIs(GameText.pSelectLevel) != 0)
+                {
+                    StartScreen = 1;
+                    Status = STATUS_ENDLEVELFADESCREEN;
+                }
+                else if (pESMenu->ChoiceIs(GameText.pEquipmentSelect) != 0)
+                {
+                    StartScreen = 2;
+                    Status = STATUS_ENDLEVELFADESCREEN;
+                }
+                else if (pESMenu->ChoiceIs(GameText.pLevelHints) != 0)
+                {
+                    StartScreen = 6;
+                    Status = STATUS_ENDLEVELFADESCREEN;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            break;
+        }
+
+        case STATUS_VIDEOSCREEN:
+        {
+            if (Front_OnTime < 0xb)
+            {
+                Front_OnTime++;
+                break;
+            }
+            Front_SetSaveAction(SAVE_VIDEO);
+            pVSMenu->Update();
+            if (Activated != 0)
+            {
+                GVideoReplay = 0;
+                SFX_PlayX(5, 0x2000, 0);
+                Flash_Fade(0x20, 1);
+                if (pVSMenu->ChoiceIs(GameText.pExit) != 0)
+                {
+                    Video_Cleanup();
+                    Status = STATUS_ENDINGSCREEN;
+                }
+                else
+                {
+                    if (pVSMenu->ChoiceIs(GameText.pFullReplay) != 0)
+                    {
+                        GVideoReplay = -1;
+                        SwitchOffPauseMode = 1;
+                        EndCode = ENDCODE_TWEAKJUMP;
+                        Video_SortAndMerge();
+                    }
+                    else if (pVSMenu->ChoiceIs(GameText.pHighlights) != 0)
+                    {
+                        GVideoReplay = 1;
+                        SwitchOffPauseMode = 1;
+                        EndCode = ENDCODE_TWEAKJUMP;
+                        Video_SortAndMerge();
+                    }
+                    else if (pVSMenu->ChoiceIs(GameText.pSaveVideo) != 0)
+                    {
+                        Front_InitMemCardMenus(0x200, SVSTATUS_CHECKINGCARDPAUSE,
+                                               STATUS_VIDEOSCREEN);
+                        Status = STATUS_MEMCARDMENUS;
+                    }
+                }
+            }
+            if (GoBack != 0)
+            {
+                SFX_PlayX(2, 0x2000, 0);
                 Status = STATUS_ENDINGSCREEN;
             }
+            break;
         }
-        if (GoBack != 0)
-        {
-            SFX_PlayX(2, 0x2000, 0);
-            Status = STATUS_ENDINGSCREEN;
-        }
-        break;
-    }
 
-    case STATUS_ENDLEVELFADESCREEN:
-    {
-        Flash_Update();
-        if (Flash_FadeFinished() != 0)
+        case STATUS_VIDEOSCREEN2:
         {
-            EndCode = ENDCODE_PLAYERQUIT;
-            SwitchOffPauseMode = 1;
-            Horse_Reset();
-        }
-        break;
-    }
-
-    case STATUS_DOSAVEFADESCREEN:
-    case STATUS_NOSAVEFADESCREEN:
-    {
-        Flash_Update();
-        if (Flash_FadeFinished() != 0)
-        {
-            if (Status == STATUS_DOSAVEFADESCREEN)
+            if (DemoTimer == 0)
             {
-                EndCode = ENDCODE_ENDLEVELDOSAVE;
+                Video_Cleanup();
+                Status = STATUS_ENDLEVELFADESCREEN;
+            }
+            if (Front_OnTime < 0xb)
+            {
+                Front_OnTime++;
+                break;
+            }
+            Front_SetSaveAction(SAVE_VIDEO);
+            pVS2Menu->Update();
+            if (Activated != 0)
+            {
+                GVideoReplay = 0;
+                SFX_PlayX(5, 0x2000, 0);
+                Flash_Fade(0x20, 1);
+                if (pVS2Menu->ChoiceIs(GameText.pExit) != 0)
+                {
+                    Video_Cleanup();
+                    Status = STATUS_ENDLEVELFADESCREEN;
+                }
+                else
+                {
+                    if (pVS2Menu->ChoiceIs(GameText.pFullReplay) != 0)
+                    {
+                        GVideoReplay = -1;
+                        SwitchOffPauseMode = 1;
+                        EndCode = ENDCODE_TWEAKJUMP;
+                        Video_SortAndMerge();
+                    }
+                    else if (pVS2Menu->ChoiceIs(GameText.pHighlights) != 0)
+                    {
+                        GVideoReplay = 1;
+                        SwitchOffPauseMode = 1;
+                        EndCode = ENDCODE_TWEAKJUMP;
+                        Video_SortAndMerge();
+                    }
+                }
+            }
+            if (GoBack != 0)
+            {
+                SFX_PlayX(2, 0x2000, 0);
+                Video_Cleanup();
+                Status = STATUS_ENDLEVELFADESCREEN;
+            }
+            break;
+        }
+
+        case STATUS_ENDHEATVIDEOMENU:
+        {
+            if (Front_OnTime < 0xb)
+            {
+                Front_OnTime++;
+                break;
+            }
+            Front_SetSaveAction(SAVE_VIDEO);
+            pVS3Menu->Update();
+            if (Activated != 0)
+            {
+                GVideoReplay = 0;
+                SFX_PlayX(5, 0x2000, 0);
+                Flash_Fade(0x20, 1);
+                if (pVS3Menu->ChoiceIs(GameText.pReturnToCompetition) != 0)
+                {
+                    Video_Cleanup();
+                    Status = STATUS_ENDHEATMENU;
+                    pEHMenu->SetLine(pEHMenu->FindEntry(GameText.pNextHeat));
+                }
+                else
+                {
+                    if (pVS3Menu->ChoiceIs(GameText.pFullReplay) != 0)
+                    {
+                        GVideoReplay = -1;
+                        SwitchOffPauseMode = 1;
+                        EndCode = ENDCODE_TWEAKJUMP;
+                        Video_SortAndMerge();
+                    }
+                    else if (pVS3Menu->ChoiceIs(GameText.pHighlights) != 0)
+                    {
+                        GVideoReplay = 1;
+                        SwitchOffPauseMode = 1;
+                        EndCode = ENDCODE_TWEAKJUMP;
+                        Video_SortAndMerge();
+                    }
+                    else if (pVS3Menu->ChoiceIs(GameText.pSaveVideo) != 0)
+                    {
+                        Front_InitMemCardMenus(0x200, SVSTATUS_CHECKINGCARDPAUSE,
+                                               STATUS_ENDHEATVIDEOMENU);
+                        Status = STATUS_MEMCARDMENUS;
+                    }
+                }
+            }
+            if (GoBack != 0)
+            {
+                SFX_PlayX(2, 0x2000, 0);
+                Status = STATUS_ENDHEATMENU;
+                pEHMenu->SetLine(pEHMenu->FindEntry(GameText.pNextHeat));
+            }
+            break;
+        }
+
+        case STATUS_GOTTAPE:
+        {
+            if (Front_OnTime < 0xb)
+            {
+                Front_OnTime++;
+                break;
+            }
+            if (Activated == 0 || CTape::DisplayContinueButton() == 0)
+            {
+                break;
+            }
+            SFX_PlayX(5, 0x2000, 0);
+            int i = 0;
+            do
+            {
+                if (GTape[i] != 0)
+                {
+                    Front_DestroyTape(GTape[i]);
+                }
+                GTape[i] = 0;
+                i++;
+            } while (i < 5);
+            Status = STATUS_TAPESAVE;
+            pYesNoMenu->SetLine(pYesNoMenu->FindEntry(GameText.pYes));
+            break;
+        }
+
+        case STATUS_CHANGEHORSEWORD:
+        {
+            GHorseClearInput2 = 0;
+            int UpDown = GetUpDown();
+            char lastAlpha = 'Z';
+            char firstAlpha = 'A';
+            if ((reinterpret_cast<SCareerOwner *>(&GCareer)->Options.HorseLen - 1 <=
+                 GHorseCursorPos) &&
+                (reinterpret_cast<SCareerOwner *>(&GCareer)->Options.HorseLen > 3))
+            {
+                lastAlpha = ' ';
+                firstAlpha = ' ';
+            }
+            if (UpDown == -1)
+            {
+                SizeUp = 0x10;
+                SFX_PlayX(0x11, 0x2000, 0);
+                if ((reinterpret_cast<SCareerOwner *>(&GCareer)
+                         ->Options.HorseWord[GHorseCursorPos] == ' ') ||
+                    (reinterpret_cast<SCareerOwner *>(&GCareer)
+                         ->Options.HorseWord[GHorseCursorPos] == 0))
+                {
+                    reinterpret_cast<SCareerOwner *>(&GCareer)->Options.HorseWord[GHorseCursorPos] =
+                        'A';
+                }
+                else
+                {
+                    reinterpret_cast<SCareerOwner *>(&GCareer)
+                        ->Options.HorseWord[GHorseCursorPos]++;
+                    if (static_cast<unsigned char>(reinterpret_cast<SCareerOwner *>(&GCareer)
+                                                       ->Options.HorseWord[GHorseCursorPos]) > 'Z')
+                    {
+                        reinterpret_cast<SCareerOwner *>(&GCareer)
+                            ->Options.HorseWord[GHorseCursorPos] = firstAlpha;
+                    }
+                }
+            }
+            if (UpDown == 1)
+            {
+                SizeUp = 0x10;
+                SFX_PlayX(0x11, 0x2000, 0);
+                if ((reinterpret_cast<SCareerOwner *>(&GCareer)
+                         ->Options.HorseWord[GHorseCursorPos] == ' ') ||
+                    (reinterpret_cast<SCareerOwner *>(&GCareer)
+                         ->Options.HorseWord[GHorseCursorPos] == 0))
+                {
+                    reinterpret_cast<SCareerOwner *>(&GCareer)->Options.HorseWord[GHorseCursorPos] =
+                        'Z';
+                }
+                else
+                {
+                    reinterpret_cast<SCareerOwner *>(&GCareer)
+                        ->Options.HorseWord[GHorseCursorPos]--;
+                    if (static_cast<unsigned char>(reinterpret_cast<SCareerOwner *>(&GCareer)
+                                                       ->Options.HorseWord[GHorseCursorPos]) < 'A')
+                    {
+                        reinterpret_cast<SCareerOwner *>(&GCareer)
+                            ->Options.HorseWord[GHorseCursorPos] = lastAlpha;
+                    }
+                }
+            }
+
+            reinterpret_cast<SCareerOwner *>(&GCareer)->Options.HorseLen = 10;
+            for (int i = 0; i < 10; i++)
+            {
+                if ((reinterpret_cast<SCareerOwner *>(&GCareer)->Options.HorseWord[i] == ' ') ||
+                    (reinterpret_cast<SCareerOwner *>(&GCareer)->Options.HorseWord[i] == 0))
+                {
+                    reinterpret_cast<SCareerOwner *>(&GCareer)->Options.HorseLen = i;
+                    break;
+                }
+            }
+
+            if ((Pad[0].Left.Triggered != 0) || (Pad[1].Left.Triggered != 0))
+            {
+                SizeUp = 0x10;
+                SFX_PlayX(5, 0x2000, 0);
+                Pad[0].Left.Triggered = 0;
+                Pad[1].Left.Triggered = 0;
+                GHorseCursorPos--;
+                if (GHorseCursorPos < 0)
+                {
+                    GHorseCursorPos = reinterpret_cast<SCareerOwner *>(&GCareer)->Options.HorseLen;
+                }
+                if (GHorseCursorPos > 9)
+                {
+                    GHorseCursorPos = 9;
+                }
+            }
+            if ((Pad[0].Right.Triggered != 0) || (Pad[1].Right.Triggered != 0))
+            {
+                SizeUp = 0x10;
+                SFX_PlayX(5, 0x2000, 0);
+                Pad[0].Right.Triggered = 0;
+                Pad[1].Right.Triggered = 0;
+                GHorseCursorPos++;
+                if (reinterpret_cast<SCareerOwner *>(&GCareer)->Options.HorseLen < GHorseCursorPos)
+                {
+                    GHorseCursorPos = 0;
+                }
+                if (GHorseCursorPos > 9)
+                {
+                    GHorseCursorPos = 0;
+                }
+            }
+            if (Activated != 0)
+            {
+                int i = 0;
+                while (i < 10)
+                {
+                    if (reinterpret_cast<SCareerOwner *>(&GCareer)->Options.HorseWord[i] == ' ')
+                    {
+                        reinterpret_cast<SCareerOwner *>(&GCareer)->Options.HorseWord[i] = 0;
+                        break;
+                    }
+                    i++;
+                }
+                sprintf(GPreferences.Options.HorseWord,
+                        reinterpret_cast<SCareerOwner *>(&GCareer)->Options.HorseWord);
+                GHorseWordChosen = 1;
+                GHorseDoneStart = 0;
+                GPreferences.Options.HorseLen =
+                    reinterpret_cast<SCareerOwner *>(&GCareer)->Options.HorseLen;
+                SFX_PlayX(5, 0x2000, 0);
+            }
+            break;
+        }
+
+        case STATUS_STARTHORSE:
+        {
+            CBruce *pSkater = GSkater[0];
+            GHorseClearInput2 = 1;
+            pSkater->mJumpInhibit = XFrames;
+            if (Activated != 0)
+            {
+                SwitchOffPauseMode = 1;
+            }
+            break;
+        }
+
+        case STATUS_TAPESAVE:
+        {
+            pYesNoMenu->Update();
+            if (Activated != 0)
+            {
+                SFX_PlayX(5, 0x2000, 0);
+                Flash_Fade(0x20, 1);
+                if (pYesNoMenu->ChoiceIs(GameText.pYes) != 0)
+                {
+                    Front_SetSaveAction(SAVE_GAME);
+                    Front_InitMemCardMenus(0x200, SVSTATUS_CHECKINGCARDPAUSE, STATUS_STATS);
+                    Status = STATUS_MEMCARDMENUS;
+                }
+                else
+                {
+                    Status = STATUS_STATS;
+                }
+            }
+            if (GoBack != 0)
+            {
+                SFX_PlayX(2, 0x2000, 0);
+                Status = STATUS_GOTTAPE;
+            }
+            break;
+        }
+
+        case STATUS_HIGHSCORE:
+        {
+            if (Front_OnTime > 10)
+            {
+                if (GHighScoreLineIndex != -1)
+                {
+                    int Level = 8;
+                    if (GenerateLevel == 0)
+                    {
+                        Level = GLevel;
+                    }
+                    int UpDown = GetUpDown();
+                    if (UpDown == -1)
+                    {
+                        SizeUp = 0x10;
+                        SFX_PlayX(0x11, 0x2000, 0);
+                        if ((reinterpret_cast<SCareerOwner *>(&GCareer)
+                                 ->HighScore[Level][GHighScoreLineIndex]
+                                 .Name[GHighScoreInitialCursorPos] == ' ') ||
+                            (reinterpret_cast<SCareerOwner *>(&GCareer)
+                                 ->HighScore[Level][GHighScoreLineIndex]
+                                 .Name[GHighScoreInitialCursorPos] == 0))
+                        {
+                            reinterpret_cast<SCareerOwner *>(&GCareer)
+                                ->HighScore[Level][GHighScoreLineIndex]
+                                .Name[GHighScoreInitialCursorPos] = 'A';
+                        }
+                        else
+                        {
+                            reinterpret_cast<SCareerOwner *>(&GCareer)
+                                ->HighScore[Level][GHighScoreLineIndex]
+                                .Name[GHighScoreInitialCursorPos]++;
+                            if (static_cast<unsigned char>(
+                                    reinterpret_cast<SCareerOwner *>(&GCareer)
+                                        ->HighScore[Level][GHighScoreLineIndex]
+                                        .Name[GHighScoreInitialCursorPos]) > 'Z')
+                            {
+                                reinterpret_cast<SCareerOwner *>(&GCareer)
+                                    ->HighScore[Level][GHighScoreLineIndex]
+                                    .Name[GHighScoreInitialCursorPos] = ' ';
+                            }
+                        }
+                    }
+                    if (UpDown == 1)
+                    {
+                        SizeUp = 0x10;
+                        SFX_PlayX(0x11, 0x2000, 0);
+                        if ((reinterpret_cast<SCareerOwner *>(&GCareer)
+                                 ->HighScore[Level][GHighScoreLineIndex]
+                                 .Name[GHighScoreInitialCursorPos] == ' ') ||
+                            (reinterpret_cast<SCareerOwner *>(&GCareer)
+                                 ->HighScore[Level][GHighScoreLineIndex]
+                                 .Name[GHighScoreInitialCursorPos] == 0))
+                        {
+                            reinterpret_cast<SCareerOwner *>(&GCareer)
+                                ->HighScore[Level][GHighScoreLineIndex]
+                                .Name[GHighScoreInitialCursorPos] = 'Z';
+                        }
+                        else
+                        {
+                            reinterpret_cast<SCareerOwner *>(&GCareer)
+                                ->HighScore[Level][GHighScoreLineIndex]
+                                .Name[GHighScoreInitialCursorPos]--;
+                            if (static_cast<unsigned char>(
+                                    reinterpret_cast<SCareerOwner *>(&GCareer)
+                                        ->HighScore[Level][GHighScoreLineIndex]
+                                        .Name[GHighScoreInitialCursorPos]) < 'A')
+                            {
+                                reinterpret_cast<SCareerOwner *>(&GCareer)
+                                    ->HighScore[Level][GHighScoreLineIndex]
+                                    .Name[GHighScoreInitialCursorPos] = ' ';
+                            }
+                        }
+                    }
+                    if ((Pad[0].Left.Triggered != 0) || (Pad[1].Left.Triggered != 0))
+                    {
+                        SizeUp = 0x10;
+                        SFX_PlayX(5, 0x2000, 0);
+                        Pad[0].Left.Triggered = 0;
+                        Pad[1].Left.Triggered = 0;
+                        GHighScoreInitialCursorPos--;
+                        if (GHighScoreInitialCursorPos < 0)
+                        {
+                            GHighScoreInitialCursorPos = 2;
+                        }
+                    }
+                    if ((Pad[0].Right.Triggered != 0) || (Pad[1].Right.Triggered != 0))
+                    {
+                        SizeUp = 0x10;
+                        SFX_PlayX(5, 0x2000, 0);
+                        Pad[0].Right.Triggered = 0;
+                        Pad[1].Right.Triggered = 0;
+                        GHighScoreInitialCursorPos++;
+                        if (GHighScoreInitialCursorPos > 2)
+                        {
+                            GHighScoreInitialCursorPos = 0;
+                        }
+                    }
+                }
+                if (Activated != 0)
+                {
+                    SFX_PlayX(0x12, 0x2000, 0);
+                    int Level = 8;
+                    if (GenerateLevel == 0)
+                    {
+                        Level = GLevel;
+                    }
+                    sprintf(
+                        reinterpret_cast<SCareerOwner *>(&GCareer)->Options.LastHighScoreInitials,
+                        reinterpret_cast<SCareerOwner *>(&GCareer)
+                            ->HighScore[Level][GHighScoreLineIndex]
+                            .Name);
+                    GHighScoreLineIndex = -1;
+                    Status = STATUS_ENDINGSCREEN;
+                }
+            }
+            break;
+        }
+
+        case STATUS_STATS:
+        {
+            if (Front_OnTime < 0xb)
+            {
+                Front_OnTime++;
+                break;
+            }
+            if (GGame == 7)
+            {
+                GHorseClearInput2 = 0;
+                GHorseWaitTime--;
+                if ((GHorseWaitTime < 1) && (NextHorseMode != 2))
+                {
+                    Activated = 1;
+                }
+                if ((NextHorseMode == 2) && (GHorseContinue != 0) &&
+                    (Front_HorseFallingText().handleComplete() != 0))
+                {
+                    Front_OnTime = 0;
+                    Status = STATUS_ENDINGSCREEN;
+                }
+            }
+
+            if (Activated == 0)
+            {
+                break;
+            }
+            GCompoSounded = 0;
+            SFX_PlayX(5, 0x2000, 0);
+            int game = GGame;
+            GHorseSounded = 0;
+            if (GGame == 7)
+            {
+                if (NextHorseMode == 2)
+                {
+                    GHorseContinue = 1;
+                    GHorseRestart = 0;
+                    Trig_SetRestart(HorseRestarts[0]);
+                }
+                else
+                {
+                    GHorseMode = NextHorseMode;
+                    GHorseRestart = NextHorseRestart;
+                    GHorseScore = NextHorseScore;
+                    GHorsePlayer = NextHorsePlayer;
+                    GHorseLetters[0] = NextHorseLetters[0];
+                    GHorseLetters[1] = NextHorseLetters[1];
+                    Trig_SetRestart(HorseRestarts[NextHorseRestart]);
+                    SwitchOffPauseMode = 1;
+                    EndCode = static_cast<EEndCode>(game);
+                }
+                break;
+            }
+            if (GHighScoreLineIndex != -1)
+            {
+                Status = STATUS_HIGHSCORE;
+                InitStatsSwisch();
+                break;
+            }
+            Status = STATUS_ENDINGSCREEN;
+            break;
+        }
+
+        case STATUS_ENDHEATMENU:
+        {
+            if (Front_OnTime < 0xb)
+            {
+                Front_OnTime++;
+                break;
+            }
+            pEHMenu->Update();
+            if (Activated == 0)
+            {
+                break;
+            }
+            SFX_PlayX(5, 0x2000, 0);
+            Flash_Fade(0x20, 1);
+            if (pEHMenu->ChoiceIs(GameText.pQuit) != 0)
+            {
+                Status = STATUS_REALLYMAINMENU;
+            }
+            else if (pEHMenu->ChoiceIs(GameText.pNextHeat) != 0)
+            {
+                SwitchOffPauseMode = 1;
+                EndCode = ENDCODE_TWEAKJUMP;
+            }
+            else if (pEHMenu->ChoiceIs(GameText.pEndComp) != 0)
+            {
+                Status = STATUS_ENDHEATWINLOSE;
+            }
+            else if (pEHMenu->ChoiceIs(GameText.pWatchReplay) != 0)
+            {
+                Status = STATUS_ENDHEATVIDEOMENU;
+            }
+            break;
+        }
+
+        case STATUS_ENDGAME:
+        {
+            Competition_EndGameLogic(Status, Activated);
+            break;
+        }
+
+        case STATUS_ENDHEATWINLOSE:
+        {
+            Competition_WinLoseLogic(Status, Activated);
+            break;
+        }
+
+        case STATUS_MEDALSAVE:
+        {
+            pYesNoMenu->Update();
+            if (Activated != 0)
+            {
+                SFX_PlayX(5, 0x2000, 0);
+                Flash_Fade(0x20, 1);
+                if (pYesNoMenu->ChoiceIs(GameText.pYes) != 0)
+                {
+                    Front_SetSaveAction(SAVE_GAME);
+                    Front_InitMemCardMenus(0x200, SVSTATUS_CHECKINGCARDPAUSE, STATUS_ENDINGSCREEN);
+                    Status = STATUS_MEMCARDMENUS;
+                    break;
+                }
+                Status = STATUS_ENDINGSCREEN;
+            }
+            break;
+        }
+
+        case STATUS_ENDHEATLADDER:
+        {
+            Competition_LadderLogic();
+            if (Activated == 0)
+            {
+                break;
+            }
+            if (Competition_LadderFullyDisplayed() != 0)
+            {
+                Video_Stop(reinterpret_cast<CBruce *>(MechList));
+                GamePaused = 1;
+                SFX_StopAll();
+                if (Competition_NewHeat() != 0)
+                {
+                    Status = STATUS_ENDHEATMENU;
+                    pEHMenu->SetLine(pEHMenu->FindEntry(GameText.pNextHeat));
+                }
+                else
+                {
+                    Status = STATUS_ENDHEATWINLOSE;
+                }
+                break;
+            }
+            Competition_FullyDisplayLadder();
+            SFX_PlayX(0x34, 0x2000, 0);
+            break;
+        }
+
+        case STATUS_ENDHEATREPLAY:
+        {
+            Competition_JudgeLogic();
+            if (Front_OnTime >= 0xb)
+            {
+                if (Activated != 0)
+                {
+                    if (Competition_JudgeFullyDisplayed() != 0)
+                    {
+                        SFX_PlayX(5, 0x2000, 0);
+                        Status = STATUS_ENDHEATLADDER;
+                        GVideoReplay = -1;
+                        RestartCompFrig();
+                        if (pPausedMenu != 0)
+                        {
+                            Front_DestroyMenu(pPausedMenu);
+                        }
+                        pPausedMenu = 0;
+                        if ((EndCode != ENDCODE_PLAYERQUIT) &&
+                            (EndCode != ENDCODE_ENDLEVELDOSAVE) &&
+                            (EndCode != ENDCODE_ENDLEVELNOSAVE))
+                        {
+                            SFX_Unpause();
+                        }
+                        Video_SortAndMerge();
+                        if (GVInfo1.NumFrames > 0x5a)
+                        {
+                            CBruce *pSkater = reinterpret_cast<CBruce *>(MechList);
+                            CBruce *pSkater2 =
+                                reinterpret_cast<CBruce *>(pSkater->CSuper.CBody.mNextItem);
+                            GamePaused = 0;
+                            GVideoReplay = 0;
+                            GVInfo1.ReplayHighlight = 0;
+                            GVInfo2.ReplayHighlight = 0;
+                            Video_Start(pSkater, VIDEO_PLAYBACK, 1, 0x7fffffff);
+                            if (pSkater2 != 0)
+                            {
+                                Video_Start(pSkater2, VIDEO_PLAYBACK, 1, 0x7fffffff);
+                            }
+                            GState = 0;
+                            Flash_Reset();
+                            {
+                                CBruce *pSkater = reinterpret_cast<CBruce *>(MechList);
+                                CBruce *pSkater2 =
+                                    reinterpret_cast<CBruce *>(pSkater->CSuper.CBody.mNextItem);
+                                pSkater->mPlayTime = Xblanks + 0x34bde;
+                                if (pSkater2 != 0)
+                                {
+                                    pSkater2->mPlayTime = Xblanks + 0x34bde;
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Competition_FullyDisplayJudge();
+                        SFX_PlayX(0x34, 0x2000, 0);
+                    }
+                }
             }
             else
             {
-                EndCode = ENDCODE_ENDLEVELNOSAVE;
+                Front_OnTime++;
             }
-            SwitchOffPauseMode = 1;
-        }
-        break;
-    }
-
-    case STATUS_SETSOUNDLEVELS:
-    {
-        pSoundMenu->Update();
-        XALEVEL =
-            ((pSoundMenu->ChoiceIs(musicBuf) != 0) ||
-             (pSoundMenu->ChoiceIs(GameText.pSkipTrack) != 0))
-                ? GPreferences.Options.MusicVolume * 0x15
-                : 0;
-        Redbook_XAUpdateVolume();
-
-        if ((pSoundMenu->ChoiceIs(musicBuf) != 0) ||
-            (pSoundMenu->ChoiceIs(GameText.pSkipTrack) != 0))
-        {
-            Redbook_XAPause(false);
-        }
-        else
-        {
-            Redbook_XAPause(true);
+            break;
         }
 
-        if ((Pad[0].Left.Triggered != 0) || (Pad[1].Left.Triggered != 0))
+        case STATUS_ENDHEAT:
         {
-            Pad[0].Left.Triggered = 0;
-            Pad[1].Left.Triggered = 0;
-            if (pSoundMenu->ChoiceIs(soundBuf) != 0)
+            Status = STATUS_ENDHEATREPLAY;
+            Front_OnTime++;
+            break;
+        }
+
+        case STATUS_SAVEGAME:
+        {
+            pYesNoMenu->Update();
+            if (Activated != 0)
             {
-                if (soundVol > 0)
-                {
-                    soundVol--;
-                }
-                reinterpret_cast<SCareerOwner *>(&GCareer)->Options.SFXVolume = (soundVol * 6) / 5;
-                GPreferences.Options.SFXVolume =
-                    reinterpret_cast<SCareerOwner *>(&GCareer)->Options.SFXVolume;
-                sprintf(soundBuf, GameText.pSFXLevel, soundVol);
-                SFXLEVEL = reinterpret_cast<SCareerOwner *>(&GCareer)->Options.SFXVolume * 0x555;
                 SFX_PlayX(5, 0x2000, 0);
-            }
-            else if (pSoundMenu->ChoiceIs(musicBuf) != 0)
-            {
-                if (musicVol > 0)
+                Flash_Fade(0x20, 1);
+                if (pYesNoMenu->ChoiceIs(GameText.pYes) != 0)
                 {
-                    musicVol--;
+                    Front_SetSaveAction(SAVE_GAME);
+                    Front_InitMemCardMenus(0x200, SVSTATUS_CHECKINGCARDPAUSE, STATUS_ENDINGSCREEN);
+                    Status = STATUS_MEMCARDMENUS;
                 }
-                reinterpret_cast<SCareerOwner *>(&GCareer)->Options.MusicVolume = (musicVol * 6) / 5;
-                GPreferences.Options.MusicVolume =
-                    reinterpret_cast<SCareerOwner *>(&GCareer)->Options.MusicVolume;
-                sprintf(musicBuf, GameText.pMusicLevel, musicVol);
-            }
-        }
-        if ((Pad[0].Right.Triggered != 0) || (Pad[1].Right.Triggered != 0))
-        {
-            Pad[0].Right.Triggered = 0;
-            Pad[1].Right.Triggered = 0;
-            if (pSoundMenu->ChoiceIs(soundBuf) != 0)
-            {
-                if (soundVol < 10)
+                else
                 {
-                    soundVol++;
+                    Status = STATUS_ENDINGSCREEN;
                 }
-                reinterpret_cast<SCareerOwner *>(&GCareer)->Options.SFXVolume = (soundVol * 6) / 5;
-                GPreferences.Options.SFXVolume =
-                    reinterpret_cast<SCareerOwner *>(&GCareer)->Options.SFXVolume;
-                sprintf(soundBuf, GameText.pSFXLevel, soundVol);
-                SFXLEVEL = reinterpret_cast<SCareerOwner *>(&GCareer)->Options.SFXVolume * 0x555;
-                SFX_PlayX(5, 0x2000, 0);
             }
-            else if (pSoundMenu->ChoiceIs(musicBuf) != 0)
+            if (GoBack != 0)
             {
-                if (musicVol < 10)
+                SFX_PlayX(2, 0x2000, 0);
+                Status = STATUS_ENDINGSCREEN;
+            }
+            break;
+        }
+
+        case STATUS_ENDLEVELFADESCREEN:
+        {
+            Flash_Update();
+            if (Flash_FadeFinished() != 0)
+            {
+                EndCode = ENDCODE_PLAYERQUIT;
+                SwitchOffPauseMode = 1;
+                Horse_Reset();
+            }
+            break;
+        }
+
+        case STATUS_DOSAVEFADESCREEN:
+        case STATUS_NOSAVEFADESCREEN:
+        {
+            Flash_Update();
+            if (Flash_FadeFinished() != 0)
+            {
+                if (Status == STATUS_DOSAVEFADESCREEN)
                 {
-                    musicVol++;
+                    EndCode = ENDCODE_ENDLEVELDOSAVE;
                 }
-                reinterpret_cast<SCareerOwner *>(&GCareer)->Options.MusicVolume = (musicVol * 6) / 5;
-                GPreferences.Options.MusicVolume =
-                    reinterpret_cast<SCareerOwner *>(&GCareer)->Options.MusicVolume;
-                sprintf(musicBuf, GameText.pMusicLevel, musicVol);
+                else
+                {
+                    EndCode = ENDCODE_ENDLEVELNOSAVE;
+                }
+                SwitchOffPauseMode = 1;
             }
+            break;
         }
-        if (Activated != 0)
+
+        case STATUS_SETSOUNDLEVELS:
         {
-            if (pSoundMenu->ChoiceIs(GameText.pSkipTrack) != 0)
-            {
-                Redbook_XANextTrack();
-            }
-            else if (pSoundMenu->ChoiceIs(GameText.pBackToMainMenu) != 0)
-            {
-                GoBack = 1;
-            }
-        }
-        if (GoBack != 0)
-        {
-            SFX_PlayX(2, 0x2000, 0);
-            Status = STATUS_PAUSEDMENU;
-            XALEVEL = reinterpret_cast<SCareerOwner *>(&GCareer)->Options.MusicVolume * 0x15;
+            pSoundMenu->Update();
+            XALEVEL = ((pSoundMenu->ChoiceIs(musicBuf) != 0) ||
+                       (pSoundMenu->ChoiceIs(GameText.pSkipTrack) != 0))
+                          ? GPreferences.Options.MusicVolume * 0x15
+                          : 0;
             Redbook_XAUpdateVolume();
-            Redbook_XARestore(Front_PausedSongPosition());
+
+            if ((pSoundMenu->ChoiceIs(musicBuf) != 0) ||
+                (pSoundMenu->ChoiceIs(GameText.pSkipTrack) != 0))
+            {
+                Redbook_XAPause(false);
+            }
+            else
+            {
+                Redbook_XAPause(true);
+            }
+
+            if ((Pad[0].Left.Triggered != 0) || (Pad[1].Left.Triggered != 0))
+            {
+                Pad[0].Left.Triggered = 0;
+                Pad[1].Left.Triggered = 0;
+                if (pSoundMenu->ChoiceIs(soundBuf) != 0)
+                {
+                    if (soundVol > 0)
+                    {
+                        soundVol--;
+                    }
+                    reinterpret_cast<SCareerOwner *>(&GCareer)->Options.SFXVolume =
+                        (soundVol * 6) / 5;
+                    GPreferences.Options.SFXVolume =
+                        reinterpret_cast<SCareerOwner *>(&GCareer)->Options.SFXVolume;
+                    sprintf(soundBuf, GameText.pSFXLevel, soundVol);
+                    SFXLEVEL =
+                        reinterpret_cast<SCareerOwner *>(&GCareer)->Options.SFXVolume * 0x555;
+                    SFX_PlayX(5, 0x2000, 0);
+                }
+                else if (pSoundMenu->ChoiceIs(musicBuf) != 0)
+                {
+                    if (musicVol > 0)
+                    {
+                        musicVol--;
+                    }
+                    reinterpret_cast<SCareerOwner *>(&GCareer)->Options.MusicVolume =
+                        (musicVol * 6) / 5;
+                    GPreferences.Options.MusicVolume =
+                        reinterpret_cast<SCareerOwner *>(&GCareer)->Options.MusicVolume;
+                    sprintf(musicBuf, GameText.pMusicLevel, musicVol);
+                }
+            }
+            if ((Pad[0].Right.Triggered != 0) || (Pad[1].Right.Triggered != 0))
+            {
+                Pad[0].Right.Triggered = 0;
+                Pad[1].Right.Triggered = 0;
+                if (pSoundMenu->ChoiceIs(soundBuf) != 0)
+                {
+                    if (soundVol < 10)
+                    {
+                        soundVol++;
+                    }
+                    reinterpret_cast<SCareerOwner *>(&GCareer)->Options.SFXVolume =
+                        (soundVol * 6) / 5;
+                    GPreferences.Options.SFXVolume =
+                        reinterpret_cast<SCareerOwner *>(&GCareer)->Options.SFXVolume;
+                    sprintf(soundBuf, GameText.pSFXLevel, soundVol);
+                    SFXLEVEL =
+                        reinterpret_cast<SCareerOwner *>(&GCareer)->Options.SFXVolume * 0x555;
+                    SFX_PlayX(5, 0x2000, 0);
+                }
+                else if (pSoundMenu->ChoiceIs(musicBuf) != 0)
+                {
+                    if (musicVol < 10)
+                    {
+                        musicVol++;
+                    }
+                    reinterpret_cast<SCareerOwner *>(&GCareer)->Options.MusicVolume =
+                        (musicVol * 6) / 5;
+                    GPreferences.Options.MusicVolume =
+                        reinterpret_cast<SCareerOwner *>(&GCareer)->Options.MusicVolume;
+                    sprintf(musicBuf, GameText.pMusicLevel, musicVol);
+                }
+            }
+            if (Activated != 0)
+            {
+                if (pSoundMenu->ChoiceIs(GameText.pSkipTrack) != 0)
+                {
+                    Redbook_XANextTrack();
+                }
+                else if (pSoundMenu->ChoiceIs(GameText.pBackToMainMenu) != 0)
+                {
+                    GoBack = 1;
+                }
+            }
+            if (GoBack != 0)
+            {
+                SFX_PlayX(2, 0x2000, 0);
+                Status = STATUS_PAUSEDMENU;
+                XALEVEL = reinterpret_cast<SCareerOwner *>(&GCareer)->Options.MusicVolume * 0x15;
+                Redbook_XAUpdateVolume();
+                Redbook_XARestore(Front_PausedSongPosition());
+            }
+            break;
         }
-        break;
-    }
 
-    case STATUS_ENDHEATJUDGES:
-    {
-        break;
-    }
+        case STATUS_ENDHEATJUDGES:
+        {
+            break;
+        }
 
-    case STATUS_BEGINHEAT:
-    {
-        break;
-    }
+        case STATUS_BEGINHEAT:
+        {
+            break;
+        }
 
-    case STATUS_MPC_BEGIN:
-    {
-        break;
-    }
+        case STATUS_MPC_BEGIN:
+        {
+            break;
+        }
 
-    case STATUS_MPC_BEGINHEAT:
-    {
-        break;
-    }
+        case STATUS_MPC_BEGINHEAT:
+        {
+            break;
+        }
 
-    case STATUS_MPC_JUDGES:
-    {
-        break;
-    }
+        case STATUS_MPC_JUDGES:
+        {
+            break;
+        }
 
-    case STATUS_MPC_LADDER:
-    {
-        // Case 30: MPC ladder
-        break;
-    }
+        case STATUS_MPC_LADDER:
+        {
+            // Case 30: MPC ladder
+            break;
+        }
 
-    case STATUS_MPC_LADDERFINAL:
-    {
-        // Case 31: MPC ladder final
-        break;
-    }
+        case STATUS_MPC_LADDERFINAL:
+        {
+            // Case 31: MPC ladder final
+            break;
+        }
 
-    case STATUS_MPC_SWITCH:
-    {
-        // Case 32: MPC switch
-        break;
-    }
+        case STATUS_MPC_SWITCH:
+        {
+            // Case 32: MPC switch
+            break;
+        }
 
-    case STATUS_MPC_ENDHEAT:
-    {
-        // Case 33: MPC end heat
-        break;
-    }
+        case STATUS_MPC_ENDHEAT:
+        {
+            // Case 33: MPC end heat
+            break;
+        }
 
-    case STATUS_MPC_WINNER:
-    {
-        // Case 34: MPC winner
-        break;
-    }
+        case STATUS_MPC_WINNER:
+        {
+            // Case 34: MPC winner
+            break;
+        }
 
-    case STATUS_ENDGAMEALLGOLD:
-    {
-        // Case 36: End game all gold
-        break;
-    }
+        case STATUS_ENDGAMEALLGOLD:
+        {
+            // Case 36: End game all gold
+            break;
+        }
 
-    case STATUS_ENDGAMEPLAYERMOVIE:
-    {
-        // Case 37: End game player movie
-        break;
-    }
+        case STATUS_ENDGAMEPLAYERMOVIE:
+        {
+            // Case 37: End game player movie
+            break;
+        }
 
-    case STATUS_ENDGAMEBAILMOVIE:
-    {
-        // Case 38: End game bail movie
-        break;
-    }
+        case STATUS_ENDGAMEBAILMOVIE:
+        {
+            // Case 38: End game bail movie
+            break;
+        }
 
-    case STATUS_ENDGAMESAVE:
-    {
-        // Case 39: End game save
-        break;
-    }
+        case STATUS_ENDGAMESAVE:
+        {
+            // Case 39: End game save
+            break;
+        }
 
-    case STATUS_ENDGAMECREDITS:
-    {
-        // Case 40: End game credits
-        break;
-    }
+        case STATUS_ENDGAMECREDITS:
+        {
+            // Case 40: End game credits
+            break;
+        }
 
-    case STATUS_LOADSUCCESS:
-    {
-        // Case 43: Load success
-        break;
-    }
+        case STATUS_LOADSUCCESS:
+        {
+            // Case 43: Load success
+            break;
+        }
 
-    case STATUS_LOADFAILED:
-    {
-        // Case 44: Load failed
-        break;
-    }
+        case STATUS_LOADFAILED:
+        {
+            // Case 44: Load failed
+            break;
+        }
 
-    default:
-        break;
+        default: break;
     }
 
 switch_end:
@@ -5048,8 +5043,7 @@ switch_end:
         }
         {
             pPausedMenu = 0;
-            if (EndCode != ENDCODE_PLAYERQUIT &&
-                EndCode != ENDCODE_ENDLEVELDOSAVE &&
+            if (EndCode != ENDCODE_PLAYERQUIT && EndCode != ENDCODE_ENDLEVELDOSAVE &&
                 EndCode != ENDCODE_ENDLEVELNOSAVE)
             {
                 SFX_Unpause();
@@ -5074,15 +5068,13 @@ SLevel *Front_FindLevel(char *pTRGName)
     int k = 0;
     while (*Levels[k].pTRGName != 0)
     {
-        if (Utils_CompareStrings(Levels[k].pTRGName, pTRGName,
-                                 static_cast<unsigned int>(-1)) != 0)
+        if (Utils_CompareStrings(Levels[k].pTRGName, pTRGName, static_cast<unsigned int>(-1)) != 0)
         {
             CurrentGameLevel = k;
             pLevel = &Levels[k];
             break;
         }
-        if (++k >= 0x29)
-            break;
+        if (++k >= 0x29) break;
     }
     return pLevel;
 }
@@ -5106,8 +5098,7 @@ void Front_SaveGameState(void)
     *pDest = '\0';
 
     CVector Dummy;
-    CSVector *pAngles =
-        reinterpret_cast<CSVector *>(Trig_GetPosition(Dummy, RestartNode));
+    CSVector *pAngles = reinterpret_cast<CSVector *>(Trig_GetPosition(Dummy, RestartNode));
     pSource = reinterpret_cast<char *>(pAngles + 1);
     pDest = LastGameState.State.RestartName;
     while (*pSource != '\0')
@@ -5170,8 +5161,7 @@ void Front_LoadGame(SSaveGame *pGame)
 {
     // FIXME(match): asm barrier — anchors entry block so the callee-saved stores precede the first lui/addiu pair (addiu in jal delay slot); tried: arg via local, comma-expr arg, TrigFileName store first (all score 6-7).
     __asm__ __volatile__("");
-    Front_DisplayScreen(
-        FrontAddressViewOwners::s_S2Demo2Bmp);
+    Front_DisplayScreen(FrontAddressViewOwners::s_S2Demo2Bmp);
 
     TrigFileName = pGame->State.TrigFileName;
 
@@ -5187,42 +5177,31 @@ void Front_LoadGame(SSaveGame *pGame)
 
     // Create sprites (score, special, bar, paused)
     {
-        Sprite *spr = static_cast<Sprite *>(
-            ::CClass::operator new(sizeof(Sprite)));
+        Sprite *spr = static_cast<Sprite *>(::CClass::operator new(sizeof(Sprite)));
         if (spr != 0)
         {
-            spr = ::new (spr) Sprite(
-                FrontAddressViewOwners::s_ScorepBmp,
-                1, 0x100, 0x100);
+            spr = ::new (spr) Sprite(FrontAddressViewOwners::s_ScorepBmp, 1, 0x100, 0x100);
         }
         pScoreSprite = spr;
     }
     {
-        Sprite *spr = static_cast<Sprite *>(
-            ::CClass::operator new(sizeof(Sprite)));
+        Sprite *spr = static_cast<Sprite *>(::CClass::operator new(sizeof(Sprite)));
         if (spr != 0)
         {
-            spr = ::new (spr) Sprite(
-                FrontAddressViewOwners::s_SpecialBmp,
-                1, 0x100, 0x100);
+            spr = ::new (spr) Sprite(FrontAddressViewOwners::s_SpecialBmp, 1, 0x100, 0x100);
         }
         pSpecialSprite = spr;
     }
     {
-        Sprite *spr = static_cast<Sprite *>(
-            ::CClass::operator new(sizeof(Sprite)));
+        Sprite *spr = static_cast<Sprite *>(::CClass::operator new(sizeof(Sprite)));
         if (spr != 0)
         {
-            spr = ::new (spr) Sprite(
-                FrontAddressViewOwners::s_SpecBarBmp,
-                1, 0x100, 0x100);
+            spr = ::new (spr) Sprite(FrontAddressViewOwners::s_SpecBarBmp, 1, 0x100, 0x100);
         }
         pBarSprite = spr;
     }
     {
-        Sprite2 *spr = new Sprite2(
-            FrontAddressViewOwners::s_PausedBmp,
-            1, 0x40, 0x100);
+        Sprite2 *spr = new Sprite2(FrontAddressViewOwners::s_PausedBmp, 1, 0x40, 0x100);
         pPausedSprite = reinterpret_cast<Sprite *>(spr);
         spr->JustX = 1;
     }
@@ -5242,8 +5221,7 @@ void Front_LoadGame(SSaveGame *pGame)
 
     if (Levels[GLevel].isCompetition != 0 && GGame == 1)
     {
-        region = Spool_PSX(
-            FrontAddressViewOwners::s_SkMedals, 0, 0, 1);
+        region = Spool_PSX(FrontAddressViewOwners::s_SkMedals, 0, 0, 1);
     }
     CurrentMedalsFileRegion = static_cast<u8>(region);
 
@@ -5282,15 +5260,12 @@ void Front_LoadGame(SSaveGame *pGame)
             }
             else if (NumberOfOnscreenSkaters >= 2)
             {
-                GSkaterRegion[i] = Spool_GetReducedSkater(
-                        Stats[selectedSkater].PSXName2,
-                        s_Sk2Anim);
+                GSkaterRegion[i] =
+                    Spool_GetReducedSkater(Stats[selectedSkater].PSXName2, s_Sk2Anim);
             }
             else
             {
-                GSkaterRegion[i] = Spool_GetReducedSkater(
-                        Stats[selectedSkater].PSXName,
-                        s_Sk2Anim);
+                GSkaterRegion[i] = Spool_GetReducedSkater(Stats[selectedSkater].PSXName, s_Sk2Anim);
             }
 
             GHeadPart = -1;
@@ -5307,8 +5282,8 @@ void Front_LoadGame(SSaveGame *pGame)
     FileIO_SetSectorsPerFrame(0x7d0);
     if (GenerateLevel != 0)
     {
-        LevelGenerator *ed = static_cast<LevelGenerator *>(
-            ::CClass::operator new(FrontLevelGeneratorStorageSize));
+        LevelGenerator *ed =
+            static_cast<LevelGenerator *>(::CClass::operator new(FrontLevelGeneratorStorageSize));
         if (ed != 0)
         {
             ed = ::new (ed) LevelGenerator(true);
@@ -5324,9 +5299,7 @@ void Front_LoadGame(SSaveGame *pGame)
         {
             Front_DestroyPolymorphic(ed);
         }
-        *reinterpret_cast<FrontEditorLevelSuffixBytes *>(
-            pGame->State.RestartName) =
-            s_AckSuffix[0];
+        *reinterpret_cast<FrontEditorLevelSuffixBytes *>(pGame->State.RestartName) = s_AckSuffix[0];
     }
     else
     {
@@ -5359,8 +5332,7 @@ void Front_LoadGame(SSaveGame *pGame)
         promptFont.JustY = 3;
 
         PromptScreenElement *pElement = new PromptScreenElement(
-            FrontAddressViewOwners::s_S2Prmpt1Bmp,
-            FrontAddressViewOwners::s_ToContinue,
+            FrontAddressViewOwners::s_S2Prmpt1Bmp, FrontAddressViewOwners::s_ToContinue,
             promptFontPointer, 0xbd, 0xda, -1, -1);
 
         unsigned int oldDb_SkyColor = Db_SkyColor;
@@ -5407,7 +5379,6 @@ void Front_LoadGame(SSaveGame *pGame)
 }
 
 
-
 /* FRONT initialized small-data definitions, in original owner order. */
 int GHorseContinue __attribute__((section(".sdata"))) = 0;
 int MIDILEVEL __attribute__((section(".sdata"))) = 0x4000;
@@ -5421,42 +5392,44 @@ int GHighScoreLineIndex __attribute__((section(".sdata"))) = -1;
 int GHighScoreInitialCursorPos __attribute__((section(".sdata"))) = 0;
 int GSoftResetEnabled __attribute__((section(".sdata"))) = 1;
 EPausedStatus Status __attribute__((section(".sdata"))) = STATUS_NORMAL;
-namespace { extern "C++" {
+namespace
+{
+extern "C++"
+{
 int DemoFlashTimer __attribute__((section(".sdata"))) = 0x30;
-char DemoString[]
-    __attribute__((section(".sdata"), aligned(4))) = "demo mode";
-char HorseLabel1[]
-    __attribute__((section(".sdata"), aligned(4))) = "PLAYER 1";
-char HorseLabel2[]
-    __attribute__((section(".sdata"), aligned(4))) = "PLAYER 2";
-} }
+char DemoString[] __attribute__((section(".sdata"), aligned(4))) = "demo mode";
+char HorseLabel1[] __attribute__((section(".sdata"), aligned(4))) = "PLAYER 1";
+char HorseLabel2[] __attribute__((section(".sdata"), aligned(4))) = "PLAYER 2";
+}
+}
 int CurrentFrontBackground __attribute__((section(".sdata"))) = 0;
 
-namespace { extern "C++" {
-char FrontRoofLib[] __attribute__((section(".sdata"), aligned(4))) =
-    "roof_lib";
-char FrontRoofEnv[] __attribute__((section(".sdata"), aligned(4))) =
-    "roof_1";
-char FrontRoofSizes[] __attribute__((section(".sdata"), aligned(4))) =
-    "roofback";
-char FrontSewerLib[] __attribute__((section(".sdata"), aligned(4))) =
-    "sewr_lib";
-char FrontSewerEnv[] __attribute__((section(".sdata"), aligned(4))) =
-    "sewr_4";
-char FrontSewerSizes[] __attribute__((section(".sdata"), aligned(4))) =
-    "sewrback";
-char FrontNoBackground[] __attribute__((section(".sdata"), aligned(4))) =
-    "";
-} }
+namespace
+{
+extern "C++"
+{
+char FrontRoofLib[] __attribute__((section(".sdata"), aligned(4))) = "roof_lib";
+char FrontRoofEnv[] __attribute__((section(".sdata"), aligned(4))) = "roof_1";
+char FrontRoofSizes[] __attribute__((section(".sdata"), aligned(4))) = "roofback";
+char FrontSewerLib[] __attribute__((section(".sdata"), aligned(4))) = "sewr_lib";
+char FrontSewerEnv[] __attribute__((section(".sdata"), aligned(4))) = "sewr_4";
+char FrontSewerSizes[] __attribute__((section(".sdata"), aligned(4))) = "sewrback";
+char FrontNoBackground[] __attribute__((section(".sdata"), aligned(4))) = "";
+}
+}
 
 const unsigned int *pSizeData __attribute__((section(".sdata"))) = 0;
 int GamePaused __attribute__((section(".sdata"))) = 0;
 
-namespace { extern "C++" {
+namespace
+{
+extern "C++"
+{
 int WobbleAmplitude __attribute__((section(".sdata"))) = 0;
 int WobbleT __attribute__((section(".sdata"))) = 0;
 int UpDownAutoRepeatTimer __attribute__((section(".sdata"))) = 0;
-} }
+}
+}
 
 #define FRONTTIMERS_LEFT_RIGHT_TIMER_OWNER_DECLARATION
 #include "FRONTTIMERS.h"
@@ -5477,264 +5450,427 @@ namespace FrontAddressViewOwners
 {
 extern "C"
 {
-namespace { extern "C++" {
-RECT Db_SkyColorBak[]
-    __attribute__((section(".sdata"))) = {
-        {0, 0, 512, 511},
-    };
-} }
+namespace
+{
+extern "C++"
+{
+RECT Db_SkyColorBak[] __attribute__((section(".sdata"))) = {
+    { 0, 0, 512, 511 },
+};
+}
+}
 }
 }
 
-namespace { extern "C++" {
+namespace
+{
+extern "C++"
+{
 int GaugeOn __attribute__((section(".sdata"))) = 0;
 unsigned int TotalProgress __attribute__((section(".sdata"))) = 0;
 unsigned int TotalSize __attribute__((section(".sdata"))) = 0;
-FrontLoadingGaugeState FrontLoadingGauge
-    __attribute__((section(".sdata"))) = {
-        {106, 200, 300, 12},
-        {108, 201, 296, 10},
-        {0, 0, 0, 0},
-        {108, 201, 0, 10},
-    };
-} }
-
-extern "C"
-{
-    namespace { extern "C++" {
-CMenu *pPausedMenu __attribute__((section(".sdata"))) = 0;
-} }
-    namespace { extern "C++" {
-CMenu *pRestartsMenu __attribute__((section(".sdata"))) = 0;
-} }
-
-    namespace FrontAddressViewOwners
-    {
-    namespace { extern "C++" {
-char GrafLabel1[]
-        __attribute__((section(".sdata"), aligned(4))) = "TAGS";
-} }
-    namespace { extern "C++" {
-char GrafLabel2[]
-        __attribute__((section(".sdata"), aligned(4))) = "STEALS";
-} }
-    namespace { extern "C++" {
-char GrafLabel3[]
-        __attribute__((section(".sdata"), aligned(4))) = "HIGH";
-} }
-    namespace { extern "C++" {
-char GrafLabel4[]
-        __attribute__((section(".sdata"), aligned(4))) = "WINS";
-} }
-    namespace { extern "C++" {
-char GrafLabel5[]
-        __attribute__((section(".sdata"), aligned(4))) = "LOSSES";
-} }
-    namespace { extern "C++" {
-char GrafLabel6[]
-        __attribute__((section(".sdata"), aligned(4))) = "STREAK";
-} }
-    }
-
-    namespace FrontAddressViewOwners
-    {
-    namespace { extern "C++" {
-char GrafFmt[4]
-        __attribute__((section(".sdata"), aligned(4))) = "%d";
-} }
-    }
-    namespace { extern "C++" {
-char Front_GrafPlayer1Match[16]
-        __attribute__((section(".sdata"), aligned(4))) = "PLAYER 1 MATCH";
-} }
-    namespace { extern "C++" {
-char Front_GrafPlayer2Match[16]
-        __attribute__((section(".sdata"), aligned(4))) = "PLAYER 2 MATCH";
-} }
-    namespace { extern "C++" {
-char Front_GrafSeparator[4]
-        __attribute__((section(".sdata"), aligned(4))) = "_";
-} }
-    namespace { extern "C++" {
-char Front_GrafStringFormat[4]
-        __attribute__((section(".sdata"), aligned(4))) = "%s";
-} }
-    namespace { extern "C++" {
-char Front_GrafTimeUp[12]
-        __attribute__((section(".sdata"), aligned(4))) = "TIME IS UP!";
-} }
-    namespace { extern "C++" {
-char Front_GrafGameOver[12]
-        __attribute__((section(".sdata"), aligned(4))) = "GAME OVER";
-} }
-    namespace { extern "C++" {
-char Front_GrafCountFormat[12]
-        __attribute__((section(".sdata"), aligned(4))) = "%ld of %ld";
-} }
-    namespace { extern "C++" {
-char Front_GrafLongFormat[4]
-        __attribute__((section(".sdata"), aligned(4))) = "%ld";
-} }
-    namespace { extern "C++" {
-char Front_GrafTrickFont[16]
-        __attribute__((section(".sdata"), aligned(4))) = "s2tricks.fnt";
-} }
-    namespace { extern "C++" {
-char Front_GrafPasscodeFormat[16]
-        __attribute__((section(".sdata"), aligned(4))) = "PASSCODE : %s";
-} }
-    namespace { extern "C++" {
-char Front_GrafTie[4]
-        __attribute__((section(".sdata"), aligned(4))) = "TIE";
-} }
-    namespace { extern "C++" {
-char Front_GrafPlayer2Wins[16]
-        __attribute__((section(".sdata"), aligned(4))) = "PLAYER TWO WINS";
-} }
-    namespace { extern "C++" {
-char Front_GrafPlayer1Wins[16]
-        __attribute__((section(".sdata"), aligned(4))) = "PLAYER ONE WINS";
-} }
-    namespace { extern "C++" {
-char Front_GrafScoreSetFormat[16]
-        __attribute__((section(".sdata"), aligned(4))) = "SCORE SET AT %d";
-} }
-    namespace { extern "C++" {
-char Front_GrafGoingForFormat[16]
-        __attribute__((section(".sdata"), aligned(4))) = "GOING FOR %d";
-} }
-    namespace { extern "C++" {
-char Front_GrafYouScoredFormat[16]
-        __attribute__((section(".sdata"), aligned(4))) = "YOU SCORED %d";
-} }
-    namespace { extern "C++" {
-char Front_GrafPush[8]
-        __attribute__((section(".sdata"), aligned(4))) = "PUSH";
-} }
-    namespace { extern "C++" {
-char Front_GrafYouAreAn[12]
-        __attribute__((section(".sdata"), aligned(4))) = "YOU ARE AN";
-} }
-    namespace { extern "C++" {
-char Front_GrafYouAreA[12]
-        __attribute__((section(".sdata"), aligned(4))) = "YOU ARE A";
-} }
-    namespace { extern "C++" {
-char Front_GrafSwitch[8]
-        __attribute__((section(".sdata"), aligned(4))) = "SWITCH";
-} }
-    namespace { extern "C++" {
-char Front_GrafPlayer1ScoreFormat[16]
-        __attribute__((section(".sdata"), aligned(4))) = "PLAYER ONE %d";
-} }
-    namespace { extern "C++" {
-char Front_GrafPlayer2ScoreFormat[16]
-        __attribute__((section(".sdata"), aligned(4))) = "PLAYER TWO %d";
-} }
-    namespace { extern "C++" {
-char Front_GrafDraw[8]
-        __attribute__((section(".sdata"), aligned(4))) = "DRAW";
-} }
-    namespace { extern "C++" {
-char Front_GrafGameStateFormat[12]
-        __attribute__((section(".sdata"), aligned(4))) = "gs = %d\n";
-} }
-
-    namespace FrontAddressViewOwners
-    {
-    namespace { extern "C++" {
-char _restart_comp_string[]
-        __attribute__((section(".sdata"), aligned(4))) = "RE_START_FRIG";
-} }
-    }
+FrontLoadingGaugeState FrontLoadingGauge __attribute__((section(".sdata"))) = {
+    { 106, 200, 300, 12 },
+    { 108, 201, 296, 10 },
+    { 0, 0, 0, 0 },
+    { 108, 201, 0, 10 },
+};
+}
 }
 
-namespace { extern "C++" {
-int StartSelectPressed
-    __attribute__((section(".sdata"))) = 0;
-unsigned int VblanksWhenStartSelectFirstPressed
-    __attribute__((section(".sdata"))) = 0;
-char FrontEditorPrefix[]
-    __attribute__((section(".sdata"), aligned(4))) = "de_";
-} }
+extern "C"
+{
+namespace
+{
+extern "C++"
+{
+CMenu *pPausedMenu __attribute__((section(".sdata"))) = 0;
+}
+}
+namespace
+{
+extern "C++"
+{
+CMenu *pRestartsMenu __attribute__((section(".sdata"))) = 0;
+}
+}
+
+namespace FrontAddressViewOwners
+{
+namespace
+{
+extern "C++"
+{
+char GrafLabel1[] __attribute__((section(".sdata"), aligned(4))) = "TAGS";
+}
+}
+namespace
+{
+extern "C++"
+{
+char GrafLabel2[] __attribute__((section(".sdata"), aligned(4))) = "STEALS";
+}
+}
+namespace
+{
+extern "C++"
+{
+char GrafLabel3[] __attribute__((section(".sdata"), aligned(4))) = "HIGH";
+}
+}
+namespace
+{
+extern "C++"
+{
+char GrafLabel4[] __attribute__((section(".sdata"), aligned(4))) = "WINS";
+}
+}
+namespace
+{
+extern "C++"
+{
+char GrafLabel5[] __attribute__((section(".sdata"), aligned(4))) = "LOSSES";
+}
+}
+namespace
+{
+extern "C++"
+{
+char GrafLabel6[] __attribute__((section(".sdata"), aligned(4))) = "STREAK";
+}
+}
+}
+
+namespace FrontAddressViewOwners
+{
+namespace
+{
+extern "C++"
+{
+char GrafFmt[4] __attribute__((section(".sdata"), aligned(4))) = "%d";
+}
+}
+}
+namespace
+{
+extern "C++"
+{
+char Front_GrafPlayer1Match[16] __attribute__((section(".sdata"), aligned(4))) = "PLAYER 1 MATCH";
+}
+}
+namespace
+{
+extern "C++"
+{
+char Front_GrafPlayer2Match[16] __attribute__((section(".sdata"), aligned(4))) = "PLAYER 2 MATCH";
+}
+}
+namespace
+{
+extern "C++"
+{
+char Front_GrafSeparator[4] __attribute__((section(".sdata"), aligned(4))) = "_";
+}
+}
+namespace
+{
+extern "C++"
+{
+char Front_GrafStringFormat[4] __attribute__((section(".sdata"), aligned(4))) = "%s";
+}
+}
+namespace
+{
+extern "C++"
+{
+char Front_GrafTimeUp[12] __attribute__((section(".sdata"), aligned(4))) = "TIME IS UP!";
+}
+}
+namespace
+{
+extern "C++"
+{
+char Front_GrafGameOver[12] __attribute__((section(".sdata"), aligned(4))) = "GAME OVER";
+}
+}
+namespace
+{
+extern "C++"
+{
+char Front_GrafCountFormat[12] __attribute__((section(".sdata"), aligned(4))) = "%ld of %ld";
+}
+}
+namespace
+{
+extern "C++"
+{
+char Front_GrafLongFormat[4] __attribute__((section(".sdata"), aligned(4))) = "%ld";
+}
+}
+namespace
+{
+extern "C++"
+{
+char Front_GrafTrickFont[16] __attribute__((section(".sdata"), aligned(4))) = "s2tricks.fnt";
+}
+}
+namespace
+{
+extern "C++"
+{
+char Front_GrafPasscodeFormat[16] __attribute__((section(".sdata"), aligned(4))) = "PASSCODE : %s";
+}
+}
+namespace
+{
+extern "C++"
+{
+char Front_GrafTie[4] __attribute__((section(".sdata"), aligned(4))) = "TIE";
+}
+}
+namespace
+{
+extern "C++"
+{
+char Front_GrafPlayer2Wins[16] __attribute__((section(".sdata"), aligned(4))) = "PLAYER TWO WINS";
+}
+}
+namespace
+{
+extern "C++"
+{
+char Front_GrafPlayer1Wins[16] __attribute__((section(".sdata"), aligned(4))) = "PLAYER ONE WINS";
+}
+}
+namespace
+{
+extern "C++"
+{
+char Front_GrafScoreSetFormat[16] __attribute__((section(".sdata"), aligned(4))) =
+    "SCORE SET AT %d";
+}
+}
+namespace
+{
+extern "C++"
+{
+char Front_GrafGoingForFormat[16] __attribute__((section(".sdata"), aligned(4))) = "GOING FOR %d";
+}
+}
+namespace
+{
+extern "C++"
+{
+char Front_GrafYouScoredFormat[16] __attribute__((section(".sdata"), aligned(4))) = "YOU SCORED %d";
+}
+}
+namespace
+{
+extern "C++"
+{
+char Front_GrafPush[8] __attribute__((section(".sdata"), aligned(4))) = "PUSH";
+}
+}
+namespace
+{
+extern "C++"
+{
+char Front_GrafYouAreAn[12] __attribute__((section(".sdata"), aligned(4))) = "YOU ARE AN";
+}
+}
+namespace
+{
+extern "C++"
+{
+char Front_GrafYouAreA[12] __attribute__((section(".sdata"), aligned(4))) = "YOU ARE A";
+}
+}
+namespace
+{
+extern "C++"
+{
+char Front_GrafSwitch[8] __attribute__((section(".sdata"), aligned(4))) = "SWITCH";
+}
+}
+namespace
+{
+extern "C++"
+{
+char Front_GrafPlayer1ScoreFormat[16] __attribute__((section(".sdata"), aligned(4))) =
+    "PLAYER ONE %d";
+}
+}
+namespace
+{
+extern "C++"
+{
+char Front_GrafPlayer2ScoreFormat[16] __attribute__((section(".sdata"), aligned(4))) =
+    "PLAYER TWO %d";
+}
+}
+namespace
+{
+extern "C++"
+{
+char Front_GrafDraw[8] __attribute__((section(".sdata"), aligned(4))) = "DRAW";
+}
+}
+namespace
+{
+extern "C++"
+{
+char Front_GrafGameStateFormat[12] __attribute__((section(".sdata"), aligned(4))) = "gs = %d\n";
+}
+}
+
+namespace FrontAddressViewOwners
+{
+namespace
+{
+extern "C++"
+{
+char _restart_comp_string[] __attribute__((section(".sdata"), aligned(4))) = "RE_START_FRIG";
+}
+}
+}
+}
+
+namespace
+{
+extern "C++"
+{
+int StartSelectPressed __attribute__((section(".sdata"))) = 0;
+unsigned int VblanksWhenStartSelectFirstPressed __attribute__((section(".sdata"))) = 0;
+char FrontEditorPrefix[] __attribute__((section(".sdata"), aligned(4))) = "de_";
+}
+}
 
 extern "C"
 {
-    namespace FrontAddressViewOwners
-    {
-    namespace { extern "C++" {
-char s_S2Demo2Bmp[]
-        __attribute__((section(".sdata"), aligned(4))) = "s2demo2.bmp";
-} }
-    namespace { extern "C++" {
-char s_Skate2Vab[]
-        __attribute__((section(".sdata"), aligned(4))) = "skate2.vab";
-} }
-    namespace { extern "C++" {
-char s_ScorepBmp[]
-        __attribute__((section(".sdata"), aligned(4))) = "scorep.bmp";
-} }
-    namespace { extern "C++" {
-char s_SpecialBmp[]
-        __attribute__((section(".sdata"), aligned(4))) = "special.bmp";
-} }
-    namespace { extern "C++" {
-char s_SpecBarBmp[]
-        __attribute__((section(".sdata"), aligned(4))) = "spec_bar.bmp";
-} }
-    namespace { extern "C++" {
-char s_PausedBmp[]
-        __attribute__((section(".sdata"), aligned(4))) = "paused.bmp";
-} }
-    namespace { extern "C++" {
-char s_Bits[]
-        __attribute__((section(".sdata"), aligned(4))) = "bits";
-} }
-    namespace { extern "C++" {
-char s_Items[]
-        __attribute__((section(".sdata"), aligned(4))) = "items";
-} }
-    namespace { extern "C++" {
-char s_SkMedals[]
-        __attribute__((section(".sdata"), aligned(4))) = "SkMedals";
-} }
-    namespace { extern "C++" {
-char s_Sk2Anim[]
-        __attribute__((section(".sdata"), aligned(4))) = "sk2anim";
-} }
-    namespace { extern "C++" {
-char s_SkEdThemeFmt[]
-        __attribute__((section(".sdata"), aligned(4))) = "SkEd%d";
-} }
-    }
+namespace FrontAddressViewOwners
+{
+namespace
+{
+extern "C++"
+{
+char s_S2Demo2Bmp[] __attribute__((section(".sdata"), aligned(4))) = "s2demo2.bmp";
+}
+}
+namespace
+{
+extern "C++"
+{
+char s_Skate2Vab[] __attribute__((section(".sdata"), aligned(4))) = "skate2.vab";
+}
+}
+namespace
+{
+extern "C++"
+{
+char s_ScorepBmp[] __attribute__((section(".sdata"), aligned(4))) = "scorep.bmp";
+}
+}
+namespace
+{
+extern "C++"
+{
+char s_SpecialBmp[] __attribute__((section(".sdata"), aligned(4))) = "special.bmp";
+}
+}
+namespace
+{
+extern "C++"
+{
+char s_SpecBarBmp[] __attribute__((section(".sdata"), aligned(4))) = "spec_bar.bmp";
+}
+}
+namespace
+{
+extern "C++"
+{
+char s_PausedBmp[] __attribute__((section(".sdata"), aligned(4))) = "paused.bmp";
+}
+}
+namespace
+{
+extern "C++"
+{
+char s_Bits[] __attribute__((section(".sdata"), aligned(4))) = "bits";
+}
+}
+namespace
+{
+extern "C++"
+{
+char s_Items[] __attribute__((section(".sdata"), aligned(4))) = "items";
+}
+}
+namespace
+{
+extern "C++"
+{
+char s_SkMedals[] __attribute__((section(".sdata"), aligned(4))) = "SkMedals";
+}
+}
+namespace
+{
+extern "C++"
+{
+char s_Sk2Anim[] __attribute__((section(".sdata"), aligned(4))) = "sk2anim";
+}
+}
+namespace
+{
+extern "C++"
+{
+char s_SkEdThemeFmt[] __attribute__((section(".sdata"), aligned(4))) = "SkEd%d";
+}
+}
+}
 
-    namespace FrontAddressViewOwners
-    {
-    namespace { extern "C++" {
+namespace FrontAddressViewOwners
+{
+namespace
+{
+extern "C++"
+{
 FrontEditorLevelSuffixBytes s_AckSuffix
-        __attribute__((section(".sdata"))) = {{'a', 'c', 'k', '\0'}};
-} }
-    }
-    namespace FrontAddressViewOwners
-    {
-    namespace { extern "C++" {
-char s_S2Prmpt1Bmp[]
-        __attribute__((section(".sdata"), aligned(4))) = "s2prmpt1.bmp";
-} }
-    namespace { extern "C++" {
-char s_ToContinue[]
-        __attribute__((section(".sdata"), aligned(4))) = "to continue";
-} }
-    }
-    namespace FrontAddressViewOwners
-    {
-    namespace { extern "C++" {
-int s_PromptClipRectLo
-        __attribute__((section(".sdata"))) = 0x00cb00a3;
-} }
-    namespace { extern "C++" {
-int s_PromptClipRectHi
-        __attribute__((section(".sdata"))) = 0x002300ba;
-} }
-    }
+    __attribute__((section(".sdata"))) = { { 'a', 'c', 'k', '\0' } };
+}
+}
+}
+namespace FrontAddressViewOwners
+{
+namespace
+{
+extern "C++"
+{
+char s_S2Prmpt1Bmp[] __attribute__((section(".sdata"), aligned(4))) = "s2prmpt1.bmp";
+}
+}
+namespace
+{
+extern "C++"
+{
+char s_ToContinue[] __attribute__((section(".sdata"), aligned(4))) = "to continue";
+}
+}
+}
+namespace FrontAddressViewOwners
+{
+namespace
+{
+extern "C++"
+{
+int s_PromptClipRectLo __attribute__((section(".sdata"))) = 0x00cb00a3;
+}
+}
+namespace
+{
+extern "C++"
+{
+int s_PromptClipRectHi __attribute__((section(".sdata"))) = 0x002300ba;
+}
+}
+}
 }

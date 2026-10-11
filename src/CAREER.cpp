@@ -15,16 +15,12 @@
 #include "PAD.h"
 #include "UTILS.h"
 #include <STDIO.H>
-typedef char Career_SCharacterProgress_size_must_be_32[
-    (sizeof(SCharacterProgress) == 0x20) ? 1 : -1];
-typedef char Career_SHighScore_size_must_be_12[
-    (sizeof(SHighScore) == 0x0c) ? 1 : -1];
-typedef char Career_SOptions_size_must_be_416[
-    (sizeof(SOptions) == 0x1a0) ? 1 : -1];
-typedef char Career_SCareer_size_must_be_2420[
-    (sizeof(SCareer) == 0x974) ? 1 : -1];
-typedef char Career_GamePreferences_size_must_be_416[
-    (sizeof(GamePreferences) == 0x1a0) ? 1 : -1];
+typedef char
+    Career_SCharacterProgress_size_must_be_32[(sizeof(SCharacterProgress) == 0x20) ? 1 : -1];
+typedef char Career_SHighScore_size_must_be_12[(sizeof(SHighScore) == 0x0c) ? 1 : -1];
+typedef char Career_SOptions_size_must_be_416[(sizeof(SOptions) == 0x1a0) ? 1 : -1];
+typedef char Career_SCareer_size_must_be_2420[(sizeof(SCareer) == 0x974) ? 1 : -1];
+typedef char Career_GamePreferences_size_must_be_416[(sizeof(GamePreferences) == 0x1a0) ? 1 : -1];
 
 /** Fixed counts and volume conversions used by career preferences. */
 enum CareerConstant
@@ -53,10 +49,8 @@ enum CareerConstant
     CareerMusicLevelPerVolume = 0x15,
     CareerDefaultSfxVolume = 12,
     CareerDefaultMusicVolume = 6,
-    CareerDefaultSfxLevel =
-        CareerDefaultSfxVolume * CareerSfxLevelPerVolume,
-    CareerDefaultMusicLevel =
-        CareerDefaultMusicVolume * CareerMusicLevelPerVolume
+    CareerDefaultSfxLevel = CareerDefaultSfxVolume * CareerSfxLevelPerVolume,
+    CareerDefaultMusicLevel = CareerDefaultMusicVolume * CareerMusicLevelPerVolume
 };
 
 // Canonical declaration for the MAIN-owned career save.
@@ -70,10 +64,8 @@ enum CareerConstant
  * original pointer table rather than duplicating the strings.
  */
 char *DefaultHighScoreInitials[25] __attribute__((section(".data"))) = {
-    "RJM", "RAD", "JKU", "JRK", "DRS", "MIK", "SIL", "SMP",
-    "JOW", "DMT", "NIC", "NAH", "CJR", "AJC", "KEN", "JJJ",
-    "CCT", "TVO", "CAB", "DWP", "GAJ", "JAF", "DWP", "TVO",
-    0
+    "RJM", "RAD", "JKU", "JRK", "DRS", "MIK", "SIL", "SMP", "JOW", "DMT", "NIC", "NAH", "CJR",
+    "AJC", "KEN", "JJJ", "CCT", "TVO", "CAB", "DWP", "GAJ", "JAF", "DWP", "TVO", 0
 };
 
 /** Persistent option values mirrored into each career save. */
@@ -104,18 +96,18 @@ void Career_Test(void)
         {
             switch (Rnd(4))
             {
-            case CareerRandomMedalNone:
-                GCareer.CharacterProgress[i].Medals[j] = MEDAL_NONE;
-                break;
-            case CareerRandomMedalGold:
-                GCareer.CharacterProgress[i].Medals[j] = MEDAL_GOLD;
-                break;
-            case CareerRandomMedalSilver:
-                GCareer.CharacterProgress[i].Medals[j] = MEDAL_SILVER;
-                break;
-            case CareerRandomMedalBronze:
-                GCareer.CharacterProgress[i].Medals[j] = MEDAL_BRONZE;
-                break;
+                case CareerRandomMedalNone:
+                    GCareer.CharacterProgress[i].Medals[j] = MEDAL_NONE;
+                    break;
+                case CareerRandomMedalGold:
+                    GCareer.CharacterProgress[i].Medals[j] = MEDAL_GOLD;
+                    break;
+                case CareerRandomMedalSilver:
+                    GCareer.CharacterProgress[i].Medals[j] = MEDAL_SILVER;
+                    break;
+                case CareerRandomMedalBronze:
+                    GCareer.CharacterProgress[i].Medals[j] = MEDAL_BRONZE;
+                    break;
             }
             ++j;
         } while (j < CareerMedalSlotCount);
@@ -167,10 +159,8 @@ void Career_Init(void)
             GCareer.HighScore[Level][Score].Name[1] = (*pHighScore)[1];
             GCareer.HighScore[Level][Score].Name[2] = (*pHighScore)[2];
             GCareer.HighScore[Level][Score].Score =
-                CAREER_LEVEL_HIGH_SCORE(Levels, Level) +
-                (CareerScoresPerLevel - 1 - Score) * 5000;
-            GCareer.HighScore[Level][Score].Skater =
-                Rnd(CareerRandomSkaterCount);
+                CAREER_LEVEL_HIGH_SCORE(Levels, Level) + (CareerScoresPerLevel - 1 - Score) * 5000;
+            GCareer.HighScore[Level][Score].Skater = Rnd(CareerRandomSkaterCount);
             ++Score;
         } while (Score < CareerScoresPerLevel);
         ++Level;
@@ -205,10 +195,8 @@ void Options_SetPreferences(void)
     GCareer.Options.ScoreDisplayEnabled = GPreferences.Options.ScoreDisplayEnabled;
     do
     {
-        GCareer.Options.AutoKickEnabled[padNum] =
-            GPreferences.Options.AutoKickEnabled[padNum];
-        GCareer.Options.VibrationEnabled[padNum] =
-            GPreferences.Options.VibrationEnabled[padNum];
+        GCareer.Options.AutoKickEnabled[padNum] = GPreferences.Options.AutoKickEnabled[padNum];
+        GCareer.Options.VibrationEnabled[padNum] = GPreferences.Options.VibrationEnabled[padNum];
         GCareer.Options.ControllerFunction[padNum][0] =
             GPreferences.Options.ControllerFunction[padNum][0];
         GCareer.Options.ControllerFunction[padNum][1] =
@@ -223,13 +211,11 @@ void Options_SetPreferences(void)
     XALEVEL = GCareer.Options.MusicVolume * CareerMusicLevelPerVolume;
     sprintf(GCareer.Options.HorseWord, GPreferences.Options.HorseWord);
     GCareer.Options.HorseLen = GPreferences.Options.HorseLen;
-    for (i = GPreferences.Options.HorseLen;
-         i < CareerHorseWordUsedLength; ++i)
+    for (i = GPreferences.Options.HorseLen; i < CareerHorseWordUsedLength; ++i)
     {
         GCareer.Options.HorseWord[i] = '\0';
     }
-    sprintf(GCareer.Options.LastHighScoreInitials,
-            GPreferences.Options.LastHighScoreInitials);
+    sprintf(GCareer.Options.LastHighScoreInitials, GPreferences.Options.LastHighScoreInitials);
     Options_RemapControllers();
 }
 
@@ -256,18 +242,10 @@ void Options_RemapControllers(void)
         {
             switch (*mapping)
             {
-            case CareerControllerTriangle:
-                *mappedTriangle = button;
-                break;
-            case CareerControllerSquare:
-                *mappedSquare = button;
-                break;
-            case CareerControllerCircle:
-                *mappedCircle = button;
-                break;
-            case CareerControllerX:
-                *mappedX = button;
-                break;
+                case CareerControllerTriangle: *mappedTriangle = button; break;
+                case CareerControllerSquare: *mappedSquare = button; break;
+                case CareerControllerCircle: *mappedCircle = button; break;
+                case CareerControllerX: *mappedX = button; break;
             }
             ++button;
             ++i;
@@ -301,14 +279,10 @@ void Options_Init(void)
     {
         GPreferences.Options.AutoKickEnabled[padNum] = 1;
         GPreferences.Options.VibrationEnabled[padNum] = 1;
-        GPreferences.Options.ControllerFunction[padNum][0] =
-            CareerControllerTriangle;
-        GPreferences.Options.ControllerFunction[padNum][1] =
-            CareerControllerSquare;
-        GPreferences.Options.ControllerFunction[padNum][2] =
-            CareerControllerCircle;
-        GPreferences.Options.ControllerFunction[padNum][3] =
-            CareerControllerX;
+        GPreferences.Options.ControllerFunction[padNum][0] = CareerControllerTriangle;
+        GPreferences.Options.ControllerFunction[padNum][1] = CareerControllerSquare;
+        GPreferences.Options.ControllerFunction[padNum][2] = CareerControllerCircle;
+        GPreferences.Options.ControllerFunction[padNum][3] = CareerControllerX;
         padNum += 1;
     } while (padNum < CareerPadCount);
     {
@@ -326,9 +300,10 @@ void Options_Init(void)
  */
 int Career_Got(int Goal)
 {
-    return (GCareer.CharacterProgress[
-                reinterpret_cast<CBruceCareerView *>(GSkater[0])->mSkaterType]
-                .GoalMask[GLevel] >> Goal) & 1;
+    return (GCareer.CharacterProgress[reinterpret_cast<CBruceCareerView *>(GSkater[0])->mSkaterType]
+                .GoalMask[GLevel] >>
+            Goal) &
+           1;
 }
 
 /**
@@ -342,8 +317,7 @@ void Career_GiveTape(int Level, int Goal)
     int t = 0;
     int j = 0;
 
-    GCareer.CharacterProgress[
-        reinterpret_cast<CBruceCareerView *>(GSkater[0])->mSkaterType]
+    GCareer.CharacterProgress[reinterpret_cast<CBruceCareerView *>(GSkater[0])->mSkaterType]
         .GoalMask[Level] |= 1 << Goal;
     do
     {
@@ -352,10 +326,12 @@ void Career_GiveTape(int Level, int Goal)
         {
             if (CAREER_LEVEL_IS_COMPETITION(Levels, j) == 0 &&
                 ((static_cast<unsigned char>(
-                      GCareer.CharacterProgress[
-                          reinterpret_cast<CBruceCareerView *>(GSkater[0])
-                              ->mSkaterType]
-                          .GoalMask[j]) >> i) & 1))
+                      GCareer
+                          .CharacterProgress[reinterpret_cast<CBruceCareerView *>(GSkater[0])
+                                                 ->mSkaterType]
+                          .GoalMask[j]) >>
+                  i) &
+                 1))
             {
                 ++t;
             }
@@ -363,8 +339,7 @@ void Career_GiveTape(int Level, int Goal)
         } while (i < CareerOrdinaryGoalCount);
         ++j;
     } while (j < CareerGoalLevelCount);
-    GCareer.CharacterProgress[
-        reinterpret_cast<CBruceCareerView *>(GSkater[0])->mSkaterType]
+    GCareer.CharacterProgress[reinterpret_cast<CBruceCareerView *>(GSkater[0])->mSkaterType]
         .NumTapes = t;
     ++reinterpret_cast<CBruceCareerView *>(GSkater[0])->mSessionTapes;
 }
@@ -382,46 +357,44 @@ void Career_GiveMedal(int Level, EMedalType medal)
     int b = 0;
     int j = 0;
 
-    GCareer.CharacterProgress[
-        reinterpret_cast<CBruceCareerView *>(GSkater[0])->mSkaterType]
-        .GoalMask[Level] |=
-        1 << medal;
+    GCareer.CharacterProgress[reinterpret_cast<CBruceCareerView *>(GSkater[0])->mSkaterType]
+        .GoalMask[Level] |= 1 << medal;
     do
     {
         if (!Levels[j].isCompetition)
         {
-            if ((GCareer.CharacterProgress[
-                     reinterpret_cast<CBruceCareerView *>(GSkater[0])
-                         ->mSkaterType]
-                     .GoalMask[j] & (1 << MEDAL_GOLD)) != 0)
+            if ((GCareer
+                     .CharacterProgress[reinterpret_cast<CBruceCareerView *>(GSkater[0])
+                                            ->mSkaterType]
+                     .GoalMask[j] &
+                 (1 << MEDAL_GOLD)) != 0)
             {
                 ++g;
             }
-            if ((GCareer.CharacterProgress[
-                     reinterpret_cast<CBruceCareerView *>(GSkater[0])
-                         ->mSkaterType]
-                     .GoalMask[j] & (1 << MEDAL_SILVER)) != 0)
+            if ((GCareer
+                     .CharacterProgress[reinterpret_cast<CBruceCareerView *>(GSkater[0])
+                                            ->mSkaterType]
+                     .GoalMask[j] &
+                 (1 << MEDAL_SILVER)) != 0)
             {
                 ++s;
             }
-            if ((GCareer.CharacterProgress[
-                     reinterpret_cast<CBruceCareerView *>(GSkater[0])
-                         ->mSkaterType]
-                     .GoalMask[j] & (1 << MEDAL_BRONZE)) != 0)
+            if ((GCareer
+                     .CharacterProgress[reinterpret_cast<CBruceCareerView *>(GSkater[0])
+                                            ->mSkaterType]
+                     .GoalMask[j] &
+                 (1 << MEDAL_BRONZE)) != 0)
             {
                 ++b;
             }
         }
         ++j;
     } while (j < CareerGoalLevelCount);
-    GCareer.CharacterProgress[
-        reinterpret_cast<CBruceCareerView *>(GSkater[0])->mSkaterType]
+    GCareer.CharacterProgress[reinterpret_cast<CBruceCareerView *>(GSkater[0])->mSkaterType]
         .NumGold = g;
-    GCareer.CharacterProgress[
-        reinterpret_cast<CBruceCareerView *>(GSkater[0])->mSkaterType]
+    GCareer.CharacterProgress[reinterpret_cast<CBruceCareerView *>(GSkater[0])->mSkaterType]
         .NumSilver = s;
-    GCareer.CharacterProgress[
-        reinterpret_cast<CBruceCareerView *>(GSkater[0])->mSkaterType]
+    GCareer.CharacterProgress[reinterpret_cast<CBruceCareerView *>(GSkater[0])->mSkaterType]
         .NumBronze = b;
 }
 
@@ -438,9 +411,11 @@ int Career_LevelTapes(int Level)
     int i = 0;
     do
     {
-        if ((GCareer.CharacterProgress[
-                 reinterpret_cast<CBruceCareerView *>(GSkater[0])->mSkaterType]
-                 .GoalMask[GLevel] >> i) & 1)
+        if ((GCareer
+                 .CharacterProgress[reinterpret_cast<CBruceCareerView *>(GSkater[0])->mSkaterType]
+                 .GoalMask[GLevel] >>
+             i) &
+            1)
         {
             ++t;
         }

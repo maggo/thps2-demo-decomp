@@ -6,7 +6,8 @@
 struct RailString;
 
 /** Collection of generated rail strings and its ordinary service interface. */
-struct RailInfo : CClass {
+struct RailInfo : CClass
+{
     RailInfo();
     virtual ~RailInfo();
     struct RailString *StringList;
@@ -24,7 +25,6 @@ struct RailInfo : CClass {
     void MergeAdd(RailString *string, bool debugify);
 };
 
-typedef char RailInfo_size_must_be_12[
-    (sizeof(RailInfo) == 12) ? 1 : -1];
+typedef char RailInfo_size_must_be_12[(sizeof(RailInfo) == 12) ? 1 : -1];
 
 #endif // THPS2_RAILINFO_H

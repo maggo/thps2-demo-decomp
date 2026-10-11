@@ -18,9 +18,8 @@ extern CBody *PowerUpList POWERUP_LIST_DECL_ATTR; // 0x800D94DC
 #undef POWERUP_LIST_DECL_ATTR
 
 /** Allocate and construct one world power-up. */
-CPowerUp *PowerUp_Create(
-    unsigned short Type, const CVector &Pos, unsigned int Flags,
-    int LifeTime, CVector &Vel);
+CPowerUp *PowerUp_Create(unsigned short Type, const CVector &Pos, unsigned int Flags, int LifeTime,
+                         CVector &Vel);
 
 #ifdef POWERUP_OWNER_DECLARATIONS
 

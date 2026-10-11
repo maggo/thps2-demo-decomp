@@ -5,7 +5,8 @@
 // (CCLASS_POLY.h in BIT2/SMOKE, CNONRENDEREDBIT.h/CSPECIALDISPLAY.h/CPOLYLINE.h elsewhere).
 
 /** Two-colour world-space line state. */
-struct CGLine : CBit {
+struct CGLine : CBit
+{
     unsigned int mCodeBGR0;
     unsigned int mPadBGR1;
     CVector mStart;

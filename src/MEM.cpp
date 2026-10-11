@@ -19,10 +19,9 @@ int Mem_NumDelete = 0;
 
 // MAIN.SYM records this as Bang's local `bg`, but keeping its storage here is
 // required to preserve MEM's original small-data order.
-static RECT BangRect
-    __attribute__((section(".sdata"))) = {100, 0, 50, 256};
+static RECT BangRect __attribute__((section(".sdata"))) = { 100, 0, 50, 256 };
 
-unsigned int HeapDefs[2][2] __attribute__((section(".sdata"))) = {{0}};
+unsigned int HeapDefs[2][2] __attribute__((section(".sdata"))) = { { 0 } };
 int LowMemory = 0;
 
 static unsigned int CriticalBigHeapUsage = 0;
@@ -31,19 +30,18 @@ namespace MemAddressViewOwners
 {
 extern "C"
 {
-static char s_HeapSizes[]
-    __attribute__((section(".sdata"), aligned(4))) = "Heap sizes: ";
-static char s_Newline[]
-    __attribute__((section(".sdata"), aligned(4))) = "\n";
+static char s_HeapSizes[] __attribute__((section(".sdata"), aligned(4))) = "Heap sizes: ";
+static char s_Newline[] __attribute__((section(".sdata"), aligned(4))) = "\n";
 }
 }
 
 int ReturnAddress = 12345;
-int Used[2] __attribute__((section(".sdata"))) = {0};
-SBlockHeader *FirstFreeBlock[2] __attribute__((section(".sdata"))) = {0};
+int Used[2] __attribute__((section(".sdata"))) = { 0 };
+SBlockHeader *FirstFreeBlock[2] __attribute__((section(".sdata"))) = { 0 };
 
 /** Per-heap usage format stored in MEM's target read-only contribution. */
-struct MemHeapUsageFormat {
+struct MemHeapUsageFormat
+{
     char text[sizeof("Heap %d: %ld bytes, ")];
 };
 
@@ -52,8 +50,7 @@ namespace MemAddressViewOwners
 extern "C"
 {
 static const MemHeapUsageFormat s_HeapUsageFormat
-    __attribute__((section(".rdata"), aligned(4))) =
-        {"Heap %d: %ld bytes, "};
+    __attribute__((section(".rdata"), aligned(4))) = { "Heap %d: %ld bytes, " };
 }
 }
 
@@ -85,8 +82,7 @@ static void Bang(unsigned char r, unsigned char g, unsigned char b);
 static void Bang(unsigned char r, unsigned char g, unsigned char b)
 {
     ClearImage(&BangRect, r, g, b);
-    for (;;)
-        ;
+    for (;;);
 }
 
 /**
@@ -101,40 +97,46 @@ void AddToFreeList(SBlockHeader *pNewFreeBlock, int Heap)
     SBlockHeader *pAfter = FirstFreeBlock[Heap];
     SBlockHeader *pBefore = 0;
 
-    while (reinterpret_cast<unsigned int>(pAfter) <
-           reinterpret_cast<unsigned int>(pNewFreeBlock)) {
+    while (reinterpret_cast<unsigned int>(pAfter) < reinterpret_cast<unsigned int>(pNewFreeBlock))
+    {
         if (pAfter == 0) break;
         pBefore = pAfter;
         pAfter = pAfter->Next;
     }
 
-    if (pBefore != 0) {
-        if (reinterpret_cast<char *>(pBefore) +
-                (pBefore->Size + sizeof(SBlockHeader)) ==
-            reinterpret_cast<char *>(pNewFreeBlock)) {
+    if (pBefore != 0)
+    {
+        if (reinterpret_cast<char *>(pBefore) + (pBefore->Size + sizeof(SBlockHeader)) ==
+            reinterpret_cast<char *>(pNewFreeBlock))
+        {
             if (reinterpret_cast<char *>(pNewFreeBlock) +
                     (pNewFreeBlock->Size + sizeof(SBlockHeader)) ==
-                reinterpret_cast<char *>(pAfter)) {
+                reinterpret_cast<char *>(pAfter))
+            {
                 pBefore->Next = pAfter->Next;
-                pBefore->Size += pNewFreeBlock->Size + pAfter->Size +
-                                 2 * sizeof(SBlockHeader);
-            } else {
-                pBefore->Size +=
-                    pNewFreeBlock->Size + sizeof(SBlockHeader);
+                pBefore->Size += pNewFreeBlock->Size + pAfter->Size + 2 * sizeof(SBlockHeader);
+            }
+            else
+            {
+                pBefore->Size += pNewFreeBlock->Size + sizeof(SBlockHeader);
             }
             return;
         }
         pBefore->Next = pNewFreeBlock;
-    } else {
+    }
+    else
+    {
         FirstFreeBlock[Heap] = pNewFreeBlock;
     }
 
-    if (reinterpret_cast<char *>(pNewFreeBlock) +
-            (pNewFreeBlock->Size + sizeof(SBlockHeader)) ==
-        reinterpret_cast<char *>(pAfter)) {
+    if (reinterpret_cast<char *>(pNewFreeBlock) + (pNewFreeBlock->Size + sizeof(SBlockHeader)) ==
+        reinterpret_cast<char *>(pAfter))
+    {
         pNewFreeBlock->Next = pAfter->Next;
         pNewFreeBlock->Size += pAfter->Size + sizeof(SBlockHeader);
-    } else {
+    }
+    else
+    {
         pNewFreeBlock->Next = pAfter;
     }
 }
@@ -152,23 +154,20 @@ void Mem_Init(void)
 
     printf(s_HeapSizes);
 
-    for (i = 0; i < 2; i++) {
+    for (i = 0; i < 2; i++)
+    {
         FirstFreeBlock[i] = 0;
         Used[i] = 0;
 
-        SBlockHeader *pAllFreeMem =
-            reinterpret_cast<SBlockHeader *>(HeapDefs[i][0]);
-        pAllFreeMem->Size =
-            HeapDefs[i][1] - HeapDefs[i][0] - sizeof(SBlockHeader);
+        SBlockHeader *pAllFreeMem = reinterpret_cast<SBlockHeader *>(HeapDefs[i][0]);
+        pAllFreeMem->Size = HeapDefs[i][1] - HeapDefs[i][0] - sizeof(SBlockHeader);
         AddToFreeList(pAllFreeMem, i);
 
-        printf(MemAddressViewOwners::s_HeapUsageFormat.text,
-               i, HeapDefs[i][1] - HeapDefs[i][0]);
+        printf(MemAddressViewOwners::s_HeapUsageFormat.text, i, HeapDefs[i][1] - HeapDefs[i][0]);
     }
 
     printf(s_Newline);
-    CriticalBigHeapUsage =
-        (98 * (HeapDefs[1][1] - HeapDefs[1][0])) / 100;
+    CriticalBigHeapUsage = (98 * (HeapDefs[1][1] - HeapDefs[1][0])) / 100;
 }
 
 /**
@@ -222,8 +221,8 @@ void *Mem_NewX(unsigned int size, int Heap, int AssertOnFailure)
 
     if (pBlock->Size > size + sizeof(SBlockHeader))
     {
-        SBlockHeader *pLeftOver = reinterpret_cast<SBlockHeader *>(
-            reinterpret_cast<char *>(pBlock + 1) + size);
+        SBlockHeader *pLeftOver =
+            reinterpret_cast<SBlockHeader *>(reinterpret_cast<char *>(pBlock + 1) + size);
         pLeftOver->Size = pBlock->Size - size - sizeof(SBlockHeader);
 
         if (pLast)
@@ -241,8 +240,7 @@ void *Mem_NewX(unsigned int size, int Heap, int AssertOnFailure)
         AddToFreeList(pLeftOver, Heap);
 
         {
-            unsigned int *pMem =
-                reinterpret_cast<unsigned int *>(pBlock + 1);
+            unsigned int *pMem = reinterpret_cast<unsigned int *>(pBlock + 1);
             for (int ii = 0; ii < size / sizeof(unsigned int); ++ii)
             {
                 *pMem++ = 0x33333333;
@@ -251,8 +249,7 @@ void *Mem_NewX(unsigned int size, int Heap, int AssertOnFailure)
 
         if (Heap == 1)
         {
-            if (static_cast<unsigned int>(Used[Heap]) >=
-                CriticalBigHeapUsage)
+            if (static_cast<unsigned int>(Used[Heap]) >= CriticalBigHeapUsage)
             {
                 LowMemory = 1;
             }
@@ -279,8 +276,7 @@ void *Mem_NewX(unsigned int size, int Heap, int AssertOnFailure)
         Used[Heap] += sizeof(SBlockHeader) + pBlock->Size;
 
         {
-            unsigned int *pMem =
-                reinterpret_cast<unsigned int *>(pBlock + 1);
+            unsigned int *pMem = reinterpret_cast<unsigned int *>(pBlock + 1);
             for (int ii = 0; ii < size / sizeof(unsigned int); ++ii)
             {
                 *pMem++ = 0x33333333;
@@ -289,8 +285,7 @@ void *Mem_NewX(unsigned int size, int Heap, int AssertOnFailure)
 
         if (Heap == 1)
         {
-            if (static_cast<unsigned int>(Used[Heap]) >=
-                CriticalBigHeapUsage)
+            if (static_cast<unsigned int>(Used[Heap]) >= CriticalBigHeapUsage)
             {
                 LowMemory = 1;
             }
@@ -364,9 +359,8 @@ void *Mem_NewTop(unsigned int size)
         SBlockHeader *pLeftOver = pBlock;
         pLeftOver->Size = old_size - size - sizeof(SBlockHeader);
 
-        pBlock = reinterpret_cast<SBlockHeader *>(
-            reinterpret_cast<char *>(pLeftOver + 1) + old_size - size -
-            sizeof(SBlockHeader));
+        pBlock = reinterpret_cast<SBlockHeader *>(reinterpret_cast<char *>(pLeftOver + 1) +
+                                                  old_size - size - sizeof(SBlockHeader));
         pBlock->Size = size;
         pBlock->ParentHeap = Heap;
 
@@ -374,8 +368,7 @@ void *Mem_NewTop(unsigned int size)
 
         if (Heap == 1)
         {
-            if (static_cast<unsigned int>(Used[Heap]) >=
-                CriticalBigHeapUsage)
+            if (static_cast<unsigned int>(Used[Heap]) >= CriticalBigHeapUsage)
             {
                 LowMemory = 1;
             }
@@ -386,8 +379,7 @@ void *Mem_NewTop(unsigned int size)
         }
 
         {
-            unsigned int *pMem =
-                reinterpret_cast<unsigned int *>(pBlock + 1);
+            unsigned int *pMem = reinterpret_cast<unsigned int *>(pBlock + 1);
             for (int ii = 0; ii < size / sizeof(unsigned int); ++ii)
             {
                 *pMem++ = 0x33333333;
@@ -412,8 +404,7 @@ void *Mem_NewTop(unsigned int size)
 
         if (Heap == 1)
         {
-            if (static_cast<unsigned int>(Used[Heap]) >=
-                CriticalBigHeapUsage)
+            if (static_cast<unsigned int>(Used[Heap]) >= CriticalBigHeapUsage)
             {
                 LowMemory = 1;
             }
@@ -424,8 +415,7 @@ void *Mem_NewTop(unsigned int size)
         }
 
         {
-            unsigned int *pMem =
-                reinterpret_cast<unsigned int *>(pBlock + 1);
+            unsigned int *pMem = reinterpret_cast<unsigned int *>(pBlock + 1);
             for (int ii = 0; ii < size / sizeof(unsigned int); ++ii)
             {
                 *pMem++ = 0x33333333;
@@ -463,8 +453,7 @@ void Mem_DeleteX(void *p)
 
         if (Heap == 1)
         {
-            if (static_cast<unsigned int>(MemTopUsed) >=
-                CriticalBigHeapUsage)
+            if (static_cast<unsigned int>(MemTopUsed) >= CriticalBigHeapUsage)
             {
                 LowMemory = Heap;
             }
@@ -493,8 +482,8 @@ void Mem_ShrinkX(void *p, unsigned int newsize)
 
     if (newsize < pBlock->Size - sizeof(SBlockHeader))
     {
-        SBlockHeader *pNewFreeBlock = reinterpret_cast<SBlockHeader *>(
-            static_cast<char *>(p) + newsize);
+        SBlockHeader *pNewFreeBlock =
+            reinterpret_cast<SBlockHeader *>(static_cast<char *>(p) + newsize);
         unsigned int newBlockOffset = newsize + sizeof(SBlockHeader);
         pNewFreeBlock->Size = pBlock->Size - newBlockOffset;
 
@@ -506,8 +495,7 @@ void Mem_ShrinkX(void *p, unsigned int newsize)
 
         if (Heap == 1)
         {
-            if (static_cast<unsigned int>(MemTopUsed) >=
-                CriticalBigHeapUsage)
+            if (static_cast<unsigned int>(MemTopUsed) >= CriticalBigHeapUsage)
             {
                 LowMemory = Heap;
             }
@@ -613,8 +601,7 @@ void *Mem_New(unsigned int size, int Heap, int AssertOnFailure)
         size = 2 * sizeof(unsigned int);
     }
     unsigned int *p =
-        static_cast<unsigned int *>(Mem_NewX(size - sizeof(unsigned int),
-                                             Heap, AssertOnFailure));
+        static_cast<unsigned int *>(Mem_NewX(size - sizeof(unsigned int), Heap, AssertOnFailure));
     p--;
     return p;
 }
@@ -650,8 +637,7 @@ void Mem_Shrink(void *p, unsigned int newsize)
     {
         newsize = 2 * sizeof(unsigned int);
     }
-    Mem_ShrinkX(static_cast<char *>(p) + sizeof(unsigned int),
-                newsize - sizeof(unsigned int));
+    Mem_ShrinkX(static_cast<char *>(p) + sizeof(unsigned int), newsize - sizeof(unsigned int));
 }
 
 /**
@@ -666,6 +652,5 @@ void Mem_Shrink(void *p, unsigned int newsize)
  */
 int Mem_GetBlockSize(void *p)
 {
-    return Mem_GetBlockSizeX(static_cast<char *>(p) + sizeof(unsigned int)) +
-           sizeof(unsigned int);
+    return Mem_GetBlockSizeX(static_cast<char *>(p) + sizeof(unsigned int)) + sizeof(unsigned int);
 }

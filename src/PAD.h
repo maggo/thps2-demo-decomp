@@ -12,7 +12,8 @@ typedef unsigned short u16;
 
 
 /** One digital button's current state and frame-history counters. */
-struct SButton {
+struct SButton
+{
     unsigned char Pressed;
     unsigned char Triggered;
     int PressedTime;
@@ -21,7 +22,8 @@ struct SButton {
 };
 
 /** Decoded gameplay state, motor state, and remap targets for one pad. */
-struct SControl {
+struct SControl
+{
     struct SButton Triangle;
     struct SButton Square;
     struct SButton Circle;
@@ -66,7 +68,8 @@ struct SControl {
 };
 
 /** Eight-byte controller packet decoded from a physical port or multitap. */
-struct ControllerData {
+struct ControllerData
+{
     unsigned char status;
     unsigned char type;
     unsigned char button1;
@@ -78,7 +81,8 @@ struct ControllerData {
 };
 
 /** Raw thirty-four-byte receive buffer filled by the PSY-Q pad library. */
-struct ControllerBuffer {
+struct ControllerBuffer
+{
     unsigned char pad[34];
 };
 
@@ -96,8 +100,8 @@ void Pad_LockAnalog(void);
 void Pad_ClearAllOne(int pad);
 void Pad_ClearAll(void);
 void Pad_ClearTriggers(SControl *p_pad);
-void Pad_ActuatorOn(unsigned char index, unsigned short time,
-                    unsigned char motor, unsigned char motor_value);
+void Pad_ActuatorOn(unsigned char index, unsigned short time, unsigned char motor,
+                    unsigned char motor_value);
 void Pad_ActuatorOff(unsigned char index, unsigned char motor);
 int Pad_Update(void);
 void Pad_Restore(void);

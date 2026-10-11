@@ -41,7 +41,8 @@ struct CBit
 };
 
 /** Whether a bail should clamp the skater's velocity. */
-enum ELimitBailVel {
+enum ELimitBailVel
+{
     DO_LIMIT = 0,
     DONT_LIMIT = 1
 };
@@ -70,7 +71,8 @@ struct CGrindSpark;
 #define CAR_ROTATION_WORD(matrix, index) (((const int *)&(matrix))[index])
 
 /** Script subtype codes for the six traffic-car assets. */
-enum ECarType {
+enum ECarType
+{
     CAR_TYPE_TAXI = 0xD5,
     CAR_TYPE_POLICE = 0xD6,
     CAR_TYPE_VAN = 0xD7,
@@ -80,7 +82,8 @@ enum ECarType {
 };
 
 /** Named fixed-point and angle constants used by traffic-car simulation. */
-enum {
+enum
+{
     CAR_FIXED_ONE = 0x1000,
     CAR_FULL_TURN = 0x1000,
     CAR_HALF_TURN = 0x800,
@@ -101,7 +104,8 @@ enum {
 };
 
 /** Sound-table entries selected by car construction, impact, and horn use. */
-enum ECarSound {
+enum ECarSound
+{
     CAR_SOUND_OVERHEAD_HIT = 0x28,
     CAR_SOUND_TAXI_HORN_FIRST = 0x6E,
     CAR_SOUND_TAXI_ENGINE = 0x71,
@@ -123,7 +127,8 @@ enum ECarSound {
 /** Target-era external compiler view of the traffic-car sound volume. */
 extern int CarVol;
 
-struct CBruceCarOwner : CSuper {
+struct CBruceCarOwner : CSuper
+{
 };
 
 /**
@@ -132,7 +137,8 @@ struct CBruceCarOwner : CSuper {
  * This remains an owner-local slice: the intervening gameplay state is opaque
  * until the wider CBruce layout is proven across its other owning systems.
  */
-struct CBruceCarCollisionOwner : CSuper {
+struct CBruceCarCollisionOwner : CSuper
+{
     unsigned char _padToIgnoreCar[0xA7C - sizeof(CSuper)];
     CCar *mIgnoreCar;
     unsigned char _padToInBail[0xF7C - 0xA80];
@@ -142,19 +148,22 @@ struct CBruceCarCollisionOwner : CSuper {
 };
 
 /** Packed six-halfword interpretation used by the car collision helper. */
-struct CarModelBounds {
+struct CarModelBounds
+{
     short Half[6];
 };
 
 /** Video state prefix used to reject split-screen playback modes. */
-struct SVideoInfo {
+struct SVideoInfo
+{
     int VideoMode;
     unsigned char _remainingVideoState[188];
 };
 
 typedef char car_owner_size_must_be_540[(sizeof(CCar) == 540) ? 1 : -1];
-typedef char car_bruce_collision_slice_size_must_be_0x1070[
-    (sizeof(CBruceCarCollisionOwner) == 0x1070) ? 1 : -1];
+typedef char
+    car_bruce_collision_slice_size_must_be_0x1070[(sizeof(CBruceCarCollisionOwner) == 0x1070) ? 1
+                                                                                              : -1];
 typedef char car_video_info_size_must_be_192[(sizeof(SVideoInfo) == 192) ? 1 : -1];
 
 /** Identity views kept for the existing call sites. */
@@ -229,7 +238,8 @@ extern char s_CarModel_Cable[];
 extern char s_CarModel_Kart[];
 extern char s_CarModel_Mar[];
 
-extern "C" {
+extern "C"
+{
 /**
  * Car model names in their original small-data owner contribution.
  *
@@ -239,18 +249,12 @@ extern "C" {
  */
 namespace CarAddressViewOwners
 {
-static char s_CarModel_Taxi[8]
-    __attribute__((section(".sdata"), aligned(4))) = "c_taxi";
-static char s_CarModel_Police[12]
-    __attribute__((section(".sdata"), aligned(4))) = "c_police";
-static char s_CarModel_Van[8]
-    __attribute__((section(".sdata"), aligned(4))) = "c_van";
-static char s_CarModel_Cable[8]
-    __attribute__((section(".sdata"), aligned(4))) = "c_cable";
-static char s_CarModel_Kart[8]
-    __attribute__((section(".sdata"), aligned(4))) = "c_kart";
-static char s_CarModel_Mar[8]
-    __attribute__((section(".sdata"), aligned(4))) = "c_mar";
+static char s_CarModel_Taxi[8] __attribute__((section(".sdata"), aligned(4))) = "c_taxi";
+static char s_CarModel_Police[12] __attribute__((section(".sdata"), aligned(4))) = "c_police";
+static char s_CarModel_Van[8] __attribute__((section(".sdata"), aligned(4))) = "c_van";
+static char s_CarModel_Cable[8] __attribute__((section(".sdata"), aligned(4))) = "c_cable";
+static char s_CarModel_Kart[8] __attribute__((section(".sdata"), aligned(4))) = "c_kart";
+static char s_CarModel_Mar[8] __attribute__((section(".sdata"), aligned(4))) = "c_mar";
 }
 }
 
@@ -281,30 +285,30 @@ CCar::CCar(short *pInfo, int NodeIndex, int Type)
 
     switch (Type)
     {
-    case CAR_TYPE_TAXI:
-        InitItem(s_CarModel_Taxi);
-        mLoopingSound = SFX_PlayPos(CAR_SOUND_TAXI_ENGINE, Car_Vector(mPos), 0);
-        break;
-    case CAR_TYPE_POLICE:
-        mLoopingSoundUpdate = 0;
-        InitItem(CarAddressViewOwners::s_CarModel_Police);
-        break;
-    case CAR_TYPE_VAN:
-        InitItem(s_CarModel_Van);
-        mLoopingSound = SFX_PlayPos(CAR_SOUND_VAN_ENGINE, Car_Vector(mPos), 0);
-        break;
-    case CAR_TYPE_CABLE:
-        InitItem(s_CarModel_Cable);
-        mLoopingSound = SFX_PlayPos(CAR_SOUND_CABLE_ENGINE, Car_Vector(mPos), 0);
-        break;
-    case CAR_TYPE_KART:
-        InitItem(s_CarModel_Kart);
-        mLoopingSound = SFX_PlayPos(CAR_SOUND_VAN_ENGINE, Car_Vector(mPos), 0);
-        break;
-    case CAR_TYPE_MAR:
-        InitItem(s_CarModel_Mar);
-        mLoopingSound = SFX_PlayPos(CAR_SOUND_MAR_ENGINE, Car_Vector(mPos), 0);
-        break;
+        case CAR_TYPE_TAXI:
+            InitItem(s_CarModel_Taxi);
+            mLoopingSound = SFX_PlayPos(CAR_SOUND_TAXI_ENGINE, Car_Vector(mPos), 0);
+            break;
+        case CAR_TYPE_POLICE:
+            mLoopingSoundUpdate = 0;
+            InitItem(CarAddressViewOwners::s_CarModel_Police);
+            break;
+        case CAR_TYPE_VAN:
+            InitItem(s_CarModel_Van);
+            mLoopingSound = SFX_PlayPos(CAR_SOUND_VAN_ENGINE, Car_Vector(mPos), 0);
+            break;
+        case CAR_TYPE_CABLE:
+            InitItem(s_CarModel_Cable);
+            mLoopingSound = SFX_PlayPos(CAR_SOUND_CABLE_ENGINE, Car_Vector(mPos), 0);
+            break;
+        case CAR_TYPE_KART:
+            InitItem(s_CarModel_Kart);
+            mLoopingSound = SFX_PlayPos(CAR_SOUND_VAN_ENGINE, Car_Vector(mPos), 0);
+            break;
+        case CAR_TYPE_MAR:
+            InitItem(s_CarModel_Mar);
+            mLoopingSound = SFX_PlayPos(CAR_SOUND_MAR_ENGINE, Car_Vector(mPos), 0);
+            break;
     }
 
     if (mLoopingSoundUpdate != 0)
@@ -326,9 +330,7 @@ CCar::CCar(short *pInfo, int NodeIndex, int Type)
     mNode = NodeIndex;
     unsigned short *links = Trig_GetLinksPointer(NodeIndex);
     mCurrentRoadSegment = links[1];
-    Trig_GetPosition(
-        Car_Vector(mPos),
-        mCurrentRoadSegment);
+    Trig_GetPosition(Car_Vector(mPos), mCurrentRoadSegment);
 
     mPos.vy -= CAR_ROAD_HEIGHT;
 }
@@ -380,15 +382,11 @@ static void CollideWithSkater(CCar *pCar, CBruce *pSkater, const MATRIX &tm, sho
 {
     CBruceCarCollisionOwner *skater = CAR_COLLISION_SKATER(pSkater);
 
-    if (pCar == skater->mIgnoreCar)
-        return;
-    if (skater->mInBail != 0 && skater->mPhysicsState != 0)
-        return;
+    if (pCar == skater->mIgnoreCar) return;
+    if (skater->mInBail != 0 && skater->mPhysicsState != 0) return;
     // The original uses an unsigned range check, which also rejects a
     // negative sentinel returned by the coarse distance helper.
-    if ((unsigned int)Utils_CrapDist(
-            Car_Vector(skater->mPos),
-            Car_Vector(pCar->mPos)) >= 500)
+    if ((unsigned int)Utils_CrapDist(Car_Vector(skater->mPos), Car_Vector(pCar->mPos)) >= 500)
         return;
 
     int OldX;
@@ -398,18 +396,12 @@ static void CollideWithSkater(CCar *pCar, CBruce *pSkater, const MATRIX &tm, sho
     int NewY;
     int NewZ;
 
-    OldX = skater->mOldPos.vx -
-        pCar->mPos.vx;
-    OldY = skater->mOldPos.vy -
-        pCar->mPos.vy;
-    OldZ = skater->mOldPos.vz -
-        pCar->mPos.vz;
-    NewX = skater->mPos.vx -
-        pCar->mPos.vx;
-    NewY = skater->mPos.vy -
-        pCar->mPos.vy;
-    NewZ = skater->mPos.vz -
-        pCar->mPos.vz;
+    OldX = skater->mOldPos.vx - pCar->mPos.vx;
+    OldY = skater->mOldPos.vy - pCar->mPos.vy;
+    OldZ = skater->mOldPos.vz - pCar->mPos.vz;
+    NewX = skater->mPos.vx - pCar->mPos.vx;
+    NewY = skater->mPos.vy - pCar->mPos.vy;
+    NewZ = skater->mPos.vz - pCar->mPos.vz;
 
     gte_ldrot0(CAR_ROTATION_WORD(tm, 0));
     gte_ldrot1(CAR_ROTATION_WORD(tm, 1));
@@ -470,12 +462,9 @@ static void CollideWithSkater(CCar *pCar, CBruce *pSkater, const MATRIX &tm, sho
     ZMin -= CAR_MODEL_BOX_MARGIN;
     ZMax += CAR_MODEL_BOX_MARGIN;
 
-    if (XMax < pBox[1] * CAR_FIXED_ONE ||
-        pBox[0] * CAR_FIXED_ONE < XMin ||
-        ZMax < pBox[5] * CAR_FIXED_ONE ||
-        pBox[4] * CAR_FIXED_ONE < ZMin ||
-        YMax < pBox[3] * CAR_FIXED_ONE ||
-        pBox[2] * CAR_FIXED_ONE < YMin)
+    if (XMax < pBox[1] * CAR_FIXED_ONE || pBox[0] * CAR_FIXED_ONE < XMin ||
+        ZMax < pBox[5] * CAR_FIXED_ONE || pBox[4] * CAR_FIXED_ONE < ZMin ||
+        YMax < pBox[3] * CAR_FIXED_ONE || pBox[2] * CAR_FIXED_ONE < YMin)
         return;
 
     int CarHeight = 0;
@@ -484,11 +473,8 @@ static void CollideWithSkater(CCar *pCar, CBruce *pSkater, const MATRIX &tm, sho
     else if (pCar->mType == CAR_TYPE_CABLE)
         CarHeight = CAR_CABLE_HEIGHT;
 
-    if (skater->mInBail == 0 &&
-        skater->mPhysicsState == 1 &&
-        CarHeight <
-            pCar->mPos.vy -
-            skater->mPos.vy)
+    if (skater->mInBail == 0 && skater->mPhysicsState == 1 &&
+        CarHeight < pCar->mPos.vy - skater->mPos.vy)
     {
         skater->mVel.vx >>= 1;
         skater->mVel.vy >>= 1;
@@ -505,8 +491,7 @@ static void CollideWithSkater(CCar *pCar, CBruce *pSkater, const MATRIX &tm, sho
         if (canSpawnBits)
         {
             pSkater->SetAnglesFromHeading();
-            Bit_SetSparkTrajectory(
-                Car_ShortVector(skater->mAngles));
+            Bit_SetSparkTrajectory(Car_ShortVector(skater->mAngles));
 
             CSVector cone;
             cone.vx = 450;
@@ -518,13 +503,11 @@ static void CollideWithSkater(CCar *pCar, CBruce *pSkater, const MATRIX &tm, sho
             for (int i = 0; i < 20; i++)
             {
                 CGrindSpark *spark =
-                    static_cast<CGrindSpark *>(CBit::operator new(
-                        BIT2_GRIND_SPARK_STORAGE_SIZE));
+                    static_cast<CGrindSpark *>(CBit::operator new(BIT2_GRIND_SPARK_STORAGE_SIZE));
                 if (spark != 0)
                 {
-                    Bit2_ConstructGrindSpark(
-                        spark, reinterpret_cast<CBody *>(pSkater), Car_ZeroVector(),
-                        -40, CAR_FIXED_ONE, 5);
+                    Bit2_ConstructGrindSpark(spark, reinterpret_cast<CBody *>(pSkater),
+                                             Car_ZeroVector(), -40, CAR_FIXED_ONE, 5);
                 }
             }
             UseCacheForBits = 1;
@@ -535,45 +518,42 @@ static void CollideWithSkater(CCar *pCar, CBruce *pSkater, const MATRIX &tm, sho
     int t = Rnd(CAR_RANDOM_SIDE_COUNT) >> 3;
     switch (t)
     {
-    case 0:
-    {
-        int vx = pCar->mVel.vx;
-        int vz = pCar->mVel.vz;
-        int absX = CarAbs(vx);
-        int absZ = CarAbs(vz);
-        if (absZ < absX)
+        case 0:
         {
-            vx += vx >> 1;
-            int offset = Rnd(vx >> 1) + (vx >> 2);
-            if ((Rnd(CAR_RANDOM_SIDE_COUNT) >> 3) != 0)
-                offset = -offset;
-            vz += offset;
+            int vx = pCar->mVel.vx;
+            int vz = pCar->mVel.vz;
+            int absX = CarAbs(vx);
+            int absZ = CarAbs(vz);
+            if (absZ < absX)
+            {
+                vx += vx >> 1;
+                int offset = Rnd(vx >> 1) + (vx >> 2);
+                if ((Rnd(CAR_RANDOM_SIDE_COUNT) >> 3) != 0) offset = -offset;
+                vz += offset;
+            }
+            else
+            {
+                vz += vz >> 1;
+                int offset = Rnd(vz >> 1) + (vz >> 2);
+                if ((Rnd(CAR_RANDOM_SIDE_COUNT) >> 3) != 0) offset = -offset;
+                vx += offset;
+            }
+            skater->mVel.vx = vx;
+            // Direct member use changes the target's three-instruction load order.
+            int carVelY = pCar->mVel.vy;
+            skater->mVel.vz = vz;
+            skater->mVel.vy = carVelY - CAR_LAUNCH_Y_OFFSET;
+            break;
         }
-        else
+        case 1:
         {
-            vz += vz >> 1;
-            int offset = Rnd(vz >> 1) + (vz >> 2);
-            if ((Rnd(CAR_RANDOM_SIDE_COUNT) >> 3) != 0)
-                offset = -offset;
-            vx += offset;
+            // The original loads the velocity into its own local before use.
+            int carVelX = pCar->mVel.vx;
+            skater->mVel.vy = -CAR_SIDE_Y_IMPULSE;
+            skater->mVel.vx = -carVelX >> 2;
+            skater->mVel.vz = -pCar->mVel.vz >> 2;
+            break;
         }
-        skater->mVel.vx = vx;
-        // Direct member use changes the target's three-instruction load order.
-        int carVelY = pCar->mVel.vy;
-        skater->mVel.vz = vz;
-        skater->mVel.vy = carVelY - CAR_LAUNCH_Y_OFFSET;
-        break;
-    }
-    case 1:
-    {
-        // The original loads the velocity into its own local before use.
-        int carVelX = pCar->mVel.vx;
-        skater->mVel.vy = -CAR_SIDE_Y_IMPULSE;
-        skater->mVel.vx = -carVelX >> 2;
-        skater->mVel.vz =
-            -pCar->mVel.vz >> 2;
-        break;
-    }
     }
 
     skater->mIgnoreCar = pCar;
@@ -593,26 +573,20 @@ static void CollideWithSkater(CCar *pCar, CBruce *pSkater, const MATRIX &tm, sho
     carType -= CAR_TYPE_TAXI;
     switch (carType)
     {
-    case CAR_TYPE_TAXI - CAR_TYPE_TAXI:
-        SFX_PlayX(
-            Rnd(4) + CAR_SOUND_TAXI_IMPACT_FIRST, CAR_SOUND_VOLUME, 0);
-        break;
-    case CAR_TYPE_POLICE - CAR_TYPE_TAXI:
-        SFX_PlayX(
-            Rnd(4) + CAR_SOUND_POLICE_IMPACT_FIRST, CAR_SOUND_VOLUME, 0);
-        break;
-    case CAR_TYPE_VAN - CAR_TYPE_TAXI:
-        SFX_PlayX(CAR_SOUND_VAN_IMPACT, CAR_SOUND_VOLUME, 0);
-        break;
-    case CAR_TYPE_CABLE - CAR_TYPE_TAXI:
-        SFX_PlayX(CAR_SOUND_CABLE, CAR_SOUND_VOLUME, 0);
-        break;
-    case CAR_TYPE_KART - CAR_TYPE_TAXI:
-        SFX_PlayX(CAR_SOUND_VAN_IMPACT, CAR_SOUND_VOLUME, 0);
-        break;
-    case CAR_TYPE_MAR - CAR_TYPE_TAXI:
-        SFX_PlayX(CAR_SOUND_NONE, CAR_SOUND_VOLUME, 0);
-        break;
+        case CAR_TYPE_TAXI - CAR_TYPE_TAXI:
+            SFX_PlayX(Rnd(4) + CAR_SOUND_TAXI_IMPACT_FIRST, CAR_SOUND_VOLUME, 0);
+            break;
+        case CAR_TYPE_POLICE - CAR_TYPE_TAXI:
+            SFX_PlayX(Rnd(4) + CAR_SOUND_POLICE_IMPACT_FIRST, CAR_SOUND_VOLUME, 0);
+            break;
+        case CAR_TYPE_VAN - CAR_TYPE_TAXI:
+            SFX_PlayX(CAR_SOUND_VAN_IMPACT, CAR_SOUND_VOLUME, 0);
+            break;
+        case CAR_TYPE_CABLE - CAR_TYPE_TAXI: SFX_PlayX(CAR_SOUND_CABLE, CAR_SOUND_VOLUME, 0); break;
+        case CAR_TYPE_KART - CAR_TYPE_TAXI:
+            SFX_PlayX(CAR_SOUND_VAN_IMPACT, CAR_SOUND_VOLUME, 0);
+            break;
+        case CAR_TYPE_MAR - CAR_TYPE_TAXI: SFX_PlayX(CAR_SOUND_NONE, CAR_SOUND_VOLUME, 0); break;
     }
 }
 
@@ -627,14 +601,15 @@ static void CollideWithSkaters(CCar *pCar)
     SModel *m;
     short *pBox;
 
-    if ((GVInfo1.VideoMode != 2) && (GVInfo2.VideoMode != 2)) {
+    if ((GVInfo1.VideoMode != 2) && (GVInfo2.VideoMode != 2))
+    {
         m = PSXRegion[pCar->mRegion].ppModels[4];
         pBox = ((CarModelBounds *)&m->Box)->Half;
-        M3dMaths_TransposeMat(
-            reinterpret_cast<unsigned short *>(&pCar->mTransform),
-            reinterpret_cast<unsigned short *>(&tm));
+        M3dMaths_TransposeMat(reinterpret_cast<unsigned short *>(&pCar->mTransform),
+                              reinterpret_cast<unsigned short *>(&tm));
         CollideWithSkater(pCar, GSkater[0], tm, pBox);
-        if (GSkater[1] != 0) {
+        if (GSkater[1] != 0)
+        {
             CollideWithSkater(pCar, GSkater[1], tm, pBox);
         }
     }
@@ -654,10 +629,8 @@ static void HonkAtSkaters(CCar *pCar, CVector Front)
 {
     int Honk = 0;
 
-    if (GVInfo1.VideoMode == 2)
-        return;
-    if (GVInfo2.VideoMode == 2)
-        return;
+    if (GVInfo1.VideoMode == 2) return;
+    if (GVInfo2.VideoMode == 2) return;
 
     int Skater = 0;
     if (GNumberOfPlayers > 0)
@@ -667,17 +640,13 @@ static void HonkAtSkaters(CCar *pCar, CVector Front)
         for (; Skater < GNumberOfPlayers; ppSkater++, Skater++)
         {
             if (static_cast<int>(Utils_CrapDist(
-                    Car_Vector(pCar->mPos),
-                    Car_Vector(CAR_SKATER_PREFIX(*ppSkater)->mPos))) < 2000)
+                    Car_Vector(pCar->mPos), Car_Vector(CAR_SKATER_PREFIX(*ppSkater)->mPos))) < 2000)
             {
                 int LeftZ = Front.vz;
-                int VecX = CAR_SKATER_PREFIX(*ppSkater)->mPos.vx -
-                    pCar->mPos.vx;
-                int VecZ = CAR_SKATER_PREFIX(*ppSkater)->mPos.vz -
-                    pCar->mPos.vz;
+                int VecX = CAR_SKATER_PREFIX(*ppSkater)->mPos.vx - pCar->mPos.vx;
+                int VecZ = CAR_SKATER_PREFIX(*ppSkater)->mPos.vz - pCar->mPos.vz;
                 int RightX;
-                if (Mips_DotProd2Sign(
-                        Front.vx - LeftZ, VecX, Front.vx + LeftZ, VecZ) > 0)
+                if (Mips_DotProd2Sign(Front.vx - LeftZ, VecX, Front.vx + LeftZ, VecZ) > 0)
                 {
                     RightX = Front.vz + Front.vx;
                     if (Mips_DotProd2Sign(RightX, VecX, Front.vz - Front.vx, VecZ) > 0)
@@ -696,28 +665,15 @@ static void HonkAtSkaters(CCar *pCar, CVector Front)
         {
             switch (pCar->mType)
             {
-            case CAR_TYPE_TAXI:
-                SFX_PlayX(
-                    Rnd(3) + CAR_SOUND_TAXI_HORN_FIRST,
-                    CAR_SOUND_VOLUME, 0);
-                break;
-            case CAR_TYPE_POLICE:
-                SFX_PlayX(CAR_SOUND_POLICE_HORN, CAR_SOUND_VOLUME, 0);
-                break;
-            case CAR_TYPE_VAN:
-                SFX_PlayX(CAR_SOUND_VAN_HORN, CAR_SOUND_VOLUME, 0);
-                break;
-            case CAR_TYPE_CABLE:
-                SFX_PlayX(CAR_SOUND_CABLE, CAR_SOUND_VOLUME, 0);
-                break;
-            case CAR_TYPE_KART:
-                SFX_PlayX(CAR_SOUND_VAN_HORN, CAR_SOUND_VOLUME, 0);
-                break;
-            case CAR_TYPE_MAR:
-                SFX_PlayX(CAR_SOUND_NONE, CAR_SOUND_VOLUME, 0);
-                break;
-            default:
-                goto set_lock;
+                case CAR_TYPE_TAXI:
+                    SFX_PlayX(Rnd(3) + CAR_SOUND_TAXI_HORN_FIRST, CAR_SOUND_VOLUME, 0);
+                    break;
+                case CAR_TYPE_POLICE: SFX_PlayX(CAR_SOUND_POLICE_HORN, CAR_SOUND_VOLUME, 0); break;
+                case CAR_TYPE_VAN: SFX_PlayX(CAR_SOUND_VAN_HORN, CAR_SOUND_VOLUME, 0); break;
+                case CAR_TYPE_CABLE: SFX_PlayX(CAR_SOUND_CABLE, CAR_SOUND_VOLUME, 0); break;
+                case CAR_TYPE_KART: SFX_PlayX(CAR_SOUND_VAN_HORN, CAR_SOUND_VOLUME, 0); break;
+                case CAR_TYPE_MAR: SFX_PlayX(CAR_SOUND_NONE, CAR_SOUND_VOLUME, 0); break;
+                default: goto set_lock;
             }
         set_lock:
             pCar->mHonkLock = 1;
@@ -763,9 +719,7 @@ void CCar::AI()
             SFXLEVEL = SFXLEVEL * CarVol / 100;
             if (remainder == 0)
             {
-                SFX_ModifyPos(
-                    loopingSound,
-                    Car_Vector(mPos), 0);
+                SFX_ModifyPos(loopingSound, Car_Vector(mPos), 0);
             }
             SFXLEVEL = t;
         }
@@ -778,8 +732,7 @@ void CCar::AI()
 
     do
     {
-        unsigned short *links =
-            Trig_GetLinksPointer(mCurrentRoadSegment);
+        unsigned short *links = Trig_GetLinksPointer(mCurrentRoadSegment);
         NextSegment = links[1];
 
         Trig_GetPosition(SegStart, mCurrentRoadSegment);
@@ -793,9 +746,7 @@ void CCar::AI()
         if (FirstTimeThroughLoop)
         {
             FirstTimeThroughLoop = 0;
-            Speed = InitialSpeed = Mips_CVecDotProd(
-                &SegDir, reinterpret_cast<CVector *>(
-                    &mVel));
+            Speed = InitialSpeed = Mips_CVecDotProd(&SegDir, reinterpret_cast<CVector *>(&mVel));
             if (Speed < 0)
             {
                 Speed = 0;
@@ -805,21 +756,15 @@ void CCar::AI()
                 Speed += CAR_ACCELERATION;
             }
 
-            mVel.vx =
-                Mips_FixMul(SegDir.vx, Speed);
-            mVel.vy =
-                Mips_FixMul(SegDir.vy, Speed);
-            mVel.vz =
-                Mips_FixMul(SegDir.vz, Speed);
+            mVel.vx = Mips_FixMul(SegDir.vx, Speed);
+            mVel.vy = Mips_FixMul(SegDir.vy, Speed);
+            mVel.vz = Mips_FixMul(SegDir.vz, Speed);
         }
         else
         {
-            mVel.vx =
-                Mips_FixMul(SegDir.vx, InitialSpeed);
-            mVel.vy =
-                Mips_FixMul(SegDir.vy, InitialSpeed);
-            mVel.vz =
-                Mips_FixMul(SegDir.vz, InitialSpeed);
+            mVel.vx = Mips_FixMul(SegDir.vx, InitialSpeed);
+            mVel.vy = Mips_FixMul(SegDir.vy, InitialSpeed);
+            mVel.vz = Mips_FixMul(SegDir.vz, InitialSpeed);
         }
 
         MajorAxis = 0;
@@ -841,45 +786,36 @@ void CCar::AI()
 
         switch (MajorAxis)
         {
-        case 0:
-            Length = ((SegEnd.vx - SegStart.vx) / SegDir.vx) << 12;
-            t = ((mPos.vx - SegStart.vx) /
-                 SegDir.vx) << 12;
-            break;
+            case 0:
+                Length = ((SegEnd.vx - SegStart.vx) / SegDir.vx) << 12;
+                t = ((mPos.vx - SegStart.vx) / SegDir.vx) << 12;
+                break;
 
-        case 1:
-            Length = ((SegEnd.vy - SegStart.vy) / SegDir.vy) << 12;
-            t = ((mPos.vy - SegStart.vy) /
-                 SegDir.vy) << 12;
-            break;
+            case 1:
+                Length = ((SegEnd.vy - SegStart.vy) / SegDir.vy) << 12;
+                t = ((mPos.vy - SegStart.vy) / SegDir.vy) << 12;
+                break;
 
-        case 2:
-            Length = ((SegEnd.vz - SegStart.vz) / SegDir.vz) << 12;
-            t = ((mPos.vz - SegStart.vz) /
-                 SegDir.vz) << 12;
-            break;
+            case 2:
+                Length = ((SegEnd.vz - SegStart.vz) / SegDir.vz) << 12;
+                t = ((mPos.vz - SegStart.vz) / SegDir.vz) << 12;
+                break;
         }
 
         if (Length - (Length >> 4) < t)
         {
             Speed -= Speed >> 4;
-            mVel.vx -=
-                mVel.vx >> 4;
-            mVel.vy -=
-                mVel.vy >> 4;
-            mVel.vz -=
-                mVel.vz >> 4;
+            mVel.vx -= mVel.vx >> 4;
+            mVel.vy -= mVel.vy >> 4;
+            mVel.vz -= mVel.vz >> 4;
         }
 
         t += Speed;
         if (t >= 0 && t <= Length)
         {
-            mPos.vx +=
-                Mips_FixMul(SegDir.vx, Speed);
-            mPos.vy +=
-                Mips_FixMul(SegDir.vy, Speed);
-            mPos.vz +=
-                Mips_FixMul(SegDir.vz, Speed);
+            mPos.vx += Mips_FixMul(SegDir.vx, Speed);
+            mPos.vy += Mips_FixMul(SegDir.vy, Speed);
+            mPos.vz += Mips_FixMul(SegDir.vz, Speed);
             RemainingSpeed = 0;
         }
         else
@@ -893,31 +829,25 @@ void CCar::AI()
     } while ((Speed = RemainingSpeed) != 0);
 
     int TargetAngle = ratan2(-SegDir.vx, -SegDir.vz) & CAR_ANGLE_MASK;
-    int d = GetDeltaAngle(
-        mAngles.vy, TargetAngle);
+    int d = GetDeltaAngle(mAngles.vy, TargetAngle);
     if (CarAbs(d) < CAR_TURN_SNAP_THRESHOLD)
     {
         mAngles.vy = TargetAngle;
     }
     else
     {
-        mAngles.vy =
-            (mAngles.vy + (d >> 2)) &
-            CAR_ANGLE_MASK;
+        mAngles.vy = (mAngles.vy + (d >> 2)) & CAR_ANGLE_MASK;
     }
 
     TargetAngle = ratan2(SegDir.vy, CAR_FIXED_ONE) & CAR_ANGLE_MASK;
-    d = GetDeltaAngle(
-        mAngles.vx, TargetAngle);
+    d = GetDeltaAngle(mAngles.vx, TargetAngle);
     if (CarAbs(d) < CAR_TURN_SNAP_THRESHOLD)
     {
         mAngles.vx = TargetAngle;
     }
     else
     {
-        mAngles.vx =
-            (mAngles.vx + (d >> 3)) &
-            CAR_ANGLE_MASK;
+        mAngles.vx = (mAngles.vx + (d >> 3)) & CAR_ANGLE_MASK;
     }
 
     HonkAtSkaters(this, SegDir);

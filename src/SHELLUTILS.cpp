@@ -14,10 +14,14 @@
 #include "PAL256.h"
 
 /** Return caller-owned storage for an ordinary placement construction. */
-inline void *operator new(unsigned int, void *storage) { return storage; }
+inline void *operator new(unsigned int, void *storage)
+{
+    return storage;
+}
 
 /** Render-buffer fields addressed by shell primitive submission. */
-struct SDoubleBuffer {
+struct SDoubleBuffer
+{
     u32 Draw[23];
     u32 Disp[5];
     int Visible;
@@ -49,7 +53,8 @@ u16 GetFree256Slot(void);
 #include "PDOUBLEBUFFER.h"
 
 /** Pixel buffer split into independently packable VRAM rectangles. */
-struct SlicedImage : CClass {
+struct SlicedImage : CClass
+{
     int width;
     int height;
     int slice_width;
@@ -64,8 +69,7 @@ struct SlicedImage : CClass {
     int m_removed_from_memory;
 
     /** Build a sliced image from caller-owned source pixels. */
-    SlicedImage(char *pImg, int w, int h, int slicew, int sliceh,
-                int bpp, u16 clut);
+    SlicedImage(char *pImg, int w, int h, int slicew, int sliceh, int bpp, u16 clut);
     /** Release the image's VRAM slices, palette slot, and backing pixels. */
     virtual ~SlicedImage();
 
@@ -79,14 +83,14 @@ struct SlicedImage : CClass {
     void rotateDraw(int x, int y);
 
     /** Draw every packed slice as a textured quad. */
-    void draw(int x, int y, int usePanelOT, int r, int g, int b,
-              int transparent, int drawStraight);
+    void draw(int x, int y, int usePanelOT, int r, int g, int b, int transparent, int drawStraight);
 };
 
 #include "SPRITE.h"
 
 /** Captured screen rectangle used to erase transient shell graphics. */
-struct EraseSprite : CClass {
+struct EraseSprite : CClass
+{
     RECT mR;
     unsigned long *mData;
 
@@ -95,7 +99,8 @@ struct EraseSprite : CClass {
 };
 
 /** Circular buffer of controller states used by shell input. */
-struct PadBuffer : CClass {
+struct PadBuffer : CClass
+{
     virtual ~PadBuffer();
     /** Shared suppression flag for the second controller input stream. */
     static int mIgnoreTwo;
@@ -112,7 +117,8 @@ struct PadBuffer : CClass {
 #include "VERTICALMENUITEM.h"
 
 /** Animated vertical text menu with selection and erase sprites. */
-struct VerticalMenu : CClass {
+struct VerticalMenu : CClass
+{
     int item_spacing;
     int font_scale;
     int font_scale_big;
@@ -128,8 +134,8 @@ struct VerticalMenu : CClass {
     int mDontDeleteSprites;
 
     /** Build the item metrics and erase sprites used by a vertical shell menu. */
-    VerticalMenu(int top, int bottom, int spacing, char **items, int num,
-                 int *xlist, int *ylist, int selection);
+    VerticalMenu(int top, int bottom, int spacing, char **items, int num, int *xlist, int *ylist,
+                 int selection);
 
     /** Release the menu's triangle and per-item erase sprites. */
     virtual ~VerticalMenu();
@@ -157,27 +163,21 @@ struct VerticalMenu : CClass {
 };
 
 /** Non-interactive vertical dialog rendered with menu item geometry. */
-struct VerticalDialog : public VerticalMenu {
+struct VerticalDialog : public VerticalMenu
+{
     /** Destroy the inherited vertical-menu state. */
     virtual ~VerticalDialog();
     /** Draw every dialog item and its erase sprite. */
     virtual void draw();
 };
 
-typedef char shell_sliced_image_size_must_be_52[
-    (sizeof(SlicedImage) == 52) ? 1 : -1];
-typedef char shell_double_buffer_size_must_be_172[
-    (sizeof(SDoubleBuffer) == 172) ? 1 : -1];
-typedef char shell_sprite_size_must_be_24[
-    (sizeof(Sprite) == 24) ? 1 : -1];
-typedef char shell_erase_sprite_size_must_be_16[
-    (sizeof(EraseSprite) == 16) ? 1 : -1];
-typedef char shell_pad_buffer_size_must_be_284[
-    (sizeof(PadBuffer) == 284) ? 1 : -1];
-typedef char shell_vertical_menu_size_must_be_820[
-    (sizeof(VerticalMenu) == 820) ? 1 : -1];
-typedef char shell_vertical_dialog_size_must_be_820[
-    (sizeof(VerticalDialog) == 820) ? 1 : -1];
+typedef char shell_sliced_image_size_must_be_52[(sizeof(SlicedImage) == 52) ? 1 : -1];
+typedef char shell_double_buffer_size_must_be_172[(sizeof(SDoubleBuffer) == 172) ? 1 : -1];
+typedef char shell_sprite_size_must_be_24[(sizeof(Sprite) == 24) ? 1 : -1];
+typedef char shell_erase_sprite_size_must_be_16[(sizeof(EraseSprite) == 16) ? 1 : -1];
+typedef char shell_pad_buffer_size_must_be_284[(sizeof(PadBuffer) == 284) ? 1 : -1];
+typedef char shell_vertical_menu_size_must_be_820[(sizeof(VerticalMenu) == 820) ? 1 : -1];
+typedef char shell_vertical_dialog_size_must_be_820[(sizeof(VerticalDialog) == 820) ? 1 : -1];
 
 #include "MEM.h"
 #include "PACK.h"
@@ -188,11 +188,11 @@ typedef char shell_vertical_dialog_size_must_be_820[
 
 // === External globals (absolute) ===
 /** Diagnostic emitted when a bitmap is not in the expected 8-bit format. */
-static char ShellInvalidBitmapDepthMessage[]
-    __attribute__((section(".rdata"), aligned(4))) =
-        "\nNot 8 bits per pixel, is %d bits per pixel";
+static char ShellInvalidBitmapDepthMessage[] __attribute__((section(".rdata"), aligned(4))) =
+    "\nNot 8 bits per pixel, is %d bits per pixel";
 /** Byte offsets in the little-endian BMP header consumed by Load8BitBMP2. */
-enum ShellBitmapOffset {
+enum ShellBitmapOffset
+{
     ShellBitmapWidthOffset = 18,
     ShellBitmapHeightOffset = 22,
     ShellBitmapDepthOffset = 28,
@@ -202,7 +202,8 @@ enum ShellBitmapOffset {
 };
 
 /** POLY_F4 byte offsets retained where field spelling changes instruction order. */
-enum ShellPolyF4Offset {
+enum ShellPolyF4Offset
+{
     ShellPolyF4LengthOffset = 3,
     ShellPolyF4RedOffset = 4,
     ShellPolyF4GreenOffset = 5,
@@ -222,9 +223,9 @@ enum ShellPolyF4Offset {
 #define SPRITE_DECLARE_SLICED_IMAGE_UNPACK_ABI
 #include "SPRITE.h"
 #undef SPRITE_DECLARE_SLICED_IMAGE_UNPACK_ABI
-#define Shell_SlicedImageUnpack \
-    SlicedImageMethodABI::unpack__11SlicedImage
-extern "C" {
+#define Shell_SlicedImageUnpack SlicedImageMethodABI::unpack__11SlicedImage
+extern "C"
+{
 
 /** Current and midpoint shell ordering-table entries. */
 int OT_entry __attribute__((section(".sdata"))) = 0x1000;
@@ -239,7 +240,6 @@ extern const char s_OTEntryOutOfRange[];
 #include "HIRESMODE.h"
 
 int HiresMode __attribute__((section(".sdata")));
-
 }
 
 // === Function implementations (address order) ===
@@ -511,9 +511,8 @@ void ResetOT(void)
  * @param arg_clut  Palette CLUT identifier.
  * @return `this` pointer (GCC 2.x ctor convention).
  */
-SlicedImage::SlicedImage(
-    char *pImg, int w, int h, int slicew, int sliceh,
-    int arg_bpp, u16 arg_clut)
+SlicedImage::SlicedImage(char *pImg, int w, int h, int slicew, int sliceh, int arg_bpp,
+                         u16 arg_clut)
 {
     SlicedImage *self = this;
     self->is_packed = 0;
@@ -659,8 +658,7 @@ int SlicedImage::pack()
     }
 
     is_packed = 1;
-    sliceTab = (RECT *)Mem_New(
-        num_slices_y * num_slices_x * sizeof(RECT), 1, 1);
+    sliceTab = (RECT *)Mem_New(num_slices_y * num_slices_x * sizeof(RECT), 1, 1);
     data_col = (unsigned short *)slicedBuffer;
 
     int numx = width / slice_width;
@@ -678,13 +676,11 @@ int SlicedImage::pack()
         {
             if (bpp == 8)
             {
-                Pack_Pack(0, slice_width * 2, slice_height,
-                                        &dum1, &dum2, bpp, 0, 0);
+                Pack_Pack(0, slice_width * 2, slice_height, &dum1, &dum2, bpp, 0, 0);
             }
             else if (bpp == 16)
             {
-                Pack_Pack(0, slice_width, slice_height,
-                                        &dum1, &dum2, bpp, 0, 0);
+                Pack_Pack(0, slice_width, slice_height, &dum1, &dum2, bpp, 0, 0);
             }
 
             r.w = slice_width;
@@ -705,13 +701,11 @@ int SlicedImage::pack()
         {
             if (bpp == 8)
             {
-                Pack_Pack(0, slice_width * 2, remy,
-                                        &dum1, &dum2, bpp, 0, 0);
+                Pack_Pack(0, slice_width * 2, remy, &dum1, &dum2, bpp, 0, 0);
             }
             else if (bpp == 16)
             {
-                Pack_Pack(0, slice_width, remy,
-                                        &dum1, &dum2, bpp, 0, 0);
+                Pack_Pack(0, slice_width, remy, &dum1, &dum2, bpp, 0, 0);
             }
 
             r.w = slice_width;
@@ -738,13 +732,11 @@ int SlicedImage::pack()
         {
             if (bpp == 8)
             {
-                Pack_Pack(0, remx * 2, slice_height,
-                                        &dum1, &dum2, bpp, 0, 0);
+                Pack_Pack(0, remx * 2, slice_height, &dum1, &dum2, bpp, 0, 0);
             }
             else if (bpp == 16)
             {
-                Pack_Pack(0, remx, slice_height,
-                                        &dum1, &dum2, bpp, 0, 0);
+                Pack_Pack(0, remx, slice_height, &dum1, &dum2, bpp, 0, 0);
             }
 
             r.w = remx;
@@ -765,13 +757,11 @@ int SlicedImage::pack()
         {
             if (bpp == 8)
             {
-                Pack_Pack(0, remx * 2, remy,
-                                        &dum1, &dum2, bpp, 0, 0);
+                Pack_Pack(0, remx * 2, remy, &dum1, &dum2, bpp, 0, 0);
             }
             else if (bpp == 16)
             {
-                Pack_Pack(0, remx, remy,
-                                        &dum1, &dum2, bpp, 0, 0);
+                Pack_Pack(0, remx, remy, &dum1, &dum2, bpp, 0, 0);
             }
 
             r.w = remx;
@@ -826,8 +816,7 @@ void Shell_SlicedImageUnpack(SlicedImage *self)
                     do
                     {
                         int sliceIndex = j * cols + i;
-                        RECT *slice = (RECT *)((sliceIndex << 3) +
-                                              (int)self->sliceTab);
+                        RECT *slice = (RECT *)((sliceIndex << 3) + (int)self->sliceTab);
                         i++;
                         Pack_Unpack(slice->x, slice->y);
                         cols = self->num_slices_x;
@@ -861,8 +850,8 @@ void Shell_SlicedImageUnpack(SlicedImage *self)
  * @param Trans  Nonzero to enable semi-transparency.
  * @param DrawStraight  Nonzero to submit each primitive immediately.
  */
-void SlicedImage::draw(int x, int y, int UsePanelOT, int r, int g, int b,
-                       int Trans, int DrawStraight)
+void SlicedImage::draw(int x, int y, int UsePanelOT, int r, int g, int b, int Trans,
+                       int DrawStraight)
 {
     int xt;
     int yt = y;
@@ -906,29 +895,22 @@ void SlicedImage::draw(int x, int y, int UsePanelOT, int r, int g, int b,
                 setRGB0(apoly, r, g, b);
             }
 
-            setXY4(apoly,
-                   xt, yt,
-                   xt + (sliceTab[index].w << bpp8), yt,
-                   xt, yt + (unsigned short)sliceTab[index].h,
-                   xt + (sliceTab[index].w << bpp8),
+            setXY4(apoly, xt, yt, xt + (sliceTab[index].w << bpp8), yt, xt,
+                   yt + (unsigned short)sliceTab[index].h, xt + (sliceTab[index].w << bpp8),
                    yt + (unsigned short)sliceTab[index].h);
-            setUV0(apoly,
-                   ((unsigned short)sliceTab[index].x & 0x3f) << bpp8,
+            setUV0(apoly, ((unsigned short)sliceTab[index].x & 0x3f) << bpp8,
                    (unsigned char)sliceTab[index].y);
             apoly->u1 =
-                (((unsigned short)sliceTab[index].x & 0x3f) << bpp8) +
-                (sliceTab[index].w << bpp8);
+                (((unsigned short)sliceTab[index].x & 0x3f) << bpp8) + (sliceTab[index].w << bpp8);
             apoly->v1 = (unsigned char)sliceTab[index].y;
-            apoly->u2 = ((unsigned short)sliceTab[index].x & 0x3f)
-                << bpp8;
+            apoly->u2 = ((unsigned short)sliceTab[index].x & 0x3f) << bpp8;
             {
                 unsigned char sliceY = (unsigned char)sliceTab[index].y;
                 unsigned char sliceH = (unsigned char)sliceTab[index].h;
                 apoly->v2 = sliceH + sliceY;
             }
             apoly->u3 =
-                (((unsigned short)sliceTab[index].x & 0x3f) << bpp8) +
-                (sliceTab[index].w << bpp8);
+                (((unsigned short)sliceTab[index].x & 0x3f) << bpp8) + (sliceTab[index].w << bpp8);
             {
                 unsigned char sliceY = (unsigned char)sliceTab[index].y;
                 unsigned char sliceH = (unsigned char)sliceTab[index].h;
@@ -937,9 +919,7 @@ void SlicedImage::draw(int x, int y, int UsePanelOT, int r, int g, int b,
 
             setSemiTrans(apoly, Trans != 0);
             setShadeTex(apoly, r == -1);
-            apoly->tpage = getTPage(bpp == 8 ? 1 : 2, 0,
-                                    sliceTab[index].x,
-                                    sliceTab[index].y);
+            apoly->tpage = getTPage(bpp == 8 ? 1 : 2, 0, sliceTab[index].x, sliceTab[index].y);
             apoly->clut = clut;
 
             if (DrawStraight == 0)
@@ -964,12 +944,10 @@ void SlicedImage::draw(int x, int y, int UsePanelOT, int r, int g, int b,
 }
 
 /** Ordering-table bounds diagnostic. */
-extern const char s_OTEntryOutOfRange[16]
-    __attribute__((section(".sdata"))) = "\nOT_entry is %d";
+extern const char s_OTEntryOutOfRange[16] __attribute__((section(".sdata"))) = "\nOT_entry is %d";
 
 /** Shared PadBuffer input-suppression flag. */
-int PadBuffer::mIgnoreTwo
-    __attribute__((section(".sdata"))) = 0;
+int PadBuffer::mIgnoreTwo __attribute__((section(".sdata"))) = 0;
 
 /**
  * DrawIt__FP4RECTiiii
@@ -997,32 +975,22 @@ void DrawIt(RECT *r, int x, int y, int bpp, int clut)
 
     if (bpp == 0x10)
     {
-        setXYWH(apoly, x, y, (unsigned short)r->w,
-                (unsigned short)r->h);
-        setUV4(apoly,
-               (unsigned char)(r->x & 0x3f), (unsigned char)r->y,
-               (unsigned char)(r->x & 0x3f) + (unsigned char)r->w,
-               (unsigned char)r->y,
-               (unsigned char)(r->x & 0x3f),
-               (unsigned char)r->h + (unsigned char)r->y,
+        setXYWH(apoly, x, y, (unsigned short)r->w, (unsigned short)r->h);
+        setUV4(apoly, (unsigned char)(r->x & 0x3f), (unsigned char)r->y,
+               (unsigned char)(r->x & 0x3f) + (unsigned char)r->w, (unsigned char)r->y,
+               (unsigned char)(r->x & 0x3f), (unsigned char)r->h + (unsigned char)r->y,
                (unsigned char)(r->x & 0x3f) + (unsigned char)r->w,
                (unsigned char)r->h + (unsigned char)r->y);
         apoly->tpage = getTPage(2, 0, r->x, r->y);
     }
     else
     {
-        setXYWH(apoly, x, y, ((unsigned short)r->w) << 1,
-                (unsigned short)r->h);
-        setUV4(apoly,
-               ((unsigned char)(r->x & 0x3f)) << 1,
-               (unsigned char)r->y,
-               (((unsigned char)(r->x & 0x3f)) << 1) +
-                   (((unsigned char)r->w) << 1),
-               (unsigned char)r->y,
-               ((unsigned char)(r->x & 0x3f)) << 1,
+        setXYWH(apoly, x, y, ((unsigned short)r->w) << 1, (unsigned short)r->h);
+        setUV4(apoly, ((unsigned char)(r->x & 0x3f)) << 1, (unsigned char)r->y,
+               (((unsigned char)(r->x & 0x3f)) << 1) + (((unsigned char)r->w) << 1),
+               (unsigned char)r->y, ((unsigned char)(r->x & 0x3f)) << 1,
                (unsigned char)r->h + (unsigned char)r->y,
-               (((unsigned char)(r->x & 0x3f)) << 1) +
-                   (((unsigned char)r->w) << 1),
+               (((unsigned char)(r->x & 0x3f)) << 1) + (((unsigned char)r->w) << 1),
                (unsigned char)r->h + (unsigned char)r->y);
         apoly->tpage = getTPage(1, 0, r->x, r->y);
         apoly->clut = clut;
@@ -1061,8 +1029,7 @@ void SlicedImage::rotateDraw(int x, int y)
         int dum1;
         int dum2;
         sliceTab = (RECT *)Mem_New(sizeof(RECT), 1, 1);
-        Pack_Pack(0, slice_width, slice_height,
-                                &dum1, &dum2, 0x10, 0, 0);
+        Pack_Pack(0, slice_width, slice_height, &dum1, &dum2, 0x10, 0, 0);
         sliceTab->w = slice_width;
         sliceTab->h = slice_height;
         sliceTab->x = dum1;
@@ -1155,12 +1122,10 @@ void SlicedImage::rotateDraw(int x, int y)
  */
 void SlicedImage::removeBlack()
 {
-    if (bpp != 0x10)
-        return;
+    if (bpp != 0x10) return;
     int temp = width * height;
     u16 *buf = (u16 *)slicedBuffer;
-    if (temp <= 0)
-        return;
+    if (temp <= 0) return;
     int i = 0;
     do
     {
@@ -1206,8 +1171,7 @@ Sprite::Sprite(char *file, int pack, int slicew, int sliceh)
         sliceh = 0;
     }
 
-    SlicedImage *image = new SlicedImage(
-        buf, w, h, slicew, sliceh, m_bpp, clut);
+    SlicedImage *image = new SlicedImage(buf, w, h, slicew, sliceh, m_bpp, clut);
     m_image = image;
     buf = 0;
     m_packed = pack;
@@ -1233,8 +1197,7 @@ Sprite::Sprite(char *file, int pack, int slicew, int sliceh)
  * @param slicew  Slice width, or 0 to keep it unsliced.
  * @param sliceh  Slice height, or 0 to keep it unsliced.
  */
-Sprite::Sprite(int x, int y, int w, int h,
-               int pack, int slicew, int sliceh)
+Sprite::Sprite(int x, int y, int w, int h, int pack, int slicew, int sliceh)
 {
     RECT r;
     int bpp = 0x10;
@@ -1259,8 +1222,7 @@ Sprite::Sprite(int x, int y, int w, int h,
     StoreImage(&r, buf);
     DrawSync(0);
 
-    SlicedImage *image = new SlicedImage(
-        (char *)buf, w, h, slicew, sliceh, bpp, 0);
+    SlicedImage *image = new SlicedImage((char *)buf, w, h, slicew, sliceh, bpp, 0);
     m_image = image;
     image->removeBlack();
     m_packed = pack;
@@ -1346,8 +1308,8 @@ EraseSprite::~EraseSprite()
  * @param selection  Initially selected entry.
  * @return `this` pointer (GCC 2.x constructor convention).
  */
-VerticalMenu::VerticalMenu(int top, int bottom, int spacing, char **items,
-                           int num, int *xlist, int *ylist, int selection)
+VerticalMenu::VerticalMenu(int top, int bottom, int spacing, char **items, int num, int *xlist,
+                           int *ylist, int selection)
 {
     int tot_h = 0;
 
@@ -1392,15 +1354,9 @@ VerticalMenu::VerticalMenu(int top, int bottom, int spacing, char **items,
         }
 
         list[i].erase_sprite =
-            new Sprite(
-                list[i].erase_sprite_x,
-                list[i].y -
-                    (((list[i].h >> 1) * font_scale_big) /
-                     font_scale) - 1,
-                550,
-                ((list[i].h * font_scale_big) /
-                 font_scale) + 4,
-                1, 32, 128);
+            new Sprite(list[i].erase_sprite_x,
+                       list[i].y - (((list[i].h >> 1) * font_scale_big) / font_scale) - 1, 550,
+                       ((list[i].h * font_scale_big) / font_scale) + 4, 1, 32, 128);
 
         DrawSync(0);
         if (list[i].grayed != 0)
@@ -1411,10 +1367,8 @@ VerticalMenu::VerticalMenu(int top, int bottom, int spacing, char **items,
         {
             Mess_SetRGB(0x7a, 0x7a, 0x7a, 0);
         }
-        Mess_DrawText(
-            list[i].x,
-            list[i].y - (list[i].h >> 1) + list[i].baseline,
-            list[i].string, 0, 0, 0x100, 0);
+        Mess_DrawText(list[i].x, list[i].y - (list[i].h >> 1) + list[i].baseline, list[i].string, 0,
+                      0, 0x100, 0);
     }
 
     mTri1 = 0;
@@ -1480,7 +1434,6 @@ VerticalMenu::~VerticalMenu()
             i = i + 1;
         } while (i < numItems);
     }
-
 }
 
 /**
@@ -1502,19 +1455,16 @@ void VerticalMenu::draw()
 
     if (tick == 63 || tick == 64)
     {
-        tri_off = (((list[old_selected].w >> 1) * font_scale_big) /
-                   font_scale) + 30;
+        tri_off = (((list[old_selected].w >> 1) * font_scale_big) / font_scale) + 30;
         if (mEraseTri1 != 0)
         {
-            mEraseTri1->draw(list[old_selected].x - tri_off - 22,
-                             list[old_selected].y - 34,
-                             0, -1, -1, -1);
+            mEraseTri1->draw(list[old_selected].x - tri_off - 22, list[old_selected].y - 34, 0, -1,
+                             -1, -1);
         }
         if (mEraseTri2 != 0)
         {
-            mEraseTri2->draw(list[old_selected].x + tri_off - 22,
-                             list[old_selected].y - 34,
-                             0, -1, -1, -1);
+            mEraseTri2->draw(list[old_selected].x + tri_off - 22, list[old_selected].y - 34, 0, -1,
+                             -1, -1);
         }
         if (tick == 63)
         {
@@ -1526,17 +1476,13 @@ void VerticalMenu::draw()
     {
         list[i].erase_sprite->draw(
             list[i].erase_sprite_x,
-            list[i].y - (((list[i].h >> 1) * font_scale_big) /
-                         font_scale) - 1,
-            0, -1, -1, -1);
+            list[i].y - (((list[i].h >> 1) * font_scale_big) / font_scale) - 1, 0, -1, -1, -1);
 
         if (i == selected)
         {
             Mess_SetRGB(0xb6, 0x84, 0x24, 0);
             Mess_SetFontScale(font_scale_big);
-            y = list[i].y -
-                ((((list[i].h >> 1) - list[i].baseline) * font_scale_big) /
-                 font_scale);
+            y = list[i].y - ((((list[i].h >> 1) - list[i].baseline) * font_scale_big) / font_scale);
         }
         else
         {
@@ -1551,13 +1497,11 @@ void VerticalMenu::draw()
             y = list[i].y - (list[i].h >> 1) + list[i].baseline;
         }
 
-        Mess_DrawText(list[i].x, y, list[i].string,
-                                   0, 0, 0x100, 0);
+        Mess_DrawText(list[i].x, y, list[i].string, 0, 0, 0x100, 0);
         Mess_SetFontScale(font_scale);
     }
 
-    tri_off = (((list[selected].w >> 1) * font_scale_big) /
-               font_scale) + 30;
+    tri_off = (((list[selected].w >> 1) * font_scale_big) / font_scale) + 30;
 
     if (tick == 61)
     {
@@ -1570,9 +1514,7 @@ void VerticalMenu::draw()
         if (tri != 0)
         {
             tri = ::new (tri) Sprite(
-                list[selected].x -
-                    (((list[selected].w >> 1) * font_scale_big) / font_scale) -
-                    52,
+                list[selected].x - (((list[selected].w >> 1) * font_scale_big) / font_scale) - 52,
                 list[selected].y - 34, 44, 68, 1, 0, 0);
         }
         mEraseTri1 = tri;
@@ -1586,9 +1528,7 @@ void VerticalMenu::draw()
         if (tri2 != 0)
         {
             tri2 = ::new (tri2) Sprite(
-                list[selected].x +
-                    (((list[selected].w >> 1) * font_scale_big) / font_scale) +
-                    8,
+                list[selected].x + (((list[selected].w >> 1) * font_scale_big) / font_scale) + 8,
                 list[selected].y - 34, 44, 68, 1, 0, 0);
         }
         mEraseTri2 = tri2;
@@ -1598,25 +1538,17 @@ void VerticalMenu::draw()
     {
         if (mTri1 != 0)
         {
-            mTri1->draw(list[selected].x - tri_off - 22,
-                        list[selected].y - 34,
-                        0, -1, -1, -1);
+            mTri1->draw(list[selected].x - tri_off - 22, list[selected].y - 34, 0, -1, -1, -1);
         }
         if (mTri2 != 0)
         {
-            mTri2->draw(list[selected].x + tri_off - 22,
-                        list[selected].y - 34,
-                        0, -1, -1, -1);
+            mTri2->draw(list[selected].x + tri_off - 22, list[selected].y - 34, 0, -1, -1, -1);
         }
     }
     else if (tick == 14 || tick == 15)
     {
-        mEraseTri1->draw(list[selected].x - tri_off - 22,
-                         list[selected].y - 34,
-                         0, -1, -1, -1);
-        mEraseTri2->draw(list[selected].x + tri_off - 22,
-                         list[selected].y - 34,
-                         0, -1, -1, -1);
+        mEraseTri1->draw(list[selected].x - tri_off - 22, list[selected].y - 34, 0, -1, -1, -1);
+        mEraseTri2->draw(list[selected].x + tri_off - 22, list[selected].y - 34, 0, -1, -1, -1);
     }
 
     tick--;
@@ -1636,22 +1568,17 @@ void VerticalMenu::draw()
  */
 void VerticalMenu::erase()
 {
-    int tri_off = (((list[selected].w >> 1) * font_scale_big) /
-                   font_scale) + 30;
+    int tri_off = (((list[selected].w >> 1) * font_scale_big) / font_scale) + 30;
 
     if (tick < 61)
     {
         if (mEraseTri1 != 0)
         {
-            mEraseTri1->draw(list[selected].x - tri_off - 22,
-                             list[selected].y - 34,
-                             0, -1, -1, -1);
+            mEraseTri1->draw(list[selected].x - tri_off - 22, list[selected].y - 34, 0, -1, -1, -1);
         }
         if (mEraseTri2 != 0)
         {
-            mEraseTri2->draw(list[selected].x + tri_off - 22,
-                             list[selected].y - 34,
-                             0, -1, -1, -1);
+            mEraseTri2->draw(list[selected].x + tri_off - 22, list[selected].y - 34, 0, -1, -1, -1);
         }
     }
 
@@ -1659,9 +1586,7 @@ void VerticalMenu::erase()
     {
         list[i].erase_sprite->draw(
             list[i].erase_sprite_x,
-            list[i].y - (((list[i].h >> 1) * font_scale_big) /
-                         font_scale) - 1,
-            0, -1, -1, -1);
+            list[i].y - (((list[i].h >> 1) * font_scale_big) / font_scale) - 1, 0, -1, -1, -1);
     }
 }
 
@@ -1677,8 +1602,7 @@ void VerticalMenu::erase()
  */
 void VerticalMenu::select(int num)
 {
-    if (list[num].grayed != 0)
-        return;
+    if (list[num].grayed != 0) return;
     old_selected = selected;
     selected = num;
     if (tick >= 0x3D)
@@ -1723,13 +1647,11 @@ void VerticalMenu::up()
     }
 
     int choice = selected - 1;
-    if (choice < 0)
-        choice = num_items - 1;
+    if (choice < 0) choice = num_items - 1;
     while (choice != selected && list[choice].grayed != 0)
     {
         choice--;
-        if (choice < 0)
-            choice = num_items - 1;
+        if (choice < 0) choice = num_items - 1;
     }
     select(choice);
 }
@@ -1753,13 +1675,11 @@ void VerticalMenu::down()
     }
 
     int choice = selected + 1;
-    if (choice >= num_items)
-        choice = 0;
+    if (choice >= num_items) choice = 0;
     while (choice != selected && list[choice].grayed != 0)
     {
         choice++;
-        if (choice >= num_items)
-            choice = 0;
+        if (choice >= num_items) choice = 0;
     }
     select(choice);
 }
@@ -1796,9 +1716,7 @@ void VerticalDialog::draw()
     {
         list[i].erase_sprite->draw(
             list[i].erase_sprite_x,
-            list[i].y - (((list[i].h >> 1) * font_scale_big) /
-                         font_scale) - 1,
-            0, -1, -1, -1);
+            list[i].y - (((list[i].h >> 1) * font_scale_big) / font_scale) - 1, 0, -1, -1, -1);
 
         if (list[i].grayed != 0)
         {
@@ -1809,10 +1727,8 @@ void VerticalDialog::draw()
             Mess_SetRGB(0x7a, 0x7a, 0x7a, 0);
         }
 
-        Mess_DrawText(
-            list[i].x,
-            list[i].y - (list[i].h >> 1) + list[i].baseline,
-            list[i].string, 0, 0, 0x100, 0);
+        Mess_DrawText(list[i].x, list[i].y - (list[i].h >> 1) + list[i].baseline, list[i].string, 0,
+                      0, 0x100, 0);
         Mess_SetFontScale(font_scale);
     }
 }

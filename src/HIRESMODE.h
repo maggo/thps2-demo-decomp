@@ -5,8 +5,7 @@
  * SHELLUTILS physically owns the high-resolution shell flag in initialized
  * small data. FRONTEND2 retains its target-proven absolute-address view.
  */
-#if defined(HIRESMODE_OWNER_DECLARATION) && \
-    defined(HIRESMODE_ABSOLUTE_DECLARATION)
+#if defined(HIRESMODE_OWNER_DECLARATION) && defined(HIRESMODE_ABSOLUTE_DECLARATION)
 #error "Select only one HiresMode declaration view"
 #elif defined(HIRESMODE_OWNER_DECLARATION)
 #define HIRESMODE_DECL_ATTR

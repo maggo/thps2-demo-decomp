@@ -34,7 +34,8 @@ struct CNonRenderedBit;
 struct SVideoInfo;
 
 /** Runtime trigger-command point stored in checksum and owner lists. */
-struct SCommandPoint {
+struct SCommandPoint
+{
     unsigned short *pCommands;
     unsigned char Collision;
     unsigned char Executed;
@@ -142,7 +143,8 @@ struct SBackgroundCommandPayload
 } __attribute__((packed));
 
 /** Composition-only gameplay-item storage used by trigger owner views. */
-struct TrigCItemOwner {
+struct TrigCItemOwner
+{
     u16 mFlags;
     u16 mInquiry;
     struct CVector mPos;
@@ -170,7 +172,8 @@ struct TrigCItemOwner {
 };
 
 /** Physics body prefix used by restart and kill commands (264 bytes). */
-struct CBody {
+struct CBody
+{
     struct TrigCItemOwner CItem;
     struct CBody **mppOriginalList;
     u16 mInputFlags;
@@ -294,7 +297,10 @@ struct TrigLightPrefix
 };
 
 /** Target-proven storage extent used by the two trigger light allocations. */
-enum { TRIG_LIGHT_STORAGE_SIZE = 100 };
+enum
+{
+    TRIG_LIGHT_STORAGE_SIZE = 100
+};
 
 /** Power-up layout used for its body-list prefix. */
 struct CPowerUp
@@ -307,7 +313,8 @@ struct CPowerUp
 };
 
 /** Animation owner prefix; fields beyond CBody are opaque to trigger code. */
-struct CSuper {
+struct CSuper
+{
     /** Start a bounded animation sequence. */
     void RunAnim(int anim, int from, int to, int to2);
 
@@ -367,10 +374,7 @@ struct CBackground
     /** Constructs and links one trigger-created background object. */
     CBackground(unsigned int checksum, const CSVector &angVel);
     /** Allocate background storage through CItem's allocator. */
-    static void *operator new(unsigned int size) throw()
-    {
-        return CItem::operator new(size);
-    }
+    static void *operator new(unsigned int size) throw() { return CItem::operator new(size); }
 
     struct CBody CBody;
     u16 mIndex;
@@ -398,7 +402,8 @@ struct CPanelData
  * These fields retain their original MAIN_STRUCTS.h offsets while unrelated
  * physics state remains opaque to this owner.
  */
-struct CBruce {
+struct CBruce
+{
     /** Clears accumulated trick state after a bail. */
     void Trick_Bail();
     /** Adds one named trick to the active scoring sequence. */
@@ -440,47 +445,34 @@ struct CBruce {
     u8 opaque_after_ignore_input_timers[5228 - 4404];
 };
 
-typedef char Trig_CommandPoint_size_must_be_24[
-    (sizeof(SCommandPoint) == 24) ? 1 : -1];
-typedef char Trig_CItem_size_must_be_76[
-    (sizeof(TrigCItemOwner) == 76) ? 1 : -1];
+typedef char Trig_CommandPoint_size_must_be_24[(sizeof(SCommandPoint) == 24) ? 1 : -1];
+typedef char Trig_CItem_size_must_be_76[(sizeof(TrigCItemOwner) == 76) ? 1 : -1];
 typedef char Trig_CBody_size_must_be_264[(sizeof(CBody) == 264) ? 1 : -1];
-typedef char Trig_CCamera_size_must_be_1668[
-    (sizeof(CCamera) == 1668) ? 1 : -1];
+typedef char Trig_CCamera_size_must_be_1668[(sizeof(CCamera) == 1668) ? 1 : -1];
 typedef char Trig_CBit_size_must_be_72[(sizeof(CBit) == 72) ? 1 : -1];
-typedef char Trig_CNonRenderedBit_size_must_be_72[
-    (sizeof(CNonRenderedBit) == 72) ? 1 : -1];
-typedef char Trig_LightPrefix_size_must_be_88[
-    (sizeof(TrigLightPrefix) == 88) ? 1 : -1];
-typedef char Trig_LightPrefix_on_offset_must_be_86[
-    ((unsigned long)&(((TrigLightPrefix *)0)->mOn) == 86) ? 1 : -1];
-typedef char Trig_Light_storage_size_must_be_100[
-    (TRIG_LIGHT_STORAGE_SIZE == 100) ? 1 : -1];
-typedef char Trig_CPowerUp_size_must_be_312[
-    (sizeof(CPowerUp) == 312) ? 1 : -1];
+typedef char Trig_CNonRenderedBit_size_must_be_72[(sizeof(CNonRenderedBit) == 72) ? 1 : -1];
+typedef char Trig_LightPrefix_size_must_be_88[(sizeof(TrigLightPrefix) == 88) ? 1 : -1];
+typedef char Trig_LightPrefix_on_offset_must_be_86
+    [((unsigned long)&(((TrigLightPrefix *)0)->mOn) == 86) ? 1 : -1];
+typedef char Trig_Light_storage_size_must_be_100[(TRIG_LIGHT_STORAGE_SIZE == 100) ? 1 : -1];
+typedef char Trig_CPowerUp_size_must_be_312[(sizeof(CPowerUp) == 312) ? 1 : -1];
 typedef char Trig_CSuper_size_must_be_400[(sizeof(CSuper) == 400) ? 1 : -1];
 typedef char Trig_CBaddy_size_must_be_532[(sizeof(CBaddy) == 532) ? 1 : -1];
-typedef char Trig_CPlatform_size_must_be_592[
-    (sizeof(CPlatform) == 592) ? 1 : -1];
-typedef char Trig_CScriptOnlyBaddy_size_must_be_556[
-    (sizeof(CScriptOnlyBaddy) == 556) ? 1 : -1];
+typedef char Trig_CPlatform_size_must_be_592[(sizeof(CPlatform) == 592) ? 1 : -1];
+typedef char Trig_CScriptOnlyBaddy_size_must_be_556[(sizeof(CScriptOnlyBaddy) == 556) ? 1 : -1];
 typedef char Trig_CCar_size_must_be_540[(sizeof(CCar) == 540) ? 1 : -1];
-typedef char Trig_CBackground_size_must_be_268[
-    (sizeof(CBackground) == 268) ? 1 : -1];
-typedef char Trig_CTrickOb_size_must_be_24[
-    (sizeof(CTrickOb) == 24) ? 1 : -1];
-typedef char Trig_CPanelData_size_must_be_2276[
-    (sizeof(CPanelData) == 2276) ? 1 : -1];
+typedef char Trig_CBackground_size_must_be_268[(sizeof(CBackground) == 268) ? 1 : -1];
+typedef char Trig_CTrickOb_size_must_be_24[(sizeof(CTrickOb) == 24) ? 1 : -1];
+typedef char Trig_CPanelData_size_must_be_2276[(sizeof(CPanelData) == 2276) ? 1 : -1];
 typedef char Trig_CBruce_size_must_be_5228[(sizeof(CBruce) == 5228) ? 1 : -1];
-typedef char Trig_STriggerLightBytes_size_must_be_20[
-    (sizeof(STriggerLightBytes) == 20) ? 1 : -1];
-typedef char Trig_STriggerLightWords_size_must_be_20[
-    (sizeof(STriggerLightWords) == 20) ? 1 : -1];
-typedef char Trig_SBackgroundCommandPayload_size_must_be_10[
-    (sizeof(SBackgroundCommandPayload) == 10) ? 1 : -1];
+typedef char Trig_STriggerLightBytes_size_must_be_20[(sizeof(STriggerLightBytes) == 20) ? 1 : -1];
+typedef char Trig_STriggerLightWords_size_must_be_20[(sizeof(STriggerLightWords) == 20) ? 1 : -1];
+typedef char
+    Trig_SBackgroundCommandPayload_size_must_be_10[(sizeof(SBackgroundCommandPayload) == 10) ? 1
+                                                                                             : -1];
 typedef char Trig_MATRIX_size_must_be_32[(sizeof(MATRIX) == 32) ? 1 : -1];
-typedef char Trig_rotation_matrix_offset_must_be_0xe90[
-    ((unsigned long)&(((CBruce *)0)->mRotationMatrix) == 0xE90) ? 1 : -1];
+typedef char Trig_rotation_matrix_offset_must_be_0xe90
+    [((unsigned long)&(((CBruce *)0)->mRotationMatrix) == 0xE90) ? 1 : -1];
 
 #define TRIG_OWNER_DECLARATIONS
 #include "TRIG.h"
@@ -502,318 +494,318 @@ typedef char Trig_rotation_matrix_offset_must_be_0xe90[
 
 /** Gap definitions and score/name metadata used by trigger command 0xC9. */
 SGapTrick GapTricks[304] __attribute__((section(".data"))) = {
-    {0, 250, "[WIMPY GAP]"},
-    {1, 500, "[GAP]"},
-    {2, 1000, "[PHAT GAP]"},
-    {1001, 200, "[TRANSFER]"},
-    {1005, 600, "[TAXI GAP]"},
-    {1006, 100, "[KICKER GAP]"},
-    {1007, 300, "[OVER THE PIPE]"},
-    {1008, 300, "[SECRET ROOM]"},
-    {1009, 400, "[FACEPLANT]"},
-    {1010, 1000, "[ACID DROP]"},
-    {1100, 10, "[10 Feet]"},
-    {1101, 10, "[20 Feet]"},
-    {1102, 10, "[30 Feet]"},
-    {1103, 10, "[40 Feet]"},
-    {1104, 10, "[50 Feet]"},
-    {1105, 10, "[60 Feet]"},
-    {1106, 10, "[70 Feet]"},
-    {1107, 10, "[80 Feet]"},
-    {1108, 10, "[90 Feet]"},
-    {1109, 10, "[100 Feet]"},
-    {1200, 1000, "[WHOOP GAP]"},
-    {1201, 100, "[WALL GAP]"},
-    {1202, 100, "[OVER THE BOX]"},
-    {1203, 2000, "[OVER THE RAFTERS]"},
-    {1204, 700, "[OVER THE PIPE]"},
-    {1205, 500, "[POOL HIP]"},
-    {1206, 700, "[POOL 2 WALKWAY]"},
-    {1207, 250, "[HP TRANSFER]"},
-    {1300, 1000, "[BRIDGE GAP]"},
-    {1301, 700, "[VERT WALL GAP]"},
-    {1302, 700, "[TWINKIE TRANSFER]"},
-    {1303, 800, "[OVER DA POOL]"},
-    {2000, 500, "[ROOF 2 ROOF GAP]"},
-    {2001, 1000, "[SWIM TEAM GAP]"},
-    {2002, 125, "[AWNING GAP]"},
-    {2003, 50, "[GARBAGE OLLIE]"},
-    {2004, 750, "[ROOF TO AWNING GAP]"},
-    {2005, 250, "[DITCH SLAP]"},
-    {2006, 750, "[OVER THE AIR CONDITIONER]"},
-    {2007, 1000, "[OVER A FOOTBRIDGE]"},
-    {2008, 500, "[PARK GAP]"},
-    {2009, 250, "[MINI GAP]"},
-    {2010, 100, "[PLANTER GAP]"},
-    {2011, 100, "[KICKER GAP]"},
-    {2100, 100, "[SS NORAIL GAP 1]"},
-    {2101, 100, "[SS NORAIL GAP 2]"},
-    {2102, 100, "[SS NORAIL GAP 3]"},
-    {2103, 100, "[SS NORAIL GAP 4]"},
-    {2104, 100, "[SS NORAIL GAP 5]"},
-    {2105, 100, "[SS NORAIL GAP 6]"},
-    {2106, 100, "[SS NORAIL GAP 7]"},
-    {2107, 100, "[SS NORAIL GAP 8]"},
-    {2108, 100, "[SS NORAIL GAP 9]"},
-    {2109, 100, "[SS NORAIL GAP 10]"},
-    {2300, 250, "[OVER A 16 STAIR SET]"},
-    {2301, 2000, "[OVER A HUGE 32 STAIR GAP]"},
-    {2302, 500, "[]"},
-    {2303, 500, "[SKATER ESCALATOR GAP]"},
-    {2304, 2500, "[32 STEPS OFF A MEZZANINE]"},
-    {2305, 100, "[THE FLYING LEAP]"},
-    {2306, 100, "[PLANTER GAP]"},
-    {2307, 250, "[RAMP GAP]"},
-    {2308, 250, "[GOING UP GAP]"},
-    {2309, 250, "[GOING DOWN GAP]"},
-    {2310, 250, "[FOUNTAIN GAP]"},
-    {2400, 250, "[PIGEON SHIT GAP]"},
-    {2500, 500, "[LOVE FOUNTAIN GAP]"},
-    {2501, 500, "[CHILLIN' ON THE BALCONY]"},
-    {2502, 100, "[LOVE STAIR SET]"},
-    {2503, 100, "[UP THE SMALL STEP SET]"},
-    {2504, 100, "[BENCH GAP]"},
-    {2505, 250, "[PHILLYSIDE HP TRANSFER]"},
-    {2506, 500, "[SPECTRUM SET]"},
-    {2507, 500, "[SHOT...]"},
-    {2508, 500, "[SCORE...]"},
-    {2509, 500, "[AND THE CROWD GOES WILD!!!]"},
-    {2510, 100, "[WORLDS MOST OBVIOUS GAP]"},
-    {2600, 250, "[RAGING GORGE GAP]"},
-    {2602, 1000, "[HUGE WATER HAZARD GAP]"},
-    {2603, 50, "[50 FEET]"},
-    {2604, 100, "[100 FEET]"},
-    {2605, 150, "[150 FEET]"},
-    {2606, 200, "[200 FEET]"},
-    {2607, 250, "[250 FEET]"},
-    {2609, 250, "[SMALL WATER HAZARD GAP]"},
-    {2610, 500, "[BIG WATER HAZARD GAP]"},
-    {2611, 25, "[25 FEET]"},
-    {2612, 75, "[75 FEET]"},
-    {2613, 125, "[125 FEET]"},
-    {2614, 175, "[175 FEET]"},
-    {2615, 225, "[225 FEET]"},
-    {3000, 250, "[OVER THE GATE]"},
-    {3001, 500, "[OVER THE CROSSBAR]"},
-    {3002, 100, "[MAIN HIP]"},
-    {3003, 100, "[BIG BOWL HIP]"},
-    {3004, 500, "[FREAKIN' HUGE HIP]"},
-    {3005, 200, "[DUMPSTER POP]"},
-    {3006, 250, "[TABLE POP]"},
-    {3007, 250, "[2 THE BOX]"},
-    {3008, 250, "[OVER THE TABLE]"},
-    {3009, 250, "[OVER THE SPEAKERS]"},
-    {3010, 250, "[OVER THE DUMPSTER]"},
-    {3011, 250, "[BOX 2 BOX ACTION]"},
-    {3012, 500, "[OVER THE BOX]"},
-    {3013, 5000, "[HUMPTEY HUMPS!!!]"},
-    {3014, 150, "[SHORTY DUMPSTER POP]"},
-    {3015, 150, "[SHORTY TABLE POP]"},
-    {3016, 150, "[SHORTY SPEAKER POP]"},
-    {3017, 100, "[SPEAKERS POP]"},
-    {3018, 100, "[OVER THE LIL' 4]"},
-    {3019, 250, "[UP THE LIL' 4]"},
-    {3020, 500, "[BIG OL' STANKY GAP]"},
-    {3021, 250, "[WATER UP LE BACKSIDE]"},
-    {3022, 1000, "[BIG MOUTH GAP]"},
-    {3023, 250, "[UP!]"},
-    {3024, 500, "[UP!!]"},
-    {3025, 1000, "[AND AWAY!!!]"},
-    {3300, 500, "[LEAP OF FAITH!]"},
-    {3600, 500, "[MUSKA'S GAP']"},
-    {3601, 100, "[TABLE POP]"},
-    {4000, 250, "[DROPPING IN ON TONY]"},
-    {4001, 1000, "[UP 2 COMBI]"},
-    {4002, 50, "[DOWN TO TONYS ISLAND]"},
-    {4003, 50, "[DOWN TO TONYS ISLAND]"},
-    {4004, 1500, "[SNAKE GAP]"},
-    {4005, 1500, "[SNAKE GAP]"},
-    {4006, 1500, "[SNAKE GAP]"},
-    {4007, 2000, "[SNAKE GAP]"},
-    {4008, 2000, "[SNAKE GAP]"},
-    {4009, 2000, "[SNAKE GAP]"},
-    {4010, 300, "[GAP]"},
-    {4011, 150, "[GAP]"},
-    {4012, 500, "[GAP]"},
-    {4013, 50, "[GAP]"},
-    {4014, 300, "[GAP]"},
-    {4015, 2000, "[TIGHT LANDING]"},
-    {4016, 100, "[SAN DIEGUITO TEN SET]"},
-    {4017, 400, "[BIG FAT GRASSY ASS]"},
-    {4018, 50, "[GRASSY ASS]"},
-    {4019, 2000, "[FEED ME!!!]"},
-    {4020, 0, "[NO SOUP FOR YOU!!!]"},
-    {4021, 0, "[DON'T LOOK DOWN!!!]"},
-    {4022, 0, "[GIVE IT UP! TAKE UP ROLLERBLADING!]"},
-    {4023, 500, "[PUSSY SNAKE GAP]"},
-    {4024, 500, "[PUSSY SNAKE GAP]"},
-    {4025, 500, "[PUSSY SNAKE GAP]"},
-    {4026, 300, "[GAP]"},
-    {4027, 300, "[GAP]"},
-    {4028, 1000, "[GAP]"},
-    {4029, 1000, "[OVER THE DOME]"},
-    {4030, 1000, "[CLEARING THE SWINGS]"},
-    {4031, 1000, "[GAP]"},
-    {4032, 1000, "[TUNNEL OF LUVIN]"},
-    {11000, 250, "[CHANNEL GAP]"},
-    {11001, 200, "[KICKER 2 LEDGE]"},
-    {11002, 1000, "[GAP]"},
-    {11100, 100, "[FREAKIN POOL GRIND]"},
-    {11101, 100, "[GAP]"},
-    {11102, 100, "[GAP]"},
-    {11200, 1000, "[ROLL IN CHANNEL GAP]"},
-    {11201, 500, "[CHANNEL GAP]"},
-    {12000, 1000, "[HALL PASS GAP]"},
-    {12001, 1000, "[GAP]"},
-    {12002, 1000, "[GAP]"},
-    {12100, 100, "[SS EITHER GAP 1]"},
-    {12101, 100, "[SS EITHER GAP 2]"},
-    {12102, 100, "[SS EITHER GAP 3]"},
-    {12103, 100, "[SS EITHER GAP 4]"},
-    {12104, 100, "[SS EITHER GAP 5]"},
-    {12105, 100, "[SS EITHER GAP 6]"},
-    {12106, 100, "[SS EITHER GAP 7]"},
-    {12107, 100, "[SS EITHER GAP 8]"},
-    {12108, 100, "[SS EITHER GAP 9]"},
-    {12109, 100, "[SS EITHER GAP 10]"},
-    {12400, 100, "[WELCOME TO BROOKLYN BANKS]"},
-    {12500, 500, "[GRIND UP DEM STAIRS]"},
-    {12501, 500, "[SHREDDIN UP THE SPECTRUM SET]"},
-    {13000, 1000, "[GAP]"},
-    {13001, 1000, "[GAP]"},
-    {13002, 1000, "[GAP]"},
-    {14000, 1000, "[GAP]"},
-    {21000, 200, "[BIG RAIL]"},
-    {21001, 300, "[DECK 2 RAIL]"},
-    {21002, 500, "[TAXI 2 LEDGE]"},
-    {21003, 1000, "[TAXI 2 RAIL]"},
-    {21004, 200, "[KICKER 2 LEDGE]"},
-    {21005, 500, "[MONSTER GRIND]"},
-    {21006, 200, "[HIGH RAIL]"},
-    {21007, 3000, "[HOLY SHI...]"},
-    {21008, 400, "[TRANSITION GRIND]"},
-    {21200, 100, "[KICKER 2 EDGE]"},
-    {21201, 200, "[BS GRIND]"},
-    {21202, 750, "[RAIL 2 RAIL TRANSFER]"},
-    {21203, 500, "[BILLBOARD GRIND]"},
-    {21204, 3000, "[DIRTY RAIL]"},
-    {21205, 2000, "[DEATH GRIND]"},
-    {21300, 1000, "[TRIPLE RAIL]"},
-    {21301, 800, "[BRIDGE GRIND]"},
-    {21302, 1000, "[HAWK BRIDGE GRIND]"},
-    {21400, 1000, "[RAFTER RAIL]"},
-    {21401, 1000, "[PIPE 2 BOX GRIND]"},
-    {21402, 500, "[LIGHT GRIND]"},
-    {21403, 700, "[WALKWAY RAIL TRANS]"},
-    {21404, 1000, "[POOL RAIL TRANS]"},
-    {21500, 1000, "[ET GRIND]"},
-    {21501, 1000, "[BHOUSE RAIL]"},
-    {21502, 2000, "[POOL GRIND]"},
-    {21503, 800, "[DECK GRIND]"},
-    {21504, 2000, "[MB EMERSON GRIND]"},
-    {22000, 250, "[DUMPSTER RAIL GAP]"},
-    {22001, 500, "[PLAYGROUND RAIL]"},
-    {22002, 750, "[RAIL TO RAIL TRANSFER]"},
-    {22003, 1000, "[HUGE RAIL]"},
-    {22004, 2500, "[LONG ASS RAIL]"},
-    {22005, 250, "[FUNBOX TO RAIL TRANSFER]"},
-    {22006, 500, "[FUNBOX TO TABLE TRANSFER]"},
-    {22007, 50, "[GIMME GAP]"},
-    {22008, 500, "[HANDICAP RAMP RAIL]"},
-    {22100, 100, "[SS MUST GAP 1]"},
-    {22101, 100, "[SS MUST GAP 2]"},
-    {22102, 100, "[SS MUST GAP 3]"},
-    {22103, 100, "[SS MUST GAP 4]"},
-    {22104, 100, "[SS MUST GAP 5]"},
-    {22105, 100, "[SS MUST GAP 6]"},
-    {22106, 100, "[SS MUST GAP 7]"},
-    {22107, 100, "[SS MUST GAP 8]"},
-    {22108, 100, "[SS MUST GAP 9]"},
-    {22109, 100, "[SS MUST GAP 10]"},
-    {22300, 1000, "[COFFEE GRIND]"},
-    {22301, 500, "[FOR THE WHOLE ATRIUM]"},
-    {22302, 500, "[RAIL COMBO]"},
-    {22400, 100, "[BENCH-HOPPIN]"},
-    {22401, 100, "[GET OFF OUR STATUE!]"},
-    {22402, 100, "[YOULL HURT YOURSELF!!!]"},
-    {22403, 100, "[PARKS CLOSED AFTER DARK, KID]"},
-    {22404, 100, "[PARKING METER GAP]"},
-    {22405, 100, "[CENTRAL PARK CRACK DEALER GAP]"},
-    {22406, 100, "[GO ASK ALICE]"},
-    {22407, 100, "[YOU LUCKY FUCKER]"},
-    {22500, 500, "[HOLY SH#! - YOU MADE IT TO THE CORNER?]"},
-    {22501, 500, "[VISITOR CENTER RAIL TRANSFER]"},
-    {22502, 750, "[TELEPHONE CO. GAP]"},
-    {22503, 750, "[WORLDS SECOND MOST OBVIOUS GAP]"},
-    {22601, 1500, "[NEVERSOFT ELEC CO GAP]"},
-    {23000, 2000, "[DOWN THE SPIRAL]"},
-    {23001, 250, "[LOMBARD LEDGE]"},
-    {23002, 500, "[HUBBA LEDGE]"},
-    {23003, 750, "[HOOK RAIL]"},
-    {23004, 500, "[RAIL 2 RAIL]"},
-    {23005, 250, "[BACKWOODS LEDGE]"},
-    {23006, 500, "[BENDY'S LIP]"},
-    {23007, 3000, "[ARE YOU KIDDING?]"},
-    {23100, 250, "[RAIL 2 LEDGE]"},
-    {23101, 250, "[LEDGE 2 RAIL]"},
-    {23102, 2000, "[LAMP STOMP]"},
-    {23103, 250, "[LAMP 2 RAIL]"},
-    {23104, 50, "[RAIL 2 RAIL]"},
-    {23105, 2000, "[KNUCKLIN' FUTS!!!]"},
-    {23106, 250, "[CROSSBAR 2 LAMP]"},
-    {23107, 1000, "[DUMPSTER STOMP]"},
-    {23108, 1000, "[KINK CLANK]"},
-    {23109, 1000, "[BUMP 'N' GRIND]"},
-    {23110, 1000, "[KINK STOMP]"},
-    {23600, 500, "[BENCH TRIPPIN']"},
-    {23601, 500, "[LEDGE 2 LEDGE]"},
-    {24000, 2000, "[RADRAMP 2 SNAKERUN]"},
-    {24001, 400, "[RAIL 2 RAIL]"},
-    {24002, 250, "[RAIL 2 RAIL]"},
-    {24003, 1000, "[UP 2 PIPE RAIL]"},
-    {24004, 2000, "[LONGRAIL]"},
-    {24005, 50, "[RAIL 2 RAIL]"},
-    {24006, 300, "[RAIL 2 RAIL]"},
-    {24007, 300, "[RAIL 2 RAIL]"},
-    {24008, 75, "[RAIL 2 RAIL]"},
-    {24009, 500, "[RAIL 2 RAIL]"},
-    {24010, 1000, "[RAIL 2 RAIL 2 RAIL]"},
-    {24011, 2000, "[OFF THE ROOF 2 RAIL]"},
-    {24012, 4000, "[TIME 2 FEED THE VOLCANO!!!]"},
-    {24013, 600, "[GAP 2 RAIL]"},
-    {24014, 1000, "[OUT THE WINDOW 2 RAIL]"},
-    {24015, 500, "[GAP 2 RAIL]"},
-    {24016, 600, "[DOWN 2 RAIL]"},
-    {24017, 2000, "[RAIL SERIES]"},
-    {24018, 900, "[HALF RAIL SERIES]"},
-    {24019, 900, "[HALF RAIL SERIES]"},
-    {24020, 2000, "[TOP OF DA WORLD MA!!!]"},
-    {24021, 2000, "[PLANK RAIL SERIES]"},
-    {24022, 450, "[RAIL 2 RAIL]"},
-    {24023, 2000, "[SWINGING THE SET]"},
-    {24024, 2000, "[RAIL SERIES]"},
-    {24025, 900, "[RAIL]"},
-    {24026, 900, "[RAIL]"},
-    {24027, 350, "[RAIL 2 RAIL]"},
-    {24028, 200, "[RAIL 2 RAIL]"},
-    {24029, 200, "[RAIL 2 RAIL]"},
-    {24030, 300, "[RAIL 2 RAIL]"},
-    {24031, 300, "[RAIL 2 RAIL]"},
-    {24032, 2000, "[LONG ASS RAIL RUN]"},
-    {24033, 700, "[CANT RAIL THE BIG ONE EH?]"},
-    {24034, 1500, "[KICKER 2 RAIL]"},
-    {24035, 1500, "[KICKER 2 RAIL]"},
-    {24036, 1500, "[KICKER 2 RAIL 2 RAIL]"},
-    {24037, 300, "[CHIN RAIL SERIES]"},
-    {-1, 0, 0},
+    { 0, 250, "[WIMPY GAP]" },
+    { 1, 500, "[GAP]" },
+    { 2, 1000, "[PHAT GAP]" },
+    { 1001, 200, "[TRANSFER]" },
+    { 1005, 600, "[TAXI GAP]" },
+    { 1006, 100, "[KICKER GAP]" },
+    { 1007, 300, "[OVER THE PIPE]" },
+    { 1008, 300, "[SECRET ROOM]" },
+    { 1009, 400, "[FACEPLANT]" },
+    { 1010, 1000, "[ACID DROP]" },
+    { 1100, 10, "[10 Feet]" },
+    { 1101, 10, "[20 Feet]" },
+    { 1102, 10, "[30 Feet]" },
+    { 1103, 10, "[40 Feet]" },
+    { 1104, 10, "[50 Feet]" },
+    { 1105, 10, "[60 Feet]" },
+    { 1106, 10, "[70 Feet]" },
+    { 1107, 10, "[80 Feet]" },
+    { 1108, 10, "[90 Feet]" },
+    { 1109, 10, "[100 Feet]" },
+    { 1200, 1000, "[WHOOP GAP]" },
+    { 1201, 100, "[WALL GAP]" },
+    { 1202, 100, "[OVER THE BOX]" },
+    { 1203, 2000, "[OVER THE RAFTERS]" },
+    { 1204, 700, "[OVER THE PIPE]" },
+    { 1205, 500, "[POOL HIP]" },
+    { 1206, 700, "[POOL 2 WALKWAY]" },
+    { 1207, 250, "[HP TRANSFER]" },
+    { 1300, 1000, "[BRIDGE GAP]" },
+    { 1301, 700, "[VERT WALL GAP]" },
+    { 1302, 700, "[TWINKIE TRANSFER]" },
+    { 1303, 800, "[OVER DA POOL]" },
+    { 2000, 500, "[ROOF 2 ROOF GAP]" },
+    { 2001, 1000, "[SWIM TEAM GAP]" },
+    { 2002, 125, "[AWNING GAP]" },
+    { 2003, 50, "[GARBAGE OLLIE]" },
+    { 2004, 750, "[ROOF TO AWNING GAP]" },
+    { 2005, 250, "[DITCH SLAP]" },
+    { 2006, 750, "[OVER THE AIR CONDITIONER]" },
+    { 2007, 1000, "[OVER A FOOTBRIDGE]" },
+    { 2008, 500, "[PARK GAP]" },
+    { 2009, 250, "[MINI GAP]" },
+    { 2010, 100, "[PLANTER GAP]" },
+    { 2011, 100, "[KICKER GAP]" },
+    { 2100, 100, "[SS NORAIL GAP 1]" },
+    { 2101, 100, "[SS NORAIL GAP 2]" },
+    { 2102, 100, "[SS NORAIL GAP 3]" },
+    { 2103, 100, "[SS NORAIL GAP 4]" },
+    { 2104, 100, "[SS NORAIL GAP 5]" },
+    { 2105, 100, "[SS NORAIL GAP 6]" },
+    { 2106, 100, "[SS NORAIL GAP 7]" },
+    { 2107, 100, "[SS NORAIL GAP 8]" },
+    { 2108, 100, "[SS NORAIL GAP 9]" },
+    { 2109, 100, "[SS NORAIL GAP 10]" },
+    { 2300, 250, "[OVER A 16 STAIR SET]" },
+    { 2301, 2000, "[OVER A HUGE 32 STAIR GAP]" },
+    { 2302, 500, "[]" },
+    { 2303, 500, "[SKATER ESCALATOR GAP]" },
+    { 2304, 2500, "[32 STEPS OFF A MEZZANINE]" },
+    { 2305, 100, "[THE FLYING LEAP]" },
+    { 2306, 100, "[PLANTER GAP]" },
+    { 2307, 250, "[RAMP GAP]" },
+    { 2308, 250, "[GOING UP GAP]" },
+    { 2309, 250, "[GOING DOWN GAP]" },
+    { 2310, 250, "[FOUNTAIN GAP]" },
+    { 2400, 250, "[PIGEON SHIT GAP]" },
+    { 2500, 500, "[LOVE FOUNTAIN GAP]" },
+    { 2501, 500, "[CHILLIN' ON THE BALCONY]" },
+    { 2502, 100, "[LOVE STAIR SET]" },
+    { 2503, 100, "[UP THE SMALL STEP SET]" },
+    { 2504, 100, "[BENCH GAP]" },
+    { 2505, 250, "[PHILLYSIDE HP TRANSFER]" },
+    { 2506, 500, "[SPECTRUM SET]" },
+    { 2507, 500, "[SHOT...]" },
+    { 2508, 500, "[SCORE...]" },
+    { 2509, 500, "[AND THE CROWD GOES WILD!!!]" },
+    { 2510, 100, "[WORLDS MOST OBVIOUS GAP]" },
+    { 2600, 250, "[RAGING GORGE GAP]" },
+    { 2602, 1000, "[HUGE WATER HAZARD GAP]" },
+    { 2603, 50, "[50 FEET]" },
+    { 2604, 100, "[100 FEET]" },
+    { 2605, 150, "[150 FEET]" },
+    { 2606, 200, "[200 FEET]" },
+    { 2607, 250, "[250 FEET]" },
+    { 2609, 250, "[SMALL WATER HAZARD GAP]" },
+    { 2610, 500, "[BIG WATER HAZARD GAP]" },
+    { 2611, 25, "[25 FEET]" },
+    { 2612, 75, "[75 FEET]" },
+    { 2613, 125, "[125 FEET]" },
+    { 2614, 175, "[175 FEET]" },
+    { 2615, 225, "[225 FEET]" },
+    { 3000, 250, "[OVER THE GATE]" },
+    { 3001, 500, "[OVER THE CROSSBAR]" },
+    { 3002, 100, "[MAIN HIP]" },
+    { 3003, 100, "[BIG BOWL HIP]" },
+    { 3004, 500, "[FREAKIN' HUGE HIP]" },
+    { 3005, 200, "[DUMPSTER POP]" },
+    { 3006, 250, "[TABLE POP]" },
+    { 3007, 250, "[2 THE BOX]" },
+    { 3008, 250, "[OVER THE TABLE]" },
+    { 3009, 250, "[OVER THE SPEAKERS]" },
+    { 3010, 250, "[OVER THE DUMPSTER]" },
+    { 3011, 250, "[BOX 2 BOX ACTION]" },
+    { 3012, 500, "[OVER THE BOX]" },
+    { 3013, 5000, "[HUMPTEY HUMPS!!!]" },
+    { 3014, 150, "[SHORTY DUMPSTER POP]" },
+    { 3015, 150, "[SHORTY TABLE POP]" },
+    { 3016, 150, "[SHORTY SPEAKER POP]" },
+    { 3017, 100, "[SPEAKERS POP]" },
+    { 3018, 100, "[OVER THE LIL' 4]" },
+    { 3019, 250, "[UP THE LIL' 4]" },
+    { 3020, 500, "[BIG OL' STANKY GAP]" },
+    { 3021, 250, "[WATER UP LE BACKSIDE]" },
+    { 3022, 1000, "[BIG MOUTH GAP]" },
+    { 3023, 250, "[UP!]" },
+    { 3024, 500, "[UP!!]" },
+    { 3025, 1000, "[AND AWAY!!!]" },
+    { 3300, 500, "[LEAP OF FAITH!]" },
+    { 3600, 500, "[MUSKA'S GAP']" },
+    { 3601, 100, "[TABLE POP]" },
+    { 4000, 250, "[DROPPING IN ON TONY]" },
+    { 4001, 1000, "[UP 2 COMBI]" },
+    { 4002, 50, "[DOWN TO TONYS ISLAND]" },
+    { 4003, 50, "[DOWN TO TONYS ISLAND]" },
+    { 4004, 1500, "[SNAKE GAP]" },
+    { 4005, 1500, "[SNAKE GAP]" },
+    { 4006, 1500, "[SNAKE GAP]" },
+    { 4007, 2000, "[SNAKE GAP]" },
+    { 4008, 2000, "[SNAKE GAP]" },
+    { 4009, 2000, "[SNAKE GAP]" },
+    { 4010, 300, "[GAP]" },
+    { 4011, 150, "[GAP]" },
+    { 4012, 500, "[GAP]" },
+    { 4013, 50, "[GAP]" },
+    { 4014, 300, "[GAP]" },
+    { 4015, 2000, "[TIGHT LANDING]" },
+    { 4016, 100, "[SAN DIEGUITO TEN SET]" },
+    { 4017, 400, "[BIG FAT GRASSY ASS]" },
+    { 4018, 50, "[GRASSY ASS]" },
+    { 4019, 2000, "[FEED ME!!!]" },
+    { 4020, 0, "[NO SOUP FOR YOU!!!]" },
+    { 4021, 0, "[DON'T LOOK DOWN!!!]" },
+    { 4022, 0, "[GIVE IT UP! TAKE UP ROLLERBLADING!]" },
+    { 4023, 500, "[PUSSY SNAKE GAP]" },
+    { 4024, 500, "[PUSSY SNAKE GAP]" },
+    { 4025, 500, "[PUSSY SNAKE GAP]" },
+    { 4026, 300, "[GAP]" },
+    { 4027, 300, "[GAP]" },
+    { 4028, 1000, "[GAP]" },
+    { 4029, 1000, "[OVER THE DOME]" },
+    { 4030, 1000, "[CLEARING THE SWINGS]" },
+    { 4031, 1000, "[GAP]" },
+    { 4032, 1000, "[TUNNEL OF LUVIN]" },
+    { 11000, 250, "[CHANNEL GAP]" },
+    { 11001, 200, "[KICKER 2 LEDGE]" },
+    { 11002, 1000, "[GAP]" },
+    { 11100, 100, "[FREAKIN POOL GRIND]" },
+    { 11101, 100, "[GAP]" },
+    { 11102, 100, "[GAP]" },
+    { 11200, 1000, "[ROLL IN CHANNEL GAP]" },
+    { 11201, 500, "[CHANNEL GAP]" },
+    { 12000, 1000, "[HALL PASS GAP]" },
+    { 12001, 1000, "[GAP]" },
+    { 12002, 1000, "[GAP]" },
+    { 12100, 100, "[SS EITHER GAP 1]" },
+    { 12101, 100, "[SS EITHER GAP 2]" },
+    { 12102, 100, "[SS EITHER GAP 3]" },
+    { 12103, 100, "[SS EITHER GAP 4]" },
+    { 12104, 100, "[SS EITHER GAP 5]" },
+    { 12105, 100, "[SS EITHER GAP 6]" },
+    { 12106, 100, "[SS EITHER GAP 7]" },
+    { 12107, 100, "[SS EITHER GAP 8]" },
+    { 12108, 100, "[SS EITHER GAP 9]" },
+    { 12109, 100, "[SS EITHER GAP 10]" },
+    { 12400, 100, "[WELCOME TO BROOKLYN BANKS]" },
+    { 12500, 500, "[GRIND UP DEM STAIRS]" },
+    { 12501, 500, "[SHREDDIN UP THE SPECTRUM SET]" },
+    { 13000, 1000, "[GAP]" },
+    { 13001, 1000, "[GAP]" },
+    { 13002, 1000, "[GAP]" },
+    { 14000, 1000, "[GAP]" },
+    { 21000, 200, "[BIG RAIL]" },
+    { 21001, 300, "[DECK 2 RAIL]" },
+    { 21002, 500, "[TAXI 2 LEDGE]" },
+    { 21003, 1000, "[TAXI 2 RAIL]" },
+    { 21004, 200, "[KICKER 2 LEDGE]" },
+    { 21005, 500, "[MONSTER GRIND]" },
+    { 21006, 200, "[HIGH RAIL]" },
+    { 21007, 3000, "[HOLY SHI...]" },
+    { 21008, 400, "[TRANSITION GRIND]" },
+    { 21200, 100, "[KICKER 2 EDGE]" },
+    { 21201, 200, "[BS GRIND]" },
+    { 21202, 750, "[RAIL 2 RAIL TRANSFER]" },
+    { 21203, 500, "[BILLBOARD GRIND]" },
+    { 21204, 3000, "[DIRTY RAIL]" },
+    { 21205, 2000, "[DEATH GRIND]" },
+    { 21300, 1000, "[TRIPLE RAIL]" },
+    { 21301, 800, "[BRIDGE GRIND]" },
+    { 21302, 1000, "[HAWK BRIDGE GRIND]" },
+    { 21400, 1000, "[RAFTER RAIL]" },
+    { 21401, 1000, "[PIPE 2 BOX GRIND]" },
+    { 21402, 500, "[LIGHT GRIND]" },
+    { 21403, 700, "[WALKWAY RAIL TRANS]" },
+    { 21404, 1000, "[POOL RAIL TRANS]" },
+    { 21500, 1000, "[ET GRIND]" },
+    { 21501, 1000, "[BHOUSE RAIL]" },
+    { 21502, 2000, "[POOL GRIND]" },
+    { 21503, 800, "[DECK GRIND]" },
+    { 21504, 2000, "[MB EMERSON GRIND]" },
+    { 22000, 250, "[DUMPSTER RAIL GAP]" },
+    { 22001, 500, "[PLAYGROUND RAIL]" },
+    { 22002, 750, "[RAIL TO RAIL TRANSFER]" },
+    { 22003, 1000, "[HUGE RAIL]" },
+    { 22004, 2500, "[LONG ASS RAIL]" },
+    { 22005, 250, "[FUNBOX TO RAIL TRANSFER]" },
+    { 22006, 500, "[FUNBOX TO TABLE TRANSFER]" },
+    { 22007, 50, "[GIMME GAP]" },
+    { 22008, 500, "[HANDICAP RAMP RAIL]" },
+    { 22100, 100, "[SS MUST GAP 1]" },
+    { 22101, 100, "[SS MUST GAP 2]" },
+    { 22102, 100, "[SS MUST GAP 3]" },
+    { 22103, 100, "[SS MUST GAP 4]" },
+    { 22104, 100, "[SS MUST GAP 5]" },
+    { 22105, 100, "[SS MUST GAP 6]" },
+    { 22106, 100, "[SS MUST GAP 7]" },
+    { 22107, 100, "[SS MUST GAP 8]" },
+    { 22108, 100, "[SS MUST GAP 9]" },
+    { 22109, 100, "[SS MUST GAP 10]" },
+    { 22300, 1000, "[COFFEE GRIND]" },
+    { 22301, 500, "[FOR THE WHOLE ATRIUM]" },
+    { 22302, 500, "[RAIL COMBO]" },
+    { 22400, 100, "[BENCH-HOPPIN]" },
+    { 22401, 100, "[GET OFF OUR STATUE!]" },
+    { 22402, 100, "[YOULL HURT YOURSELF!!!]" },
+    { 22403, 100, "[PARKS CLOSED AFTER DARK, KID]" },
+    { 22404, 100, "[PARKING METER GAP]" },
+    { 22405, 100, "[CENTRAL PARK CRACK DEALER GAP]" },
+    { 22406, 100, "[GO ASK ALICE]" },
+    { 22407, 100, "[YOU LUCKY FUCKER]" },
+    { 22500, 500, "[HOLY SH#! - YOU MADE IT TO THE CORNER?]" },
+    { 22501, 500, "[VISITOR CENTER RAIL TRANSFER]" },
+    { 22502, 750, "[TELEPHONE CO. GAP]" },
+    { 22503, 750, "[WORLDS SECOND MOST OBVIOUS GAP]" },
+    { 22601, 1500, "[NEVERSOFT ELEC CO GAP]" },
+    { 23000, 2000, "[DOWN THE SPIRAL]" },
+    { 23001, 250, "[LOMBARD LEDGE]" },
+    { 23002, 500, "[HUBBA LEDGE]" },
+    { 23003, 750, "[HOOK RAIL]" },
+    { 23004, 500, "[RAIL 2 RAIL]" },
+    { 23005, 250, "[BACKWOODS LEDGE]" },
+    { 23006, 500, "[BENDY'S LIP]" },
+    { 23007, 3000, "[ARE YOU KIDDING?]" },
+    { 23100, 250, "[RAIL 2 LEDGE]" },
+    { 23101, 250, "[LEDGE 2 RAIL]" },
+    { 23102, 2000, "[LAMP STOMP]" },
+    { 23103, 250, "[LAMP 2 RAIL]" },
+    { 23104, 50, "[RAIL 2 RAIL]" },
+    { 23105, 2000, "[KNUCKLIN' FUTS!!!]" },
+    { 23106, 250, "[CROSSBAR 2 LAMP]" },
+    { 23107, 1000, "[DUMPSTER STOMP]" },
+    { 23108, 1000, "[KINK CLANK]" },
+    { 23109, 1000, "[BUMP 'N' GRIND]" },
+    { 23110, 1000, "[KINK STOMP]" },
+    { 23600, 500, "[BENCH TRIPPIN']" },
+    { 23601, 500, "[LEDGE 2 LEDGE]" },
+    { 24000, 2000, "[RADRAMP 2 SNAKERUN]" },
+    { 24001, 400, "[RAIL 2 RAIL]" },
+    { 24002, 250, "[RAIL 2 RAIL]" },
+    { 24003, 1000, "[UP 2 PIPE RAIL]" },
+    { 24004, 2000, "[LONGRAIL]" },
+    { 24005, 50, "[RAIL 2 RAIL]" },
+    { 24006, 300, "[RAIL 2 RAIL]" },
+    { 24007, 300, "[RAIL 2 RAIL]" },
+    { 24008, 75, "[RAIL 2 RAIL]" },
+    { 24009, 500, "[RAIL 2 RAIL]" },
+    { 24010, 1000, "[RAIL 2 RAIL 2 RAIL]" },
+    { 24011, 2000, "[OFF THE ROOF 2 RAIL]" },
+    { 24012, 4000, "[TIME 2 FEED THE VOLCANO!!!]" },
+    { 24013, 600, "[GAP 2 RAIL]" },
+    { 24014, 1000, "[OUT THE WINDOW 2 RAIL]" },
+    { 24015, 500, "[GAP 2 RAIL]" },
+    { 24016, 600, "[DOWN 2 RAIL]" },
+    { 24017, 2000, "[RAIL SERIES]" },
+    { 24018, 900, "[HALF RAIL SERIES]" },
+    { 24019, 900, "[HALF RAIL SERIES]" },
+    { 24020, 2000, "[TOP OF DA WORLD MA!!!]" },
+    { 24021, 2000, "[PLANK RAIL SERIES]" },
+    { 24022, 450, "[RAIL 2 RAIL]" },
+    { 24023, 2000, "[SWINGING THE SET]" },
+    { 24024, 2000, "[RAIL SERIES]" },
+    { 24025, 900, "[RAIL]" },
+    { 24026, 900, "[RAIL]" },
+    { 24027, 350, "[RAIL 2 RAIL]" },
+    { 24028, 200, "[RAIL 2 RAIL]" },
+    { 24029, 200, "[RAIL 2 RAIL]" },
+    { 24030, 300, "[RAIL 2 RAIL]" },
+    { 24031, 300, "[RAIL 2 RAIL]" },
+    { 24032, 2000, "[LONG ASS RAIL RUN]" },
+    { 24033, 700, "[CANT RAIL THE BIG ONE EH?]" },
+    { 24034, 1500, "[KICKER 2 RAIL]" },
+    { 24035, 1500, "[KICKER 2 RAIL]" },
+    { 24036, 1500, "[KICKER 2 RAIL 2 RAIL]" },
+    { 24037, 300, "[CHIN RAIL SERIES]" },
+    { -1, 0, 0 },
 };
 
 /** Restart and trigger-menu name tables populated while parsing TRG files. */
 #define RESTARTNAMETABLES_OWNER_DECLARATION
 #include "RESTARTNAMETABLES.h"
-char *CheatRestarts[20] __attribute__((section(".data"))) = {0};
-char *HorseRestarts[20] __attribute__((section(".data"))) = {0};
-char *MenuFilenamePointers[40] __attribute__((section(".data"))) = {0};
+char *CheatRestarts[20] __attribute__((section(".data"))) = { 0 };
+char *HorseRestarts[20] __attribute__((section(".data"))) = { 0 };
+char *MenuFilenamePointers[40] __attribute__((section(".data"))) = { 0 };
 
 /** Trigger-file state and restart counters initialized before parsing. */
 int NumCheatRestarts __attribute__((section(".sdata"))) = 0;
@@ -853,13 +845,11 @@ struct CBodyKillView : CItemKillView
     virtual void DeleteStuff();
 };
 
-typedef char Trig_CItemKillView_size_must_be_76[
-    (sizeof(CItemKillView) == 76) ? 1 : -1];
+typedef char Trig_CItemKillView_size_must_be_76[(sizeof(CItemKillView) == 76) ? 1 : -1];
 
 // === Owner-local absolute-addressed globals ===
 // MAIN_STRUCTS identifies this as TRIG's file-local command-point hash table.
-static SCommandPoint *HashTable[256]
-    __attribute__((section(".bss")));
+static SCommandPoint *HashTable[256] __attribute__((section(".bss")));
 
 // === External function declarations ===
 #include "MEM.h"
@@ -873,8 +863,7 @@ static SCommandPoint *HashTable[256]
 #include "DB.h"
 
 // === Required owner-local forward declaration ===
-static void ExecuteCommandList(
-    unsigned short *pCommands, int Node, int WaitForSpooling);
+static void ExecuteCommandList(unsigned short *pCommands, int Node, int WaitForSpooling);
 // === Function implementations (address order) ===
 
 /**
@@ -909,10 +898,10 @@ void Trig_ClearTrigMenu(void)
  * @param node  Rail / graph node identifier.
  * @param pCommands  Commands to operate on.
  */
-static void CreateCommandPoint(unsigned int checksum, unsigned short node, unsigned short *pCommands)
+static void CreateCommandPoint(unsigned int checksum, unsigned short node,
+                               unsigned short *pCommands)
 {
-    SCommandPoint *pNewCommandPoint =
-        (SCommandPoint *)Mem_New(sizeof(SCommandPoint), 0, 1);
+    SCommandPoint *pNewCommandPoint = (SCommandPoint *)Mem_New(sizeof(SCommandPoint), 0, 1);
 
     pNewCommandPoint->pNext = CommandPoints;
     CommandPoints = pNewCommandPoint;
@@ -953,8 +942,7 @@ void Trig_DeleteCommandPoints(void)
     {
         SCommandPoint *pNext = pCP->pNext;
         Mem_Delete(pCP);
-        TotalCommandPointMemory -=
-            sizeof(SCommandPoint) + sizeof(unsigned int);
+        TotalCommandPointMemory -= sizeof(SCommandPoint) + sizeof(unsigned int);
         pCP = pNext;
     }
     CommandPoints = 0;
@@ -982,8 +970,7 @@ static SCommandPoint *GetCommandPoint(int Node)
             SCommandPoint *pCP = CommandPoints;
             while (pCP != 0)
             {
-                if (pCP->NodeIndex == Node)
-                    return pCP;
+                if (pCP->NodeIndex == Node) return pCP;
                 pCP = pCP->pNext;
             }
         }
@@ -1054,16 +1041,14 @@ SCommandPoint *Trig_TriggerCommandPoint(unsigned int checksum, bool assert)
     SCommandPoint *result = 0;
     while (pSearch != 0)
     {
-        if (pSearch->Checksum != checksum)
-            goto next;
+        if (pSearch->Checksum != checksum) goto next;
         {
             u8 collision = pSearch->Collision;
             u8 executed = pSearch->Executed;
             int Player = pCurrentPlayer->mIndex + 1;
             collision = collision | Player;
             pSearch->Collision = collision;
-            if ((executed & Player) != 0)
-                goto next;
+            if ((executed & Player) != 0) goto next;
             {
                 unsigned short *pCommands = pSearch->pCommands;
                 unsigned short nodeIdx = pSearch->NodeIndex;
@@ -1103,8 +1088,7 @@ void Trig_SetRestart(char *pName)
             if (*pNode == 8)
             {
                 CVector Dummy;
-                if (Utils_CompareStrings(
-                        (char *)(Trig_GetPosition(Dummy, i) + 3), pName, -1))
+                if (Utils_CompareStrings((char *)(Trig_GetPosition(Dummy, i) + 3), pName, -1))
                 {
                     RestartNode = i;
                     return;
@@ -1131,21 +1115,18 @@ void FudgeAngles(CBruce *pBruce)
     pBruce->CSuper.CBody.CItem.mAngles.vz = 0;
     pBruce->CSuper.CBody.CItem.mAngles.vx = 0;
     pBruce->CSuper.CBody.CItem.mAngles.vy =
-        ((unsigned short)pBruce->CSuper.CBody.CItem.mAngles.vy + 0x800) &
-        0xFFF;
+        ((unsigned short)pBruce->CSuper.CBody.CItem.mAngles.vy + 0x800) & 0xFFF;
     Temp1.vx = -0x1000;
     Temp1.vy = 0;
     Temp1.vz = 0;
-    Utils_RotateY(Temp2, Temp1,
-                  pBruce->CSuper.CBody.CItem.mAngles.vy);
+    Utils_RotateY(Temp2, Temp1, pBruce->CSuper.CBody.CItem.mAngles.vy);
     pBruce->mRotationMatrix.m[0][0] = Temp2.vx;
     pBruce->mRotationMatrix.m[1][0] = Temp2.vy;
     pBruce->mRotationMatrix.m[2][0] = Temp2.vz;
     Temp1.vx = 0;
     Temp1.vy = 0;
     Temp1.vz = -0x1000;
-    Utils_RotateY(Temp2, Temp1,
-                  pBruce->CSuper.CBody.CItem.mAngles.vy);
+    Utils_RotateY(Temp2, Temp1, pBruce->CSuper.CBody.CItem.mAngles.vy);
     pBruce->mFront.vx = pBruce->mRotationMatrix.m[0][2] = Temp2.vx;
     pBruce->mFront.vy = pBruce->mRotationMatrix.m[1][2] = Temp2.vy;
     pBruce->mFront.vz = pBruce->mRotationMatrix.m[2][2] = Temp2.vz;
@@ -1190,25 +1171,21 @@ void Trig_ExecuteRestart(void)
     unsigned short *cmds = (unsigned short *)((int)pName + ((int)pName & 1));
     ExecuteCommandList(cmds, RestartNode, 1);
 
-    if (GNumberOfPlayers != 2)
-        return;
-    if (GGame == 7)
-        return;
+    if (GNumberOfPlayers != 2) return;
+    if (GGame == 7) return;
 
     // Rotation + position update
     CBruce *pMan = (CBruce *)MechList;
     CVector Dummy = pMan->mFront * 100;
     pMan->CSuper.CBody.CItem.mPos += Dummy;
 
-    if (NumNodes <= 0)
-        return;
+    if (NumNodes <= 0) return;
     int i = 0;
     do
     {
         short *pNode = OffsetList[i];
         if (*pNode == 8 &&
-            Utils_CompareStrings(
-                (char *)(Trig_GetPosition(Dummy, i) + 3), "RE_2P", -1))
+            Utils_CompareStrings((char *)(Trig_GetPosition(Dummy, i) + 3), "RE_2P", -1))
         {
             CVector StartPos;
             unsigned short *restartAngles = Trig_GetPosition(StartPos, i);
@@ -1302,29 +1279,23 @@ void Trig_LoadTRG(char *Name)
     char *pStart = (char *)OffsetList[NumNodes - 1];
     short lastType = *(short *)pStart;
     int v1Ff = 0xFF;
-    if (lastType != v1Ff)
-        return;
+    if (lastType != v1Ff) return;
     int base = (int)TrigFile;
     int newsize = pStart - (char *)base;
     newsize = (newsize + 5) & -4;
     Mem_Shrink((void *)base, newsize);
     TrigFileSize = newsize;
-
 }
 
 /** Diagnostic messages retained by the original trigger parser. */
-static char TrigFakeTRGMessage1[] __attribute__((section(".sdata"))) =
-    "Trig_FakeTRG 1\n";
-static char TrigFakeTRGMessage2[] __attribute__((section(".sdata"))) =
-    "Trig_FakeTRG 2\n";
+static char TrigFakeTRGMessage1[] __attribute__((section(".sdata"))) = "Trig_FakeTRG 1\n";
+static char TrigFakeTRGMessage2[] __attribute__((section(".sdata"))) = "Trig_FakeTRG 2\n";
 
 /** Scratch allocation used while commands wait for asynchronous spooling. */
 static unsigned int *pPSXDualBuffer __attribute__((section(".sdata"))) = 0;
 
 /** Default inline command list attached to command-point nodes. */
-static unsigned short CrateCommands[2] __attribute__((section(".sdata"))) = {
-    3, 0xFFFF
-};
+static unsigned short CrateCommands[2] __attribute__((section(".sdata"))) = { 3, 0xFFFF };
 
 /** Object-file regions and the compacted trigger-file size. */
 unsigned char CurrentObjFileRegion __attribute__((section(".sdata"))) = 0;
@@ -1367,8 +1338,7 @@ unsigned char GetFlag(unsigned char flag, unsigned char *pFlags)
  */
 char *SkipFlags(unsigned char *pFlags)
 {
-    while (*pFlags != 0xFF)
-        pFlags++;
+    while (*pFlags != 0xFF) pFlags++;
     return (char *)(pFlags + 1);
 }
 
@@ -1396,18 +1366,15 @@ CBody *Trig_CreateObject(int NodeIndex)
     unsigned short *pStuff;
     int LifeTime;
 
-    if (NodeType == 5)
-        goto case5;
+    if (NodeType == 5) goto case5;
     if (NodeType < 6)
     {
-        if (NodeType != 1)
-            goto done;
+        if (NodeType != 1) goto done;
         // NodeType == 1 (Seedable stays 0)
     }
     else
     {
-        if (NodeType != 7)
-            goto done;
+        if (NodeType != 7) goto done;
         Seedable = 1;
     }
     // Shared body for NodeType 1 and 7
@@ -1424,37 +1391,29 @@ CBody *Trig_CreateObject(int NodeIndex)
         {
             if (Type < 0xD5)
             {
-                if (Type == 0xCB)
-                    goto makeScriptOnly;
+                if (Type == 0xCB) goto makeScriptOnly;
                 goto done;
             }
-            goto makeCCar;    // 0xD5-0xDA range
+            goto makeCCar; // 0xD5-0xDA range
         }
-        if (Type == 0x192)
-            goto makeCPlatform;
+        if (Type == 0x192) goto makeCPlatform;
         goto done;
     }
 
 makeScriptOnly:
     NewObject = (CBody *)CItem::operator new(sizeof(CScriptOnlyBaddy));
-    if (NewObject == 0)
-        goto done_null;
-    NewObject = (CBody *)::new ((CScriptOnlyBaddy *)NewObject)
-        CScriptOnlyBaddy(pInfo, NodeIndex);
+    if (NewObject == 0) goto done_null;
+    NewObject = (CBody *)::new ((CScriptOnlyBaddy *)NewObject) CScriptOnlyBaddy(pInfo, NodeIndex);
     goto done;
 makeCPlatform:
     NewObject = (CBody *)CItem::operator new(sizeof(CPlatform));
-    if (NewObject == 0)
-        goto done_null;
-    NewObject = (CBody *)::new ((CPlatform *)NewObject)
-        CPlatform(pInfo, NodeIndex);
+    if (NewObject == 0) goto done_null;
+    NewObject = (CBody *)::new ((CPlatform *)NewObject) CPlatform(pInfo, NodeIndex);
     goto done;
 makeCCar:
     NewObject = (CBody *)CItem::operator new(sizeof(CCar));
-    if (NewObject == 0)
-        goto done_null;
-    NewObject = (CBody *)::new ((CCar *)NewObject)
-        CCar(pInfo, NodeIndex, Type);
+    if (NewObject == 0) goto done_null;
+    NewObject = (CBody *)::new ((CCar *)NewObject) CCar(pInfo, NodeIndex, Type);
     goto done;
 
 case5:
@@ -1467,9 +1426,8 @@ case5:
         unsigned int flags = pStuff[0];
         LifeTime = pStuff[1];
         // CPowerUp's target-proven CBody prefix begins at offset zero.
-        NewObject = reinterpret_cast<CBody *>(PowerUp_Create(
-            Type & 0xFFFF, Pos, (flags == 0) << 2,
-            LifeTime, ZeroVector));
+        NewObject = reinterpret_cast<CBody *>(
+            PowerUp_Create(Type & 0xFFFF, Pos, (flags == 0) << 2, LifeTime, ZeroVector));
         int links = Trig_GetLinksPointer(NodeIndex);
         unsigned short linkCount = *(unsigned short *)links;
         if (linkCount != 0)
@@ -1498,12 +1456,9 @@ done:
         {
             // Preserve the list that owned the object before suspending it.
             CBody **ppList = 0;
-            if (NewObject == BaddyList)
-                ppList = &BaddyList;
-            if (NewObject == EnvironmentalObjectList)
-                ppList = &EnvironmentalObjectList;
-            if (NewObject == PowerUpList)
-                ppList = &PowerUpList;
+            if (NewObject == BaddyList) ppList = &BaddyList;
+            if (NewObject == EnvironmentalObjectList) ppList = &EnvironmentalObjectList;
+            if (NewObject == PowerUpList) ppList = &PowerUpList;
             NewObject->Suspend(ppList);
         }
     }
@@ -1529,32 +1484,24 @@ void Trig_SendPulseToNode(int NodeIndex)
 
     if (nodeType < 0xc)
     {
-        if (nodeType >= 0xa)
-            return;
-        if (nodeType == 5)
-            goto createObj;
+        if (nodeType >= 0xa) return;
+        if (nodeType == 5) goto createObj;
         if (nodeType < 6)
         {
-            if (nodeType == 1)
-                goto createObj;
+            if (nodeType == 1) goto createObj;
             return;
         }
-        if (nodeType == 6)
-            goto cmdPoint;
-        if (nodeType == 7)
-            goto createObj;
+        if (nodeType == 6) goto cmdPoint;
+        if (nodeType == 7) goto createObj;
         return;
     }
-    if (nodeType == 0xe)
-        goto trickOb;
+    if (nodeType == 0xe) goto trickOb;
     if (nodeType < 0xf)
     {
-        if (nodeType == 0xc)
-            goto trickOb;
+        if (nodeType == 0xc) goto trickOb;
         return;
     }
-    if (nodeType == 0x1F5)
-        goto light;
+    if (nodeType == 0x1F5) goto light;
     return;
 
 createObj: // case 1, 5, 7
@@ -1572,19 +1519,14 @@ cmdPoint: // case 6
     return;
 light: // case 0x1F5
     {
-        STriggerLightWords *pStuff =
-            (STriggerLightWords *)Trig_GetPosition(Pos, NodeIndex);
+        STriggerLightWords *pStuff = (STriggerLightWords *)Trig_GetPosition(Pos, NodeIndex);
         UseCacheForBits = 0;
-        CLight *lightObj = static_cast<CLight *>(
-            CBit::operator new(TRIG_LIGHT_STORAGE_SIZE));
+        CLight *lightObj = static_cast<CLight *>(CBit::operator new(TRIG_LIGHT_STORAGE_SIZE));
         if (lightObj != 0)
         {
-            ::new (lightObj) CLight(
-                Pos, NodeIndex,
-                pStuff->ClipDist, pStuff->InnerRadius,
-                pStuff->FringeRadius, pStuff->Amp,
-                pStuff->r0, pStuff->g0, pStuff->b0,
-                pStuff->r1, pStuff->g1, pStuff->b1);
+            ::new (lightObj) CLight(Pos, NodeIndex, pStuff->ClipDist, pStuff->InnerRadius,
+                                    pStuff->FringeRadius, pStuff->Amp, pStuff->r0, pStuff->g0,
+                                    pStuff->b0, pStuff->r1, pStuff->g1, pStuff->b1);
         }
         UseCacheForBits = 1;
     }
@@ -1636,23 +1578,15 @@ void Trig_SendPulse(unsigned short *pLinkInfo)
 static void KillInList(int Node, CBody *pList, int How)
 {
     CBodyKillView *body = (CBodyKillView *)pList;
-    if (body == 0)
-        return;
+    if (body == 0) return;
     do
     {
         if (body->mNode == (unsigned int)Node)
         {
             switch (How)
             {
-            case 0:
-                body->Die();
-                break;
-            case 1:
-                body->Hit(
-                    body->mHealth,
-                    ZeroVector,
-                    0);
-                break;
+                case 0: body->Die(); break;
+                case 1: body->Hit(body->mHealth, ZeroVector, 0); break;
             }
         }
         body = (CBodyKillView *)body->mNextItem;
@@ -1685,8 +1619,7 @@ static void SendVisibleFromNode(int node, int visible)
     else
     {
         SetFlags = 1;
-        if ((CBody *)pPlayer == MechList)
-            SetFlags = 0x40;
+        if ((CBody *)pPlayer == MechList) SetFlags = 0x40;
     }
     ClearFlags = ~SetFlags;
     if (visible != 0)
@@ -1712,55 +1645,52 @@ static void SendVisibleFromNode(int node, int visible)
                 CPowerUp *pUp;
                 CBit *pBit;
 
-            case 5:
-                // PowerUp — iterate PowerUpList, match on node.
-                pUp = (CPowerUp *)PowerUpList;
-                for (; pUp != 0;
-                     pUp = (CPowerUp *)pUp->CBody.CItem.mNextItem)
-                {
-                    if (pUp->CBody.mNode == VisNode)
+                case 5:
+                    // PowerUp — iterate PowerUpList, match on node.
+                    pUp = (CPowerUp *)PowerUpList;
+                    for (; pUp != 0; pUp = (CPowerUp *)pUp->CBody.CItem.mNextItem)
                     {
-                        unsigned short flags = pUp->CBody.CItem.mFlags;
-                        pUp->CBody.CItem.mFlags =
-                            (flags & ClearFlags) | SetFlags;
-                        break;
+                        if (pUp->CBody.mNode == VisNode)
+                        {
+                            unsigned short flags = pUp->CBody.CItem.mFlags;
+                            pUp->CBody.CItem.mFlags = (flags & ClearFlags) | SetFlags;
+                            break;
+                        }
                     }
-                }
-                break;
+                    break;
 
-            case 0x1F5:
-                // NonRenderedBitList.
-                pBit = (CBit *)NonRenderedBitList;
-                for (; pBit != 0; pBit = pBit->mNext)
-                {
-                    if (pBit->mType == 2 && pBit->mLifetime == VisNode)
+                case 0x1F5:
+                    // NonRenderedBitList.
+                    pBit = (CBit *)NonRenderedBitList;
+                    for (; pBit != 0; pBit = pBit->mNext)
                     {
-                        if (visible != 0)
-                            ((TrigLightPrefix *)pBit)->mOn = 1;
-                        else if (GNumberOfPlayers == 1)
-                            ((TrigLightPrefix *)pBit)->mOn = 0;
-                        break;
+                        if (pBit->mType == 2 && pBit->mLifetime == VisNode)
+                        {
+                            if (visible != 0)
+                                ((TrigLightPrefix *)pBit)->mOn = 1;
+                            else if (GNumberOfPlayers == 1)
+                                ((TrigLightPrefix *)pBit)->mOn = 0;
+                            break;
+                        }
                     }
-                }
-                break;
+                    break;
 
-            case 2:
-            case 9:
-            case 14:
-            case 12:
-                pVisNode++;
-                pVisNode += *pVisNode + 1;
-                if ((int)pVisNode & 2)
+                case 2:
+                case 9:
+                case 14:
+                case 12:
                     pVisNode++;
-                {
-                    Item *pItem = Spool_FindEnviroItem(*(int *)pVisNode);
-                    if (pItem != 0)
+                    pVisNode += *pVisNode + 1;
+                    if ((int)pVisNode & 2) pVisNode++;
                     {
-                        unsigned short flags = pItem->Flags;
-                        pItem->Flags = (flags & ClearFlags) | SetFlags;
+                        Item *pItem = Spool_FindEnviroItem(*(int *)pVisNode);
+                        if (pItem != 0)
+                        {
+                            unsigned short flags = pItem->Flags;
+                            pItem->Flags = (flags & ClearFlags) | SetFlags;
+                        }
                     }
-                }
-                break;
+                    break;
             }
         }
     }
@@ -1796,109 +1726,91 @@ static void SendKillFromNode(int Node, int How)
 
             switch (*pKillNode)
             {
-            case 1:
-                goto body_kill;
-            case 2:
-            case 9:
-                goto enviro_kill;
-            case 10:
-            case 11:
-                goto rail_kill;
-            case 12:
-            case 14:
-                goto next_link;
-            case 0x1F4:
-            case 0x1F5:
-                goto bit_kill;
-            default:
-                goto next_link;
+                case 1: goto body_kill;
+                case 2:
+                case 9: goto enviro_kill;
+                case 10:
+                case 11: goto rail_kill;
+                case 12:
+                case 14: goto next_link;
+                case 0x1F4:
+                case 0x1F5: goto bit_kill;
+                default: goto next_link;
             }
 
         body_kill:
-        {
-            // Kill in EnvironmentalObjectList
-            pList = EnvironmentalObjectList;
-            if (pList == 0)
-                goto after_enviro;
-            do
             {
-                CPlatform *pPlatform = (CPlatform *)pList;
-                unsigned short bodyNode = pList->mNode;
-                if (bodyNode != KillNode)
-                    goto next_body;
+                // Kill in EnvironmentalObjectList
+                pList = EnvironmentalObjectList;
+                if (pList == 0) goto after_enviro;
+                do
                 {
-                    unsigned short status = pList->CItem.mFlags;
-                    if (!(status & 0x100))
-                        goto next_body;
-                    int flags2 = pPlatform->CBaddy.mSpecificFlags;
-                    if (!(flags2 & 0x10))
-                        goto next_body;
-                    pList->CItem.mFlags = status | 0x20;
-                    if (flags2 & 0x20)
-                        goto next_body;
-                    // Kill: send pulse, set kill flag, call Bounce
-                    unsigned short bn = pList->mNode;
-                    int lp = Trig_GetLinksPointer(bn);
-                    Trig_SendPulse((unsigned short *)lp);
-                    pPlatform->CBaddy.mDeathPulseSent = 1;
-                    pPlatform->Bounce(
-                        pCurrentPlayer,
-                        pCurrentPlayer->CSuper.CBody.mVel);
-                }
-                Bounced = 1;
-            next_body:
-                pList = (CBody *)pList->CItem.mNextItem;
-            } while (pList != 0);
-        after_enviro:
-            if (Bounced != 0)
-                goto next_link;
-            KillInList(KillNode, BaddyList, How);
-            KillInList(KillNode, EnvironmentalObjectList, How);
-        }
-        goto next_link;
-
-    enviro_kill:
-        {
-            Item *pItem;
-
-            pKillNode++;
-            pKillNode += *pKillNode + 1;
-            if ((int)pKillNode & 2)
-                pKillNode++;
-            pItem = Spool_FindEnviroItem(*(int *)pKillNode);
-            if (pItem == 0)
-                goto next_link;
-            if (How == 1)
-            {
-                Exp_HitEnvItem(pItem, 0, 0xFFFF);
-                goto next_link;
+                    CPlatform *pPlatform = (CPlatform *)pList;
+                    unsigned short bodyNode = pList->mNode;
+                    if (bodyNode != KillNode) goto next_body;
+                    {
+                        unsigned short status = pList->CItem.mFlags;
+                        if (!(status & 0x100)) goto next_body;
+                        int flags2 = pPlatform->CBaddy.mSpecificFlags;
+                        if (!(flags2 & 0x10)) goto next_body;
+                        pList->CItem.mFlags = status | 0x20;
+                        if (flags2 & 0x20) goto next_body;
+                        // Kill: send pulse, set kill flag, call Bounce
+                        unsigned short bn = pList->mNode;
+                        int lp = Trig_GetLinksPointer(bn);
+                        Trig_SendPulse((unsigned short *)lp);
+                        pPlatform->CBaddy.mDeathPulseSent = 1;
+                        pPlatform->Bounce(pCurrentPlayer, pCurrentPlayer->CSuper.CBody.mVel);
+                    }
+                    Bounced = 1;
+                next_body:
+                    pList = (CBody *)pList->CItem.mNextItem;
+                } while (pList != 0);
+            after_enviro:
+                if (Bounced != 0) goto next_link;
+                KillInList(KillNode, BaddyList, How);
+                KillInList(KillNode, EnvironmentalObjectList, How);
             }
-            pItem->Flags |= 0x41;
             goto next_link;
-        }
 
-    bit_kill:
-        {
-            CBit *pBit = (CBit *)NonRenderedBitList;
-            if (pBit == 0)
-                goto next_link;
-            do
+        enviro_kill:
             {
-                if (pBit->mType == 2 && pBit->mLifetime == KillNode)
+                Item *pItem;
+
+                pKillNode++;
+                pKillNode += *pKillNode + 1;
+                if ((int)pKillNode & 2) pKillNode++;
+                pItem = Spool_FindEnviroItem(*(int *)pKillNode);
+                if (pItem == 0) goto next_link;
+                if (How == 1)
                 {
-                    pBit->Die();
+                    Exp_HitEnvItem(pItem, 0, 0xFFFF);
                     goto next_link;
                 }
-                pBit = pBit->mNext;
-            } while (pBit != 0);
-            goto next_link;
-        }
+                pItem->Flags |= 0x41;
+                goto next_link;
+            }
 
-    rail_kill:
-        Rail_KillRail(KillNode);
+        bit_kill:
+            {
+                CBit *pBit = (CBit *)NonRenderedBitList;
+                if (pBit == 0) goto next_link;
+                do
+                {
+                    if (pBit->mType == 2 && pBit->mLifetime == KillNode)
+                    {
+                        pBit->Die();
+                        goto next_link;
+                    }
+                    pBit = pBit->mNext;
+                } while (pBit != 0);
+                goto next_link;
+            }
 
-    next_link:
-        ;
+        rail_kill:
+            Rail_KillRail(KillNode);
+
+        next_link:;
         }
     }
 }
@@ -2077,134 +1989,120 @@ static unsigned short *SkipCommand(unsigned short *pCommand)
 {
     switch (*pCommand++)
     {
-    case 0xFFFF:
-        return 0;
+        case 0xFFFF: return 0;
 
-    case 0x82:
-    case 0x87:
-    case 0x8B:
-    case 0x8F:
-    case 0x90:
-    case 0x91:
-    case 0x92:
-    case 0xA7:
-    case 0xAE:
-    case 0xC8:
-    case 0xCA:
-        pCommand += 2;
-        break;
+        case 0x82:
+        case 0x87:
+        case 0x8B:
+        case 0x8F:
+        case 0x90:
+        case 0x91:
+        case 0x92:
+        case 0xA7:
+        case 0xAE:
+        case 0xC8:
+        case 0xCA: pCommand += 2; break;
 
-    case 0x68:
-        pCommand += 3;
-        break;
+        case 0x68: pCommand += 3; break;
 
-    case 0x73:
-    case 0x77:
-    case 0x7E:
-    case 0x7F:
-    case 0x80:
-    case 0x8C:
-    case 0x8E:
-    case 0xB0:
-    case 0xB2:
-        pCommand = SkipString((char *)pCommand);
-        break;
+        case 0x73:
+        case 0x77:
+        case 0x7E:
+        case 0x7F:
+        case 0x80:
+        case 0x8C:
+        case 0x8E:
+        case 0xB0:
+        case 0xB2: pCommand = SkipString((char *)pCommand); break;
 
-    case 2:
-    {
-        if (*(u8 *)pCommand != 0)
+        case 2:
         {
-            do
+            if (*(u8 *)pCommand != 0)
             {
-                pCommand = SkipString((char *)pCommand);
-            } while (*(u8 *)pCommand != 0);
+                do
+                {
+                    pCommand = SkipString((char *)pCommand);
+                } while (*(u8 *)pCommand != 0);
+            }
+            pCommand++;
+            break;
         }
-        pCommand++;
-        break;
-    }
 
-    case 0xAB:
-    {
-        unsigned int *p_checksum =
-            (unsigned int *)(((int)pCommand + 3) & ~3);
-        pCommand = (unsigned short *)
-            ((char *)p_checksum + sizeof(SBackgroundCommandPayload));
-        break;
-    }
-
-    case 0xC9:
-    {
-        unsigned int *p_checksum =
-            (unsigned int *)(((int)pCommand + 3) & ~3);
-        pCommand = (unsigned short *)((char *)p_checksum + 6);
-        break;
-    }
-
-    case 0x8D:
-        pCommand += 2;
-        // Fall through: both formats end in the same aligned entry list.
-    case 0x85:
-    {
-        int *p_pos;
-        while (*pCommand != 0xFF)
+        case 0xAB:
         {
-            p_pos = (int *)((int)pCommand + 3);
-            p_pos = (int *)((int)p_pos & ~3);
-            p_pos += 6;
-            pCommand = (unsigned short *)p_pos;
+            unsigned int *p_checksum = (unsigned int *)(((int)pCommand + 3) & ~3);
+            pCommand = (unsigned short *)((char *)p_checksum + sizeof(SBackgroundCommandPayload));
+            break;
         }
-        pCommand++;
-        break;
-    }
 
-    case 0x8A:
-    case 0x0D:
-    case 0x69:
-    case 0x6A:
-    case 0x83:
-    case 0x84:
-    case 0x86:
-    case 0x93:
-    case 0x94:
-    case 0x99:
-    case 0x9A:
-    case 0x9B:
-    case 0x9C:
-    case 0xA0:
-    case 0xA3:
-    case 0xA4:
-    case 0xA5:
-    case 0xA6:
-    case 0xA8:
-    case 0xA9:
-    case 0xAA:
-    case 0xAC:
-    case 0xB1:
-        pCommand++;
-        break;
+        case 0xC9:
+        {
+            unsigned int *p_checksum = (unsigned int *)(((int)pCommand + 3) & ~3);
+            pCommand = (unsigned short *)((char *)p_checksum + 6);
+            break;
+        }
 
-    // Commands without inline payload data already point at the next command.
-    case 3:
-    case 4:
-    case 5:
-    case 0x0A:
-    case 0x0B:
-    case 0x0C:
-    case 0x66:
-    case 0x67:
-    case 0x79:
-    case 0x7A:
-    case 0x81:
-    case 0x88:
-    case 0x89:
-    case 0xAD:
-    case 0xAF:
-        break;
+        case 0x8D:
+            pCommand += 2;
+            // Fall through: both formats end in the same aligned entry list.
+        case 0x85:
+        {
+            int *p_pos;
+            while (*pCommand != 0xFF)
+            {
+                p_pos = (int *)((int)pCommand + 3);
+                p_pos = (int *)((int)p_pos & ~3);
+                p_pos += 6;
+                pCommand = (unsigned short *)p_pos;
+            }
+            pCommand++;
+            break;
+        }
 
-    // End-if already points at the following command.
-    case 0x95:
-    default:
-        return pCommand;
+        case 0x8A:
+        case 0x0D:
+        case 0x69:
+        case 0x6A:
+        case 0x83:
+        case 0x84:
+        case 0x86:
+        case 0x93:
+        case 0x94:
+        case 0x99:
+        case 0x9A:
+        case 0x9B:
+        case 0x9C:
+        case 0xA0:
+        case 0xA3:
+        case 0xA4:
+        case 0xA5:
+        case 0xA6:
+        case 0xA8:
+        case 0xA9:
+        case 0xAA:
+        case 0xAC:
+        case 0xB1: pCommand++; break;
+
+        // Commands without inline payload data already point at the next command.
+        case 3:
+        case 4:
+        case 5:
+        case 0x0A:
+        case 0x0B:
+        case 0x0C:
+        case 0x66:
+        case 0x67:
+        case 0x79:
+        case 0x7A:
+        case 0x81:
+        case 0x88:
+        case 0x89:
+        case 0xAD:
+        case 0xAF: break;
+
+        // End-if already points at the following command.
+        case 0x95:
+        default: return pCommand;
     }
 
     return pCommand;
@@ -2263,10 +2161,8 @@ static void ExecuteCommandList(unsigned short *pCommands, int Node, int WaitForS
     SCommandPoint *pCommandPoint = GetCommandPoint(Node);
 
     /* Read-only traces retained from the disabled fake-TRG diagnostic path. */
-    static const char fakeTrgEnter[] =
-        "\nEnter Trig_FakeTRG\n";
-    static const char fakeTrgExit[] =
-        "Exit Trig_FakeTRG\n";
+    static const char fakeTrgEnter[] = "\nEnter Trig_FakeTRG\n";
+    static const char fakeTrgExit[] = "Exit Trig_FakeTRG\n";
 
     while (*pCommands != 0xFFFF)
     {
@@ -2279,773 +2175,745 @@ static void ExecuteCommandList(unsigned short *pCommands, int Node, int WaitForS
 
         switch (Command)
         {
-        case 0x02:
-        {
-            // Define cheat restart strings
-            NumCheatRestarts = 0;
-            if (*(unsigned char *)pCommands == 0)
-                goto case_02_done;
-            do
+            case 0x02:
             {
-                CheatRestarts[NumCheatRestarts++] = (char *)pCommands;
-                pCommands = (unsigned short *)SkipString((char *)pCommands);
-            } while (*(unsigned char *)pCommands != 0);
-        case_02_done:
-            pCommands++;
-            break;
-        }
-
-        case 0x97:
-        {
-            // Allocate dual buffer
-            Trig_RemoveDualBuffer();
-            unsigned short val = *pCommands;
-            pCommands++;
-            unsigned int size = ((((val << 5) - val) << 2) + val) << 3;
-            Trig_AllocateDualBuffer(size);
-            break;
-        }
-
-        case 0x8C:
-        case 0xB0:
-        {
-            // Set restart
-            int OldRestart = RestartNode;
-            Trig_SetRestart(GGame == 7 ? HorseRestarts[GHorseRestart]
-                                       : (char *)pCommands);
-            pCommands = (unsigned short *)SkipString((char *)pCommands);
-            if (OldRestart == 0xFFFF)
-                break;
-            if (RestartNode == OldRestart)
-                break;
-            if (Command != 0xB0)
-            {
-                Mess_DeleteAll();
-            }
-            Front_SaveGameState();
-            break;
-        }
-
-        case 0xB2:
-        {
-            // Set restart (2-player only)
-            if (GNumberOfPlayers == 2)
-            {
-                Trig_SetRestart(GGame == 7 ? HorseRestarts[GHorseRestart]
-                                           : (char *)pCommands);
-            }
-            goto skip_string;
-        }
-
-        case 0x7E:
-            Spool_PSX((char *)pCommands, 0, 0, 1);
-            if (WaitForSpooling)
-            {
-                Spool_Sync();
-            }
-            pCommands = (unsigned short *)SkipString((char *)pCommands);
-            break;
-
-        case 0x7F:
-        {
-            // Spool clear PSX
-            Spool_ClearPSX((char *)pCommands);
-            pCommands = (unsigned short *)SkipString((char *)pCommands);
-            break;
-        }
-
-        case 0x80:
-            Spool_PSX((char *)pCommands, 1, 0, 1);
-            if (WaitForSpooling)
-            {
-                Spool_Sync();
-            }
-            pCommands = (unsigned short *)SkipString((char *)pCommands);
-            break;
-
-        case 0x81:
-        {
-            // Spool sync
-            Spool_Sync();
-            break;
-        }
-
-        case 0x9F:
-        {
-            // SFX spool MIDI
-            SFX_SpoolInMIDI((char *)pCommands);
-            goto skip_string;
-        }
-
-        case 0x8E:
-        {
-            // Store obj file + find region
-            pCurrentObjFile = (char *)pCommands;
-            pCommands = (unsigned short *)SkipString((char *)pCommands);
-            CurrentObjFileRegion = Spool_FindRegion(pCurrentObjFile);
-            break;
-        }
-
-        case 0x85:
-        {
-            CVector min, max;
-            while (*pCommands != 0xFF)
-            {
-                int *p_pos = (int *)(((int)pCommands + 3) & ~3);
-                min.vx = *p_pos++ << 12;
-                min.vy = *p_pos++ << 12;
-                min.vz = *p_pos++ << 12;
-                max.vx = *p_pos++ << 12;
-                max.vy = *p_pos++ << 12;
-                max.vz = *p_pos++ << 12;
-                Utils_KillEverythingInBox(min, max);
-                pCommands = (unsigned short *)p_pos;
-            }
-            pCommands++;
-            break;
-        }
-
-        case 0x8A:
-            pCommands++;
-            break;
-
-        case 0x8D:
-        {
-            // Set visibility in box loop
-            unsigned short on = *pCommands++;
-            unsigned short in = *pCommands++;
-            CVector min, max;
-            while (*pCommands != 0xFF)
-            {
-                int *p_pos = (int *)(((int)pCommands + 3) & ~3);
-                min.vx = *p_pos++ << 12;
-                min.vy = *p_pos++ << 12;
-                min.vz = *p_pos++ << 12;
-                max.vx = *p_pos++ << 12;
-                max.vy = *p_pos++ << 12;
-                max.vz = *p_pos++ << 12;
-                Utils_SetVisibilityInBox(min, max, on, in);
-                pCommands = (unsigned short *)p_pos;
-            }
-            pCommands++;
-            break;
-        }
-
-        case 0xAB:
-        {
-            // Create background
-            unsigned int *p_checksum =
-                (unsigned int *)(((int)pCommands + 3) & ~3);
-            unsigned int checksum = *p_checksum++;
-            pCommands = (unsigned short *)p_checksum;
-            CSVector ang_vel;
-            ang_vel.vx = *pCommands++;
-            ang_vel.vy = *pCommands++;
-            ang_vel.vz = *pCommands++;
-            CBackground *pBackground =
-                (CBackground *)CItem::operator new(sizeof(CBackground));
-            if (pBackground == 0)
-                break;
-            ::new (pBackground) CBackground(checksum, ang_vel);
-            break;
-        }
-
-        case 0x83:
-        {
-            // Backgrnd_On
-            Backgrnd_On(*pCommands);
-            pCommands++;
-            break;
-        }
-
-        case 0x84:
-        {
-            // Backgrnd_Off
-            Backgrnd_Off(*pCommands);
-            pCommands++;
-            break;
-        }
-
-        case 0x68:
-        {
-            // Set fog params (deferred)
-            ZHither = *pCommands++;
-            NewFoggingParameters = 1;
-            ZDpqMin = *pCommands++;
-            Range = *pCommands++;
-            break;
-        }
-
-        case 0xC8:
-        {
-            // Set fade colour
-            unsigned int fadecolor = *pCommands++ << 16;
-            fadecolor += *pCommands++;
-            M3d_FadeColour = fadecolor;
-            break;
-        }
-
-        case 0xCA:
-        {
-            // Set sky color + update
-            unsigned int skycolor = *pCommands++ << 16;
-            skycolor += *pCommands++;
-            Db_SkyColor = skycolor;
-            Db_UpdateSky();
-            break;
-        }
-
-        case 0xC9:
-        {
-            // Gap trick assignment
-            unsigned int *pChecksum = (unsigned int *)(((int)pCommands + 3) & ~3);
-            unsigned int Checksum = *pChecksum++;
-            pCommands = (unsigned short *)pChecksum;
-            int GapType = *pCommands++;
-            if (GVInfo1.VideoMode == 2)
-                break;
-
-            int i;
-            for (i = 0; i < pCurrentPlayer->mGaps; i++)
-            {
-                if (pCurrentPlayer->mGapChecksum[i] != 0)
+                // Define cheat restart strings
+                NumCheatRestarts = 0;
+                if (*(unsigned char *)pCommands == 0) goto case_02_done;
+                do
                 {
-                    if (pCurrentPlayer->mGapChecksum[i] ==
-                        pCommandPoint->Checksum)
-                    {
-                        pCurrentPlayer->mGapChecksum[i] = 0;
-                        if (pCurrentPlayer->mInBail == 0)
-                        {
-                            SGapTrick *pGapTrick = GapTricks;
-                            while (pGapTrick->Type != -1 &&
-                                   pGapTrick->Type !=
-                                       pCurrentPlayer->mGapType[i])
-                            {
-                                pGapTrick++;
-                            }
+                    CheatRestarts[NumCheatRestarts++] = (char *)pCommands;
+                    pCommands = (unsigned short *)SkipString((char *)pCommands);
+                } while (*(unsigned char *)pCommands != 0);
+            case_02_done:
+                pCommands++;
+                break;
+            }
 
-                            if (pGapTrick->Type != -1)
+            case 0x97:
+            {
+                // Allocate dual buffer
+                Trig_RemoveDualBuffer();
+                unsigned short val = *pCommands;
+                pCommands++;
+                unsigned int size = ((((val << 5) - val) << 2) + val) << 3;
+                Trig_AllocateDualBuffer(size);
+                break;
+            }
+
+            case 0x8C:
+            case 0xB0:
+            {
+                // Set restart
+                int OldRestart = RestartNode;
+                Trig_SetRestart(GGame == 7 ? HorseRestarts[GHorseRestart] : (char *)pCommands);
+                pCommands = (unsigned short *)SkipString((char *)pCommands);
+                if (OldRestart == 0xFFFF) break;
+                if (RestartNode == OldRestart) break;
+                if (Command != 0xB0)
+                {
+                    Mess_DeleteAll();
+                }
+                Front_SaveGameState();
+                break;
+            }
+
+            case 0xB2:
+            {
+                // Set restart (2-player only)
+                if (GNumberOfPlayers == 2)
+                {
+                    Trig_SetRestart(GGame == 7 ? HorseRestarts[GHorseRestart] : (char *)pCommands);
+                }
+                goto skip_string;
+            }
+
+            case 0x7E:
+                Spool_PSX((char *)pCommands, 0, 0, 1);
+                if (WaitForSpooling)
+                {
+                    Spool_Sync();
+                }
+                pCommands = (unsigned short *)SkipString((char *)pCommands);
+                break;
+
+            case 0x7F:
+            {
+                // Spool clear PSX
+                Spool_ClearPSX((char *)pCommands);
+                pCommands = (unsigned short *)SkipString((char *)pCommands);
+                break;
+            }
+
+            case 0x80:
+                Spool_PSX((char *)pCommands, 1, 0, 1);
+                if (WaitForSpooling)
+                {
+                    Spool_Sync();
+                }
+                pCommands = (unsigned short *)SkipString((char *)pCommands);
+                break;
+
+            case 0x81:
+            {
+                // Spool sync
+                Spool_Sync();
+                break;
+            }
+
+            case 0x9F:
+            {
+                // SFX spool MIDI
+                SFX_SpoolInMIDI((char *)pCommands);
+                goto skip_string;
+            }
+
+            case 0x8E:
+            {
+                // Store obj file + find region
+                pCurrentObjFile = (char *)pCommands;
+                pCommands = (unsigned short *)SkipString((char *)pCommands);
+                CurrentObjFileRegion = Spool_FindRegion(pCurrentObjFile);
+                break;
+            }
+
+            case 0x85:
+            {
+                CVector min, max;
+                while (*pCommands != 0xFF)
+                {
+                    int *p_pos = (int *)(((int)pCommands + 3) & ~3);
+                    min.vx = *p_pos++ << 12;
+                    min.vy = *p_pos++ << 12;
+                    min.vz = *p_pos++ << 12;
+                    max.vx = *p_pos++ << 12;
+                    max.vy = *p_pos++ << 12;
+                    max.vz = *p_pos++ << 12;
+                    Utils_KillEverythingInBox(min, max);
+                    pCommands = (unsigned short *)p_pos;
+                }
+                pCommands++;
+                break;
+            }
+
+            case 0x8A: pCommands++; break;
+
+            case 0x8D:
+            {
+                // Set visibility in box loop
+                unsigned short on = *pCommands++;
+                unsigned short in = *pCommands++;
+                CVector min, max;
+                while (*pCommands != 0xFF)
+                {
+                    int *p_pos = (int *)(((int)pCommands + 3) & ~3);
+                    min.vx = *p_pos++ << 12;
+                    min.vy = *p_pos++ << 12;
+                    min.vz = *p_pos++ << 12;
+                    max.vx = *p_pos++ << 12;
+                    max.vy = *p_pos++ << 12;
+                    max.vz = *p_pos++ << 12;
+                    Utils_SetVisibilityInBox(min, max, on, in);
+                    pCommands = (unsigned short *)p_pos;
+                }
+                pCommands++;
+                break;
+            }
+
+            case 0xAB:
+            {
+                // Create background
+                unsigned int *p_checksum = (unsigned int *)(((int)pCommands + 3) & ~3);
+                unsigned int checksum = *p_checksum++;
+                pCommands = (unsigned short *)p_checksum;
+                CSVector ang_vel;
+                ang_vel.vx = *pCommands++;
+                ang_vel.vy = *pCommands++;
+                ang_vel.vz = *pCommands++;
+                CBackground *pBackground = (CBackground *)CItem::operator new(sizeof(CBackground));
+                if (pBackground == 0) break;
+                ::new (pBackground) CBackground(checksum, ang_vel);
+                break;
+            }
+
+            case 0x83:
+            {
+                // Backgrnd_On
+                Backgrnd_On(*pCommands);
+                pCommands++;
+                break;
+            }
+
+            case 0x84:
+            {
+                // Backgrnd_Off
+                Backgrnd_Off(*pCommands);
+                pCommands++;
+                break;
+            }
+
+            case 0x68:
+            {
+                // Set fog params (deferred)
+                ZHither = *pCommands++;
+                NewFoggingParameters = 1;
+                ZDpqMin = *pCommands++;
+                Range = *pCommands++;
+                break;
+            }
+
+            case 0xC8:
+            {
+                // Set fade colour
+                unsigned int fadecolor = *pCommands++ << 16;
+                fadecolor += *pCommands++;
+                M3d_FadeColour = fadecolor;
+                break;
+            }
+
+            case 0xCA:
+            {
+                // Set sky color + update
+                unsigned int skycolor = *pCommands++ << 16;
+                skycolor += *pCommands++;
+                Db_SkyColor = skycolor;
+                Db_UpdateSky();
+                break;
+            }
+
+            case 0xC9:
+            {
+                // Gap trick assignment
+                unsigned int *pChecksum = (unsigned int *)(((int)pCommands + 3) & ~3);
+                unsigned int Checksum = *pChecksum++;
+                pCommands = (unsigned short *)pChecksum;
+                int GapType = *pCommands++;
+                if (GVInfo1.VideoMode == 2) break;
+
+                int i;
+                for (i = 0; i < pCurrentPlayer->mGaps; i++)
+                {
+                    if (pCurrentPlayer->mGapChecksum[i] != 0)
+                    {
+                        if (pCurrentPlayer->mGapChecksum[i] == pCommandPoint->Checksum)
+                        {
+                            pCurrentPlayer->mGapChecksum[i] = 0;
+                            if (pCurrentPlayer->mInBail == 0)
                             {
-                                if (pGapTrick->Type < 20000)
+                                SGapTrick *pGapTrick = GapTricks;
+                                while (pGapTrick->Type != -1 &&
+                                       pGapTrick->Type != pCurrentPlayer->mGapType[i])
                                 {
-                                    pCurrentPlayer->Trick_Trick(
-                                        pGapTrick->Name,
-                                        -pGapTrick->Score,
-                                        0);
-                                    SFX_PlayX(0xA1, 0x2000, 0);
+                                    pGapTrick++;
                                 }
-                                else
+
+                                if (pGapTrick->Type != -1)
                                 {
-                                    pCurrentPlayer->mpGrindGapTrick =
-                                        pGapTrick;
+                                    if (pGapTrick->Type < 20000)
+                                    {
+                                        pCurrentPlayer->Trick_Trick(pGapTrick->Name,
+                                                                    -pGapTrick->Score, 0);
+                                        SFX_PlayX(0xA1, 0x2000, 0);
+                                    }
+                                    else
+                                    {
+                                        pCurrentPlayer->mpGrindGapTrick = pGapTrick;
+                                    }
                                 }
                             }
                         }
                     }
                 }
+
+                if (Checksum == 0) break;
+                if (pCurrentPlayer->mGaps < 10)
+                {
+                    pCurrentPlayer->mGapChecksum[pCurrentPlayer->mGaps] = Checksum;
+                    pCurrentPlayer->mGapType[pCurrentPlayer->mGaps] = GapType;
+                    pCurrentPlayer->mGaps++;
+                }
+                else
+                {
+                    // The ten pending gap slots are full; report their contents.
+                    i = 0;
+                    do
+                    {
+                        printf("Checksum %lx, type %d\n", pCurrentPlayer->mGapChecksum[i],
+                               pCurrentPlayer->mGapType[i]);
+                        i++;
+                    } while (i < 10);
+                }
+                break;
             }
 
-            if (Checksum == 0)
+            case 0x69:
+            {
+                // SFX_PlayX
+                short sfxId = *(short *)pCommands;
+                pCommands++;
+                SFX_PlayX(sfxId, 0x2000, 0);
                 break;
-            if (pCurrentPlayer->mGaps < 10)
-            {
-                pCurrentPlayer->mGapChecksum[pCurrentPlayer->mGaps] =
-                    Checksum;
-                pCurrentPlayer->mGapType[pCurrentPlayer->mGaps] = GapType;
-                pCurrentPlayer->mGaps++;
             }
-            else
+
+            case 0x6A:
             {
-                // The ten pending gap slots are full; report their contents.
-                i = 0;
+                // SFX_Stop
+                short sfxId = *(short *)pCommands;
+                SFX_Stop(sfxId);
+                pCommands++;
+                break;
+            }
+
+            case 0x96:
+            {
+                // SFX MIDI channel mute
+                SFX_MIDIChannelMute(*pCommands);
+                pCommands++;
+                break;
+            }
+
+            case 0x9B:
+            {
+                // SFX MIDI fade in
+                SFX_MIDIFadeIn(*pCommands);
+                pCommands++;
+                break;
+            }
+
+            case 0x9C:
+            {
+                // SFX MIDI fade out
+                SFX_MIDIFadeOut(*pCommands);
+                pCommands++;
+                break;
+            }
+
+            case 0x9D:
+            {
+                // SFX set reverb type
+                SFX_SetReverbType(*(unsigned char *)pCommands);
+                pCommands++;
+                break;
+            }
+
+            case 0x9E:
+            {
+                // Game over
+                Game_Over();
+                break;
+            }
+
+            case 0xA3:
+            {
+                // Set MechList anim speed
+                CBruce *pBruce = (CBruce *)MechList;
+                if (pBruce == 0) break;
+                unsigned short val = *pCommands;
+                pCommands++;
+                pBruce->mIgnoreBruceInputTimer = val;
+                break;
+            }
+
+            case 0xB1:
+            {
+                // Set MechList anim param
+                CBruce *pBruce = (CBruce *)MechList;
+                if (pBruce == 0) break;
+                unsigned short val = *pCommands;
+                pCommands++;
+                pBruce->mIgnoreBruceInputFreezeTimer = val;
+                break;
+            }
+
+            case 0x98:
+            {
+                // Teleport player
+                CVector StartPos;
+                CVector BestStartPos;
+                CSVector *pBestAngles =
+                    (CSVector *)Trig_GetPosition(BestStartPos, Trig_GetLinksPointer(Node)[1]);
+                CBruce *pBruce = pCurrentPlayer;
+                CBody &body = pBruce->CSuper.CBody;
+                body.CItem.mPos = BestStartPos;
+                body.mVel.vx = 0;
+                body.mVel.vy = -0x4000;
+                body.mVel.vz = 0;
+                body.mAcc.vx = 0;
+                body.mAcc.vy = 0;
+                body.mAcc.vz = 0;
+                body.CItem.mPos.vy += (int)0xFFFE7000;
+                pBruce->Trick_Bail();
+                pBruce->mDoingATrick = 0;
+                pBruce->mJumpPending = 0;
+                pBruce->mJumpStrength = 0;
+                pBruce->ResetTrickBuffers();
+                pBruce->mStickToRail = 0;
+                // Restore the linked node's angular velocity.
+                body.CItem.mAngles = *pBestAngles;
+                FudgeAngles(pBruce);
+                body.mOldPos = body.CItem.mPos;
+                // Preserve this position as Bruce's next safe restart point.
+                pBruce->mSafePos = body.CItem.mPos;
+                pBruce->mInBail = 0;
+                pBruce->mpCamera->ResetOrientation();
+                pBruce->CSuper.RunAnim(0, 0, -1, -1);
+                pBruce->mPanelData.OutOfBounds();
+                break;
+            }
+
+            case 0x94:
+            {
+                // Conditional (if pulse count != value)
+                if (pCommandPoint->PulsesReceived == *pCommands++) break;
+                // Check for endif (0x95) or skip commands until 0x95
+                if (*pCommands == 0x95)
+                {
+                    pCommands++;
+                    break;
+                }
                 do
                 {
-                    printf("Checksum %lx, type %d\n",
-                           pCurrentPlayer->mGapChecksum[i],
-                           pCurrentPlayer->mGapType[i]);
-                    i++;
-                } while (i < 10);
-            }
-            break;
-        }
-
-        case 0x69:
-        {
-            // SFX_PlayX
-            short sfxId = *(short *)pCommands;
-            pCommands++;
-            SFX_PlayX(sfxId, 0x2000, 0);
-            break;
-        }
-
-        case 0x6A:
-        {
-            // SFX_Stop
-            short sfxId = *(short *)pCommands;
-            SFX_Stop(sfxId);
-            pCommands++;
-            break;
-        }
-
-        case 0x96:
-        {
-            // SFX MIDI channel mute
-            SFX_MIDIChannelMute(*pCommands);
-            pCommands++;
-            break;
-        }
-
-        case 0x9B:
-        {
-            // SFX MIDI fade in
-            SFX_MIDIFadeIn(*pCommands);
-            pCommands++;
-            break;
-        }
-
-        case 0x9C:
-        {
-            // SFX MIDI fade out
-            SFX_MIDIFadeOut(*pCommands);
-            pCommands++;
-            break;
-        }
-
-        case 0x9D:
-        {
-            // SFX set reverb type
-            SFX_SetReverbType(*(unsigned char *)pCommands);
-            pCommands++;
-            break;
-        }
-
-        case 0x9E:
-        {
-            // Game over
-            Game_Over();
-            break;
-        }
-
-        case 0xA3:
-        {
-            // Set MechList anim speed
-            CBruce *pBruce = (CBruce *)MechList;
-            if (pBruce == 0)
-                break;
-            unsigned short val = *pCommands;
-            pCommands++;
-            pBruce->mIgnoreBruceInputTimer = val;
-            break;
-        }
-
-        case 0xB1:
-        {
-            // Set MechList anim param
-            CBruce *pBruce = (CBruce *)MechList;
-            if (pBruce == 0)
-                break;
-            unsigned short val = *pCommands;
-            pCommands++;
-            pBruce->mIgnoreBruceInputFreezeTimer = val;
-            break;
-        }
-
-        case 0x98:
-        {
-            // Teleport player
-            CVector StartPos;
-            CVector BestStartPos;
-            CSVector *pBestAngles = (CSVector *)Trig_GetPosition(
-                BestStartPos, Trig_GetLinksPointer(Node)[1]);
-            CBruce *pBruce = pCurrentPlayer;
-            CBody &body = pBruce->CSuper.CBody;
-            body.CItem.mPos = BestStartPos;
-            body.mVel.vx = 0;
-            body.mVel.vy = -0x4000;
-            body.mVel.vz = 0;
-            body.mAcc.vx = 0;
-            body.mAcc.vy = 0;
-            body.mAcc.vz = 0;
-            body.CItem.mPos.vy += (int)0xFFFE7000;
-            pBruce->Trick_Bail();
-            pBruce->mDoingATrick = 0;
-            pBruce->mJumpPending = 0;
-            pBruce->mJumpStrength = 0;
-            pBruce->ResetTrickBuffers();
-            pBruce->mStickToRail = 0;
-            // Restore the linked node's angular velocity.
-            body.CItem.mAngles = *pBestAngles;
-            FudgeAngles(pBruce);
-            body.mOldPos = body.CItem.mPos;
-            // Preserve this position as Bruce's next safe restart point.
-            pBruce->mSafePos = body.CItem.mPos;
-            pBruce->mInBail = 0;
-            pBruce->mpCamera->ResetOrientation();
-            pBruce->CSuper.RunAnim(0, 0, -1, -1);
-            pBruce->mPanelData.OutOfBounds();
-            break;
-        }
-
-        case 0x94:
-        {
-            // Conditional (if pulse count != value)
-            if (pCommandPoint->PulsesReceived == *pCommands++)
-                break;
-            // Check for endif (0x95) or skip commands until 0x95
-            if (*pCommands == 0x95)
-            {
+                    pCommands = (unsigned short *)SkipCommand(pCommands);
+                } while (*pCommands != 0x95);
                 pCommands++;
                 break;
             }
-            do
-            {
-                pCommands = (unsigned short *)SkipCommand(pCommands);
-            } while (*pCommands != 0x95);
-            pCommands++;
-            break;
-        }
 
-        case 0x86:
-        {
-            // Set executed flag + repeat counter
-            if (pCommandPoint->NumPulsesSet == 0)
+            case 0x86:
             {
-                pCommandPoint->NumPulses = *pCommands;
-                pCommandPoint->NumPulsesSet = 1;
+                // Set executed flag + repeat counter
+                if (pCommandPoint->NumPulsesSet == 0)
+                {
+                    pCommandPoint->NumPulses = *pCommands;
+                    pCommandPoint->NumPulsesSet = 1;
+                }
+                pCommands++;
+                break;
             }
-            pCommands++;
-            break;
-        }
 
-        case 0x03:
-        {
-            // End-if / repeat trigger
-            if (pCommandPoint != 0)
+            case 0x03:
             {
-                unsigned short repeat = pCommandPoint->NumPulses;
-                if (repeat != 0)
+                // End-if / repeat trigger
+                if (pCommandPoint != 0)
+                {
+                    unsigned short repeat = pCommandPoint->NumPulses;
+                    if (repeat != 0)
+                    {
+                        Trig_SendPulse((unsigned short *)Trig_GetLinksPointer(Node));
+                        unsigned short rep = pCommandPoint->NumPulses;
+                        if (rep != 0xFFFF) pCommandPoint->NumPulses = rep - 1;
+                    }
+                }
+                else
                 {
                     Trig_SendPulse((unsigned short *)Trig_GetLinksPointer(Node));
-                    unsigned short rep = pCommandPoint->NumPulses;
-                    if (rep != 0xFFFF)
-                        pCommandPoint->NumPulses = rep - 1;
                 }
-            }
-            else
-            {
-                Trig_SendPulse((unsigned short *)Trig_GetLinksPointer(Node));
-            }
-            break;
-        }
-
-        case 0x04:
-        case 0x05:
-        {
-            // Send signal to links with param
-            int links = Trig_GetLinksPointer(Node);
-            SendSuspendOrActivate((unsigned short *)links, Command);
-            break;
-        }
-
-        case 0x0A:
-        {
-            // Send signal to links
-            int links = Trig_GetLinksPointer(Node);
-            SendSignalToLinks((unsigned short *)links);
-            break;
-        }
-
-        case 0x0D:
-        {
-            // Send visible from node
-            SendVisibleFromNode(Node, *pCommands);
-            pCommands++;
-            break;
-        }
-
-        case 0x0B:
-        {
-            // Send kill from node (0)
-            SendKillFromNode(Node, 0);
-            break;
-        }
-
-        case 0x0C:
-        {
-            // Send kill from node (1)
-            SendKillFromNode(Node, 1);
-            break;
-        }
-
-        case 0x77:
-        case 0xA2:
-        skip_string:
-            pCommands = (unsigned short *)SkipString((char *)pCommands);
-            break;
-
-        case 0xAA:
-        {
-            // Set suspend distance
-            SuspendDistance = *pCommands++;
-            break;
-        }
-
-        case 0xA6:
-        {
-            // Set OT pushback
-            M3d_OTPushback = *pCommands++;
-            break;
-        }
-
-        case 0xA9:
-        {
-            // Set OT pushback 2
-            M3d_OTPushback2 = *pCommands++;
-            break;
-        }
-
-        case 0xAD:
-        {
-            // Camera save orient
-            CCamera *pCamera = (CCamera *)CameraList;
-            if (pCamera == 0)
-                break;
-            pCamera->mFocus = pCamera->mTripod;
-            break;
-        }
-
-        case 0xA7:
-        {
-            // Camera set zoom
-            CCamera *pCamera = (CCamera *)CameraList;
-            if (pCamera == 0)
-            {
-                pCommands += 2;
                 break;
             }
-            pCamera->SetZoom(pCommands[0], pCommands[1]);
-            pCommands += 2;
-            break;
-        }
 
-        case 0xA8:
-        {
-            // Camera heading set
-            CCamera *pCamera = (CCamera *)CameraList;
-            if (pCamera != 0)
+            case 0x04:
+            case 0x05:
             {
-                int heading = *(short *)pCommands;
-                pCamera->mPitchDamper = heading;
-            }
-            pCommands++;
-            break;
-        }
-
-        case 0xAC:
-        {
-            // Camera pitch set
-            CCamera *pCamera = (CCamera *)CameraList;
-            if (pCamera != 0)
-            {
-                int pitch = *(short *)pCommands;
-                pCamera->mTripodPosYDamper = pitch;
-            }
-            pCommands++;
-            break;
-        }
-
-        case 0x82:
-        {
-            // Camera set angle
-            CCamera *pCamera = (CCamera *)CameraList;
-            if (pCamera == 0)
-            {
-                pCommands += 2;
+                // Send signal to links with param
+                int links = Trig_GetLinksPointer(Node);
+                SendSuspendOrActivate((unsigned short *)links, Command);
                 break;
             }
-            pCamera->SetCamAngle(*(short *)pCommands, pCommands[1]);
-            pCommands += 2;
-            break;
-        }
 
-        case 0x87:
-        {
-            // Camera set XZ distance
-            CCamera *pCamera = (CCamera *)CameraList;
-            if (pCamera == 0)
+            case 0x0A:
             {
-                pCommands += 2;
+                // Send signal to links
+                int links = Trig_GetLinksPointer(Node);
+                SendSignalToLinks((unsigned short *)links);
                 break;
             }
-            pCamera->SetCamXZDistance(pCommands[0], pCommands[1]);
-            pCommands += 2;
-            break;
-        }
 
-        case 0x8F:
-        {
-            // Camera set Y distance
-            CCamera *pCamera = (CCamera *)CameraList;
-            if (pCamera == 0)
+            case 0x0D:
             {
-                pCommands += 2;
-                break;
-            }
-            pCamera->SetCamYDistance(*(short *)pCommands, pCommands[1]);
-            pCommands += 2;
-            break;
-        }
-
-        case 0x90:
-        {
-            // Camera set X offset
-            CCamera *pCamera = (CCamera *)CameraList;
-            if (pCamera == 0)
-            {
-                pCommands += 2;
-                break;
-            }
-            pCamera->SetCamXOffset(*(short *)pCommands, pCommands[1]);
-            pCommands += 2;
-            break;
-        }
-
-        case 0x91:
-        {
-            // Camera set Y offset
-            CCamera *pCamera = (CCamera *)CameraList;
-            if (pCamera == 0)
-            {
-                pCommands += 2;
-                break;
-            }
-            pCamera->SetCamYOffset(*(short *)pCommands, pCommands[1]);
-            pCommands += 2;
-            break;
-        }
-
-        case 0x92:
-        {
-            // Camera set Z offset
-            CCamera *pCamera = (CCamera *)CameraList;
-            if (pCamera == 0)
-            {
-                pCommands += 2;
-                break;
-            }
-            pCamera->SetCamZOffset(*(short *)pCommands, pCommands[1]);
-            pCommands += 2;
-            break;
-        }
-
-        case 0x99:
-        {
-            // Camera collision ray LR
-            CCamera *pCamera = (CCamera *)CameraList;
-            if (pCamera == 0)
-            {
+                // Send visible from node
+                SendVisibleFromNode(Node, *pCommands);
                 pCommands++;
                 break;
             }
-            pCamera->SetCollisionRayLR(*(short *)pCommands);
-            pCommands++;
-            break;
-        }
 
-        case 0x9A:
-        {
-            // Camera collision ray back
-            CCamera *pCamera = (CCamera *)CameraList;
-            if (pCamera == 0)
+            case 0x0B:
             {
+                // Send kill from node (0)
+                SendKillFromNode(Node, 0);
+                break;
+            }
+
+            case 0x0C:
+            {
+                // Send kill from node (1)
+                SendKillFromNode(Node, 1);
+                break;
+            }
+
+            case 0x77:
+            case 0xA2:
+            skip_string:
+                pCommands = (unsigned short *)SkipString((char *)pCommands);
+                break;
+
+            case 0xAA:
+            {
+                // Set suspend distance
+                SuspendDistance = *pCommands++;
+                break;
+            }
+
+            case 0xA6:
+            {
+                // Set OT pushback
+                M3d_OTPushback = *pCommands++;
+                break;
+            }
+
+            case 0xA9:
+            {
+                // Set OT pushback 2
+                M3d_OTPushback2 = *pCommands++;
+                break;
+            }
+
+            case 0xAD:
+            {
+                // Camera save orient
+                CCamera *pCamera = (CCamera *)CameraList;
+                if (pCamera == 0) break;
+                pCamera->mFocus = pCamera->mTripod;
+                break;
+            }
+
+            case 0xA7:
+            {
+                // Camera set zoom
+                CCamera *pCamera = (CCamera *)CameraList;
+                if (pCamera == 0)
+                {
+                    pCommands += 2;
+                    break;
+                }
+                pCamera->SetZoom(pCommands[0], pCommands[1]);
+                pCommands += 2;
+                break;
+            }
+
+            case 0xA8:
+            {
+                // Camera heading set
+                CCamera *pCamera = (CCamera *)CameraList;
+                if (pCamera != 0)
+                {
+                    int heading = *(short *)pCommands;
+                    pCamera->mPitchDamper = heading;
+                }
                 pCommands++;
                 break;
             }
-            pCamera->SetCollisionRayBack(*(short *)pCommands);
-            pCommands++;
-            break;
-        }
 
-        case 0xA4:
-        {
-            // Camera collision angle LR
-            CCamera *pCamera = (CCamera *)CameraList;
-            if (pCamera == 0)
+            case 0xAC:
             {
+                // Camera pitch set
+                CCamera *pCamera = (CCamera *)CameraList;
+                if (pCamera != 0)
+                {
+                    int pitch = *(short *)pCommands;
+                    pCamera->mTripodPosYDamper = pitch;
+                }
                 pCommands++;
                 break;
             }
-            pCamera->SetCollisionAngLR(*(short *)pCommands);
-            pCommands++;
-            break;
-        }
 
-        case 0xA5:
-        {
-            // Camera collision angle back
-            CCamera *pCamera = (CCamera *)CameraList;
-            if (pCamera == 0)
+            case 0x82:
             {
+                // Camera set angle
+                CCamera *pCamera = (CCamera *)CameraList;
+                if (pCamera == 0)
+                {
+                    pCommands += 2;
+                    break;
+                }
+                pCamera->SetCamAngle(*(short *)pCommands, pCommands[1]);
+                pCommands += 2;
+                break;
+            }
+
+            case 0x87:
+            {
+                // Camera set XZ distance
+                CCamera *pCamera = (CCamera *)CameraList;
+                if (pCamera == 0)
+                {
+                    pCommands += 2;
+                    break;
+                }
+                pCamera->SetCamXZDistance(pCommands[0], pCommands[1]);
+                pCommands += 2;
+                break;
+            }
+
+            case 0x8F:
+            {
+                // Camera set Y distance
+                CCamera *pCamera = (CCamera *)CameraList;
+                if (pCamera == 0)
+                {
+                    pCommands += 2;
+                    break;
+                }
+                pCamera->SetCamYDistance(*(short *)pCommands, pCommands[1]);
+                pCommands += 2;
+                break;
+            }
+
+            case 0x90:
+            {
+                // Camera set X offset
+                CCamera *pCamera = (CCamera *)CameraList;
+                if (pCamera == 0)
+                {
+                    pCommands += 2;
+                    break;
+                }
+                pCamera->SetCamXOffset(*(short *)pCommands, pCommands[1]);
+                pCommands += 2;
+                break;
+            }
+
+            case 0x91:
+            {
+                // Camera set Y offset
+                CCamera *pCamera = (CCamera *)CameraList;
+                if (pCamera == 0)
+                {
+                    pCommands += 2;
+                    break;
+                }
+                pCamera->SetCamYOffset(*(short *)pCommands, pCommands[1]);
+                pCommands += 2;
+                break;
+            }
+
+            case 0x92:
+            {
+                // Camera set Z offset
+                CCamera *pCamera = (CCamera *)CameraList;
+                if (pCamera == 0)
+                {
+                    pCommands += 2;
+                    break;
+                }
+                pCamera->SetCamZOffset(*(short *)pCommands, pCommands[1]);
+                pCommands += 2;
+                break;
+            }
+
+            case 0x99:
+            {
+                // Camera collision ray LR
+                CCamera *pCamera = (CCamera *)CameraList;
+                if (pCamera == 0)
+                {
+                    pCommands++;
+                    break;
+                }
+                pCamera->SetCollisionRayLR(*(short *)pCommands);
                 pCommands++;
                 break;
             }
-            pCamera->SetCollisionAngBack(*(short *)pCommands);
-            pCommands++;
-            break;
-        }
 
-        case 0xA0:
-        {
-            // Camera set look-at flag
-            CCamera *pCamera = (CCamera *)CameraList;
-            if (pCamera != 0)
-                pCamera->mCameraMode = *pCommands;
-            pCommands++;
-            break;
-        }
-
-        case 0xA1:
-        {
-            // Camera set complex mode
-            CCamera *pCamera = (CCamera *)CameraList;
-            if (pCamera == 0)
+            case 0x9A:
             {
+                // Camera collision ray back
+                CCamera *pCamera = (CCamera *)CameraList;
+                if (pCamera == 0)
+                {
+                    pCommands++;
+                    break;
+                }
+                pCamera->SetCollisionRayBack(*(short *)pCommands);
                 pCommands++;
                 break;
             }
-            pCamera->SetComplexMode(*pCommands);
-            pCommands++;
-            break;
-        }
 
-        case 0x93:
-        {
-            // Set current game level
-            CurrentGameLevel = *pCommands++;
-            break;
-        }
+            case 0xA4:
+            {
+                // Camera collision angle LR
+                CCamera *pCamera = (CCamera *)CameraList;
+                if (pCamera == 0)
+                {
+                    pCommands++;
+                    break;
+                }
+                pCamera->SetCollisionAngLR(*(short *)pCommands);
+                pCommands++;
+                break;
+            }
 
-        case 0x88:
-        {
-            // XA allow on
-            Redbook_XAAllow(true);
-            break;
-        }
+            case 0xA5:
+            {
+                // Camera collision angle back
+                CCamera *pCamera = (CCamera *)CameraList;
+                if (pCamera == 0)
+                {
+                    pCommands++;
+                    break;
+                }
+                pCamera->SetCollisionAngBack(*(short *)pCommands);
+                pCommands++;
+                break;
+            }
 
-        case 0x89:
-        {
-            // XA allow off
-            Redbook_XAAllow(false);
-            break;
-        }
+            case 0xA0:
+            {
+                // Camera set look-at flag
+                CCamera *pCamera = (CCamera *)CameraList;
+                if (pCamera != 0) pCamera->mCameraMode = *pCommands;
+                pCommands++;
+                break;
+            }
 
-        case 0x8B:
-        case 0xAE:
-            pCommands += 2;
-            break;
+            case 0xA1:
+            {
+                // Camera set complex mode
+                CCamera *pCamera = (CCamera *)CameraList;
+                if (pCamera == 0)
+                {
+                    pCommands++;
+                    break;
+                }
+                pCamera->SetComplexMode(*pCommands);
+                pCommands++;
+                break;
+            }
 
-        default:
-            break;
+            case 0x93:
+            {
+                // Set current game level
+                CurrentGameLevel = *pCommands++;
+                break;
+            }
+
+            case 0x88:
+            {
+                // XA allow on
+                Redbook_XAAllow(true);
+                break;
+            }
+
+            case 0x89:
+            {
+                // XA allow off
+                Redbook_XAAllow(false);
+                break;
+            }
+
+            case 0x8B:
+            case 0xAE: pCommands += 2; break;
+
+            default: break;
         }
 
     next_cmd:;
@@ -3098,8 +2966,7 @@ void Trig_InitialParseTRGFile(void)
             {
                 char *pNodeName = (char *)Trig_GetPosition(Dummy, i);
                 pNodeName += 6;
-                if (*pNodeName == 'H')
-                    HorseRestarts[NumHorseRestarts++] = pNodeName;
+                if (*pNodeName == 'H') HorseRestarts[NumHorseRestarts++] = pNodeName;
             }
             i++;
         } while (i < NumNodes);
@@ -3133,8 +3000,7 @@ void Trig_InitialParseTRGFile(void)
             do
             {
                 short *pNode = OffsetList[i];
-                if (*pNode == 4)
-                    ExecuteCommandList((unsigned short *)(pNode + 1), i, 1);
+                if (*pNode == 4) ExecuteCommandList((unsigned short *)(pNode + 1), i, 1);
                 i++;
             } while (i < NumNodes);
         }
@@ -3153,8 +3019,7 @@ void Trig_ParseTRGFile(void)
 {
     {
         int i = 0;
-        if (NumNodes <= 0)
-            goto phase2;
+        if (NumNodes <= 0) goto phase2;
 
         do
         {
@@ -3164,103 +3029,82 @@ void Trig_ParseTRGFile(void)
 
             switch (*pNode)
             {
-            case 7:
-                goto case7;
-            case 1:
-                goto case1;
-            case 2:
-            case 9:
-                goto cpDefault;
-            case 5:
-                goto case5;
-            case 6:
-                goto case6;
-            case 12:
-            case 14:
-                goto trickOb;
-            case 13:
-                goto camPt;
-            case 0x1F4:
-                goto light;
-            default:
-                goto next;
+                case 7: goto case7;
+                case 1: goto case1;
+                case 2:
+                case 9: goto cpDefault;
+                case 5: goto case5;
+                case 6: goto case6;
+                case 12:
+                case 14: goto trickOb;
+                case 13: goto camPt;
+                case 0x1F4: goto light;
+                default: goto next;
             }
 
-    case7:
-        {
-            short linkCount = pNode[3];
-            int flagOffset = (linkCount << 1) + 8;
-            GetFlag(1, (unsigned char *)pNode + flagOffset);
-        }
-        goto next;
-    case1:
-        {
-            short linkCount = pNode[3];
-            int flagOffset = (linkCount << 1) + 8;
-            if (GetFlag(1, (unsigned char *)pNode + flagOffset) == 0)
-                goto next;
-        }
-        goto createObject;
-    case5:
-        if (*Trig_GetPosition(Pos, i) != 1)
-            goto next;
-        // fall through to shared create
-    createObject:
-        Trig_CreateObject(i);
-        goto next;
-    case6:
-        {
-            pNode++;
-            pNode += *pNode + 1;
-            unsigned short nodeIndex = i;
-            if ((int)pNode & 2)
-                pNode++;
-            checksum = *(unsigned int *)pNode;
-            CreateCommandPoint(checksum, nodeIndex,
-                               (unsigned short *)(pNode + 2));
-        }
-        goto next;
-    cpDefault: // case 2 and 9
-        {
-            pNode++;
-            pNode += *pNode + 1;
-            if ((int)pNode & 2)
-                pNode++;
-            checksum = *(unsigned int *)pNode;
-            CreateCommandPoint(checksum, i & 0xFFFF, CrateCommands);
-        }
-        goto next;
-    light: // case 0x1F4
-        {
-            STriggerLightBytes *pStuff =
-                (STriggerLightBytes *)Trig_GetPosition(Pos, i);
-            UseCacheForBits = 0;
-            CLight *pLight = static_cast<CLight *>(
-                CBit::operator new(TRIG_LIGHT_STORAGE_SIZE));
-            if (pLight != 0)
+        case7:
             {
-                ::new (pLight) CLight(
-                    Pos, i,
-                    pStuff->ClipDist, pStuff->InnerRadius,
-                    pStuff->FringeRadius, pStuff->Amp,
-                    pStuff->r0.Value, pStuff->g0.Value,
-                    pStuff->b0.Value, pStuff->r1.Value,
-                    pStuff->g1.Value, pStuff->b1.Value);
+                short linkCount = pNode[3];
+                int flagOffset = (linkCount << 1) + 8;
+                GetFlag(1, (unsigned char *)pNode + flagOffset);
             }
-            UseCacheForBits = 1;
-        }
-        goto next;
-    trickOb: // case 0xc and 0xe
-        {
-            CTrickOb *pTrickOb =
-                (CTrickOb *)CClass::operator new(sizeof(CTrickOb));
-            if (pTrickOb != 0)
-                ::new (pTrickOb) CTrickOb(i & 0xFFFF, 0);
-        }
-        goto next;
-    camPt: // case 0xd
-        CamPt_New(i);
-    next:
+            goto next;
+        case1:
+            {
+                short linkCount = pNode[3];
+                int flagOffset = (linkCount << 1) + 8;
+                if (GetFlag(1, (unsigned char *)pNode + flagOffset) == 0) goto next;
+            }
+            goto createObject;
+        case5:
+            if (*Trig_GetPosition(Pos, i) != 1) goto next;
+            // fall through to shared create
+        createObject:
+            Trig_CreateObject(i);
+            goto next;
+        case6:
+            {
+                pNode++;
+                pNode += *pNode + 1;
+                unsigned short nodeIndex = i;
+                if ((int)pNode & 2) pNode++;
+                checksum = *(unsigned int *)pNode;
+                CreateCommandPoint(checksum, nodeIndex, (unsigned short *)(pNode + 2));
+            }
+            goto next;
+        cpDefault: // case 2 and 9
+            {
+                pNode++;
+                pNode += *pNode + 1;
+                if ((int)pNode & 2) pNode++;
+                checksum = *(unsigned int *)pNode;
+                CreateCommandPoint(checksum, i & 0xFFFF, CrateCommands);
+            }
+            goto next;
+        light: // case 0x1F4
+            {
+                STriggerLightBytes *pStuff = (STriggerLightBytes *)Trig_GetPosition(Pos, i);
+                UseCacheForBits = 0;
+                CLight *pLight = static_cast<CLight *>(CBit::operator new(TRIG_LIGHT_STORAGE_SIZE));
+                if (pLight != 0)
+                {
+                    ::new (pLight)
+                        CLight(Pos, i, pStuff->ClipDist, pStuff->InnerRadius, pStuff->FringeRadius,
+                               pStuff->Amp, pStuff->r0.Value, pStuff->g0.Value, pStuff->b0.Value,
+                               pStuff->r1.Value, pStuff->g1.Value, pStuff->b1.Value);
+                }
+                UseCacheForBits = 1;
+            }
+            goto next;
+        trickOb: // case 0xc and 0xe
+            {
+                CTrickOb *pTrickOb = (CTrickOb *)CClass::operator new(sizeof(CTrickOb));
+                if (pTrickOb != 0) ::new (pTrickOb) CTrickOb(i & 0xFFFF, 0);
+            }
+            goto next;
+        camPt: // case 0xd
+            CamPt_New(i);
+        next:
             i++;
         } while (i < NumNodes);
     }
@@ -3270,8 +3114,7 @@ phase2:
     Trig_ClearTrigMenu();
     int i = 0;
     int numN = NumNodes;
-    if (numN <= 0)
-        return;
+    if (numN <= 0) return;
     do
     {
         short *pNode = OffsetList[i];
@@ -3302,23 +3145,20 @@ unsigned short *Trig_GetLinksPointer(int node)
 
     switch (*pNode)
     {
-    case 1:
-        return pNode + 3;
-    case 5:
-        return pNode + 2;
-    case 2:
-    case 3:
-    case 6:
-    case 8:
-    case 9:
-    case 10:
-    case 11:
-    case 12:
-    case 13:
-    case 14:
-    case 1000:
-    case 1001:
-        return pNode + 1;
+        case 1: return pNode + 3;
+        case 5: return pNode + 2;
+        case 2:
+        case 3:
+        case 6:
+        case 8:
+        case 9:
+        case 10:
+        case 11:
+        case 12:
+        case 13:
+        case 14:
+        case 1000:
+        case 1001: return pNode + 1;
     }
 }
 
@@ -3353,52 +3193,50 @@ unsigned short *Trig_GetPosition(CVector &pos, int node)
 
     switch (*pNode)
     {
-    case 1:
-    case 7:
-    {
-        pNode += pNode[3] + 4;
-        pFlags = (unsigned char *)pNode;
-        // FIXME(match): register pin ($a0 for flag) — with `t` below keeps pPos/flag in $a0 so `pos` is copied to $a3 and the join tail is shared; score 39 without; tried: declaration orders (mask/pPos/pLong), pre-initialised pPos, while-loop form.
-        register uint flag asm("$4") = *pFlags;
-        mask = 0xFF;
-        if (flag != mask)
+        case 1:
+        case 7:
         {
-            do
+            pNode += pNode[3] + 4;
+            pFlags = (unsigned char *)pNode;
+            // FIXME(match): register pin ($a0 for flag) — with `t` below keeps pPos/flag in $a0 so `pos` is copied to $a3 and the join tail is shared; score 39 without; tried: declaration orders (mask/pPos/pLong), pre-initialised pPos, while-loop form.
+            register uint flag asm("$4") = *pFlags;
+            mask = 0xFF;
+            if (flag != mask)
             {
-                pFlags++;
-            } while (*pFlags != mask);
+                do
+                {
+                    pFlags++;
+                } while (*pFlags != mask);
+            }
+            pPos = (ushort *)(pFlags + 4);
+            break;
         }
-        pPos = (ushort *)(pFlags + 4);
-        break;
-    }
-    case 3:
-    case 8:
-    case 10:
-    case 11:
-    case 13:
-    case 1000:
-    case 1001:
-        mask = 0xFFFFFFFC;
-        pPos = (ushort *)((uint)pNode[1] * 2 + (int)pNode + 7);
-        pLong = (int *)((uint)pPos & mask);
-        goto store;
-    case 5:
-        mask = 0xFFFFFFFC;
-        pPos = (ushort *)((uint)pNode[2] * 2 + (int)pNode + 9);
-        pLong = (int *)((uint)pPos & mask);
-        goto store;
-    case 500:
-    case 501:
-    {
-        // FIXME(match): register pin + asm barrier — same $a0 pPos/$a3 pos split as `flag` above; tried: see `flag`.
-        register ushort *t asm("$4") =
-            (ushort *)((char *)pNode + 5);
-        asm("" : "+r"(t));
-        pPos = t;
-        break;
-    }
-    default:
-        goto done;
+        case 3:
+        case 8:
+        case 10:
+        case 11:
+        case 13:
+        case 1000:
+        case 1001:
+            mask = 0xFFFFFFFC;
+            pPos = (ushort *)((uint)pNode[1] * 2 + (int)pNode + 7);
+            pLong = (int *)((uint)pPos & mask);
+            goto store;
+        case 5:
+            mask = 0xFFFFFFFC;
+            pPos = (ushort *)((uint)pNode[2] * 2 + (int)pNode + 9);
+            pLong = (int *)((uint)pPos & mask);
+            goto store;
+        case 500:
+        case 501:
+        {
+            // FIXME(match): register pin + asm barrier — same $a0 pPos/$a3 pos split as `flag` above; tried: see `flag`.
+            register ushort *t asm("$4") = (ushort *)((char *)pNode + 5);
+            asm("" : "+r"(t));
+            pPos = t;
+            break;
+        }
+        default: goto done;
     }
     mask = 0xFFFFFFFC;
     pLong = (int *)((uint)pPos & mask);

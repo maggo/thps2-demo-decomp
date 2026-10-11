@@ -31,17 +31,15 @@ inline void *operator new(unsigned int, void *address)
  */
 inline FontCharacter *FontTools_GetCharacter(FontCharacter *table, int index)
 {
-    return reinterpret_cast<FontCharacter *>(
-        index * static_cast<int>(sizeof(FontCharacter)) +
-        reinterpret_cast<int>(table));
+    return reinterpret_cast<FontCharacter *>(index * static_cast<int>(sizeof(FontCharacter)) +
+                                             reinterpret_cast<int>(table));
 }
 
 /** Preserve FONTTOOLS' scaled-index-first add for a font-table slot. */
 inline Font **FontTools_GetFontSlot(Font **table, int index)
 {
-    return reinterpret_cast<Font **>(
-        index * static_cast<int>(sizeof(Font *)) +
-        reinterpret_cast<int>(table));
+    return reinterpret_cast<Font **>(index * static_cast<int>(sizeof(Font *)) +
+                                     reinterpret_cast<int>(table));
 }
 
 // These packed-stream accesses must remain unaligned native loads.  Function
@@ -66,8 +64,7 @@ inline u16 FontTools_LowHalf(const int &word)
 #include "FILEIO.h"
 #include "PAL.h"
 
-typedef char FontTools_TextEffect_size_must_be_8[
-    (sizeof(TextEffect) == 8) ? 1 : -1];
+typedef char FontTools_TextEffect_size_must_be_8[(sizeof(TextEffect) == 8) ? 1 : -1];
 
 #undef FONTTOOLS_OWNER_DECLARATIONS
 #include "MEM.h"
@@ -79,8 +76,8 @@ typedef char FontTools_TextEffect_size_must_be_8[
  * The original object places both zero-initialized tables in one contiguous
  * 160-byte `.data` contribution rather than common/BSS storage.
  */
-char FontManager::FontName[8][16] __attribute__((section(".data"))) = {{0}};
-Font *FontManager::FontTab[8] __attribute__((section(".data"))) = {0};
+char FontManager::FontName[8][16] __attribute__((section(".data"))) = { { 0 } };
+Font *FontManager::FontTab[8] __attribute__((section(".data"))) = { 0 };
 int FontManager::dumb = 0;
 
 // === Function implementations (address order) ===
@@ -96,10 +93,8 @@ int FontManager::dumb = 0;
  */
 // Two owner-local strings sit between the manager scalar and the vtables in
 // the target's small-data contribution.  No surviving code references them.
-static char FontTools_DefaultFontName[12] =
-    "mainf.fnt";
-static char FontTools_Greeting[12] =
-    "Hello world";
+static char FontTools_DefaultFontName[12] = "mainf.fnt";
+static char FontTools_Greeting[12] = "Hello world";
 
 Font::Font()
 {
@@ -146,20 +141,17 @@ Font::Font(unsigned char *buf)
     CurrentTextEffect = 0;
 
     NumChars = FontTools_ReadInt(buf);
-    CharTab = static_cast<FontCharacter *>(
-        Mem_New((NumChars + 1) * sizeof(FontCharacter), 1, 1));
+    CharTab = static_cast<FontCharacter *>(Mem_New((NumChars + 1) * sizeof(FontCharacter), 1, 1));
 
     clutx = Pal16X;
     cluty = Pal16Y + GetFree16Slot();
-    colors = static_cast<unsigned short *>(
-        Mem_New(16 * sizeof(unsigned short), 1, 1));
+    colors = static_cast<unsigned short *>(Mem_New(16 * sizeof(unsigned short), 1, 1));
     {
         int i = 0;
         unsigned short *colorEntry = colors;
         do
         {
-            *colorEntry = FontTools_ReadU16(
-                buf + NumChars * sizeof(FontCharacter) + 4 + i * 2);
+            *colorEntry = FontTools_ReadU16(buf + NumChars * sizeof(FontCharacter) + 4 + i * 2);
             i++;
             colorEntry++;
         } while (i < 16);
@@ -194,11 +186,11 @@ Font::Font(unsigned char *buf)
 
                 int image_w = FontTools_ReadInt(tb);
                 FontCharacter *imageSlot = FontTools_GetCharacter(CharTab, i);
-                SlicedImage2 *image = static_cast<SlicedImage2 *>(
-                    CClass::operator new(sizeof(SlicedImage2)));
+                SlicedImage2 *image =
+                    static_cast<SlicedImage2 *>(CClass::operator new(sizeof(SlicedImage2)));
                 if (image != 0)
-                    image = ::new (image) SlicedImage2(
-                        db, image_w * 4, CharTab[i].H, 0, 0, 4, Clut);
+                    image =
+                        ::new (image) SlicedImage2(db, image_w * 4, CharTab[i].H, 0, 0, 4, Clut);
                 imageSlot->Image = image;
 
                 CharTab[i].Image->pack();
@@ -245,11 +237,9 @@ Font::Font(unsigned char *buf)
     }
 
     FontCharacter *imageSlot = FontTools_GetCharacter(CharTab, NumChars);
-    SlicedImage2 *image = static_cast<SlicedImage2 *>(
-        CClass::operator new(sizeof(SlicedImage2)));
+    SlicedImage2 *image = static_cast<SlicedImage2 *>(CClass::operator new(sizeof(SlicedImage2)));
     if (image != 0)
-        image = ::new (image) SlicedImage2(
-            crap, image_w * 4, CharTab[NumChars].H, 0, 0, 4, Clut);
+        image = ::new (image) SlicedImage2(crap, image_w * 4, CharTab[NumChars].H, 0, 0, 4, Clut);
     imageSlot->Image = image;
     Mem_Delete(crap);
     CharTab[NumChars].Image->pack();
@@ -260,7 +250,9 @@ Font::Font(unsigned char *buf)
 }
 
 /** Release the Font object through the inherited CClass arena. */
-Font::~Font() {}
+Font::~Font()
+{
+}
 
 /**
  *
@@ -289,17 +281,10 @@ void Font::draw(int x, int y, char *str, int drawFirst)
     {
         switch (JustX)
         {
-        case 0:
-            xstart = x;
-            break;
-        case 1:
-            xstart = x - (strWidth >> 1);
-            break;
-        case 2:
-            xstart = x - strWidth;
-            break;
-        default:
-            break;
+            case 0: xstart = x; break;
+            case 1: xstart = x - (strWidth >> 1); break;
+            case 2: xstart = x - strWidth; break;
+            default: break;
         }
     }
 
@@ -307,28 +292,18 @@ void Font::draw(int x, int y, char *str, int drawFirst)
     {
         switch (JustY)
         {
-        case 0:
-            ystart = y + heightAboveBaseline(str);
-            break;
-        case 1:
-            ystart = y - (height(str) >> 1) + heightAboveBaseline(str);
-            break;
-        case 3:
-            ystart = y;
-            break;
-        case 2:
-            ystart = y - height(str) + heightAboveBaseline(str);
-            break;
-        default:
-            break;
+            case 0: ystart = y + heightAboveBaseline(str); break;
+            case 1: ystart = y - (height(str) >> 1) + heightAboveBaseline(str); break;
+            case 3: ystart = y; break;
+            case 2: ystart = y - height(str) + heightAboveBaseline(str); break;
+            default: break;
         }
     }
 
     int xt = xstart << 12;
     int yt = ystart << 12;
     char *ltr = str;
-    if (*ltr == 0)
-        return;
+    if (*ltr == 0) return;
 
     do
     {
@@ -393,8 +368,7 @@ void Font::draw(int x, int y, char *str, int drawFirst)
 
             if (Aliased != 0)
             {
-                CharTab[i].Image->Transparent =
-                    reinterpret_cast<void *>(1);
+                CharTab[i].Image->Transparent = reinterpret_cast<void *>(1);
                 CharTab[i].Image->TransType = 2;
                 SlicedImage2 *sprite = CharTab[i].Image;
                 sprite->draw(ScreenX >> 12, ScreenY >> 12, drawFirst);
@@ -402,8 +376,7 @@ void Font::draw(int x, int y, char *str, int drawFirst)
 
             if (Shadow != 0)
             {
-                CharTab[i].Image->Transparent =
-                    reinterpret_cast<void *>(1);
+                CharTab[i].Image->Transparent = reinterpret_cast<void *>(1);
                 CharTab[i].Image->TransType = 2;
                 CharTab[i].Image->R = 0xFF;
                 CharTab[i].Image->G = 0xFF;
@@ -444,21 +417,19 @@ int Font::width(char *str)
         do
         {
             int i = getCharIndex(*str);
-            if (i != -1)
-                goto found;
+            if (i != -1) goto found;
             {
                 int esc = isEscapeChar(*str);
-                if (esc != 0)
-                    goto next;
+                if (esc != 0) goto next;
                 w += CharTab[0].W;
                 goto next;
             }
         found:
-        {
-            // Scaled-index-first sum (not &charTable[idx]) keeps the
-            // target's `addu` operand order.
-            w += SpaceX + FontTools_GetCharacter(CharTab, i)->W;
-        }
+            {
+                // Scaled-index-first sum (not &charTable[idx]) keeps the
+                // target's `addu` operand order.
+                w += SpaceX + FontTools_GetCharacter(CharTab, i)->W;
+            }
         next:
             str++;
         } while (*str != 0);
@@ -563,102 +534,79 @@ int Font::getCharIndex(char asc)
     int myCharMap = CharMap;
     if (myCharMap == 2)
     {
-        if (static_cast<u8>(asc - 'a') < 26)
-            return asc - 'a' + 48;
+        if (static_cast<u8>(asc - 'a') < 26) return asc - 'a' + 48;
         myCharMap = 0;
     }
-    if (myCharMap != 0)
-        goto mode1;
+    if (myCharMap != 0) goto mode1;
     // Mode 0: standard character mapping
     {
-        if (static_cast<u8>(asc - 'A') < 26)
-            return asc - 'A';
-        if (static_cast<u8>(asc - 'a') < 26)
-            return asc - 'a';
-        if ((unsigned)(asc - '0') < 10)
-            return asc - '0' + 26;
-        if (asc == ' ')
-            return -1;
+        if (static_cast<u8>(asc - 'A') < 26) return asc - 'A';
+        if (static_cast<u8>(asc - 'a') < 26) return asc - 'a';
+        if ((unsigned)(asc - '0') < 10) return asc - '0' + 26;
+        if (asc == ' ') return -1;
         if (asc == '?')
         {
-            if (NumChars >= 37)
-                return 36;
+            if (NumChars >= 37) return 36;
         }
         if (asc == '!')
         {
-            if (NumChars >= 38)
-                return 37;
+            if (NumChars >= 38) return 37;
         }
         if (asc == ':')
         {
-            if (NumChars >= 39)
-                return 38;
+            if (NumChars >= 39) return 38;
         }
         if (asc == '.')
         {
-            if (NumChars >= 40)
-                return 39;
+            if (NumChars >= 40) return 39;
         }
         if (asc == ',')
         {
-            if (NumChars >= 41)
-                return 40;
+            if (NumChars >= 41) return 40;
         }
         if (asc == '-')
         {
-            if (NumChars >= 42)
-                return 41;
+            if (NumChars >= 42) return 41;
         }
         if (asc == '%')
         {
-            if (NumChars >= 43)
-                return 42;
+            if (NumChars >= 43) return 42;
         }
         if (asc == '+')
         {
-            if (NumChars >= 44)
-                return 43;
+            if (NumChars >= 44) return 43;
         }
         if (asc == '\'')
         {
-            if (NumChars >= 45)
-                return 44;
+            if (NumChars >= 45) return 44;
         }
         if (asc == '#')
         {
-            if (NumChars >= 46)
-                return 45;
+            if (NumChars >= 46) return 45;
         }
         if (asc == '/')
         {
-            if (NumChars >= 47)
-                return 46;
+            if (NumChars >= 47) return 46;
         }
         if (asc == '$')
         {
-            if (NumChars >= 48)
-                return 47;
+            if (NumChars >= 48) return 47;
         }
         goto escape_check;
     }
 mode1:
-    if (myCharMap != 1)
-        goto escape_check;
+    if (myCharMap != 1) goto escape_check;
     {
-        if (static_cast<u8>(asc - '0') < 10)
-            return asc - '0';
-        if (asc == ':')
-            return 10;
-        if (asc == ' ')
-            return -1;
+        if (static_cast<u8>(asc - '0') < 10) return asc - '0';
+        if (asc == ':') return 10;
+        if (asc == ' ') return -1;
     }
 escape_check:
-{
-    int esc = isEscapeChar(asc);
-    if (esc != 0)
-        return -1;
-    return NumChars;
-}
+    {
+        int esc = isEscapeChar(asc);
+        if (esc != 0) return -1;
+        return NumChars;
+    }
 }
 
 /**
@@ -674,28 +622,17 @@ escape_check:
  */
 int Font::isEscapeChar(char asc)
 {
-    if (asc == ']')
-        return 0xFE;
-    if (asc == '[')
-        return 0xFD;
-    if (asc == '}')
-        return 0xFE;
-    if (asc == '{')
-        return 0xFC;
-    if (asc == '>')
-        return 0xFE;
-    if (asc == '<')
-        return 0xFB;
-    if (asc == '`')
-        return 0xFE;
-    if (asc == '|')
-        return 0xF9;
-    if (asc == '&')
-        return 0xFE;
-    if (asc == '~')
-        return 0xF8;
-    if (asc == '^')
-        return 0xFA;
+    if (asc == ']') return 0xFE;
+    if (asc == '[') return 0xFD;
+    if (asc == '}') return 0xFE;
+    if (asc == '{') return 0xFC;
+    if (asc == '>') return 0xFE;
+    if (asc == '<') return 0xFB;
+    if (asc == '`') return 0xFE;
+    if (asc == '|') return 0xF9;
+    if (asc == '&') return 0xFE;
+    if (asc == '~') return 0xF8;
+    if (asc == '^') return 0xFA;
     return 0;
 }
 
@@ -714,8 +651,7 @@ int Font::isEscapeChar(char asc)
 void Font::handleEscapeChar(char asc)
 {
     int escCode = isEscapeChar(static_cast<u8>(asc));
-    if (escCode == 0xFA)
-        goto done;
+    if (escCode == 0xFA) goto done;
     if (escCode == 0xFE)
     {
         int r = OldR;
@@ -778,8 +714,7 @@ void Font::handleEscapeChar(char asc)
         OldB = oldB;
         goto done;
     }
-    if (escCode != 0xF8)
-        goto done;
+    if (escCode != 0xF8) goto done;
     {
         int oldR = FontTools_LowByte(R);
         int oldG = FontTools_LowByte(G);
@@ -808,8 +743,7 @@ done:;
 int Font::fixedWidth(char *pString)
 {
     int width = 0;
-    if (*pString == 0)
-        goto done;
+    if (*pString == 0) goto done;
     do
     {
         int w = fixedCharWidth(*pString);
@@ -841,14 +775,10 @@ int Font::fixedCharWidth(char asc)
     {
         return 0;
     }
-    if (CharMap == 0)
-        goto defwidth;
-    if (CharMap == 2)
-        goto defwidth;
-    if (CharMap != 1)
-        goto done;
-    if (character != ':')
-        goto defwidth;
+    if (CharMap == 0) goto defwidth;
+    if (CharMap == 2) goto defwidth;
+    if (CharMap != 1) goto done;
+    if (character != ':') goto defwidth;
     charWidth = (CharTab[10].W + SpaceX) * Scale;
     goto done;
 defwidth:
@@ -905,8 +835,7 @@ void Font::unload()
         Free16Slot(FontTools_LowHalf(Clut));
     }
     int i = 0;
-    if (NumChars + 1 <= 0)
-        goto done;
+    if (NumChars + 1 <= 0) goto done;
     do
     {
         if (CharTab[i].Image != 0)
@@ -959,21 +888,19 @@ Font *FontManager::LoadFont(unsigned char *pData, char *fontname)
     Font **candidate = fontTab;
     do
     {
-        if (*candidate == 0)
-            goto found;
+        if (*candidate == 0) goto found;
         slot++;
         candidate++;
     } while (slot < 8);
 found:
-{
-    Font **fontSlot = FontTools_GetFontSlot(fontTab, slot);
-    Font *font = static_cast<Font *>(CClass::operator new(sizeof(Font)));
-    if (font != 0)
-        font = ::new (font) Font(pData);
-    *fontSlot = font;
-    strcpy(FontManager::FontName[slot], fontname);
-    return *fontSlot;
-}
+    {
+        Font **fontSlot = FontTools_GetFontSlot(fontTab, slot);
+        Font *font = static_cast<Font *>(CClass::operator new(sizeof(Font)));
+        if (font != 0) font = ::new (font) Font(pData);
+        *fontSlot = font;
+        strcpy(FontManager::FontName[slot], fontname);
+        return *fontSlot;
+    }
 }
 
 /**
@@ -993,8 +920,7 @@ Font *FontManager::GetFont(char *fontname)
     char *registeredName = &FontManager::FontName[0][0];
     do
     {
-        if (strcmp(registeredName, fontname) == 0)
-            goto found;
+        if (strcmp(registeredName, fontname) == 0) goto found;
         slot++;
         registeredName += sizeof(FontManager::FontName[0]);
     } while (slot < 8);
@@ -1017,21 +943,19 @@ void FontManager::UnloadFont(char *fontname)
     char *registeredName = &FontManager::FontName[0][0];
     do
     {
-        if (strcmp(registeredName, fontname) == 0)
-            goto found;
+        if (strcmp(registeredName, fontname) == 0) goto found;
         slot++;
-        if (slot >= 8)
-            goto found;
+        if (slot >= 8) goto found;
         registeredName += sizeof(FontManager::FontName[0]);
     } while (1);
 found:
-{
-    Font **fontSlot = FontTools_GetFontSlot(FontManager::FontTab, slot);
-    (*fontSlot)->unload();
-    if (*fontSlot != 0)
     {
-        delete *fontSlot;
+        Font **fontSlot = FontTools_GetFontSlot(FontManager::FontTab, slot);
+        (*fontSlot)->unload();
+        if (*fontSlot != 0)
+        {
+            delete *fontSlot;
+        }
+        *fontSlot = 0;
     }
-    *fontSlot = 0;
-}
 }

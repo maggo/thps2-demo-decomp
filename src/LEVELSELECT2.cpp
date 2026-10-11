@@ -83,7 +83,8 @@ struct VideoScreenElement;
 #include "SCAMERA.h"
 
 /** Ordering-table fields consumed from the active double buffer. */
-struct LevelSelectDoubleBuffer {
+struct LevelSelectDoubleBuffer
+{
     unsigned char pad_00[0x84];
     unsigned int *panelOrderingTable;
     unsigned int *globeOrderingTable;
@@ -108,14 +109,11 @@ struct LevelSelectDoubleBuffer {
 #include "M3DMATHS.h"
 #undef M3DMATHS_TYPED_API
 #include "IMAGE.h"
-typedef char levelselect_item_size_must_be_36[
-    (sizeof(Item) == 36) ? 1 : -1];
-typedef char levelselect_button_size_must_be_16[
-    (sizeof(SButton) == 16) ? 1 : -1];
-typedef char levelselect_control_size_must_be_364[
-    (sizeof(SControl) == 364) ? 1 : -1];
-typedef char levelselect_double_buffer_size_must_be_148[
-    (sizeof(LevelSelectDoubleBuffer) == 148) ? 1 : -1];
+typedef char levelselect_item_size_must_be_36[(sizeof(Item) == 36) ? 1 : -1];
+typedef char levelselect_button_size_must_be_16[(sizeof(SButton) == 16) ? 1 : -1];
+typedef char levelselect_control_size_must_be_364[(sizeof(SControl) == 364) ? 1 : -1];
+typedef char
+    levelselect_double_buffer_size_must_be_148[(sizeof(LevelSelectDoubleBuffer) == 148) ? 1 : -1];
 #include "SFX.h"
 #include "M3DINIT.h"
 #include "MAIN.h"
@@ -127,15 +125,13 @@ typedef char levelselect_double_buffer_size_must_be_148[
 
 // === Forward type declarations ===
 
-typedef char levelselect_image_size_must_be_28[
-    (sizeof(Image) == 28) ? 1 : -1];
-typedef char levelselect_sliced_image_size_must_be_60[
-    (sizeof(SlicedImage2) == 60) ? 1 : -1];
-typedef char levelselect_sprite_size_must_be_60[
-    (sizeof(Sprite2) == 60) ? 1 : -1];
+typedef char levelselect_image_size_must_be_28[(sizeof(Image) == 28) ? 1 : -1];
+typedef char levelselect_sliced_image_size_must_be_60[(sizeof(SlicedImage2) == 60) ? 1 : -1];
+typedef char levelselect_sprite_size_must_be_60[(sizeof(Sprite2) == 60) ? 1 : -1];
 
 /** Little-endian views used by the PSX texture and VRAM interfaces. */
-union LevelSelectPackedInt {
+union LevelSelectPackedInt
+{
     int value;
     u16 lowHalf;
     s16 lowSignedHalf;
@@ -145,12 +141,12 @@ union LevelSelectPackedInt {
 #include "PROMPTSCREENELEMENT.h"
 
 /** Career-medal row (owned by PLAYERSELECT) used by the level-select screen. */
-struct CareerScreenElement : ScreenElementList {
+struct CareerScreenElement : ScreenElementList
+{
     ScreenElement *mpMedalIcons[3];
     int mDelay[9];
 
-    CareerScreenElement(Font *font, int homeX, int homeY, int screenX,
-                        int screenY);
+    CareerScreenElement(Font *font, int homeX, int homeY, int screenX, int screenY);
     virtual ~CareerScreenElement();
     void update();
     void draw(int x, int y);
@@ -164,7 +160,8 @@ struct CareerScreenElement : ScreenElementList {
  */
 
 /** Complete level-selection screen and its child elements. */
-struct LevelSelectScreen : ScreenElementList {
+struct LevelSelectScreen : ScreenElementList
+{
     struct LevelNameScreenElement *mpLevelName;
     struct GlobeScreenElement *mpGlobe;
     struct VideoScreenElement *mpVideo;
@@ -182,27 +179,30 @@ struct LevelSelectScreen : ScreenElementList {
 };
 
 /** One- or two-player skater portrait/name row. */
-struct SkaterNameScreenElement : ScreenElementList {
+struct SkaterNameScreenElement : ScreenElementList
+{
     SpriteScreenElement *mpFace;
     TextScreenElement *mpName;
     Font mFont;
 
-    SkaterNameScreenElement(bool secondPlayer,
-                            int homeX, int homeY, int screenX, int screenY);
+    SkaterNameScreenElement(bool secondPlayer, int homeX, int homeY, int screenX, int screenY);
     virtual ~SkaterNameScreenElement();
 };
 
 /** Globe preview and its crosshair overlay. */
-struct GlobeScreenElement : ScreenElement {
+struct GlobeScreenElement : ScreenElement
+{
     struct Item mGlobeItem;
-    union {
+    union
+    {
         int mGlobeRegion;
         unsigned char mGlobeRegionByte;
     };
     Sprite2 *mpCrosshair;
     int mCrossY;
     int mTargetCrossY;
-    union {
+    union
+    {
         int mGlobeRot;
         u16 mGlobeRotLowHalf;
     };
@@ -216,7 +216,8 @@ struct GlobeScreenElement : ScreenElement {
 };
 
 /** Composite park/city label with its two local fonts. */
-struct LevelNameScreenElement : ScreenElementList {
+struct LevelNameScreenElement : ScreenElementList
+{
     TextScreenElement *mpPark;
     TextScreenElement *mpCity;
     Font mFont1;
@@ -234,14 +235,16 @@ struct LevelNameScreenElement : ScreenElementList {
 };
 
 /** Animated text row used by the level and city labels. */
-struct NameScreenElement : TextScreenElement {
+struct NameScreenElement : TextScreenElement
+{
     NameScreenElement(char *, Font *, int, int, int, int);
     virtual ~NameScreenElement();
     void update();
 };
 
 /** Video preview, mask sprites, playback state, and textured quad. */
-struct VideoScreenElement : ScreenElementList {
+struct VideoScreenElement : ScreenElementList
+{
     int mLevel;
     int mNewLevel;
     int mState;
@@ -263,7 +266,8 @@ struct VideoScreenElement : ScreenElementList {
 };
 
 /** Goal selector and its eight streamed goal-image sprites. */
-struct GoalScreenElement : ScreenElement {
+struct GoalScreenElement : ScreenElement
+{
     int mW;
     int mH;
     int mState;
@@ -286,32 +290,30 @@ struct GoalScreenElement : ScreenElement {
     void update();
 };
 
-typedef char levelselect_goal_element_size_must_be_204[
-    (sizeof(GoalScreenElement) == 204) ? 1 : -1];
-typedef char levelselect_video_element_size_must_be_156[
-    (sizeof(VideoScreenElement) == 156) ? 1 : -1];
-typedef char levelselect_packed_int_size_must_be_4[
-    (sizeof(LevelSelectPackedInt) == 4) ? 1 : -1];
-typedef char levelselect_name_element_size_must_be_44[
-    (sizeof(NameScreenElement) == 44) ? 1 : -1];
-typedef char levelselect_prompt_element_size_must_be_104[
-    (sizeof(PromptScreenElement) == 104) ? 1 : -1];
-typedef char levelselect_career_element_size_must_be_152[
-    (sizeof(CareerScreenElement) == 152) ? 1 : -1];
-typedef char levelselect_level_name_element_size_must_be_292[
-    (sizeof(LevelNameScreenElement) == 292) ? 1 : -1];
-typedef char levelselect_globe_element_size_must_be_96[
-    (sizeof(GlobeScreenElement) == 96) ? 1 : -1];
-typedef char levelselect_screen_size_must_be_284[
-    (sizeof(LevelSelectScreen) == 284) ? 1 : -1];
-typedef char levelselect_skater_name_size_must_be_192[
-    (sizeof(SkaterNameScreenElement) == 192) ? 1 : -1];
+typedef char levelselect_goal_element_size_must_be_204[(sizeof(GoalScreenElement) == 204) ? 1 : -1];
+typedef char
+    levelselect_video_element_size_must_be_156[(sizeof(VideoScreenElement) == 156) ? 1 : -1];
+typedef char levelselect_packed_int_size_must_be_4[(sizeof(LevelSelectPackedInt) == 4) ? 1 : -1];
+typedef char levelselect_name_element_size_must_be_44[(sizeof(NameScreenElement) == 44) ? 1 : -1];
+typedef char
+    levelselect_prompt_element_size_must_be_104[(sizeof(PromptScreenElement) == 104) ? 1 : -1];
+typedef char
+    levelselect_career_element_size_must_be_152[(sizeof(CareerScreenElement) == 152) ? 1 : -1];
+typedef char levelselect_level_name_element_size_must_be_292[(sizeof(LevelNameScreenElement) == 292)
+                                                                 ? 1
+                                                                 : -1];
+typedef char levelselect_globe_element_size_must_be_96[(sizeof(GlobeScreenElement) == 96) ? 1 : -1];
+typedef char levelselect_screen_size_must_be_284[(sizeof(LevelSelectScreen) == 284) ? 1 : -1];
+typedef char
+    levelselect_skater_name_size_must_be_192[(sizeof(SkaterNameScreenElement) == 192) ? 1 : -1];
 
-enum {
+enum
+{
     LevelSelectLevelCount = 8,
 };
 
-enum LevelSelectAbsoluteAddress {
+enum LevelSelectAbsoluteAddress
+{
     LevelSelectDoubleBufferAddress = 0x800DA338,
     LevelSelectSpoolerAddress = 0x800DA694,
 };
@@ -320,9 +322,7 @@ enum LevelSelectAbsoluteAddress {
  * Globe preview viewport and the original small-data pointer that owns it.
  */
 static SViewport CreateViewport1 = {
-    342, 120, 171, 0,
-    10, 30000, 0xD55, 0,
-    0, 0,
+    342, 120, 171, 0, 10, 30000, 0xD55, 0, 0, 0,
 };
 static SViewport *pViewport = &CreateViewport1;
 
@@ -362,44 +362,29 @@ namespace LevelSelectAddressViewOwners
 {
 extern "C"
 {
-static char s_MainfFnt_LevelSelect[]
-    __attribute__((section(".sdata"), aligned(4))) = "mainf.fnt";
-static char s_S2font2Fnt_LevelSelect[]
-    __attribute__((section(".sdata"), aligned(4))) = "s2font2.fnt";
-static char s_S2font1Fnt[]
-    __attribute__((section(".sdata"), aligned(4))) = "s2font1.fnt";
-static char s_Ingame1Fnt[]
-    __attribute__((section(".sdata"), aligned(4))) = "ingame1.fnt";
-static char s_S2bgd3Bmp[]
-    __attribute__((section(".sdata"), aligned(4))) = "s2bgd3.bmp";
-static char s_S2prmpt4Bmp_LevelSelect[]
-    __attribute__((section(".sdata"), aligned(4))) = "s2prmpt4.bmp";
-static char s_Select_LevelSelect[]
-    __attribute__((section(".sdata"), aligned(4))) = "select";
-static char s_S2prmpt1Bmp_LevelSelect[]
-    __attribute__((section(".sdata"), aligned(4))) = "s2prmpt1.bmp";
-static char s_Accept_LevelSelect[]
-    __attribute__((section(".sdata"), aligned(4))) = "accept";
-static char s_S2prmpt2Bmp_LevelSelect[]
-    __attribute__((section(".sdata"), aligned(4))) = "s2prmpt2.bmp";
-static char s_Back_LevelSelect[]
-    __attribute__((section(".sdata"), aligned(4))) = "back";
-static char s_S2versusBmp[]
-    __attribute__((section(".sdata"), aligned(4))) = "s2versus.bmp";
-static char s_Globe[]
-    __attribute__((section(".sdata"), aligned(4))) = "globe";
-static char s_S2crosshBmp[]
-    __attribute__((section(".sdata"), aligned(4))) = "s2crossh.bmp";
-static char s_MarBmp[]
-    __attribute__((section(".sdata"), aligned(4))) = "mar.bmp";
-static char s_LevnaBmp[]
-    __attribute__((section(".sdata"), aligned(4))) = "levna.bmp";
-static char s_S2win5Bmp[]
-    __attribute__((section(".sdata"), aligned(4))) = "s2win5.bmp";
-static char s_S2levl00Bmp[]
-    __attribute__((section(".sdata"), aligned(4))) = "s2levl00.bmp";
-static char s_S2levl0NumBmp[]
-    __attribute__((section(".sdata"), aligned(4))) = "s2levl0%d.bmp";
+static char s_MainfFnt_LevelSelect[] __attribute__((section(".sdata"), aligned(4))) = "mainf.fnt";
+static char s_S2font2Fnt_LevelSelect[] __attribute__((section(".sdata"), aligned(4))) =
+    "s2font2.fnt";
+static char s_S2font1Fnt[] __attribute__((section(".sdata"), aligned(4))) = "s2font1.fnt";
+static char s_Ingame1Fnt[] __attribute__((section(".sdata"), aligned(4))) = "ingame1.fnt";
+static char s_S2bgd3Bmp[] __attribute__((section(".sdata"), aligned(4))) = "s2bgd3.bmp";
+static char s_S2prmpt4Bmp_LevelSelect[] __attribute__((section(".sdata"), aligned(4))) =
+    "s2prmpt4.bmp";
+static char s_Select_LevelSelect[] __attribute__((section(".sdata"), aligned(4))) = "select";
+static char s_S2prmpt1Bmp_LevelSelect[] __attribute__((section(".sdata"), aligned(4))) =
+    "s2prmpt1.bmp";
+static char s_Accept_LevelSelect[] __attribute__((section(".sdata"), aligned(4))) = "accept";
+static char s_S2prmpt2Bmp_LevelSelect[] __attribute__((section(".sdata"), aligned(4))) =
+    "s2prmpt2.bmp";
+static char s_Back_LevelSelect[] __attribute__((section(".sdata"), aligned(4))) = "back";
+static char s_S2versusBmp[] __attribute__((section(".sdata"), aligned(4))) = "s2versus.bmp";
+static char s_Globe[] __attribute__((section(".sdata"), aligned(4))) = "globe";
+static char s_S2crosshBmp[] __attribute__((section(".sdata"), aligned(4))) = "s2crossh.bmp";
+static char s_MarBmp[] __attribute__((section(".sdata"), aligned(4))) = "mar.bmp";
+static char s_LevnaBmp[] __attribute__((section(".sdata"), aligned(4))) = "levna.bmp";
+static char s_S2win5Bmp[] __attribute__((section(".sdata"), aligned(4))) = "s2win5.bmp";
+static char s_S2levl00Bmp[] __attribute__((section(".sdata"), aligned(4))) = "s2levl00.bmp";
+static char s_S2levl0NumBmp[] __attribute__((section(".sdata"), aligned(4))) = "s2levl0%d.bmp";
 }
 }
 /** Read the low halfword of an integer-backed PSX screen coordinate. */
@@ -427,14 +412,10 @@ int LevelSelect2_Main(void)
     Spool_RemoveUnusedTextures();
     Pal_RemoveUnusedPalettes();
     Pack_DefragmentFully();
-    FontManager::LoadFont(
-        LevelSelectAddressViewOwners::s_MainfFnt_LevelSelect);
-    FontManager::LoadFont(
-        LevelSelectAddressViewOwners::s_S2font2Fnt_LevelSelect);
-    FontManager::LoadFont(
-        LevelSelectAddressViewOwners::s_S2font1Fnt);
-    FontManager::LoadFont(
-        LevelSelectAddressViewOwners::s_Ingame1Fnt);
+    FontManager::LoadFont(LevelSelectAddressViewOwners::s_MainfFnt_LevelSelect);
+    FontManager::LoadFont(LevelSelectAddressViewOwners::s_S2font2Fnt_LevelSelect);
+    FontManager::LoadFont(LevelSelectAddressViewOwners::s_S2font1Fnt);
+    FontManager::LoadFont(LevelSelectAddressViewOwners::s_Ingame1Fnt);
 
     LevelSelectScreen *pScreen = new LevelSelectScreen;
 
@@ -458,22 +439,17 @@ int LevelSelect2_Main(void)
         pScreen->draw();
         DrawSync(0);
         Pause(1);
-        while ((unsigned int)Vblanks <
-               (unsigned int)(GStartTime + 2))
+        while ((unsigned int)Vblanks < (unsigned int)(GStartTime + 2))
         {
         }
         Db_DisplayDraw();
         PollHost();
     }
 
-    FontManager::UnloadFont(
-        LevelSelectAddressViewOwners::s_MainfFnt_LevelSelect);
-    FontManager::UnloadFont(
-        LevelSelectAddressViewOwners::s_S2font2Fnt_LevelSelect);
-    FontManager::UnloadFont(
-        LevelSelectAddressViewOwners::s_S2font1Fnt);
-    FontManager::UnloadFont(
-        LevelSelectAddressViewOwners::s_Ingame1Fnt);
+    FontManager::UnloadFont(LevelSelectAddressViewOwners::s_MainfFnt_LevelSelect);
+    FontManager::UnloadFont(LevelSelectAddressViewOwners::s_S2font2Fnt_LevelSelect);
+    FontManager::UnloadFont(LevelSelectAddressViewOwners::s_S2font1Fnt);
+    FontManager::UnloadFont(LevelSelectAddressViewOwners::s_Ingame1Fnt);
     Db_SkyColor = oldSkyColor;
 
     delete pScreen;
@@ -493,15 +469,11 @@ int LevelSelect2_Main(void)
 LevelSelectScreen::LevelSelectScreen() : ScreenElementList(0, 0, -1, -1)
 {
 
-    Sprite2 *sprite = new Sprite2(
-        LevelSelectAddressViewOwners::s_S2bgd3Bmp,
-        1, 0, 0);
+    Sprite2 *sprite = new Sprite2(LevelSelectAddressViewOwners::s_S2bgd3Bmp, 1, 0, 0);
     mBackground = sprite;
 
-    FontManager::GetFont(
-        LevelSelectAddressViewOwners::s_MainfFnt_LevelSelect);
-    Font *sourceFont = FontManager::GetFont(
-        LevelSelectAddressViewOwners::s_S2font2Fnt_LevelSelect);
+    FontManager::GetFont(LevelSelectAddressViewOwners::s_MainfFnt_LevelSelect);
+    Font *sourceFont = FontManager::GetFont(LevelSelectAddressViewOwners::s_S2font2Fnt_LevelSelect);
     mFont2 = *sourceFont;
 
     mFont2.JustX = 0;
@@ -515,37 +487,30 @@ LevelSelectScreen::LevelSelectScreen() : ScreenElementList(0, 0, -1, -1)
     mFont2.Scale = 0x1000;
 
     PromptScreenElement *pPromptElement[3];
-    PromptScreenElement *item = new PromptScreenElement(
-        LevelSelectAddressViewOwners::s_S2prmpt4Bmp_LevelSelect,
-        s_Select_LevelSelect,
-        &mFont2, 115, 220, -1, 260);
+    PromptScreenElement *item =
+        new PromptScreenElement(LevelSelectAddressViewOwners::s_S2prmpt4Bmp_LevelSelect,
+                                s_Select_LevelSelect, &mFont2, 115, 220, -1, 260);
     pPromptElement[0] = item;
 
-    item = new PromptScreenElement(
-        LevelSelectAddressViewOwners::s_S2prmpt1Bmp_LevelSelect,
-        s_Accept_LevelSelect,
-        &mFont2, 228, 220, -1, 260);
+    item = new PromptScreenElement(LevelSelectAddressViewOwners::s_S2prmpt1Bmp_LevelSelect,
+                                   s_Accept_LevelSelect, &mFont2, 228, 220, -1, 260);
     pPromptElement[1] = item;
 
-    item = new PromptScreenElement(
-        LevelSelectAddressViewOwners::s_S2prmpt2Bmp_LevelSelect,
-        s_Back_LevelSelect,
-        &mFont2, 333, 220, -1, 260);
+    item = new PromptScreenElement(LevelSelectAddressViewOwners::s_S2prmpt2Bmp_LevelSelect,
+                                   s_Back_LevelSelect, &mFont2, 333, 220, -1, 260);
     pPromptElement[2] = item;
 
     int i = 0;
     do
     {
-        addItem(
-            pPromptElement[i]);
+        addItem(pPromptElement[i]);
         i++;
     } while (i < 3);
 
     if (FrontEnd2_GameMode == 1)
     {
         CareerScreenElement *item = new CareerScreenElement(&mFont2, 244, 133, 512, 133);
-        addItem(
-            item);
+        addItem(item);
     }
 
     if (FrontEnd2_GameMode == 1)
@@ -722,15 +687,13 @@ int LevelSelectScreen::isDone(int *return_value)
  *
  * @return `this` pointer (GCC 2.x ctor convention).
  */
-SkaterNameScreenElement::SkaterNameScreenElement(
-    bool secondPlayer,
-    int homeX, int homeY, int screenX, int screenY)
+SkaterNameScreenElement::SkaterNameScreenElement(bool secondPlayer, int homeX, int homeY,
+                                                 int screenX, int screenY)
     : ScreenElementList(homeX, homeY, screenX, screenY)
 {
     Font *font = &mFont;
 
-    Font *sourceFont = FontManager::GetFont(
-        LevelSelectAddressViewOwners::s_S2font1Fnt);
+    Font *sourceFont = FontManager::GetFont(LevelSelectAddressViewOwners::s_S2font1Fnt);
     mFont = *sourceFont;
 
     mFont.JustX = 2;
@@ -745,21 +708,26 @@ SkaterNameScreenElement::SkaterNameScreenElement(
 
     if (secondPlayer)
     {
-        SpriteScreenElement *pElement = new SpriteScreenElement(Stats[SelectedSkater2].PortraitName, 0, -32, -1, -1, 0, 0);
+        SpriteScreenElement *pElement =
+            new SpriteScreenElement(Stats[SelectedSkater2].PortraitName, 0, -32, -1, -1, 0, 0);
         mpFace = pElement;
 
-        TextScreenElement *name = new TextScreenElement(Stats[SelectedSkater2].Name, font, -2, 17, -2, -30);
+        TextScreenElement *name =
+            new TextScreenElement(Stats[SelectedSkater2].Name, font, -2, 17, -2, -30);
         mpName = name;
 
-        SpriteScreenElement *versus = new SpriteScreenElement(LevelSelectAddressViewOwners::s_S2versusBmp, -76, -36, -1, -1, 0, 0);
+        SpriteScreenElement *versus = new SpriteScreenElement(
+            LevelSelectAddressViewOwners::s_S2versusBmp, -76, -36, -1, -1, 0, 0);
         addItem(versus);
     }
     else
     {
-        SpriteScreenElement *pElement = new SpriteScreenElement(Stats[SelectedSkater].PortraitName, 0, -32, -1, -1, 0, 0);
+        SpriteScreenElement *pElement =
+            new SpriteScreenElement(Stats[SelectedSkater].PortraitName, 0, -32, -1, -1, 0, 0);
         mpFace = pElement;
 
-        TextScreenElement *name = new TextScreenElement(Stats[SelectedSkater].Name, font, -2, 17, -2, -30);
+        TextScreenElement *name =
+            new TextScreenElement(Stats[SelectedSkater].Name, font, -2, 17, -2, -30);
         mpName = name;
     }
 
@@ -787,8 +755,7 @@ SkaterNameScreenElement::~SkaterNameScreenElement()
  * Demangled: GlobeScreenElement::(int, int, int, int)
  *
  */
-GlobeScreenElement::GlobeScreenElement(
-    int homeX, int homeY, int screenX, int screenY)
+GlobeScreenElement::GlobeScreenElement(int homeX, int homeY, int screenX, int screenY)
     : ScreenElement(homeX, homeY, screenX, screenY)
 {
     mGlobeRegion = Spool_PSX(s_Globe, 0, 0, 1);
@@ -811,20 +778,15 @@ GlobeScreenElement::GlobeScreenElement(
     pItemList->RGB = 0xFF00;
     pItemList->NextItem = 0;
 
-    M3dMaths_SetIdentityRotation(
-        &MikeCamera->Transform);
+    M3dMaths_SetIdentityRotation(&MikeCamera->Transform);
     MikeCamera->Position.vx = 0;
     MikeCamera->Position.vy = 0;
     MikeCamera->Position.vz = -300;
-    TransMatrix(
-        &MikeCamera->Transform,
-        &MikeCamera->Position);
+    TransMatrix(&MikeCamera->Transform, &MikeCamera->Position);
     M3dInit_SetFoggingParams(10, 6000, 0x800);
     M3dInit_InitAtStart();
 
-    Sprite2 *crosshair = new Sprite2(
-        LevelSelectAddressViewOwners::s_S2crosshBmp,
-        1, 0, 0);
+    Sprite2 *crosshair = new Sprite2(LevelSelectAddressViewOwners::s_S2crosshBmp, 1, 0, 0);
     mpCrosshair = crosshair;
     crosshair->JustX = 1;
     mpCrosshair->JustY = 1;
@@ -932,8 +894,7 @@ void GlobeScreenElement::draw(int x, int y)
     vp->xR = (s16)(cx2 + x + 65);
 
     u16 cy2 = LevelSelect_LowHalf(mScreenY);
-    LevelSelectDoubleBuffer *db =
-        reinterpret_cast<LevelSelectDoubleBuffer *>(pDoubleBuffer);
+    LevelSelectDoubleBuffer *db = reinterpret_cast<LevelSelectDoubleBuffer *>(pDoubleBuffer);
     vp->yB = (s16)(cy2 + y + 40);
 
     unsigned int *ot = db->globeOrderingTable;
@@ -996,8 +957,7 @@ LevelNameScreenElement::LevelNameScreenElement(int homeX, int homeY, int screenX
     : ScreenElementList(homeX, homeY, screenX, screenY)
 {
 
-    Font *sourceFont = FontManager::GetFont(
-        LevelSelectAddressViewOwners::s_S2font1Fnt);
+    Font *sourceFont = FontManager::GetFont(LevelSelectAddressViewOwners::s_S2font1Fnt);
     mFont1 = *sourceFont;
 
     mFont1.JustX = 2;
@@ -1014,17 +974,18 @@ LevelNameScreenElement::LevelNameScreenElement(int homeX, int homeY, int screenX
     mFont2.JustX = 0;
     mSpacing = 20;
 
-    NameScreenElement *park = new NameScreenElement(Levels[SelectedLevel].pLevelName, &mFont1, -262, 0, -1, -1);
+    NameScreenElement *park =
+        new NameScreenElement(Levels[SelectedLevel].pLevelName, &mFont1, -262, 0, -1, -1);
     mpPark = park;
 
-    NameScreenElement *city = new NameScreenElement(Levels[SelectedLevel].pCityName, &mFont2, 522, 0, -1, -1);
+    NameScreenElement *city =
+        new NameScreenElement(Levels[SelectedLevel].pCityName, &mFont2, 522, 0, -1, -1);
     mpCity = city;
 
     mOriginalHomeX = mHomeX;
     addItem(mpPark);
     addItem(mpCity);
     SetLevel(SelectedLevel);
-
 }
 
 /**
@@ -1083,32 +1044,32 @@ void LevelNameScreenElement::update()
 
     switch (mState)
     {
-    case 0:
-        mLevel = mTargetLevel;
-        mpPark->mHomeX = (-mSpacing) >> 1;
-        mpCity->mHomeX = mSpacing >> 1;
+        case 0:
+            mLevel = mTargetLevel;
+            mpPark->mHomeX = (-mSpacing) >> 1;
+            mpCity->mHomeX = mSpacing >> 1;
 
-        mpPark->setString(Levels[mLevel].pLevelName);
-        mpCity->setString(Levels[mLevel].pCityName);
+            mpPark->setString(Levels[mLevel].pLevelName);
+            mpCity->setString(Levels[mLevel].pCityName);
 
-        {
-            int width = mpPark->width();
-            int homeX = mOriginalHomeX + width + (mSpacing >> 1);
-            mState = 1;
-            mHomeX = homeX;
-            mScreenX = homeX;
-        }
-        break;
-
-    case 2:
-        if (mpCity->mAtHome != 0)
-        {
-            if (mpPark->mAtHome != 0)
             {
-                mState = 0;
+                int width = mpPark->width();
+                int homeX = mOriginalHomeX + width + (mSpacing >> 1);
+                mState = 1;
+                mHomeX = homeX;
+                mScreenX = homeX;
             }
-        }
-        break;
+            break;
+
+        case 2:
+            if (mpCity->mAtHome != 0)
+            {
+                if (mpPark->mAtHome != 0)
+                {
+                    mState = 0;
+                }
+            }
+            break;
     }
 }
 
@@ -1118,9 +1079,8 @@ void LevelNameScreenElement::update()
  * Address: 0x80081174
  * Mangled: __17NameScreenElementPcP4Fontiiii
  */
-NameScreenElement::NameScreenElement(
-    char *pString, Font *pFont,
-    int homeX, int homeY, int screenX, int screenY)
+NameScreenElement::NameScreenElement(char *pString, Font *pFont, int homeX, int homeY, int screenX,
+                                     int screenY)
     : TextScreenElement(pString, pFont, homeX, homeY, screenX, screenY)
 {
 }
@@ -1177,8 +1137,7 @@ void NameScreenElement::update()
         elem->mScreenY += add;
     }
 
-    if ((elem->mScreenY == elem->mHomeY) &&
-        (elem->mScreenX == elem->mHomeX))
+    if ((elem->mScreenY == elem->mHomeY) && (elem->mScreenX == elem->mHomeX))
     {
         elem->mAtHome = (void *)1;
         return;
@@ -1207,21 +1166,19 @@ VideoScreenElement::VideoScreenElement(int homeX, int homeY, int screenX, int sc
     }
 
     {
-        Sprite2 *sprite = new Sprite2(
-            LevelSelectAddressViewOwners::s_LevnaBmp,
-            1, 0, 0);
+        Sprite2 *sprite = new Sprite2(LevelSelectAddressViewOwners::s_LevnaBmp, 1, 0, 0);
         mVideoSprite[1] = sprite;
     }
 
     {
-        SpriteScreenElement *item = new SpriteScreenElement(LevelSelectAddressViewOwners::s_S2win5Bmp, 0, 0, -1, -1, 0, 0);
+        SpriteScreenElement *item =
+            new SpriteScreenElement(LevelSelectAddressViewOwners::s_S2win5Bmp, 0, 0, -1, -1, 0, 0);
         addItem(item);
     }
 
     mVideoW.value = 176;
     mVideoH.value = 48;
-    Pack_Pack(0, 176, 48,
-              &mVideoVramX.value, &mVideoVramY.value, 16, 0, 0);
+    Pack_Pack(0, 176, 48, &mVideoVramX.value, &mVideoVramY.value, 16, 0, 0);
 
     {
         POLY_FT4 *videoPoly = (POLY_FT4 *)Mem_New(sizeof(POLY_FT4), 1, 1);
@@ -1233,8 +1190,7 @@ VideoScreenElement::VideoScreenElement(int homeX, int homeY, int screenX, int sc
         mVideoPoly->b0 = 0x80;
         mVideoPoly->u0 = mVideoVramX.lowByte & 0x3F;
         mVideoPoly->v0 = mVideoVramY.lowByte;
-        mVideoPoly->u1 = (u8)(mVideoW.lowByte +
-                              (mVideoVramX.lowByte & 0x3F));
+        mVideoPoly->u1 = (u8)(mVideoW.lowByte + (mVideoVramX.lowByte & 0x3F));
         mVideoPoly->v1 = mVideoVramY.lowByte;
         mVideoPoly->u2 = mVideoVramX.lowByte & 0x3F;
         {
@@ -1242,8 +1198,7 @@ VideoScreenElement::VideoScreenElement(int homeX, int homeY, int screenX, int sc
             u8 videoH = mVideoH.lowByte;
             mVideoPoly->v2 = (u8)(videoH + videoY);
         }
-        mVideoPoly->u3 = (u8)(mVideoW.lowByte +
-                              (mVideoVramX.lowByte & 0x3F));
+        mVideoPoly->u3 = (u8)(mVideoW.lowByte + (mVideoVramX.lowByte & 0x3F));
         {
             u8 videoY = mVideoVramY.lowByte;
             u8 videoH = mVideoH.lowByte;
@@ -1304,8 +1259,7 @@ void VideoScreenElement::draw(int x, int y)
 
     if ((unsigned int)(mState - 3) < 2)
     {
-        LevelSelectDoubleBuffer *db =
-            *(LevelSelectDoubleBuffer **)LevelSelectDoubleBufferAddress;
+        LevelSelectDoubleBuffer *db = *(LevelSelectDoubleBuffer **)LevelSelectDoubleBufferAddress;
         mVideoPoly->x0 = (s16)video_x;
         mVideoPoly->y0 = (s16)video_y;
         mVideoPoly->x1 = (s16)(mVideoW.lowHalf + video_x);
@@ -1316,12 +1270,9 @@ void VideoScreenElement::draw(int x, int y)
         mVideoPoly->y3 = (s16)(mVideoH.lowHalf + video_y);
 
         unsigned int *panelOT = db->panelOrderingTable;
-        mVideoPoly->tag =
-            (mVideoPoly->tag & 0xFF000000) | (*panelOT & 0x00FFFFFF);
+        mVideoPoly->tag = (mVideoPoly->tag & 0xFF000000) | (*panelOT & 0x00FFFFFF);
         unsigned int *panelOT2 = db->panelOrderingTable;
-        *panelOT2 =
-            (*panelOT2 & 0xFF000000) |
-            ((unsigned int)mVideoPoly & 0x00FFFFFF);
+        *panelOT2 = (*panelOT2 & 0xFF000000) | ((unsigned int)mVideoPoly & 0x00FFFFFF);
     }
     else
     {
@@ -1355,8 +1306,7 @@ void VideoScreenElement::draw(int x, int y)
             r.w = videoW;
             r.h = videoH;
             r.y = (s16)(topY + video_y);
-            MoveImage(
-                &r, mVideoVramX.value, mVideoVramY.value);
+            MoveImage(&r, mVideoVramX.value, mVideoVramY.value);
             mState = 3;
         }
     }
@@ -1376,69 +1326,67 @@ void VideoScreenElement::update()
 {
     switch (mState)
     {
-    case 0:
-    {
-        int count = mCount;
-        if (count != 0)
+        case 0:
         {
-            count--;
-            mCount = count;
+            int count = mCount;
             if (count != 0)
             {
-                break;
+                count--;
+                mCount = count;
+                if (count != 0)
+                {
+                    break;
+                }
             }
+            if ((*(Spooler **)LevelSelectSpoolerAddress)->IsSetDone())
+            {
+                mState = 1;
+            }
+            break;
         }
-        if ((*(Spooler **)LevelSelectSpoolerAddress)->IsSetDone())
+        case 1:
         {
+            int level = mLevel;
+            SLevel *table = Levels;
+            signed char movie = table[level].STR;
+            if (movie != 0)
+            {
+                GameFMV_SetStartTrack(movie);
+                int videoX = mVideoVramX.lowHalf;
+                int videoW = mVideoW.lowHalf;
+                int videoY = mVideoVramY.lowHalf;
+                GameFMV_StartX = videoX;
+                GameFMV_EndX = videoX + videoW;
+                GameFMV_StartY = videoY;
+                GameFMV_StartFMV(1);
+            }
+            mState = 2;
+            mCount = 2;
+            break;
+        }
+        case 2: mCount = mCount - 1; break;
+        case 3:
+            GameFMV_SyncFMV(1);
+            if (mNewLevel != -1)
+            {
+                mState = 4;
+            }
+            break;
+        case 4:
+        {
+            int level = mLevel;
+            SLevel *table = Levels;
+            signed char movie = table[level].STR;
+            if (movie != 0)
+            {
+                GameFMV_StopFMV();
+            }
+            int newLevel = mNewLevel;
+            mNewLevel = -1;
             mState = 1;
+            mLevel = newLevel;
+            break;
         }
-        break;
-    }
-    case 1:
-    {
-        int level = mLevel;
-        SLevel *table = Levels;
-        signed char movie = table[level].STR;
-        if (movie != 0)
-        {
-            GameFMV_SetStartTrack(movie);
-            int videoX = mVideoVramX.lowHalf;
-            int videoW = mVideoW.lowHalf;
-            int videoY = mVideoVramY.lowHalf;
-            GameFMV_StartX = videoX;
-            GameFMV_EndX = videoX + videoW;
-            GameFMV_StartY = videoY;
-            GameFMV_StartFMV(1);
-        }
-        mState = 2;
-        mCount = 2;
-        break;
-    }
-    case 2:
-        mCount = mCount - 1;
-        break;
-    case 3:
-        GameFMV_SyncFMV(1);
-        if (mNewLevel != -1)
-        {
-            mState = 4;
-        }
-        break;
-    case 4:
-    {
-        int level = mLevel;
-        SLevel *table = Levels;
-        signed char movie = table[level].STR;
-        if (movie != 0)
-        {
-            GameFMV_StopFMV();
-        }
-        int newLevel = mNewLevel;
-        mNewLevel = -1;
-        mState = 1;
-        mLevel = newLevel;
-        break;
-    }
     }
     ScreenElementList::update();
 }
@@ -1469,8 +1417,7 @@ void VideoScreenElement::SetLevel(int level)
 GoalScreenElement::GoalScreenElement(int homeX, int homeY, int screenX, int screenY)
     : ScreenElement(homeX, homeY, screenX, screenY)
 {
-    unsigned int size = FileIO_Open(
-        LevelSelectAddressViewOwners::s_S2levl00Bmp);
+    unsigned int size = FileIO_Open(LevelSelectAddressViewOwners::s_S2levl00Bmp);
     unsigned char *bmpBuf = (unsigned char *)Mem_New(size, 1, 1);
     FileIO_Load(bmpBuf);
     FileIO_Sync();
@@ -1510,9 +1457,7 @@ GoalScreenElement::GoalScreenElement(int homeX, int homeY, int screenX, int scre
     do
     {
         int num = order[i];
-        sprintf(name,
-                LevelSelectAddressViewOwners::s_S2levl0NumBmp,
-                num % 9 + 1);
+        sprintf(name, LevelSelectAddressViewOwners::s_S2levl0NumBmp, num % 9 + 1);
         mSpoolID[num] = Spooler::SpoolMgr->AddFile(name, 0);
         i++;
     } while (i < LevelSelectLevelCount);
@@ -1569,58 +1514,57 @@ void GoalScreenElement::update()
 
     switch (mState)
     {
-    case 0:
-        if (mTargetLevel != -1)
-        {
-            int newLevel = mTargetLevel;
-            int oldLevel = mLevel;
-            mLevel = newLevel;
-            mTargetLevel = -1;
-            mLastLevel = oldLevel;
-            mpSprite[newLevel]->pack();
-            mLeavingX = 0;
-            mState = 1;
-            mLeavingDir = mNextDir;
-        }
-        break;
-
-    case 1:
-    {
-        mpSprite[mLastLevel]->Scale += 400;
-
-        int scale_offs = ((mpSprite[mLastLevel]->Scale * mW) >> 13)
-            + (mW >> 1);
-        mLeavingX += mLeavingDir;
-
-        if (mLeavingDir > 0)
-        {
-            mLeavingDir += (mLeavingDir >> 1) + 1;
-        }
-        else
-        {
-            mLeavingDir += (mLeavingDir >> 1) - 1;
-        }
-
-        if (scale_offs < mLeavingX || mLeavingX < -scale_offs)
-        {
-            mFreeLastCount = 2;
-            mState = 2;
-        }
-        break;
-    }
-
-    case 2:
-        if (mFreeLastCount != 0)
-        {
-            mFreeLastCount--;
-            if (mFreeLastCount == 0)
+        case 0:
+            if (mTargetLevel != -1)
             {
-                mpSprite[mLastLevel]->Scale = 0x1000;
-                mpSprite[mLastLevel]->unpack();
-                mState = 0;
+                int newLevel = mTargetLevel;
+                int oldLevel = mLevel;
+                mLevel = newLevel;
+                mTargetLevel = -1;
+                mLastLevel = oldLevel;
+                mpSprite[newLevel]->pack();
+                mLeavingX = 0;
+                mState = 1;
+                mLeavingDir = mNextDir;
             }
+            break;
+
+        case 1:
+        {
+            mpSprite[mLastLevel]->Scale += 400;
+
+            int scale_offs = ((mpSprite[mLastLevel]->Scale * mW) >> 13) + (mW >> 1);
+            mLeavingX += mLeavingDir;
+
+            if (mLeavingDir > 0)
+            {
+                mLeavingDir += (mLeavingDir >> 1) + 1;
+            }
+            else
+            {
+                mLeavingDir += (mLeavingDir >> 1) - 1;
+            }
+
+            if (scale_offs < mLeavingX || mLeavingX < -scale_offs)
+            {
+                mFreeLastCount = 2;
+                mState = 2;
+            }
+            break;
         }
-        break;
+
+        case 2:
+            if (mFreeLastCount != 0)
+            {
+                mFreeLastCount--;
+                if (mFreeLastCount == 0)
+                {
+                    mpSprite[mLastLevel]->Scale = 0x1000;
+                    mpSprite[mLastLevel]->unpack();
+                    mState = 0;
+                }
+            }
+            break;
     }
 
     ScreenElement::update();

@@ -16,10 +16,8 @@ struct CFlatRipple : CPolyLine
     int mAngle;
 
     /** Build a flat ripple and initialize its ring segments. */
-    CFlatRipple(
-        const CVector &position, int maxRadius,
-        unsigned char red, unsigned char green, unsigned char blue,
-        int numSegments, int growRate);
+    CFlatRipple(const CVector &position, int maxRadius, unsigned char red, unsigned char green,
+                unsigned char blue, int numSegments, int growRate);
     /** Restore the derived dispatch table before base destruction. */
     ~CFlatRipple();
     /** Expand, fade, and rebuild this ripple for one frame. */

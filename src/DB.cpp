@@ -38,7 +38,8 @@
 #include <LIBGTE.H>
 #include <LIBGPU.H>
 
-enum {
+enum
+{
     DbBufferCount = 2,
     DbScreenWidth = 512,
     DbScreenHeight = 240,
@@ -49,8 +50,7 @@ enum {
 };
 
 /** The two GPU display buffers, initialized before the first frame is built. */
-SDoubleBuffer DoubleBuffer[DbBufferCount]
-    __attribute__((section(".data"))) = {{0}};
+SDoubleBuffer DoubleBuffer[DbBufferCount] __attribute__((section(".data"))) = { { 0 } };
 
 /**
  * The ordering-table word follows Db_Init's display-area constant and the two
@@ -67,8 +67,8 @@ unsigned int *OrderingTable;
 /** Convert the CPU polygon-buffer pointer to the address consumed by DMA. */
 static inline unsigned int *Db_GetDmaPolyAddress(SDoubleBuffer *buffer)
 {
-    return reinterpret_cast<unsigned int *>(
-        reinterpret_cast<unsigned int>(buffer->Polys) & DbCachedAddressMask);
+    return reinterpret_cast<unsigned int *>(reinterpret_cast<unsigned int>(buffer->Polys) &
+                                            DbCachedAddressMask);
 }
 
 /**
@@ -179,16 +179,14 @@ void Db_Vblank(void)
         int i;
         for (i = 0; i < DbBufferCount; i++)
         {
-            if (DoubleBuffer[i].RenderNow &&
-                !DoubleBuffer[i].Rendering &&
-                !DoubleBuffer[1 - i].Rendering &&
-                !DoubleBuffer[i].Visible)
+            if (DoubleBuffer[i].RenderNow && !DoubleBuffer[i].Rendering &&
+                !DoubleBuffer[1 - i].Rendering && !DoubleBuffer[i].Visible)
             {
                 DoubleBuffer[i].RenderNow = 0;
                 DoubleBuffer[i].Rendering = 1;
                 PutDrawEnv(&DoubleBuffer[i].Draw);
-                DrawOTag(reinterpret_cast<unsigned long *>(
-                    DoubleBuffer[i].PanelOT + Db_OTSize() - 1));
+                DrawOTag(
+                    reinterpret_cast<unsigned long *>(DoubleBuffer[i].PanelOT + Db_OTSize() - 1));
             }
         }
     }
@@ -213,8 +211,7 @@ void Db_WaitRender(void)
     }
 
     int otsize = Db_OTSize();
-    ClearOTagR(reinterpret_cast<unsigned long *>(pDoubleBuffer->PanelOT),
-              otsize);
+    ClearOTagR(reinterpret_cast<unsigned long *>(pDoubleBuffer->PanelOT), otsize);
 
     pPoly = Db_GetDmaPolyAddress(pDoubleBuffer);
     CalcPolyBufferEnd();
@@ -286,35 +283,28 @@ void Db_Init(void)
 
     Db_SkyColor = 0;
     CurrentOTSize = (GNumberOfPlayers << 12) + 2;
-    POLYBUFFERSIZE =
-        Levels[GLevel].ExtraPolyBuffer[GNumberOfPlayers - 1] +
-        DbBasePolyBufferSize;
+    POLYBUFFERSIZE = Levels[GLevel].ExtraPolyBuffer[GNumberOfPlayers - 1] + DbBasePolyBufferSize;
 
     if (DoubleBuffer[0].Polys == 0)
     {
-        DoubleBuffer[0].Polys =
-            static_cast<unsigned char *>(Mem_New(POLYBUFFERSIZE * 2, 1, 1));
+        DoubleBuffer[0].Polys = static_cast<unsigned char *>(Mem_New(POLYBUFFERSIZE * 2, 1, 1));
         DoubleBuffer[1].Polys = DoubleBuffer[0].Polys + POLYBUFFERSIZE;
 
-        DoubleBuffer[0].PanelOT = static_cast<unsigned int *>(Mem_New(
-            (Db_OTSize() << 2) | 2, 1, 1));
+        DoubleBuffer[0].PanelOT =
+            static_cast<unsigned int *>(Mem_New((Db_OTSize() << 2) | 2, 1, 1));
         DoubleBuffer[0].OrderingTable = DoubleBuffer[0].PanelOT + 2;
 
-        DoubleBuffer[1].PanelOT = static_cast<unsigned int *>(Mem_New(
-            (Db_OTSize() << 2) | 2, 1, 1));
+        DoubleBuffer[1].PanelOT =
+            static_cast<unsigned int *>(Mem_New((Db_OTSize() << 2) | 2, 1, 1));
         DoubleBuffer[1].OrderingTable = DoubleBuffer[1].PanelOT + 2;
     }
 
     DoubleBuffer[0].Top = 0;
     DoubleBuffer[1].Top = DbFrameBufferHeight;
-    SetDefDrawEnv(&DoubleBuffer[0].Draw, 0, 0,
-        DbScreenWidth, DbScreenHeight);
-    SetDefDrawEnv(&DoubleBuffer[1].Draw, 0, DbFrameBufferHeight,
-        DbScreenWidth, DbScreenHeight);
-    SetDefDispEnv(&DoubleBuffer[0].Disp, 0, DbFrameBufferHeight,
-        DbScreenWidth, DbScreenHeight);
-    SetDefDispEnv(&DoubleBuffer[1].Disp, 0, 0,
-        DbScreenWidth, DbScreenHeight);
+    SetDefDrawEnv(&DoubleBuffer[0].Draw, 0, 0, DbScreenWidth, DbScreenHeight);
+    SetDefDrawEnv(&DoubleBuffer[1].Draw, 0, DbFrameBufferHeight, DbScreenWidth, DbScreenHeight);
+    SetDefDispEnv(&DoubleBuffer[0].Disp, 0, DbFrameBufferHeight, DbScreenWidth, DbScreenHeight);
+    SetDefDispEnv(&DoubleBuffer[1].Disp, 0, 0, DbScreenWidth, DbScreenHeight);
 
     DoubleBuffer[0].Disp.screen.x = DoubleBuffer[1].Disp.screen.x = 0;
     DoubleBuffer[0].Disp.screen.y = DoubleBuffer[1].Disp.screen.y = 0;
@@ -336,15 +326,13 @@ void Db_Init(void)
             DoubleBuffer[i].Window.y = DoubleBuffer[i].Top;
             DoubleBuffer[i].Window.w = DbScreenWidth;
             DoubleBuffer[i].Window.h = DbScreenHeight;
-            ClearOTagR(reinterpret_cast<unsigned long *>(
-                           DoubleBuffer[i].PanelOT),
-                       Db_OTSize());
+            ClearOTagR(reinterpret_cast<unsigned long *>(DoubleBuffer[i].PanelOT), Db_OTSize());
         }
     }
 
     pDoubleBuffer = &DoubleBuffer[1];
     pOtherBuffer = &DoubleBuffer[0];
-    RECT screen = {0, 0, DbScreenWidth, DbFullVramHeight};
+    RECT screen = { 0, 0, DbScreenWidth, DbFullVramHeight };
     ClearImage2(&screen, 0, 0, 0);
     DrawSync(0);
 
@@ -364,8 +352,7 @@ void Db_Init(void)
  * first use, making ASPSX choose absolute loads instead of the target's
  * GP-relative form.
  */
-static unsigned int DbSharedBufferPointers[2]
-    __attribute__((section(".sdata"))) = {0, 0};
+static unsigned int DbSharedBufferPointers[2] __attribute__((section(".sdata"))) = { 0, 0 };
 
 /**
  * Exchange display buffers without submitting a frame, then clear the new OT.
@@ -373,11 +360,9 @@ static unsigned int DbSharedBufferPointers[2]
 void Db_FlipClear(void)
 {
     pOtherBuffer = pDoubleBuffer;
-    pDoubleBuffer = pDoubleBuffer == DoubleBuffer
-        ? DoubleBuffer + 1 : DoubleBuffer;
+    pDoubleBuffer = pDoubleBuffer == DoubleBuffer ? DoubleBuffer + 1 : DoubleBuffer;
     int size = Db_OTSize();
-    ClearOTagR(reinterpret_cast<unsigned long *>(pDoubleBuffer->PanelOT),
-              size);
+    ClearOTagR(reinterpret_cast<unsigned long *>(pDoubleBuffer->PanelOT), size);
     pPoly = Db_GetDmaPolyAddress(pDoubleBuffer);
     CalcPolyBufferEnd();
 }
@@ -418,6 +403,5 @@ after_bg:
     }
 
     int otsize2 = Db_OTSize();
-    DrawOTag(reinterpret_cast<unsigned long *>(
-        pDoubleBuffer->PanelOT + otsize2 - 1));
+    DrawOTag(reinterpret_cast<unsigned long *>(pDoubleBuffer->PanelOT + otsize2 - 1));
 }

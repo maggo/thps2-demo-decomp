@@ -78,51 +78,33 @@ typedef CCamera MainCreationCamera;
  * the two compiler-generated switch tables. Keeping even the currently unused
  * memory-report labels preserves the original table and literal order.
  */
-    static char Main_checksumSuccessFormat[]
-        __attribute__((section(".rdata"))) =
-        "FOUND Valid checksum %lx , score %d, on the %dth try\n";
-    static char Main_randomAttemptsFormat[]
-        __attribute__((section(".rdata"))) =
-        "Tried\t%d randoms numbers, \n";
-    static char sDumpAutoTestFmt[]
-        __attribute__((section(".rdata"))) =
-        "L-%d, P1-%d, P2-%d, G-%d";
-    static char Main_memoryRowFormat[]
-        __attribute__((section(".rdata"))) =
-        "%5d,%03d - %s (%d%%)\n";
-    static char Main_memoryUsageHeader[]
-        __attribute__((section(".rdata"))) =
-        "\nMEMORY USAGE  (1K = 1000 bytes\n\n";
-    static char Main_tablesAndVariablesLabel[]
-        __attribute__((section(".rdata"))) =
-        "Tables and Variables";
-    static char Main_commandPointUsageLabel[]
-        __attribute__((section(".rdata"))) =
-        "Command Point usage";
-    static char Main_bitEffectsLabel[]
-        __attribute__((section(".rdata"))) =
-        "Bits effects (glows, fringes)";
-    static char Main_skater1DecompressBufferLabel[]
-        __attribute__((section(".rdata"))) =
-        "Skater 1 Decompress Buffer";
-    static char Main_skater1VideoReplayBufferLabel[]
-        __attribute__((section(".rdata"))) =
-        "Skater 1 Video Replay buffer";
-    static char Main_skater2DecompressBufferLabel[]
-        __attribute__((section(".rdata"))) =
-        "Skater 2 Decompress Buffer";
-    static char Main_skater2VideoReplayBufferLabel[]
-        __attribute__((section(".rdata"))) =
-        "Skater 2 Video Replay buffer";
-    static char Main_otherHeapUsageLabel[]
-        __attribute__((section(".rdata"))) =
-        "Other Heap Usage";
-    static char Main_endCodeTweakJumpMessage[]
-        __attribute__((section(".rdata"))) =
-        "ENDCODE_TWEAKJUMP\n";
-    static char Main_notEndCodeTweakJumpMessage[]
-        __attribute__((section(".rdata"))) =
-        "not .... ENDCODE_TWEAKJUMP\n";
+static char Main_checksumSuccessFormat[] __attribute__((section(".rdata"))) =
+    "FOUND Valid checksum %lx , score %d, on the %dth try\n";
+static char Main_randomAttemptsFormat[] __attribute__((section(".rdata"))) =
+    "Tried\t%d randoms numbers, \n";
+static char sDumpAutoTestFmt[] __attribute__((section(".rdata"))) = "L-%d, P1-%d, P2-%d, G-%d";
+static char Main_memoryRowFormat[] __attribute__((section(".rdata"))) = "%5d,%03d - %s (%d%%)\n";
+static char Main_memoryUsageHeader[] __attribute__((section(".rdata"))) =
+    "\nMEMORY USAGE  (1K = 1000 bytes\n\n";
+static char Main_tablesAndVariablesLabel[] __attribute__((section(".rdata"))) =
+    "Tables and Variables";
+static char Main_commandPointUsageLabel[] __attribute__((section(".rdata"))) =
+    "Command Point usage";
+static char Main_bitEffectsLabel[] __attribute__((section(".rdata"))) =
+    "Bits effects (glows, fringes)";
+static char Main_skater1DecompressBufferLabel[] __attribute__((section(".rdata"))) =
+    "Skater 1 Decompress Buffer";
+static char Main_skater1VideoReplayBufferLabel[] __attribute__((section(".rdata"))) =
+    "Skater 1 Video Replay buffer";
+static char Main_skater2DecompressBufferLabel[] __attribute__((section(".rdata"))) =
+    "Skater 2 Decompress Buffer";
+static char Main_skater2VideoReplayBufferLabel[] __attribute__((section(".rdata"))) =
+    "Skater 2 Video Replay buffer";
+static char Main_otherHeapUsageLabel[] __attribute__((section(".rdata"))) = "Other Heap Usage";
+static char Main_endCodeTweakJumpMessage[] __attribute__((section(".rdata"))) =
+    "ENDCODE_TWEAKJUMP\n";
+static char Main_notEndCodeTweakJumpMessage[] __attribute__((section(".rdata"))) =
+    "not .... ENDCODE_TWEAKJUMP\n";
 
 /**
  * MAIN's initialized small-data prefix.
@@ -131,62 +113,62 @@ typedef CCamera MainCreationCamera;
  * through PatchY. Keeping the real owners together also preserves the
  * owner-local Released/LoopTimer/FPS string fragment which follows it.
  */
-    int Cheat_FlipScreen __attribute__((section(".sdata"))) = 0;
-    short *GTricks __attribute__((section(".sdata"))) = 0;
-    char Code_String[9] = "12345678";
-    int GGame __attribute__((section(".sdata"))) = 1;
-    int GNumberOfPlayers __attribute__((section(".sdata"))) = 1;
-    int GAutoTest __attribute__((section(".sdata"))) = 0;
-    int GAutoPlayer1 __attribute__((section(".sdata"))) = 0;
-    int GAutoPlayer2 __attribute__((section(".sdata"))) = 0;
-    int GAutoLevel __attribute__((section(".sdata"))) = 0;
-    int GAutoGame __attribute__((section(".sdata"))) = 0;
-    int GAutoPlayer1a __attribute__((section(".sdata"))) = 0;
-    int GAutoPlayer2a __attribute__((section(".sdata"))) = 0;
-    int GAutoLevela __attribute__((section(".sdata"))) = 0;
-    int GAutoGamea __attribute__((section(".sdata"))) = 0;
-    int GHorseWordChosen __attribute__((section(".sdata"))) = 0;
-    int Mick_MapMode __attribute__((section(".sdata"))) = 0;
-    int Mick_MapDoit __attribute__((section(".sdata"))) = 0;
-    int SelectedSkater2 __attribute__((section(".sdata"))) = 0;
+int Cheat_FlipScreen __attribute__((section(".sdata"))) = 0;
+short *GTricks __attribute__((section(".sdata"))) = 0;
+char Code_String[9] = "12345678";
+int GGame __attribute__((section(".sdata"))) = 1;
+int GNumberOfPlayers __attribute__((section(".sdata"))) = 1;
+int GAutoTest __attribute__((section(".sdata"))) = 0;
+int GAutoPlayer1 __attribute__((section(".sdata"))) = 0;
+int GAutoPlayer2 __attribute__((section(".sdata"))) = 0;
+int GAutoLevel __attribute__((section(".sdata"))) = 0;
+int GAutoGame __attribute__((section(".sdata"))) = 0;
+int GAutoPlayer1a __attribute__((section(".sdata"))) = 0;
+int GAutoPlayer2a __attribute__((section(".sdata"))) = 0;
+int GAutoLevela __attribute__((section(".sdata"))) = 0;
+int GAutoGamea __attribute__((section(".sdata"))) = 0;
+int GHorseWordChosen __attribute__((section(".sdata"))) = 0;
+int Mick_MapMode __attribute__((section(".sdata"))) = 0;
+int Mick_MapDoit __attribute__((section(".sdata"))) = 0;
+int SelectedSkater2 __attribute__((section(".sdata"))) = 0;
 
 /** Optional auto-test restart label displayed over the current frame. */
 static char *pAutoTestRestartName __attribute__((section(".sdata"))) = 0;
 
-    EEndCode EndCode __attribute__((section(".sdata"))) = ENDCODE_NONE;
-    int TTime __attribute__((section(".sdata"))) = 0;
-    int EveryOther __attribute__((section(".sdata"))) = 0;
-    int Restart __attribute__((section(".sdata"))) = 0;
-    int CurrentWaterLevel __attribute__((section(".sdata"))) = 0x7fffffff;
-    int CurrentWaterLevel2 __attribute__((section(".sdata"))) = 0x7fffffff;
-    int CurrentDualShockLevel __attribute__((section(".sdata"))) = 2;
-    int GameFrozen __attribute__((section(".sdata"))) = 0;
+EEndCode EndCode __attribute__((section(".sdata"))) = ENDCODE_NONE;
+int TTime __attribute__((section(".sdata"))) = 0;
+int EveryOther __attribute__((section(".sdata"))) = 0;
+int Restart __attribute__((section(".sdata"))) = 0;
+int CurrentWaterLevel __attribute__((section(".sdata"))) = 0x7fffffff;
+int CurrentWaterLevel2 __attribute__((section(".sdata"))) = 0x7fffffff;
+int CurrentDualShockLevel __attribute__((section(".sdata"))) = 2;
+int GameFrozen __attribute__((section(".sdata"))) = 0;
 #define CHEATPANELON_OWNER_DECLARATION
 #include "CHEATPANELON.h"
-    int Cheat_PanelOn __attribute__((section(".sdata"))) = 1;
-    int Cheat_L2KillsBaddies __attribute__((section(".sdata"))) = 0;
-    int Cheat_LevelSelect __attribute__((section(".sdata"))) = 0;
-    int Cheat_AutoTest __attribute__((section(".sdata"))) = 0;
+int Cheat_PanelOn __attribute__((section(".sdata"))) = 1;
+int Cheat_L2KillsBaddies __attribute__((section(".sdata"))) = 0;
+int Cheat_LevelSelect __attribute__((section(".sdata"))) = 0;
+int Cheat_AutoTest __attribute__((section(".sdata"))) = 0;
 #define FRONTCHEATS_OWNER_DECLARATION
 #include "FRONTCHEATS.h"
-    int Cheat_RestartSkip __attribute__((section(".sdata"))) = 0;
-    int Cheat_GameInfo __attribute__((section(".sdata"))) = 0;
-    int Cheat_FPS __attribute__((section(".sdata"))) = 0;
-    int Cheat_Blood __attribute__((section(".sdata"))) = 1;
-    int Cheat_SlowMo __attribute__((section(".sdata"))) = 0;
-    int Cheat_BigHead __attribute__((section(".sdata"))) = 0;
-    int Cheat_ScreenShots __attribute__((section(".sdata"))) = 0;
-    int Cheat_Fire __attribute__((section(".sdata"))) = 0;
-    int PolyBufferBytesUsed __attribute__((section(".sdata"))) = 0;
-    int MusicStopped __attribute__((section(".sdata"))) = 0;
-    VECTOR Zero __attribute__((section(".sdata"))) = {0, 0, 0, 0};
-    #define TOTALCCLASSUSAGE_OWNER_DECLARATION
-    #include "TOTALCCLASSUSAGE.h"
-    int TotalCClassUsage __attribute__((section(".sdata"))) = 0;
-    int Mick_Darkness __attribute__((section(".sdata"))) = 0;
-    int ViewportMode __attribute__((section(".sdata"))) = 0;
-    int PatchX __attribute__((section(".sdata"))) = 16;
-    int PatchY __attribute__((section(".sdata"))) = 150;
+int Cheat_RestartSkip __attribute__((section(".sdata"))) = 0;
+int Cheat_GameInfo __attribute__((section(".sdata"))) = 0;
+int Cheat_FPS __attribute__((section(".sdata"))) = 0;
+int Cheat_Blood __attribute__((section(".sdata"))) = 1;
+int Cheat_SlowMo __attribute__((section(".sdata"))) = 0;
+int Cheat_BigHead __attribute__((section(".sdata"))) = 0;
+int Cheat_ScreenShots __attribute__((section(".sdata"))) = 0;
+int Cheat_Fire __attribute__((section(".sdata"))) = 0;
+int PolyBufferBytesUsed __attribute__((section(".sdata"))) = 0;
+int MusicStopped __attribute__((section(".sdata"))) = 0;
+VECTOR Zero __attribute__((section(".sdata"))) = { 0, 0, 0, 0 };
+#define TOTALCCLASSUSAGE_OWNER_DECLARATION
+#include "TOTALCCLASSUSAGE.h"
+int TotalCClassUsage __attribute__((section(".sdata"))) = 0;
+int Mick_Darkness __attribute__((section(".sdata"))) = 0;
+int ViewportMode __attribute__((section(".sdata"))) = 0;
+int PatchX __attribute__((section(".sdata"))) = 16;
+int PatchY __attribute__((section(".sdata"))) = 150;
 
 #include "COMPCHECK_H.h"
 
@@ -288,10 +270,8 @@ struct MainTexture
 };
 
 typedef char Main_SDoubleBuffer_size_must_be_172[(sizeof(MainDoubleBuffer) == 172) ? 1 : -1];
-typedef char Main_TexturePalette_prefix_size_must_be_4[
-    (sizeof(MainTexturePalette) == 4) ? 1 : -1];
-typedef char Main_Texture_prefix_size_must_be_32[
-    (sizeof(MainTexture) == 32) ? 1 : -1];
+typedef char Main_TexturePalette_prefix_size_must_be_4[(sizeof(MainTexturePalette) == 4) ? 1 : -1];
+typedef char Main_Texture_prefix_size_must_be_32[(sizeof(MainTexture) == 32) ? 1 : -1];
 
 extern char Main_fpsFormat[];
 
@@ -320,51 +300,51 @@ struct CBruce
 // === External declarations (C linkage) ===
 extern "C"
 {
-    #include <STDIO.H>
-    #include <STRINGS.H>
-    #include <LIBAPI.H>
+#include <STDIO.H>
+#include <STRINGS.H>
+#include <LIBAPI.H>
 
-    #include "STARTUPGAMESTATE.h"
-    #define FRONTFLOWSTATE_DECLARE_BACKOUT
-    #include "FRONTFLOWSTATE.h"
-    #include "GENERATELEVEL.h"
-    // Draw_Rect / Mick_Darken globals (absolute addressing)
-    // db.obj owns pPoly at 0x800DA344; no pPoly_arr array view is needed in MAIN.
-    // db.obj owns pPoly at 0x800DA344; no pPoly2_arr array view is needed in MAIN.
-    // db.obj owns pPoly at 0x800DA344; no pPoly3_arr array view is needed in MAIN.
-    // db.obj owns pPoly at 0x800DA344; no pPoly4_arr array view is needed in MAIN.
-    // db.obj owns pPoly at 0x800DA344; no pPoly5_arr array view is needed in MAIN.
-    // Auto-test stats variables (GP-relative)
-    // Mick_Darken externals
-    // Game_Over externals
-    // Game_Over globals (GP-relative)
-    // Game_Over globals (absolute addressing)
+#include "STARTUPGAMESTATE.h"
+#define FRONTFLOWSTATE_DECLARE_BACKOUT
+#include "FRONTFLOWSTATE.h"
+#include "GENERATELEVEL.h"
+// Draw_Rect / Mick_Darken globals (absolute addressing)
+// db.obj owns pPoly at 0x800DA344; no pPoly_arr array view is needed in MAIN.
+// db.obj owns pPoly at 0x800DA344; no pPoly2_arr array view is needed in MAIN.
+// db.obj owns pPoly at 0x800DA344; no pPoly3_arr array view is needed in MAIN.
+// db.obj owns pPoly at 0x800DA344; no pPoly4_arr array view is needed in MAIN.
+// db.obj owns pPoly at 0x800DA344; no pPoly5_arr array view is needed in MAIN.
+// Auto-test stats variables (GP-relative)
+// Mick_Darken externals
+// Game_Over externals
+// Game_Over globals (GP-relative)
+// Game_Over globals (absolute addressing)
 
-    // Multiplayer stat globals are owned by physics.obj; MAIN uses typed scalar views.
-    // physics.obj owns GWins1 at 0x800D7D48; MAIN reads the live GWins1 scalar.
-    // physics.obj owns GWins1 at 0x800D7D48; MAIN writes the live GWins1 scalar.
-    // physics.obj owns GLosses1 at 0x800D7D4C; MAIN reads the live GLosses1 scalar.
-    // physics.obj owns GLosses1 at 0x800D7D4C; MAIN writes the live GLosses1 scalar.
-    // physics.obj owns GStreak1 at 0x800D7D50; MAIN reads the live GStreak1 scalar.
-    // physics.obj owns GStreak1 at 0x800D7D50; MAIN writes the live GStreak1 scalar.
-    // physics.obj owns GStreak1 at 0x800D7D50; MAIN reloads the live GStreak1 scalar.
-    // physics.obj owns GHighTags1 at 0x800D7D54; MAIN reads the live GHighTags1 scalar.
-    // physics.obj owns GHighTags1 at 0x800D7D54; MAIN writes the live GHighTags1 scalar.
-    // physics.obj owns GWins2 at 0x800D7D58; MAIN reads the live GWins2 scalar.
-    // physics.obj owns GWins2 at 0x800D7D58; MAIN writes the live GWins2 scalar.
-    // physics.obj owns GLosses2 at 0x800D7D5C; MAIN reads the live GLosses2 scalar.
-    // physics.obj owns GLosses2 at 0x800D7D5C; MAIN writes the live GLosses2 scalar.
-    // physics.obj owns GStreak2 at 0x800D7D60; MAIN reads the live GStreak2 scalar.
-    // physics.obj owns GStreak2 at 0x800D7D60; MAIN writes the live GStreak2 scalar.
-    // physics.obj owns GStreak2 at 0x800D7D60; MAIN reloads the live GStreak2 scalar.
-    // physics.obj owns GHighTags2 at 0x800D7D64; MAIN reads the live GHighTags2 scalar.
-    // physics.obj owns GHighTags2 at 0x800D7D64; MAIN writes the live GHighTags2 scalar.
+// Multiplayer stat globals are owned by physics.obj; MAIN uses typed scalar views.
+// physics.obj owns GWins1 at 0x800D7D48; MAIN reads the live GWins1 scalar.
+// physics.obj owns GWins1 at 0x800D7D48; MAIN writes the live GWins1 scalar.
+// physics.obj owns GLosses1 at 0x800D7D4C; MAIN reads the live GLosses1 scalar.
+// physics.obj owns GLosses1 at 0x800D7D4C; MAIN writes the live GLosses1 scalar.
+// physics.obj owns GStreak1 at 0x800D7D50; MAIN reads the live GStreak1 scalar.
+// physics.obj owns GStreak1 at 0x800D7D50; MAIN writes the live GStreak1 scalar.
+// physics.obj owns GStreak1 at 0x800D7D50; MAIN reloads the live GStreak1 scalar.
+// physics.obj owns GHighTags1 at 0x800D7D54; MAIN reads the live GHighTags1 scalar.
+// physics.obj owns GHighTags1 at 0x800D7D54; MAIN writes the live GHighTags1 scalar.
+// physics.obj owns GWins2 at 0x800D7D58; MAIN reads the live GWins2 scalar.
+// physics.obj owns GWins2 at 0x800D7D58; MAIN writes the live GWins2 scalar.
+// physics.obj owns GLosses2 at 0x800D7D5C; MAIN reads the live GLosses2 scalar.
+// physics.obj owns GLosses2 at 0x800D7D5C; MAIN writes the live GLosses2 scalar.
+// physics.obj owns GStreak2 at 0x800D7D60; MAIN reads the live GStreak2 scalar.
+// physics.obj owns GStreak2 at 0x800D7D60; MAIN writes the live GStreak2 scalar.
+// physics.obj owns GStreak2 at 0x800D7D60; MAIN reloads the live GStreak2 scalar.
+// physics.obj owns GHighTags2 at 0x800D7D64; MAIN reads the live GHighTags2 scalar.
+// physics.obj owns GHighTags2 at 0x800D7D64; MAIN writes the live GHighTags2 scalar.
 
-    // FPS_Init globals
-    // The scalar declaration is the original code-generation view; the
-    // three-word owner storage is defined above under the same linker name.
+// FPS_Init globals
+// The scalar declaration is the original code-generation view; the
+// three-word owner storage is defined above under the same linker name.
 
-    // Display pipeline and diagnostic-message helpers.
+// Display pipeline and diagnostic-message helpers.
 }
 #include "MESS.h"
 #define PANEL_PRIMITIVE_API
@@ -498,8 +478,7 @@ u32 CheckSum_Calculate(u32 Score, u8 Random, int gs)
  */
 void CheckSum_Encode(u32 Score, u8 Random, int gs)
 {
-    PutHex4Byte(Code_String,
-                CheckSum_Calculate(Score, Random, gs));
+    PutHex4Byte(Code_String, CheckSum_Calculate(Score, Random, gs));
 }
 
 /**
@@ -512,9 +491,9 @@ void CheckSum_Encode(u32 Score, u8 Random, int gs)
  */
 void DumpAutoTest(void)
 {
-    char pad[24];     // 24 bytes padding before DrawEnv
+    char pad[24]; // 24 bytes padding before DrawEnv
     char DrawEnv[96]; // DRAWENV at sp+0x30
-    char buf[200];    // sprintf buffer at sp+0x90
+    char buf[200]; // sprintf buffer at sp+0x90
     int fntId;
     DRAWENV *pDraw;
     char *pBuf;
@@ -529,8 +508,7 @@ void DumpAutoTest(void)
     SetDefDrawEnv(pDraw, 0, 0, 0x200, 0xf0);
     PutDrawEnv(pDraw);
     pBuf = buf;
-    sprintf(pBuf, sDumpAutoTestFmt, GAutoLevela, GAutoPlayer1a, GAutoPlayer2a,
-            GAutoGamea);
+    sprintf(pBuf, sDumpAutoTestFmt, GAutoLevela, GAutoPlayer1a, GAutoPlayer2a, GAutoGamea);
     FntPrint(pBuf);
     FntFlush(fntId);
 
@@ -613,8 +591,10 @@ void CClass::operator delete(void *p)
 void CalcPolyBufferEnd(void)
 {
     PolyBufferEnd = reinterpret_cast<unsigned char *>(
-        (reinterpret_cast<unsigned int>(reinterpret_cast<MainDoubleBuffer *>(pDoubleBuffer)->Polys) +
-         POLYBUFFERSIZE - 256) & 0x7FFFFFFF);
+        (reinterpret_cast<unsigned int>(
+             reinterpret_cast<MainDoubleBuffer *>(pDoubleBuffer)->Polys) +
+         POLYBUFFERSIZE - 256) &
+        0x7FFFFFFF);
 }
 
 /**
@@ -652,8 +632,7 @@ void Game_Over(void)
 
     Redbook_XABeginFade();
 
-    if (GGame != 8)
-        goto end_section;
+    if (GGame != 8) goto end_section;
 
     {
         if (reinterpret_cast<MainGameOverSkater *>(GSkater[1])->mTags ==
@@ -692,18 +671,14 @@ void Game_Over(void)
             GStreak2 = -GStreak1;
         }
 
-        if (GHighTags1 <
-            reinterpret_cast<MainGameOverSkater *>(GSkater[0])->mTags)
+        if (GHighTags1 < reinterpret_cast<MainGameOverSkater *>(GSkater[0])->mTags)
         {
-            GHighTags1 =
-                reinterpret_cast<MainGameOverSkater *>(GSkater[0])->mTags;
+            GHighTags1 = reinterpret_cast<MainGameOverSkater *>(GSkater[0])->mTags;
         }
 
-        if (GHighTags2 <
-            reinterpret_cast<MainGameOverSkater *>(GSkater[1])->mTags)
+        if (GHighTags2 < reinterpret_cast<MainGameOverSkater *>(GSkater[1])->mTags)
         {
-            GHighTags2 =
-                reinterpret_cast<MainGameOverSkater *>(GSkater[1])->mTags;
+            GHighTags2 = reinterpret_cast<MainGameOverSkater *>(GSkater[1])->mTags;
         }
     }
 
@@ -712,8 +687,7 @@ end_section:
     {
         GState = 1;
         {
-            MainGameOverSkater *skater =
-                reinterpret_cast<MainGameOverSkater *>(GSkater[1]);
+            MainGameOverSkater *skater = reinterpret_cast<MainGameOverSkater *>(GSkater[1]);
             GSpin = 0x50;
             GSpinSpeed = 0x40;
             if (skater != 0)
@@ -811,8 +785,7 @@ void DownloadBMP(char *pData, int x, int y, int ClutX, int ClutY)
     h = reinterpret_cast<MainBitmapHeader *>(pData)->height;
 
     int colors = reinterpret_cast<MainBitmapHeader *>(pData)->colorCount;
-    if (colors == 0)
-        colors = 0x100;
+    if (colors == 0) colors = 0x100;
 
     char *pColor = reinterpret_cast<MainBitmapHeader *>(pData)->colorData;
     int i = 0;
@@ -858,18 +831,15 @@ void DownloadBMP(char *pData, int x, int y, int ClutX, int ClutY)
     DrawSync(0);
 
     int pad = w % 4;
-    if (pad > 0)
-        pad = 4 - pad;
+    if (pad > 0) pad = 4 - pad;
     w += pad;
 
     char *data = static_cast<char *>(Mem_New((w + 3) * h, 1, 1));
-    char *in = reinterpret_cast<MainBitmapHeader *>(pData)->colorData +
-               colors * 4;
+    char *in = reinterpret_cast<MainBitmapHeader *>(pData)->colorData + colors * 4;
     char *out = data + (h - 1) * w;
     for (int row = 0; row < h; row++)
     {
-        for (int c = 0; c < w - pad; c++)
-            *out++ = *in++;
+        for (int c = 0; c < w - pad; c++) *out++ = *in++;
 
         for (int f = 0; f < pad; f++)
         {
@@ -913,8 +883,7 @@ void ReplaceTexture(u32 Checksum, char *pFile)
     int ClutY;
     char *buf;
 
-    pTexture = reinterpret_cast<MainTexture *>(
-        Spool_FindTextureEntry(Checksum));
+    pTexture = reinterpret_cast<MainTexture *>(Spool_FindTextureEntry(Checksum));
     if (pTexture != 0)
     {
         ClutY = Pal256Y;
@@ -964,10 +933,10 @@ struct MainFourVertexWidePrimitive
     short x3;
 };
 
-typedef char Main_ThreeVertexWidePrimitive_size_must_be_0x1A[
-    (sizeof(MainThreeVertexWidePrimitive) == 0x1A) ? 1 : -1];
-typedef char Main_FourVertexWidePrimitive_size_must_be_0x22[
-    (sizeof(MainFourVertexWidePrimitive) == 0x22) ? 1 : -1];
+typedef char Main_ThreeVertexWidePrimitive_size_must_be_0x1A
+    [(sizeof(MainThreeVertexWidePrimitive) == 0x1A) ? 1 : -1];
+typedef char Main_FourVertexWidePrimitive_size_must_be_0x22
+    [(sizeof(MainFourVertexWidePrimitive) == 0x22) ? 1 : -1];
 
 /** Reflect one GPU primitive X coordinate across the 512-pixel framebuffer. */
 static inline short Main_MirrorPrimitiveX(unsigned short x)
@@ -1085,13 +1054,10 @@ int Display_Viewport(SViewport *pViewport, int ViewportNumber)
 {
     Camera_CurrentMikeCamera = ViewportNumber;
 
-    MainDoubleBuffer *doubleBuffer =
-        reinterpret_cast<MainDoubleBuffer *>(pDoubleBuffer);
-    unsigned int *viewportOT =
-        doubleBuffer->OrderingTable + ViewportNumber * 0x1000;
+    MainDoubleBuffer *doubleBuffer = reinterpret_cast<MainDoubleBuffer *>(pDoubleBuffer);
+    unsigned int *viewportOT = doubleBuffer->OrderingTable + ViewportNumber * 0x1000;
     doubleBuffer->ViewportOT = viewportOT;
-    M3d_RenderSetup(
-        &MikeCamera[ViewportNumber], pViewport, viewportOT);
+    M3d_RenderSetup(&MikeCamera[ViewportNumber], pViewport, viewportOT);
 
     Mick_MapDoit = Mick_MapMode;
     M3d_Render((void *)EnviroList);
@@ -1111,8 +1077,7 @@ int Display_Viewport(SViewport *pViewport, int ViewportNumber)
     int t2 = M3d_OTPushback2;
     M3d_OTPushback = -0x40;
 
-    if (skater->mPhysicsState != 0 &&
-        skater->mInBail == 0)
+    if (skater->mPhysicsState != 0 && skater->mInBail == 0)
     {
         M3d_OTPushback2 = 0x80;
     }
@@ -1230,12 +1195,11 @@ void Display(void)
         Mess_SetRGB(255, 0, 0, 0);
         Mess_SetScale(256);
         Mess_SetTextJustify(0);
-        Mess_DrawText(
-            256, 60, (const char *)pAutoTestRestartName, 0, 0, 256, false);
+        Mess_DrawText(256, 60, (const char *)pAutoTestRestartName, 0, 0, 256, false);
     }
 
-    ApocalypseViewport.Zoom = static_cast<unsigned short>(
-        reinterpret_cast<CCamera *>(CameraList)->GetZoom());
+    ApocalypseViewport.Zoom =
+        static_cast<unsigned short>(reinterpret_cast<CCamera *>(CameraList)->GetZoom());
 
     if (!GameFrozen || Cheat_ScreenShots)
     {
@@ -1286,74 +1250,74 @@ void Display(void)
 
     switch (ViewportMode)
     {
-    case 0:
-        if (!GameFrozen)
-        {
-            if (CloseCam)
+        case 0:
+            if (!GameFrozen)
             {
-                camDist = 386;
-                camPitch = 30;
-                camYOffset = -160;
+                if (CloseCam)
+                {
+                    camDist = 386;
+                    camPitch = 30;
+                    camYOffset = -160;
+                }
+                else
+                {
+                    camDist = 290;
+                    camPitch = 150;
+                    camYOffset = -108;
+                }
             }
-            else
+            Display_Viewport(&ApocalypseViewport, 0);
+            break;
+
+        case 1:
+            if (!GameFrozen)
             {
-                camDist = 290;
-                camPitch = 150;
-                camYOffset = -108;
+                camDist = 286;
+                camPitch = 118;
+                camYOffset = -140;
             }
-        }
-        Display_Viewport(&ApocalypseViewport, 0);
-        break;
+            BlackOut(254, 0, 4, 240);
+            Display_Viewport(&LeftViewport, 0);
+            Display_Viewport(&RightViewport, 1);
+            break;
 
-    case 1:
-        if (!GameFrozen)
-        {
-            camDist = 286;
-            camPitch = 118;
-            camYOffset = -140;
-        }
-        BlackOut(254, 0, 4, 240);
-        Display_Viewport(&LeftViewport, 0);
-        Display_Viewport(&RightViewport, 1);
-        break;
+        case 2:
+            if (!GameFrozen)
+            {
+                camDist = 450;
+                camPitch = 60;
+                camYOffset = -120;
+            }
+            BlackOut(0, 118, 512, 4);
+            Display_Viewport(&TopViewport, 0);
+            Display_Viewport(&BottomViewport, 1);
+            break;
 
-    case 2:
-        if (!GameFrozen)
-        {
-            camDist = 450;
-            camPitch = 60;
-            camYOffset = -120;
-        }
-        BlackOut(0, 118, 512, 4);
-        Display_Viewport(&TopViewport, 0);
-        Display_Viewport(&BottomViewport, 1);
-        break;
+        case 3:
+            if (!GameFrozen)
+            {
+                camDist = 642;
+                camPitch = 32;
+                camYOffset = -172;
+            }
+            BlackOut(256, 0, 256, 120);
+            BlackOut(0, 120, 256, 120);
+            Display_Viewport(&TopLeftViewport, 0);
+            Display_Viewport(&BottomRightViewport, 1);
+            break;
 
-    case 3:
-        if (!GameFrozen)
-        {
-            camDist = 642;
-            camPitch = 32;
-            camYOffset = -172;
-        }
-        BlackOut(256, 0, 256, 120);
-        BlackOut(0, 120, 256, 120);
-        Display_Viewport(&TopLeftViewport, 0);
-        Display_Viewport(&BottomRightViewport, 1);
-        break;
-
-    case 4:
-        if (!GameFrozen)
-        {
-            camDist = 610;
-            camPitch = 0;
-            camYOffset = -200;
-        }
-        BlackOut(304, 0, 208, 88);
-        BlackOut(0, 152, 208, 88);
-        Display_Viewport(&TopLeftBigViewport, 0);
-        Display_Viewport(&BottomRightBigViewport, 1);
-        break;
+        case 4:
+            if (!GameFrozen)
+            {
+                camDist = 610;
+                camPitch = 0;
+                camYOffset = -200;
+            }
+            BlackOut(304, 0, 208, 88);
+            BlackOut(0, 152, 208, 88);
+            Display_Viewport(&TopLeftBigViewport, 0);
+            Display_Viewport(&BottomRightBigViewport, 1);
+            break;
     }
 
     if (Cheat_FlipScreen)
@@ -1368,24 +1332,21 @@ void Display(void)
     {
         if (((MainDisplayBruce *)GSkater[0])->mBalanceMeterActive)
         {
-            Panel_BalanceUD(
-                ((MainDisplayBruce *)GSkater[0])->mBalanceValue,
-                4000, 30, 200, 120, 255, 0xff00);
+            Panel_BalanceUD(((MainDisplayBruce *)GSkater[0])->mBalanceValue, 4000, 30, 200, 120,
+                            255, 0xff00);
         }
     }
     else
     {
         if (((MainDisplayBruce *)GSkater[0])->mBalanceMeterActive)
         {
-            Panel_BalanceUD(
-                ((MainDisplayBruce *)GSkater[0])->mBalanceValue,
-                4000, 25, 80, 120, 255, 0xff00);
+            Panel_BalanceUD(((MainDisplayBruce *)GSkater[0])->mBalanceValue, 4000, 25, 80, 120, 255,
+                            0xff00);
         }
         if (((MainDisplayBruce *)GSkater[1])->mBalanceMeterActive)
         {
-            Panel_BalanceUD(
-                ((MainDisplayBruce *)GSkater[1])->mBalanceValue,
-                4000, 25, 336, 120, 255, 0xff00);
+            Panel_BalanceUD(((MainDisplayBruce *)GSkater[1])->mBalanceValue, 4000, 25, 336, 120,
+                            255, 0xff00);
         }
     }
 
@@ -1407,9 +1368,7 @@ void Display(void)
 
     int polyBufferStart = (int)reinterpret_cast<MainDoubleBuffer *>(pDoubleBuffer)->Polys;
     int polyBufferEnd = reinterpret_cast<int>(pPoly);
-    PolyBufferBytesUsed =
-        (polyBufferEnd & 0x7fffffff) -
-        (polyBufferStart & 0x7fffffff);
+    PolyBufferBytesUsed = (polyBufferEnd & 0x7fffffff) - (polyBufferStart & 0x7fffffff);
 }
 
 /** MAIN-owned frame-loop state stored alongside the FPS counters. */
@@ -1425,8 +1384,7 @@ namespace MainAddressViewOwners
 {
 extern "C"
 {
-static char Main_fpsFormat[]
-    __attribute__((section(".sdata"))) = " %d FPS";
+static char Main_fpsFormat[] __attribute__((section(".sdata"))) = " %d FPS";
 }
 }
 
@@ -1437,8 +1395,7 @@ namespace MainAddressViewOwners
 {
 extern "C"
 {
-    static char DefaultPSH[]
-        __attribute__((section(".sdata"))) = "sk2anim";
+static char DefaultPSH[] __attribute__((section(".sdata"))) = "sk2anim";
 }
 }
 /**
@@ -1539,8 +1496,7 @@ int FPS_Display(void)
             }
             else
             {
-                Font_String(
-                    450, 210, tmp1, 50 + FPS_Pulse, 50, 50, 1);
+                Font_String(450, 210, tmp1, 50 + FPS_Pulse, 50, 50, 1);
             }
             Font_Display();
         }
@@ -1619,8 +1575,8 @@ struct MainSetSkaterBruce
     int mSkaterType;
 };
 
-typedef char Main_SetSkaterBruce_prefix_size_must_be_0xDAC[
-    (sizeof(MainSetSkaterBruce) == 0xDAC) ? 1 : -1];
+typedef char
+    Main_SetSkaterBruce_prefix_size_must_be_0xDAC[(sizeof(MainSetSkaterBruce) == 0xDAC) ? 1 : -1];
 /**
  * Absolute-addressed call-site view of MAIN's `DefaultPSH` string.
  *
@@ -1630,8 +1586,7 @@ typedef char Main_SetSkaterBruce_prefix_size_must_be_0xDAC[
 extern char DefaultPSH[];
 void SetSkater(CBruce *pBruce, char *filename)
 {
-    if (Create_UseSkater(
-            reinterpret_cast<MainSetSkaterBruce *>(pBruce)->mSkaterType) != 0)
+    if (Create_UseSkater(reinterpret_cast<MainSetSkaterBruce *>(pBruce)->mSkaterType) != 0)
     {
         Create_BuildSkater(reinterpret_cast<CSuper *>(pBruce));
         return;
@@ -1641,13 +1596,10 @@ void SetSkater(CBruce *pBruce, char *filename)
     int mAnimPartCount = 0;
     char *PSH_ModelHierarchy[32];
     int mModelPartCount = 0;
-    char *pData1 = Spool_LoadPSH(
-        DefaultPSH, PSH_AnimHierarchy, &mAnimPartCount, 32);
-    char *pData2 = Spool_LoadPSH(
-        filename, PSH_ModelHierarchy, &mModelPartCount, 32);
-    reinterpret_cast<CSuper *>(pBruce)->CalculateAnimOrder(
-        PSH_AnimHierarchy, mAnimPartCount,
-        PSH_ModelHierarchy, mModelPartCount);
+    char *pData1 = Spool_LoadPSH(DefaultPSH, PSH_AnimHierarchy, &mAnimPartCount, 32);
+    char *pData2 = Spool_LoadPSH(filename, PSH_ModelHierarchy, &mModelPartCount, 32);
+    reinterpret_cast<CSuper *>(pBruce)->CalculateAnimOrder(PSH_AnimHierarchy, mAnimPartCount,
+                                                           PSH_ModelHierarchy, mModelPartCount);
     Mem_Delete(pData1);
     Mem_Delete(pData2);
 }
@@ -1675,10 +1627,8 @@ struct MainCreationBruce
     unsigned char _remainingState[0x146C - 0xDB0];
 };
 
-typedef char MainCreationBruce_size_check[
-    (sizeof(MainCreationBruce) == 0x146C) ? 1 : -1];
-typedef char MainCreationCamera_size_check[
-    (sizeof(MainCreationCamera) == 0x684) ? 1 : -1];
+typedef char MainCreationBruce_size_check[(sizeof(MainCreationBruce) == 0x146C) ? 1 : -1];
+typedef char MainCreationCamera_size_check[(sizeof(MainCreationCamera) == 0x684) ? 1 : -1];
 
 void CreateSkatersAndCameras(void)
 {
@@ -1687,8 +1637,7 @@ void CreateSkatersAndCameras(void)
     CBruce **skaters = GSkater;
     skaters[0] = 0;
     skaters[1] = 0;
-    if (GNumberOfPlayers == 2 && GGame != 7)
-        NumberOfOnscreenSkaters = 2;
+    if (GNumberOfPlayers == 2 && GGame != 7) NumberOfOnscreenSkaters = 2;
     int i = 0;
     if (NumberOfOnscreenSkaters != 0)
     {
@@ -1700,35 +1649,28 @@ void CreateSkatersAndCameras(void)
         do
         {
             MainCreationBruce *pBruce =
-                (MainCreationBruce *)::CItem::operator new(
-                    sizeof(MainCreationBruce));
+                (MainCreationBruce *)::CItem::operator new(sizeof(MainCreationBruce));
             if (pBruce != 0)
                 pBruce = reinterpret_cast<MainCreationBruce *>(
-                    CBruceConstructorABI::__6CBruce(
-                        reinterpret_cast<CBruceCtorSlice *>(pBruce)));
+                    CBruceConstructorABI::__6CBruce(reinterpret_cast<CBruceCtorSlice *>(pBruce)));
             int selectedSkater = SelectedSkater;
             GSkater[i] = reinterpret_cast<CBruce *>(pBruce);
             pBruce->mIndex = i;
             pBruce->mSkaterType = selectedSkater;
-            if (i > 0 && (GGame != 7 || GHorsePlayer != 0))
-                pBruce->mSkaterType = SelectedSkater2;
+            if (i > 0 && (GGame != 7 || GHorsePlayer != 0)) pBruce->mSkaterType = SelectedSkater2;
             MainCreationCamera *pCam =
-                (MainCreationCamera *)::CItem::operator new(
-                    sizeof(MainCreationCamera));
-            if (pCam != 0)
-                pCam = ::new (pCam) CCamera(
-                    reinterpret_cast<CBody *>(pBruce), 0);
+                (MainCreationCamera *)::CItem::operator new(sizeof(MainCreationCamera));
+            if (pCam != 0) pCam = ::new (pCam) CCamera(reinterpret_cast<CBody *>(pBruce), 0);
             pCam->mCameraMode = cameraActive;
             pBruce->mpCamera = pCam;
             char *skaterFilename;
             if (!oneP)
-                skaterFilename = *(char **)(
-                    multiplayerStats + pBruce->mSkaterType * sizeof(SStats));
+                skaterFilename =
+                    *(char **)(multiplayerStats + pBruce->mSkaterType * sizeof(SStats));
             else
                 skaterFilename = stats[pBruce->mSkaterType].PSXName;
             SetSkater((CBruce *)pBruce, skaterFilename);
-            if (stats[pBruce->mSkaterType].Ability[11] == 0)
-                pBruce->mExtraFlags |= 2;
+            if (stats[pBruce->mSkaterType].Ability[11] == 0) pBruce->mExtraFlags |= 2;
             pBruce->mpBoardStats = bs;
             reinterpret_cast<CBruce *>(pBruce)->GetStats(i);
             i++;
@@ -1737,16 +1679,12 @@ void CreateSkatersAndCameras(void)
     }
     if (GNumberOfPlayers == 2)
     {
-        ((MainCreationBruce *)GSkater[1])->mpOtherPlayer =
-            (MainCreationBruce *)GSkater[0];
-        ((MainCreationBruce *)GSkater[0])->mpOtherPlayer =
-            (MainCreationBruce *)GSkater[1];
+        ((MainCreationBruce *)GSkater[1])->mpOtherPlayer = (MainCreationBruce *)GSkater[0];
+        ((MainCreationBruce *)GSkater[0])->mpOtherPlayer = (MainCreationBruce *)GSkater[1];
     }
     if (Levels[GLevel].isCompetition != 0 && GGame == 1 && GVideoRestart.NumSkaters == 0)
     {
-        if (GVideoReplay == 0)
-            ((MainCreationBruce *)GSkater[0])->mpCamera
-                ->StartCompetitionIntro();
+        if (GVideoReplay == 0) ((MainCreationBruce *)GSkater[0])->mpCamera->StartCompetitionIntro();
     }
 }
 
@@ -1770,8 +1708,7 @@ struct SVideoInfo
     char reserved_078[0x48];
 };
 
-typedef char Main_SVideoInfo_size_must_be_192[
-    (sizeof(SVideoInfo) == 192) ? 1 : -1];
+typedef char Main_SVideoInfo_size_must_be_192[(sizeof(SVideoInfo) == 192) ? 1 : -1];
 
 /** Powerup lifetime re-armed when a replay carries the S-K-A-T-E letters. */
 struct MainGameInitPowerUp
@@ -1807,8 +1744,7 @@ struct MainGameInitSkater
 
 void ResetOT(void);
 void SetClippingBox(int x, int y, int w, int h);
-void DrawColoredBox(int x, int y, int w, int h, unsigned char r,
-                    unsigned char g, unsigned char b);
+void DrawColoredBox(int x, int y, int w, int h, unsigned char r, unsigned char g, unsigned char b);
 
 /**
  * Game_Init__Fv
@@ -1848,13 +1784,11 @@ void Game_Init(void)
             VblankUpdateBar = 1;
             if (GVideoRestart.NumSkaters == 1)
             {
-                LoadError =
-                    Card_Load(THPS_VIDEO_FILE, GVInfo1.pBlockStart, 0);
+                LoadError = Card_Load(THPS_VIDEO_FILE, GVInfo1.pBlockStart, 0);
             }
             else
             {
-                LoadError = Card_Load(
-                    THPS_VIDEO_FILE, GVInfo1.pBlockStart, GVInfo2.pBlockStart);
+                LoadError = Card_Load(THPS_VIDEO_FILE, GVInfo1.pBlockStart, GVInfo2.pBlockStart);
             }
             VblankUpdateBar = 0;
             if (LoadError != 0)
@@ -1867,17 +1801,14 @@ void Game_Init(void)
                 Mess_SetTextJustify(0);
                 Mess_SetScale(0xFF);
                 Mess_SetRGB(0x96, 0x64, 0x19, 0);
-                Mess_DrawText(
-                    0x100, 0x6E, (const char *)GameText.pLoadFailed, 1, 0, 0x100, 0);
-                Mess_DrawText(
-                    0x100, 0x82, (const char *)GameText.pPressXToContinue, 1, 0, 0x100, 0);
+                Mess_DrawText(0x100, 0x6E, (const char *)GameText.pLoadFailed, 1, 0, 0x100, 0);
+                Mess_DrawText(0x100, 0x82, (const char *)GameText.pPressXToContinue, 1, 0, 0x100,
+                              0);
                 HiRes_DrawOTag();
                 Pad_ClearTriggers(&Pad[0]);
                 Pad_ClearTriggers(&Pad[1]);
-                while (Pad[0].X.Triggered == 0 &&
-                       Pad[1].X.Triggered == 0 &&
-                       Pad[0].Start.Triggered == 0 &&
-                       Pad[1].Start.Triggered == 0)
+                while (Pad[0].X.Triggered == 0 && Pad[1].X.Triggered == 0 &&
+                       Pad[0].Start.Triggered == 0 && Pad[1].Start.Triggered == 0)
                 {
                     Pad_Update();
                 }
@@ -1886,8 +1817,7 @@ void Game_Init(void)
             }
             {
                 int i;
-                SVideoHead *VH1 =
-                    (SVideoHead *)((char *)GVInfo1.pBlockStart + 0x200);
+                SVideoHead *VH1 = (SVideoHead *)((char *)GVInfo1.pBlockStart + 0x200);
                 SHighlight *pDst;
                 SHighlight *pSrc;
 
@@ -1906,8 +1836,7 @@ void Game_Init(void)
             if (GVideoRestart.NumSkaters == 2)
             {
                 int i;
-                SVideoHead *VH2 =
-                    (SVideoHead *)((char *)GVInfo2.pBlockStart + 0x200);
+                SVideoHead *VH2 = (SVideoHead *)((char *)GVInfo2.pBlockStart + 0x200);
                 SHighlight *pDst;
                 SHighlight *pSrc;
 
@@ -1924,8 +1853,7 @@ void Game_Init(void)
                 } while (i < 5);
             }
             GVideoReplay = -1;
-            GVideoRestart.NumSkaters =
-                -GVideoRestart.NumSkaters;
+            GVideoRestart.NumSkaters = -GVideoRestart.NumSkaters;
         }
     }
 
@@ -1935,8 +1863,8 @@ void Game_Init(void)
         SVideoHead *VH;
 
         VblankUpdateBar = 1;
-        LoadError = Card_LoadReplayFromCD(
-            GVInfo1.pBlockStart, GVInfo2.pBlockStart, (char *)DemoName);
+        LoadError =
+            Card_LoadReplayFromCD(GVInfo1.pBlockStart, GVInfo2.pBlockStart, (char *)DemoName);
         DemoName[4]++;
         if (DemoName[4] > 0x4A)
         {
@@ -1974,8 +1902,7 @@ void Game_Init(void)
         if (GVideoRestart.NumSkaters == 2)
         {
             int i;
-            SVideoHead *VH2 =
-                (SVideoHead *)((char *)GVInfo2.pBlockStart + 0x200);
+            SVideoHead *VH2 = (SVideoHead *)((char *)GVInfo2.pBlockStart + 0x200);
             SHighlight *pDst;
             SHighlight *pSrc;
 
@@ -2016,8 +1943,7 @@ void Game_Init(void)
     }
     else
     {
-        GVideoFlags =
-            ((SVideoHead *)((char *)GVInfo1.pBlockStart + 0x200))->VideoFlags;
+        GVideoFlags = ((SVideoHead *)((char *)GVInfo1.pBlockStart + 0x200))->VideoFlags;
     }
 
     if (GGame == 1 && Levels[GLevel].isCompetition == 0)
@@ -2044,24 +1970,21 @@ void Game_Init(void)
 
     if (GVideoReplay != 0)
     {
-        MainGameInitReplaySkater *pSkater =
-            (MainGameInitReplaySkater *)MechList;
+        MainGameInitReplaySkater *pSkater = (MainGameInitReplaySkater *)MechList;
         MainGameInitReplaySkater *pSkater2 = pSkater->mNextItem;
 
         if (GVideoReplay > 0)
         {
             GVInfo1.ReplayHighlight = GVideoReplay;
             GVInfo2.ReplayHighlight = GVideoReplay;
-            Video_Start(
-                reinterpret_cast<CBruce *>(pSkater), VIDEO_PLAYBACK,
-                GVInfo1.Highlights[GVideoReplay - 1].FromFrame,
-                GVInfo1.Highlights[GVideoReplay - 1].ToFrame);
+            Video_Start(reinterpret_cast<CBruce *>(pSkater), VIDEO_PLAYBACK,
+                        GVInfo1.Highlights[GVideoReplay - 1].FromFrame,
+                        GVInfo1.Highlights[GVideoReplay - 1].ToFrame);
             if (pSkater2 != 0)
             {
-                Video_Start(
-                    reinterpret_cast<CBruce *>(pSkater2), VIDEO_PLAYBACK,
-                    GVInfo1.Highlights[GVideoReplay - 1].FromFrame,
-                    GVInfo1.Highlights[GVideoReplay - 1].ToFrame);
+                Video_Start(reinterpret_cast<CBruce *>(pSkater2), VIDEO_PLAYBACK,
+                            GVInfo1.Highlights[GVideoReplay - 1].FromFrame,
+                            GVInfo1.Highlights[GVideoReplay - 1].ToFrame);
             }
             Video_SyncObsIfNeeded();
         }
@@ -2070,19 +1993,16 @@ void Game_Init(void)
             GVideoReplay = 0;
             GVInfo1.ReplayHighlight = 0;
             GVInfo2.ReplayHighlight = 0;
-            Video_Start(reinterpret_cast<CBruce *>(pSkater), VIDEO_PLAYBACK,
-                        1, 0x7FFFFFFF);
+            Video_Start(reinterpret_cast<CBruce *>(pSkater), VIDEO_PLAYBACK, 1, 0x7FFFFFFF);
             if (pSkater2 != 0)
             {
-                Video_Start(reinterpret_cast<CBruce *>(pSkater2),
-                            VIDEO_PLAYBACK, 1, 0x7FFFFFFF);
+                Video_Start(reinterpret_cast<CBruce *>(pSkater2), VIDEO_PLAYBACK, 1, 0x7FFFFFFF);
             }
         }
         GState = 0;
         Flash_Reset();
         {
-            MainGameInitReplaySkater *pMech =
-                (MainGameInitReplaySkater *)MechList;
+            MainGameInitReplaySkater *pMech = (MainGameInitReplaySkater *)MechList;
 
             pMech->mPlayTime = Xblanks + 0x34BDE;
             if (pMech->mNextItem != 0)
@@ -2100,18 +2020,14 @@ void Game_Init(void)
         pSkater = (MainGameInitReplaySkater *)MechList;
         pSkater2 = pSkater->mNextItem;
         if (GVInfo1.VideoMode == 0 &&
-            reinterpret_cast<CCamera *>(CameraList)
-                    ->InCompetitionIntro() == 0)
+            reinterpret_cast<CCamera *>(CameraList)->InCompetitionIntro() == 0)
         {
-            Video_Start(reinterpret_cast<CBruce *>(pSkater), VIDEO_RECORD,
-                        1, 0x7FFFFFFF);
+            Video_Start(reinterpret_cast<CBruce *>(pSkater), VIDEO_RECORD, 1, 0x7FFFFFFF);
             if (pSkater2 != 0)
             {
-                Video_Start(reinterpret_cast<CBruce *>(pSkater2), VIDEO_RECORD,
-                            1, 0x7FFFFFFF);
+                Video_Start(reinterpret_cast<CBruce *>(pSkater2), VIDEO_RECORD, 1, 0x7FFFFFFF);
             }
-            ((SVideoHead *)((char *)GVInfo1.pBlockStart + 0x200))->VideoFlags =
-                GVideoFlags;
+            ((SVideoHead *)((char *)GVInfo1.pBlockStart + 0x200))->VideoFlags = GVideoFlags;
         }
     }
 
@@ -2120,12 +2036,9 @@ void Game_Init(void)
     {
         PadEnableCom(1);
     }
-    ((MainGameInitSkater *)GSkater[0])->mVelX =
-        ((MainGameInitSkater *)GSkater[0])->mFrontX * 20;
-    ((MainGameInitSkater *)GSkater[0])->mVelY =
-        ((MainGameInitSkater *)GSkater[0])->mFrontY * 20;
-    ((MainGameInitSkater *)GSkater[0])->mVelZ =
-        ((MainGameInitSkater *)GSkater[0])->mFrontZ * 20;
+    ((MainGameInitSkater *)GSkater[0])->mVelX = ((MainGameInitSkater *)GSkater[0])->mFrontX * 20;
+    ((MainGameInitSkater *)GSkater[0])->mVelY = ((MainGameInitSkater *)GSkater[0])->mFrontY * 20;
+    ((MainGameInitSkater *)GSkater[0])->mVelZ = ((MainGameInitSkater *)GSkater[0])->mFrontZ * 20;
     {
         int i;
 
@@ -2141,34 +2054,21 @@ void Game_Init(void)
     (void)XStart;
 }
 
-    int MemTotal __attribute__((section(".sdata"))) = 0;
-    static char Main_systemAreaLabel[]
-        __attribute__((section(".sdata"))) = "System Area";
-    static char Main_codeLabel[]
-        __attribute__((section(".sdata"))) = "Code";
-    static char Main_polyBuffersLabel[]
-        __attribute__((section(".sdata"))) = "2 Poly Buffers ";
-    static char Main_orderingTablesLabel[]
-        __attribute__((section(".sdata"))) = "2 OTs";
-    static char Main_tricksFileName[]
-        __attribute__((section(".sdata"))) = "Tricks.bin";
-    static char Main_triggerFileLabel[]
-        __attribute__((section(".sdata"))) = ".TRG file";
-    static char Main_classUsageLabel[]
-        __attribute__((section(".sdata"))) = "CClass usage";
-    static char Main_palettesLabel[]
-        __attribute__((section(".sdata"))) = "Palletes";
-    static char Main_packRegionsLabel[]
-        __attribute__((section(".sdata"))) = "Pack Regions";
-    static char Main_textureInfoLabel[]
-        __attribute__((section(".sdata"))) = "Texture Info";
-    static char Main_vabHeadersLabel[]
-        __attribute__((section(".sdata"))) = "VAB Headers";
-    static char Main_memoryDivider[]
-        __attribute__((section(".sdata"))) = "---------\n";
-    static char Main_freeMemoryLabel[]
-        __attribute__((section(".sdata"))) = "Free Memory";
-    int DemoDiskMode __attribute__((section(".sdata"))) = 0;
+int MemTotal __attribute__((section(".sdata"))) = 0;
+static char Main_systemAreaLabel[] __attribute__((section(".sdata"))) = "System Area";
+static char Main_codeLabel[] __attribute__((section(".sdata"))) = "Code";
+static char Main_polyBuffersLabel[] __attribute__((section(".sdata"))) = "2 Poly Buffers ";
+static char Main_orderingTablesLabel[] __attribute__((section(".sdata"))) = "2 OTs";
+static char Main_tricksFileName[] __attribute__((section(".sdata"))) = "Tricks.bin";
+static char Main_triggerFileLabel[] __attribute__((section(".sdata"))) = ".TRG file";
+static char Main_classUsageLabel[] __attribute__((section(".sdata"))) = "CClass usage";
+static char Main_palettesLabel[] __attribute__((section(".sdata"))) = "Palletes";
+static char Main_packRegionsLabel[] __attribute__((section(".sdata"))) = "Pack Regions";
+static char Main_textureInfoLabel[] __attribute__((section(".sdata"))) = "Texture Info";
+static char Main_vabHeadersLabel[] __attribute__((section(".sdata"))) = "VAB Headers";
+static char Main_memoryDivider[] __attribute__((section(".sdata"))) = "---------\n";
+static char Main_freeMemoryLabel[] __attribute__((section(".sdata"))) = "Free Memory";
+int DemoDiskMode __attribute__((section(".sdata"))) = 0;
 
 
 /**
@@ -2197,10 +2097,8 @@ void System_Logic(void)
         Pad[0] = Pad[1];
         Pad[1] = temp;
     }
-    if (GClear1 != 0)
-        Pad_ClearAllOne(0);
-    if (GClear2 != 0)
-        Pad_ClearAllOne(1);
+    if (GClear1 != 0) Pad_ClearAllOne(0);
+    if (GClear2 != 0) Pad_ClearAllOne(1);
 }
 
 /**
@@ -2241,61 +2139,52 @@ struct MainLogicSkater
     int mPhysicsState;
 };
 
-typedef char MainLogicCamera_prefix_size_must_be_0x5C8[
-    (sizeof(MainLogicCamera) == 0x5C8) ? 1 : -1];
-typedef char MainLogicSkater_prefix_size_must_be_0x1070[
-    (sizeof(MainLogicSkater) == 0x1070) ? 1 : -1];
+typedef char MainLogicCamera_prefix_size_must_be_0x5C8[(sizeof(MainLogicCamera) == 0x5C8) ? 1 : -1];
+typedef char
+    MainLogicSkater_prefix_size_must_be_0x1070[(sizeof(MainLogicSkater) == 0x1070) ? 1 : -1];
 void CheckEndGame(void)
 {
     MainLogicSkater *p0 = reinterpret_cast<MainLogicSkater *>(GSkater[0]);
     MainLogicSkater *p1;
-    if ((((p0->mPhysicsState == 0 && p0->mManual == 0) ||
-          p0->mPhysicsState == 7)
-         && (((p1 = reinterpret_cast<MainLogicSkater *>(GSkater[1])) == 0
-              || (p1->mPhysicsState == 0 && p1->mManual == 0))
-             || p1->mPhysicsState == 7))
-        && (GState == 1 && (GSpin = GSpin - 1, GSpin < 1)))
+    if ((((p0->mPhysicsState == 0 && p0->mManual == 0) || p0->mPhysicsState == 7) &&
+         (((p1 = reinterpret_cast<MainLogicSkater *>(GSkater[1])) == 0 ||
+           (p1->mPhysicsState == 0 && p1->mManual == 0)) ||
+          p1->mPhysicsState == 7)) &&
+        (GState == 1 && (GSpin = GSpin - 1, GSpin < 1)))
     {
-        if (GGame != 7 &&
-            reinterpret_cast<MainLogicSkater *>(GSkater[0])->mLandedTotal != 0)
+        if (GGame != 7 && reinterpret_cast<MainLogicSkater *>(GSkater[0])->mLandedTotal != 0)
         {
             GSpinSpeed = 0;
             GSpin = GState;
             return;
         }
 
-        MainLogicSkater *b0 =
-            reinterpret_cast<MainLogicSkater *>(GSkater[0]);
+        MainLogicSkater *b0 = reinterpret_cast<MainLogicSkater *>(GSkater[0]);
         if (b0->mSFXGrind != 0)
         {
             SFX_Stop(b0->mSFXWallride);
             reinterpret_cast<MainLogicSkater *>(GSkater[0])->mSFXGrind = 0;
             if (reinterpret_cast<MainLogicSkater *>(GSkater[0])->mSFXGrind != 0)
             {
-                SFX_Stop(
-                    reinterpret_cast<MainLogicSkater *>(GSkater[0])->mSFXGrind);
+                SFX_Stop(reinterpret_cast<MainLogicSkater *>(GSkater[0])->mSFXGrind);
                 reinterpret_cast<MainLogicSkater *>(GSkater[0])->mSFXGrind = 0;
             }
         }
         if (reinterpret_cast<MainLogicSkater *>(GSkater[0])->mSFXGround != 0)
         {
-            SFX_Stop(
-                reinterpret_cast<MainLogicSkater *>(GSkater[0])->mSFXGround);
+            SFX_Stop(reinterpret_cast<MainLogicSkater *>(GSkater[0])->mSFXGround);
             reinterpret_cast<MainLogicSkater *>(GSkater[0])->mSFXGround = 0;
         }
         if (GSkater[1] != 0)
         {
             if (reinterpret_cast<MainLogicSkater *>(GSkater[1])->mSFXGrind != 0)
             {
-                SFX_Stop(
-                    reinterpret_cast<MainLogicSkater *>(GSkater[1])->mSFXGrind);
+                SFX_Stop(reinterpret_cast<MainLogicSkater *>(GSkater[1])->mSFXGrind);
                 reinterpret_cast<MainLogicSkater *>(GSkater[1])->mSFXGrind = 0;
             }
-            if (GSkater[1] != 0 &&
-                reinterpret_cast<MainLogicSkater *>(GSkater[1])->mSFXGround != 0)
+            if (GSkater[1] != 0 && reinterpret_cast<MainLogicSkater *>(GSkater[1])->mSFXGround != 0)
             {
-                SFX_Stop(
-                    reinterpret_cast<MainLogicSkater *>(GSkater[1])->mSFXGround);
+                SFX_Stop(reinterpret_cast<MainLogicSkater *>(GSkater[1])->mSFXGround);
                 reinterpret_cast<MainLogicSkater *>(GSkater[1])->mSFXGround = 0;
             }
         }
@@ -2318,13 +2207,10 @@ void CheckEndGame(void)
 void CheckSkatersStop(void)
 {
     int state = GState;
-    if (state != 1)
-        return;
-    if (GamePaused != 0)
-        return;
+    if (state != 1) return;
+    if (GamePaused != 0) return;
 
-    MainLogicSkater *player0 =
-        reinterpret_cast<MainLogicSkater *>(GSkater[0]);
+    MainLogicSkater *player0 = reinterpret_cast<MainLogicSkater *>(GSkater[0]);
     if (player0->mPhysicsState == 0)
     {
         if (player0->mManual == 0)
@@ -2336,15 +2222,11 @@ void CheckSkatersStop(void)
         }
     }
 
-    if (GNumberOfPlayers != 2)
-        return;
+    if (GNumberOfPlayers != 2) return;
 
-    MainLogicSkater *player1 =
-        reinterpret_cast<MainLogicSkater *>(GSkater[1]);
-    if (player1->mPhysicsState != 0)
-        return;
-    if (player1->mManual != 0)
-        return;
+    MainLogicSkater *player1 = reinterpret_cast<MainLogicSkater *>(GSkater[1]);
+    if (player1->mPhysicsState != 0) return;
+    if (player1->mManual != 0) return;
 
     int t = Pad[1].Circle.Pressed;
     Pad_ClearAllOne(1);
@@ -2371,8 +2253,7 @@ void Game_Logic(void)
     Video_HandleStepping();
     CheckSkatersStop();
 
-    if ((GNumberOfPlayers == 1 || (GGame == 7 && GHorseClearInput2 != 0)) &&
-        Cheat_ScreenShots == 0)
+    if ((GNumberOfPlayers == 1 || (GGame == 7 && GHorseClearInput2 != 0)) && Cheat_ScreenShots == 0)
     {
         /* Preserve player 2's Select across the single-player input clear.
          * The original saves and restores INSIDE the conditional
@@ -2386,8 +2267,7 @@ void Game_Logic(void)
     Font_Reset();
 
     int Frozen = 0;
-    if (GamePaused != 0 || GameFrozen != 0)
-        Frozen = 1;
+    if (GamePaused != 0 || GameFrozen != 0) Frozen = 1;
 
     if (!Frozen)
     {
@@ -2411,28 +2291,22 @@ void Game_Logic(void)
             /* Constant slow spin on the frontend skater display. */
             if (GGame != 7 && GState == 1 && GSpin < 0x28)
             {
-                if ((reinterpret_cast<MainLogicSkater *>(GSkater[0])
-                             ->mPhysicsState == 0 &&
-                     reinterpret_cast<MainLogicSkater *>(GSkater[0])
-                             ->mManual == 0) ||
-                    reinterpret_cast<MainLogicSkater *>(GSkater[0])
-                            ->mPhysicsState == 7)
+                if ((reinterpret_cast<MainLogicSkater *>(GSkater[0])->mPhysicsState == 0 &&
+                     reinterpret_cast<MainLogicSkater *>(GSkater[0])->mManual == 0) ||
+                    reinterpret_cast<MainLogicSkater *>(GSkater[0])->mPhysicsState == 7)
                 {
                     if (GSkater[1] == 0 ||
-                        (reinterpret_cast<MainLogicSkater *>(GSkater[1])
-                                 ->mPhysicsState == 0 &&
-                         reinterpret_cast<MainLogicSkater *>(GSkater[1])
-                                 ->mManual == 0) ||
-                        reinterpret_cast<MainLogicSkater *>(GSkater[1])
-                                ->mPhysicsState == 7)
+                        (reinterpret_cast<MainLogicSkater *>(GSkater[1])->mPhysicsState == 0 &&
+                         reinterpret_cast<MainLogicSkater *>(GSkater[1])->mManual == 0) ||
+                        reinterpret_cast<MainLogicSkater *>(GSkater[1])->mPhysicsState == 7)
                     {
                         int spin = GSpinSpeed;
-                        reinterpret_cast<MainLogicSkater *>(GSkater[0])
-                            ->mpCamera->extra_YRot += spin;
+                        reinterpret_cast<MainLogicSkater *>(GSkater[0])->mpCamera->extra_YRot +=
+                            spin;
                         if (GSkater[1] != 0)
                         {
-                            reinterpret_cast<MainLogicSkater *>(GSkater[1])
-                                ->mpCamera->extra_YRot += spin;
+                            reinterpret_cast<MainLogicSkater *>(GSkater[1])->mpCamera->extra_YRot +=
+                                spin;
                         }
                     }
                 }
@@ -2441,8 +2315,7 @@ void Game_Logic(void)
     }
     else
     {
-        if (GState == 1)
-            Ob_AI(&CameraList);
+        if (GState == 1) Ob_AI(&CameraList);
     }
 
     Shatter_MaybeMakeGlassShatterSound();
@@ -2486,8 +2359,7 @@ void Game_Logic(void)
         }
     }
 
-    if (MechList->IsDead() != 0)
-        EndCode = ENDCODE_BRUCEDIED;
+    if (MechList->IsDead() != 0) EndCode = ENDCODE_BRUCEDIED;
 }
 
 /**
@@ -2612,22 +2484,19 @@ int main(void)
     Db_Init();
 
     Pad_Update();
-    if (!Pad[0].Start.Pressed &&
-        (!Pad[0].LeftOne.Pressed || !Pad[0].LeftTwo.Pressed))
+    if (!Pad[0].Start.Pressed && (!Pad[0].LeftOne.Pressed || !Pad[0].LeftTwo.Pressed))
     {
         GameFMV_PlayMovie(-1);
     }
 
     Pad_Update();
-    if (!Pad[0].Start.Pressed &&
-        (!Pad[0].LeftOne.Pressed || !Pad[0].LeftTwo.Pressed))
+    if (!Pad[0].Start.Pressed && (!Pad[0].LeftOne.Pressed || !Pad[0].LeftTwo.Pressed))
     {
         GameFMV_PlayMovie(-2);
     }
 
     Pad_Update();
-    if (!Pad[0].Start.Pressed &&
-        (!Pad[0].LeftOne.Pressed || !Pad[0].LeftTwo.Pressed))
+    if (!Pad[0].Start.Pressed && (!Pad[0].LeftOne.Pressed || !Pad[0].LeftTwo.Pressed))
     {
         GameFMV_PlayMovie(-25);
     }
@@ -2645,9 +2514,7 @@ int main(void)
     {
         Pause(1);
         Pad_Update();
-        if (Pad[0].Start.Triggered ||
-            Pad[0].X.Triggered ||
-            Pad[1].Start.Triggered ||
+        if (Pad[0].Start.Triggered || Pad[0].X.Triggered || Pad[1].Start.Triggered ||
             Pad[1].X.Triggered)
         {
             break;
@@ -2672,22 +2539,19 @@ int main(void)
     Db_Init();
 
     Pad_Update();
-    if (!Pad[0].Start.Pressed &&
-        (!Pad[0].LeftOne.Pressed || !Pad[0].LeftTwo.Pressed))
+    if (!Pad[0].Start.Pressed && (!Pad[0].LeftOne.Pressed || !Pad[0].LeftTwo.Pressed))
     {
         GameFMV_PlayMovie(-1);
     }
 
     Pad_Update();
-    if (!Pad[0].Start.Pressed &&
-        (!Pad[0].LeftOne.Pressed || !Pad[0].LeftTwo.Pressed))
+    if (!Pad[0].Start.Pressed && (!Pad[0].LeftOne.Pressed || !Pad[0].LeftTwo.Pressed))
     {
         GameFMV_PlayMovie(-2);
     }
 
     Pad_Update();
-    if (!Pad[0].Start.Pressed &&
-        (!Pad[0].LeftOne.Pressed || !Pad[0].LeftTwo.Pressed))
+    if (!Pad[0].Start.Pressed && (!Pad[0].LeftOne.Pressed || !Pad[0].LeftTwo.Pressed))
     {
         GameFMV_PlayMovie(-25);
     }
@@ -2706,79 +2570,76 @@ namespace MainAddressViewOwners
 {
 extern "C"
 {
-    static char s_S2MarketBmp[]
-        __attribute__((section(".sdata"))) = "s2market.bmp";
+static char s_S2MarketBmp[] __attribute__((section(".sdata"))) = "s2market.bmp";
 }
 }
 
-    void *OldSP __attribute__((section(".sdata"))) = 0;
-    int CurrentGameLevel __attribute__((section(".sdata"))) = 0;
-    int CurrentWaterDamage __attribute__((section(".sdata"))) = 0;
-    int CurrentDifficultyLevel __attribute__((section(".sdata"))) = 0;
-    int XFrames __attribute__((section(".sdata"))) = 0;
-    int TimeScale __attribute__((section(".sdata"))) = 0;
-    int TimeScaleSquared __attribute__((section(".sdata"))) = 0;
-    unsigned char *PolyBufferEnd __attribute__((section(".sdata"))) = 0;
-    int GState __attribute__((section(".sdata"))) = 0;
-    int GSpin __attribute__((section(".sdata"))) = 0;
-    int GSpinSpeed __attribute__((section(".sdata"))) = 0;
-    int GStartTime __attribute__((section(".sdata"))) = 0;
-    int GSkaterRegion[2] __attribute__((section(".sdata"))) = {0, 0};
-    int GHorsePlayer __attribute__((section(".sdata"))) = 0;
-    int GHorseMode __attribute__((section(".sdata"))) = 0;
-    int GHorseScore __attribute__((section(".sdata"))) = 0;
-    int GHorseDoneStart __attribute__((section(".sdata"))) = 0;
-    int GHorseRestart __attribute__((section(".sdata"))) = 0;
-    /** Per-player counts of letters accumulated in the current HORSE round. */
-    int GHorseLetters[2] __attribute__((section(".sdata"))) = {0, 0};
-    int GHorseCursorPos __attribute__((section(".sdata"))) = 0;
-    int GHorseWaitTime __attribute__((section(".sdata"))) = 0;
-    int GHorseClearInput2 __attribute__((section(".sdata"))) = 0;
-    char GVideoFlags __attribute__((section(".sdata"))) = 0;
-    short *GTricksKeys __attribute__((section(".sdata"))) = 0;
-    short *GGrindTricksList __attribute__((section(".sdata"))) = 0;
-    short *GBailsList __attribute__((section(".sdata"))) = 0;
-    CBruce *GSkater[2]
-        __attribute__((section(".sdata"))) = {0, 0};
+void *OldSP __attribute__((section(".sdata"))) = 0;
+int CurrentGameLevel __attribute__((section(".sdata"))) = 0;
+int CurrentWaterDamage __attribute__((section(".sdata"))) = 0;
+int CurrentDifficultyLevel __attribute__((section(".sdata"))) = 0;
+int XFrames __attribute__((section(".sdata"))) = 0;
+int TimeScale __attribute__((section(".sdata"))) = 0;
+int TimeScaleSquared __attribute__((section(".sdata"))) = 0;
+unsigned char *PolyBufferEnd __attribute__((section(".sdata"))) = 0;
+int GState __attribute__((section(".sdata"))) = 0;
+int GSpin __attribute__((section(".sdata"))) = 0;
+int GSpinSpeed __attribute__((section(".sdata"))) = 0;
+int GStartTime __attribute__((section(".sdata"))) = 0;
+int GSkaterRegion[2] __attribute__((section(".sdata"))) = { 0, 0 };
+int GHorsePlayer __attribute__((section(".sdata"))) = 0;
+int GHorseMode __attribute__((section(".sdata"))) = 0;
+int GHorseScore __attribute__((section(".sdata"))) = 0;
+int GHorseDoneStart __attribute__((section(".sdata"))) = 0;
+int GHorseRestart __attribute__((section(".sdata"))) = 0;
+/** Per-player counts of letters accumulated in the current HORSE round. */
+int GHorseLetters[2] __attribute__((section(".sdata"))) = { 0, 0 };
+int GHorseCursorPos __attribute__((section(".sdata"))) = 0;
+int GHorseWaitTime __attribute__((section(".sdata"))) = 0;
+int GHorseClearInput2 __attribute__((section(".sdata"))) = 0;
+char GVideoFlags __attribute__((section(".sdata"))) = 0;
+short *GTricksKeys __attribute__((section(".sdata"))) = 0;
+short *GGrindTricksList __attribute__((section(".sdata"))) = 0;
+short *GBailsList __attribute__((section(".sdata"))) = 0;
+CBruce *GSkater[2] __attribute__((section(".sdata"))) = { 0, 0 };
 
-    CPowerUp *GPowS __attribute__((section(".sdata"))) = 0;
-    CPowerUp *GPowK __attribute__((section(".sdata"))) = 0;
-    CPowerUp *GPowA __attribute__((section(".sdata"))) = 0;
-    CPowerUp *GPowT __attribute__((section(".sdata"))) = 0;
-    CPowerUp *GPowE __attribute__((section(".sdata"))) = 0;
-    CPowerUp *GPowTape __attribute__((section(".sdata"))) = 0;
-    int GClear1 __attribute__((section(".sdata"))) = 0;
-    int GClear2 __attribute__((section(".sdata"))) = 0;
-    int GRenderedInvisible __attribute__((section(".sdata"))) = 0;
-    int GRenderedCulled __attribute__((section(".sdata"))) = 0;
-    int GRenderedFast __attribute__((section(".sdata"))) = 0;
-    int GRenderedNonRotated __attribute__((section(".sdata"))) = 0;
-    int GRenderedRotated __attribute__((section(".sdata"))) = 0;
-    int NumPolyF3 __attribute__((section(".sdata"))) = 0;
-    int NumPolyFT3 __attribute__((section(".sdata"))) = 0;
-    int NumPolyG3 __attribute__((section(".sdata"))) = 0;
-    int NumPolyGT3 __attribute__((section(".sdata"))) = 0;
-    int NumPolyF4 __attribute__((section(".sdata"))) = 0;
-    int NumPolyFT4 __attribute__((section(".sdata"))) = 0;
-    int NumPolyG4 __attribute__((section(".sdata"))) = 0;
-    int NumPolyGT4 __attribute__((section(".sdata"))) = 0;
-    int NumSetTile __attribute__((section(".sdata"))) = 0;
-    int NumTile1 __attribute__((section(".sdata"))) = 0;
-    int NumOther __attribute__((section(".sdata"))) = 0;
-    int CloseCam __attribute__((section(".sdata"))) = 0;
-    int PrimitiveCount __attribute__((section(".sdata"))) = 0;
-    int XFramesShifted __attribute__((section(".sdata"))) = 0;
-    int FPS __attribute__((section(".sdata"))) = 0;
-    static int Main_FPSTail[2]
-        __attribute__((section(".sdata"))) = {0, 0};
-    int LastXblanks __attribute__((section(".sdata"))) = 0;
-    int Profile_Bop __attribute__((section(".sdata"))) = 0;
-    Sprite *pScoreSprite __attribute__((section(".sdata"))) = 0;
-    Sprite *pSpecialSprite __attribute__((section(".sdata"))) = 0;
-    Sprite *pBarSprite __attribute__((section(".sdata"))) = 0;
-    Sprite *pPausedSprite __attribute__((section(".sdata"))) = 0;
-    int MemDumpLoop __attribute__((section(".sdata"))) = 0;
-    int DemoSize __attribute__((section(".sdata"))) = 0;
+CPowerUp *GPowS __attribute__((section(".sdata"))) = 0;
+CPowerUp *GPowK __attribute__((section(".sdata"))) = 0;
+CPowerUp *GPowA __attribute__((section(".sdata"))) = 0;
+CPowerUp *GPowT __attribute__((section(".sdata"))) = 0;
+CPowerUp *GPowE __attribute__((section(".sdata"))) = 0;
+CPowerUp *GPowTape __attribute__((section(".sdata"))) = 0;
+int GClear1 __attribute__((section(".sdata"))) = 0;
+int GClear2 __attribute__((section(".sdata"))) = 0;
+int GRenderedInvisible __attribute__((section(".sdata"))) = 0;
+int GRenderedCulled __attribute__((section(".sdata"))) = 0;
+int GRenderedFast __attribute__((section(".sdata"))) = 0;
+int GRenderedNonRotated __attribute__((section(".sdata"))) = 0;
+int GRenderedRotated __attribute__((section(".sdata"))) = 0;
+int NumPolyF3 __attribute__((section(".sdata"))) = 0;
+int NumPolyFT3 __attribute__((section(".sdata"))) = 0;
+int NumPolyG3 __attribute__((section(".sdata"))) = 0;
+int NumPolyGT3 __attribute__((section(".sdata"))) = 0;
+int NumPolyF4 __attribute__((section(".sdata"))) = 0;
+int NumPolyFT4 __attribute__((section(".sdata"))) = 0;
+int NumPolyG4 __attribute__((section(".sdata"))) = 0;
+int NumPolyGT4 __attribute__((section(".sdata"))) = 0;
+int NumSetTile __attribute__((section(".sdata"))) = 0;
+int NumTile1 __attribute__((section(".sdata"))) = 0;
+int NumOther __attribute__((section(".sdata"))) = 0;
+int CloseCam __attribute__((section(".sdata"))) = 0;
+int PrimitiveCount __attribute__((section(".sdata"))) = 0;
+int XFramesShifted __attribute__((section(".sdata"))) = 0;
+int FPS __attribute__((section(".sdata"))) = 0;
+static int Main_FPSTail[2] __attribute__((section(".sdata"))) = { 0, 0 };
+int LastXblanks __attribute__((section(".sdata"))) = 0;
+int Profile_Bop __attribute__((section(".sdata"))) = 0;
+Sprite *pScoreSprite __attribute__((section(".sdata"))) = 0;
+Sprite *pSpecialSprite __attribute__((section(".sdata"))) = 0;
+Sprite *pBarSprite __attribute__((section(".sdata"))) = 0;
+Sprite *pPausedSprite __attribute__((section(".sdata"))) = 0;
+int MemDumpLoop __attribute__((section(".sdata"))) = 0;
+int DemoSize __attribute__((section(".sdata"))) = 0;
 
 
 /**
@@ -2811,14 +2672,14 @@ int LaunchGame(void)
 
     switch (Result)
     {
-    case 0:
-        LoadingScreen_Main();
-        if (GAutoTest)
-        {
-            DumpAutoTest();
-        }
-        Front_LoadGame(&StartupGameState);
-        break;
+        case 0:
+            LoadingScreen_Main();
+            if (GAutoTest)
+            {
+                DumpAutoTest();
+            }
+            Front_LoadGame(&StartupGameState);
+            break;
     }
 
     if (BackOut)
@@ -2860,107 +2721,103 @@ play_game:
 
     switch (EndCode)
     {
-    case ENDCODE_TWEAKJUMP:
-        printf(Main_endCodeTweakJumpMessage);
-        Init_Cleanup(GenerateLevel ? 2 : 1);
-        Trig_ParseTRGFile();
-        Rail_CreateRails();
-        CreateSkatersAndCameras();
-        Trig_ExecuteRestart();
-        goto play_game;
+        case ENDCODE_TWEAKJUMP:
+            printf(Main_endCodeTweakJumpMessage);
+            Init_Cleanup(GenerateLevel ? 2 : 1);
+            Trig_ParseTRGFile();
+            Rail_CreateRails();
+            CreateSkatersAndCameras();
+            Trig_ExecuteRestart();
+            goto play_game;
 
-    default:
-        printf(Main_notEndCodeTweakJumpMessage);
-        Panel_Uninit();
-        Init_Restart(PACK512x240, 16);
-        Db_Init();
-        GNumberOfPlayers = 1;
-        Front_DisplayScreen(MainAddressViewOwners::s_S2MarketBmp);
-        Pad_Update();
-
-        Pad[0].Start.Triggered = 0;
-        Pad[0].X.Triggered = 0;
-        Pad[1].Start.Triggered = 0;
-        Pad[1].X.Triggered = 0;
-
-        int i = 0;
-        while (i < 480)
-        {
-            Pause(1);
+        default:
+            printf(Main_notEndCodeTweakJumpMessage);
+            Panel_Uninit();
+            Init_Restart(PACK512x240, 16);
+            Db_Init();
+            GNumberOfPlayers = 1;
+            Front_DisplayScreen(MainAddressViewOwners::s_S2MarketBmp);
             Pad_Update();
-            if (Pad[0].Start.Triggered ||
-                Pad[0].X.Triggered ||
-                Pad[1].Start.Triggered ||
-                Pad[1].X.Triggered)
-            {
-                break;
-            }
-            ++i;
-        }
 
-        Pad[0].Start.Triggered = 0;
-        Pad[0].X.Triggered = 0;
-        Pad[1].Start.Triggered = 0;
-        Pad[1].X.Triggered = 0;
+            Pad[0].Start.Triggered = 0;
+            Pad[0].X.Triggered = 0;
+            Pad[1].Start.Triggered = 0;
+            Pad[1].X.Triggered = 0;
+
+            int i = 0;
+            while (i < 480)
+            {
+                Pause(1);
+                Pad_Update();
+                if (Pad[0].Start.Triggered || Pad[0].X.Triggered || Pad[1].Start.Triggered ||
+                    Pad[1].X.Triggered)
+                {
+                    break;
+                }
+                ++i;
+            }
+
+            Pad[0].Start.Triggered = 0;
+            Pad[0].X.Triggered = 0;
+            Pad[1].Start.Triggered = 0;
+            Pad[1].X.Triggered = 0;
     }
 
     return 0;
 }
 
-    /** Uppercase digits used by the checksum/debug formatting helpers. */
-    char HexDigits[17] __attribute__((section(".data"))) =
-        "ABCFHJKLMNPSTVXY";
+/** Uppercase digits used by the checksum/debug formatting helpers. */
+char HexDigits[17] __attribute__((section(".data"))) = "ABCFHJKLMNPSTVXY";
 
-    /** Short controller scripts used by the attract-mode demo. */
-    SDemo pLittleDemo[4] __attribute__((section(".data"))) =
-    {
-        {5, 5, 10, 1},
-        {5, 5, 0, 1},
-        {5, 5, 2, 1},
-        {10, 0xffff, 0, 0},
-    };
+/** Short controller scripts used by the attract-mode demo. */
+SDemo pLittleDemo[4] __attribute__((section(".data"))) = {
+    { 5, 5, 10, 1 },
+    { 5, 5, 0, 1 },
+    { 5, 5, 2, 1 },
+    { 10, 0xffff, 0, 0 },
+};
 
-    /** Full-screen viewport used by the Apocalypse camera mode. */
-    SViewport ApocalypseViewport __attribute__((section(".data"))) =
-        {0x200, 0xf0, 0, 0, 10, 30000, 0, 0, 0, 0};
+/** Full-screen viewport used by the Apocalypse camera mode. */
+SViewport ApocalypseViewport
+    __attribute__((section(".data"))) = { 0x200, 0xf0, 0, 0, 10, 30000, 0, 0, 0, 0 };
 
-    /** Left half of the two-player horizontal layout. */
-    SViewport LeftViewport __attribute__((section(".data"))) =
-        {0xfe, 0xf0, 0, 0, 10, 30000, 0, 0, 0, 0};
+/** Left half of the two-player horizontal layout. */
+SViewport LeftViewport
+    __attribute__((section(".data"))) = { 0xfe, 0xf0, 0, 0, 10, 30000, 0, 0, 0, 0 };
 
-    /** Right half of the two-player horizontal layout. */
-    SViewport RightViewport __attribute__((section(".data"))) =
-        {0x200, 0xf0, 0x102, 0, 10, 30000, 0, 0, 0, 0};
+/** Right half of the two-player horizontal layout. */
+SViewport RightViewport
+    __attribute__((section(".data"))) = { 0x200, 0xf0, 0x102, 0, 10, 30000, 0, 0, 0, 0 };
 
-    /** Top half of the two-player vertical layout. */
-    SViewport TopViewport __attribute__((section(".data"))) =
-        {0x200, 0x76, 0, 0, 10, 30000, 0, 0, 0, 0};
+/** Top half of the two-player vertical layout. */
+SViewport TopViewport
+    __attribute__((section(".data"))) = { 0x200, 0x76, 0, 0, 10, 30000, 0, 0, 0, 0 };
 
-    /** Bottom half of the two-player vertical layout. */
-    SViewport BottomViewport __attribute__((section(".data"))) =
-        {0x200, 0xf0, 0, 0x7a, 10, 30000, 0, 0, 0, 0};
+/** Bottom half of the two-player vertical layout. */
+SViewport BottomViewport
+    __attribute__((section(".data"))) = { 0x200, 0xf0, 0, 0x7a, 10, 30000, 0, 0, 0, 0 };
 
-    /** Top-left quadrant of the four-way layout. */
-    SViewport TopLeftViewport __attribute__((section(".data"))) =
-        {0x100, 0x78, 0, 0, 10, 30000, 0, 0, 0, 0};
+/** Top-left quadrant of the four-way layout. */
+SViewport TopLeftViewport
+    __attribute__((section(".data"))) = { 0x100, 0x78, 0, 0, 10, 30000, 0, 0, 0, 0 };
 
-    /** Bottom-right quadrant of the four-way layout. */
-    SViewport BottomRightViewport __attribute__((section(".data"))) =
-        {0x200, 0xf0, 0x100, 0x78, 10, 30000, 0, 0, 0, 0};
+/** Bottom-right quadrant of the four-way layout. */
+SViewport BottomRightViewport
+    __attribute__((section(".data"))) = { 0x200, 0xf0, 0x100, 0x78, 10, 30000, 0, 0, 0, 0 };
 
-    /** Enlarged top-left viewport used by asymmetric layouts. */
-    SViewport TopLeftBigViewport __attribute__((section(".data"))) =
-        {0x130, 0x98, 0, 0, 10, 30000, 0xd55, 0, 0, 0};
+/** Enlarged top-left viewport used by asymmetric layouts. */
+SViewport TopLeftBigViewport
+    __attribute__((section(".data"))) = { 0x130, 0x98, 0, 0, 10, 30000, 0xd55, 0, 0, 0 };
 
-    /** Small bottom-right viewport paired with TopLeftBigViewport. */
-    SViewport BottomRightBigViewport __attribute__((section(".data"))) =
-        {0x200, 0xf0, 0xd0, 0x58, 10, 30000, 0, 0, 0, 0};
+/** Small bottom-right viewport paired with TopLeftBigViewport. */
+SViewport BottomRightBigViewport
+    __attribute__((section(".data"))) = { 0x200, 0xf0, 0xd0, 0x58, 10, 30000, 0, 0, 0, 0 };
 
-    /** Persistent career/save state, zeroed at startup. */
-    SCareer GCareer __attribute__((section(".data"))) = {};
+/** Persistent career/save state, zeroed at startup. */
+SCareer GCareer __attribute__((section(".data"))) = {};
 
-    /** Temporary controller state used while remapping or restoring input. */
-    SControl TempPad __attribute__((section(".data"))) = {};
+/** Temporary controller state used while remapping or restoring input. */
+SControl TempPad __attribute__((section(".data"))) = {};
 
 
 /**

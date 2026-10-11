@@ -29,29 +29,34 @@ struct CBody;
 #undef VIDEO_LAYOUT_ONLY
 #undef VIDEO_HIGHLIGHT_LAYOUT
 
-enum EPhysicsState {
+enum EPhysicsState
+{
     PHYSICS_ON_GROUND = 0,
     PHYSICS_ON_RAIL = 4,
 };
 
-enum EPausedStatus {
+enum EPausedStatus
+{
     STATUS_ENDHEATREPLAY = 20,
     STATUS_ENDHEATJUDGES = 21,
     STATUS_ENDHEATLADDER = 22,
 };
 
-enum ESoundCmdType {
+enum ESoundCmdType
+{
     SFX_EMPTY = 0,
     SFX_PLAY = 1,
     SFX_STOP = 2,
 };
 
-struct SSoundCmd {
+struct SSoundCmd
+{
     ESoundCmdType SoundCmdType;
     int SoundNum;
 };
 
-struct SVideoInfo {
+struct SVideoInfo
+{
     /** Preserve the original empty construction of the CVector members. */
     SVideoInfo() {}
 
@@ -137,7 +142,8 @@ struct SGapTrick;
 struct CSuper;
 
 /** Replay-local CItem prefix, including its list link and vtable slot. */
-struct VideoCItemOwner {
+struct VideoCItemOwner
+{
     unsigned short mFlags;
     unsigned short mInquiry;
     CVector mPos;
@@ -154,7 +160,8 @@ struct VideoCItemOwner {
 };
 
 /** Replay-local target layout slice of CBody. */
-struct CBody {
+struct CBody
+{
     VideoCItemOwner CItem;
     u8 _pad004C[8];
     CVector mVel;
@@ -165,24 +172,25 @@ struct CBody {
     u8 _pad00D0[56];
 };
 
-typedef char Video_CBody_size_must_be_264[
-    (sizeof(CBody) == 264) ? 1 : -1];
+typedef char Video_CBody_size_must_be_264[(sizeof(CBody) == 264) ? 1 : -1];
 
 /** Invoke the power-up body's collect slot through its recovered vtable. */
-static inline void Video_CollectBody(CBody *pBody) {
-    if (pBody == 0)
-        return;
+static inline void Video_CollectBody(CBody *pBody)
+{
+    if (pBody == 0) return;
     typedef void (*CollectMethod)(CBody *);
     reinterpret_cast<CollectMethod>(pBody->CItem._vf[3])(pBody);
 }
 
 /** Return a signed magnitude without introducing a runtime library call. */
-static inline int Video_Abs(int value) {
+static inline int Video_Abs(int value)
+{
     return (value ^ (value >> 31)) - (value >> 31);
 }
 
 /** Replay-local CSuper prefix through the animation-speed field. */
-struct VideoCSuperOwner {
+struct VideoCSuperOwner
+{
     struct CBody CBody;
     unsigned int mExtraFlags;
     u8 _pad010C[12];
@@ -202,7 +210,8 @@ struct VideoCSuperOwner {
 /**
  * Owner-local CBruce slice covering replay and shared trick state.
  */
-struct CBruce {
+struct CBruce
+{
     VideoCSuperOwner CSuper;
     u8 _pad0190[2292];
     short *mpTrick;
@@ -283,12 +292,14 @@ struct CBruce {
 };
 
 /** Recover a complete skater from the CBody list head used by VIDEO.CPP. */
-static inline CBruce *Video_GetBruce(CBody *pBody) {
+static inline CBruce *Video_GetBruce(CBody *pBody)
+{
     return reinterpret_cast<CBruce *>(pBody);
 }
 
 /** Follow the CItem list link to the next skater body. */
-static inline CBruce *Video_GetNextBruce(CBody *pBody) {
+static inline CBruce *Video_GetNextBruce(CBody *pBody)
+{
     return reinterpret_cast<CBruce *>(pBody->CItem.mNextItem);
 }
 
@@ -310,20 +321,17 @@ void RestartCompFrig(void);
 /** Fixed-point vector operators provided by VECTOR.cpp. */
 #include "CVECTOROPS.h"
 
-typedef char Video_CBruce_size_must_be_5228[
-    (sizeof(CBruce) == 5228) ? 1 : -1];
-typedef char Video_CItem_size_must_be_76[
-    (sizeof(VideoCItemOwner) == 76) ? 1 : -1];
-typedef char Video_CSuper_size_must_be_400[
-    (sizeof(VideoCSuperOwner) == 400) ? 1 : -1];
-typedef char Video_CTrickOb_size_must_be_24[
-    (sizeof(CTrickOb) == 24) ? 1 : -1];
+typedef char Video_CBruce_size_must_be_5228[(sizeof(CBruce) == 5228) ? 1 : -1];
+typedef char Video_CItem_size_must_be_76[(sizeof(VideoCItemOwner) == 76) ? 1 : -1];
+typedef char Video_CSuper_size_must_be_400[(sizeof(VideoCSuperOwner) == 400) ? 1 : -1];
+typedef char Video_CTrickOb_size_must_be_24[(sizeof(CTrickOb) == 24) ? 1 : -1];
 #include "SFX.h"
 #include "M3DZONE.h"
 #include "PAD.h"
 #include "PLATFORM.h"
 
-enum {
+enum
+{
     VideoWordBits = 32,
     VideoStreamWords = 32,
     VideoHighlightCount = 5,
@@ -351,23 +359,22 @@ SVideoInfo GVInfo1 __attribute__((section(".data")));
 SVideoInfo GVInfo2 __attribute__((section(".data")));
 
 /** Position-delta widths selected by the replay prefix code. */
-static int PosBits[7] __attribute__((section(".data"))) = {3, 4, 5, 7, 8, 16, 20};
+static int PosBits[7] __attribute__((section(".data"))) = { 3, 4, 5, 7, 8, 16, 20 };
 
 /** Euler-angle widths selected by the replay prefix code. */
-static int EulerBits[7] __attribute__((section(".data"))) = {2, 4, 5, 6, 7, 9, 12};
+static int EulerBits[7] __attribute__((section(".data"))) = { 2, 4, 5, 6, 7, 9, 12 };
 
 /** Board-flip widths selected by the replay prefix code. */
-static int FlipAngleBits[7] __attribute__((section(".data"))) = {0, 6, 7, 8, 12, -1, -1};
+static int FlipAngleBits[7] __attribute__((section(".data"))) = { 0, 6, 7, 8, 12, -1, -1 };
 
 /** Variable-length prefix values used by replay compression. */
-static int PrefixCode[7] __attribute__((section(".data"))) = {0, 1, 3, 7, 15, 31, 63};
+static int PrefixCode[7] __attribute__((section(".data"))) = { 0, 1, 3, 7, 15, 31, 63 };
 
 /** Bit lengths for each replay prefix value. */
-static int PrefixBits[7] __attribute__((section(".data"))) = {1, 2, 3, 4, 5, 6, 6};
+static int PrefixBits[7] __attribute__((section(".data"))) = { 1, 2, 3, 4, 5, 6, 6 };
 
 /** Ring buffer of sound commands embedded in a replay stream. */
-SSoundCmd SoundCmd[VideoSoundQueueCapacity]
-    __attribute__((section(".data"))) = {};
+SSoundCmd SoundCmd[VideoSoundQueueCapacity] __attribute__((section(".data"))) = {};
 
 /** Replay and highlight bookkeeping, in the original VIDEO.CPP small-data order. */
 int GVideoReplay __attribute__((section(".sdata"))) = 0;
@@ -413,20 +420,28 @@ static void GetDataChunk(CBruce *pSkater, int NChunks);
  * @param n  Count.
  * @return bits
  */
-static long BitsRequired(long n) {
+static long BitsRequired(long n)
+{
     long Bits = 2;
-    if (n < 0) {
+    if (n < 0)
+    {
         long Limit = -2;
-        if (n < Limit) {
-            do {
+        if (n < Limit)
+        {
+            do
+            {
                 Limit <<= 1;
                 Bits++;
             } while (n < Limit);
         }
-    } else {
+    }
+    else
+    {
         long Limit = 2;
-        if (n >= Limit) {
-            do {
+        if (n >= Limit)
+        {
+            do
+            {
                 Limit <<= 1;
                 Bits++;
             } while (n >= Limit);
@@ -448,12 +463,15 @@ static long BitsRequired(long n) {
  * @param v  Value whose low `n` bits are appended to the stream.
  * @param n  Count.
  */
-static void PutNBits(SVideoInfo *VInfo, long v, int n) {
-    if (n == 0) {
+static void PutNBits(SVideoInfo *VInfo, long v, int n)
+{
+    if (n == 0)
+    {
         return;
     }
 
-    if (VInfo->BitsLeft < n) {
+    if (VInfo->BitsLeft < n)
+    {
         VInfo->Bits &= (1 << (VideoWordBits - VInfo->BitsLeft)) - 1;
         VInfo->Bits |= v << (VideoWordBits - VInfo->BitsLeft);
         n -= VInfo->BitsLeft;
@@ -467,7 +485,8 @@ static void PutNBits(SVideoInfo *VInfo, long v, int n) {
     VInfo->Bits |= v << (VideoWordBits - VInfo->BitsLeft);
     VInfo->BitsLeft -= n;
 
-    if (VInfo->BitsLeft == 0) {
+    if (VInfo->BitsLeft == 0)
+    {
         *VInfo->pStream++ = VInfo->Bits;
         VInfo->Bits = 0;
         VInfo->BitsLeft = VideoWordBits;
@@ -484,8 +503,10 @@ static void PutNBits(SVideoInfo *VInfo, long v, int n) {
  *
  * @param VInfo  Video-info structure.
  */
-static void FlushBits(SVideoInfo *VInfo) {
-    if (VInfo->BitsLeft != VideoWordBits) {
+static void FlushBits(SVideoInfo *VInfo)
+{
+    if (VInfo->BitsLeft != VideoWordBits)
+    {
         ulong *pWord = VInfo->pStream;
         *pWord = VInfo->Bits;
         VInfo->pStream = pWord + 1;
@@ -506,19 +527,24 @@ static void FlushBits(SVideoInfo *VInfo) {
  * @param n  Count.
  * @return result
  */
-static long GetNBitsUnsigned(SVideoInfo *VInfo, int n) {
+static long GetNBitsUnsigned(SVideoInfo *VInfo, int n)
+{
     unsigned long res;
 
-    if (VInfo->BitsLeft == 0) {
+    if (VInfo->BitsLeft == 0)
+    {
         VInfo->Bits = *VInfo->pStream++;
         VInfo->BitsLeft = VideoWordBits;
     }
 
-    if (VInfo->BitsLeft >= n) {
+    if (VInfo->BitsLeft >= n)
+    {
         VInfo->BitsLeft -= n;
         res = VInfo->Bits & ((1 << n) - 1);
         VInfo->Bits >>= n;
-    } else {
+    }
+    else
+    {
         res = VInfo->Bits & ((1 << VInfo->BitsLeft) - 1);
         n -= VInfo->BitsLeft;
         VInfo->Bits = *VInfo->pStream++;
@@ -541,9 +567,11 @@ static long GetNBitsUnsigned(SVideoInfo *VInfo, int n) {
  * @param n  Count.
  * @return result
  */
-static long GetNBitsSigned(SVideoInfo *VInfo, int n) {
+static long GetNBitsSigned(SVideoInfo *VInfo, int n)
+{
     long res = GetNBitsUnsigned(VInfo, n);
-    if (res & (1 << (n - 1))) {
+    if (res & (1 << (n - 1)))
+    {
         res |= -(1 << n);
     }
     return res;
@@ -560,8 +588,10 @@ static long GetNBitsSigned(SVideoInfo *VInfo, int n) {
  * @param VInfo  Video-info structure.
  * @return bitBuf & 1
  */
-static long GetBit(SVideoInfo *VInfo) {
-    if (VInfo->BitsLeft == 0) {
+static long GetBit(SVideoInfo *VInfo)
+{
+    if (VInfo->BitsLeft == 0)
+    {
         VInfo->Bits = *VInfo->pStream++;
         VInfo->BitsLeft = VideoWordBits;
     }
@@ -580,7 +610,8 @@ static long GetBit(SVideoInfo *VInfo) {
  * Demangled: InitSoundCmdQueue(void)
  *
  */
-void InitSoundCmdQueue(void) {
+void InitSoundCmdQueue(void)
+{
     FirstEntry = 0;
     LastEntry = 0;
 }
@@ -596,7 +627,8 @@ void InitSoundCmdQueue(void) {
  * @param SoundCmdType  Replay sound operation to queue.
  * @param SoundNum  Sound identifier consumed by the queued operation.
  */
-void QueueSoundCmd(ESoundCmdType SoundCmdType, int SoundNum) {
+void QueueSoundCmd(ESoundCmdType SoundCmdType, int SoundNum)
+{
     SoundCmd[LastEntry].SoundCmdType = SoundCmdType;
     SoundCmd[LastEntry].SoundNum = SoundNum;
     LastEntry = (LastEntry + 1) % VideoSoundQueueCapacity;
@@ -612,7 +644,8 @@ void QueueSoundCmd(ESoundCmdType SoundCmdType, int SoundNum) {
  *
  * @return FirstEntry != LastEntry
  */
-int HasSoundCmd(void) {
+int HasSoundCmd(void)
+{
     return FirstEntry != LastEntry;
 }
 
@@ -627,7 +660,8 @@ int HasSoundCmd(void) {
  * @param SoundCmdType  Receives the oldest queued operation.
  * @param SoundNum  Receives the oldest queued sound identifier.
  */
-void DequeueSoundCmd(ESoundCmdType &SoundCmdType, int &SoundNum) {
+void DequeueSoundCmd(ESoundCmdType &SoundCmdType, int &SoundNum)
+{
     SoundCmdType = SoundCmd[FirstEntry].SoundCmdType;
     SoundNum = SoundCmd[FirstEntry].SoundNum;
     FirstEntry = (FirstEntry + 1) % VideoSoundQueueCapacity;
@@ -646,9 +680,12 @@ void DequeueSoundCmd(ESoundCmdType &SoundCmdType, int &SoundNum) {
  * @param PitchOffset  Runtime pitch offset; replay capture records only the
  *                     identifier.
  */
-void Video_SFXPlay(int Sound, short Vol, int PitchOffset) {
-    if (GVInfo1.VideoMode == VIDEO_RECORD) {
-        if (GamePaused == 0) {
+void Video_SFXPlay(int Sound, short Vol, int PitchOffset)
+{
+    if (GVInfo1.VideoMode == VIDEO_RECORD)
+    {
+        if (GamePaused == 0)
+        {
             QueueSoundCmd(SFX_PLAY, Sound);
         }
     }
@@ -663,7 +700,8 @@ void Video_SFXPlay(int Sound, short Vol, int PitchOffset) {
  * Demangled: InitBloodSplat(void)
  *
  */
-void InitBloodSplat(void) {
+void InitBloodSplat(void)
+{
     Splat2 = -1;
     Splat1 = -1;
 }
@@ -681,9 +719,12 @@ void InitBloodSplat(void) {
  * @param BodyPart Body-part index to record for the active player.
  * @param MaxBloodBits Bit width accepted for compatibility with the replay event interface.
  */
-void Video_BloodSplat(CBruce *pSkater, int BodyPart, int MaxBloodBits) {
-    if (GVInfo1.VideoMode == VIDEO_RECORD) {
-        if (&pSkater->CSuper.CBody == MechList) {
+void Video_BloodSplat(CBruce *pSkater, int BodyPart, int MaxBloodBits)
+{
+    if (GVInfo1.VideoMode == VIDEO_RECORD)
+    {
+        if (&pSkater->CSuper.CBody == MechList)
+        {
             Splat1 = BodyPart;
             return;
         }
@@ -700,7 +741,8 @@ void Video_BloodSplat(CBruce *pSkater, int BodyPart, int MaxBloodBits) {
  * Demangled: InitTrickObs(void)
  *
  */
-void InitTrickObs(void) {
+void InitTrickObs(void)
+{
     TrickOb2 = -1;
     TrickOb1 = -1;
 }
@@ -715,14 +757,19 @@ void InitTrickObs(void) {
  *
  * @param pSkater  Active skater being processed.
  */
-void Video_HighlightStart(CBruce *pSkater) {
+void Video_HighlightStart(CBruce *pSkater)
+{
     SVideoInfo *VInfo;
-    if (&pSkater->CSuper.CBody == MechList) {
+    if (&pSkater->CSuper.CBody == MechList)
+    {
         VInfo = &GVInfo1;
-    } else {
+    }
+    else
+    {
         VInfo = &GVInfo2;
     }
-    if (HLStartCalled == 0) {
+    if (HLStartCalled == 0)
+    {
         HLStartCalled = 1;
         HighlightStartFrame = VInfo->NumFrames;
         HighlightStartY = pSkater->CSuper.CBody.CItem.mPos.vy;
@@ -740,15 +787,19 @@ void Video_HighlightStart(CBruce *pSkater) {
  * @param pSkater  Active skater being processed.
  * @param Score  Score value.
  */
-void Video_HighlightEnd(CBruce *pSkater, int Score) {
+void Video_HighlightEnd(CBruce *pSkater, int Score)
+{
     SVideoInfo *VInfo;
     int WasABail;
     int i;
     int j;
 
-    if (&pSkater->CSuper.CBody == MechList) {
+    if (&pSkater->CSuper.CBody == MechList)
+    {
         VInfo = &GVInfo1;
-    } else {
+    }
+    else
+    {
         VInfo = &GVInfo2;
     }
 
@@ -757,38 +808,51 @@ void Video_HighlightEnd(CBruce *pSkater, int Score) {
     HighlightEndY = pSkater->CSuper.CBody.CItem.mPos.vy;
 
     WasABail = static_cast<unsigned int>(Score) >> 31;
-    if (Score < 0) {
+    if (Score < 0)
+    {
         Score = -Score;
     }
 
-    if (Score == 0) {
+    if (Score == 0)
+    {
         Score = (Video_Abs(HighlightEndY - HighlightStartY) << 1) >> 12;
-    } else {
+    }
+    else
+    {
         Score += Video_Abs(HighlightEndY - HighlightStartY) >> 13;
     }
 
     i = 0;
-    do {
-        if (VInfo->Highlights[i].Score < Score) {
+    do
+    {
+        if (VInfo->Highlights[i].Score < Score)
+        {
             j = VideoHighlightCount - 1;
-            if (i < VideoHighlightCount - 1) {
-                do {
+            if (i < VideoHighlightCount - 1)
+            {
+                do
+                {
                     VInfo->Highlights[j] = VInfo->Highlights[j - 1];
                     j--;
                 } while (i < j);
             }
 
             HighlightStartFrame -= 15;
-            if (HighlightStartFrame < 0) {
+            if (HighlightStartFrame < 0)
+            {
                 HighlightStartFrame = 0;
             }
 
-            if (WasABail != 0) {
+            if (WasABail != 0)
+            {
                 HighlightEndFrame += 30;
-            } else {
+            }
+            else
+            {
                 HighlightEndFrame += 8;
             }
-            if (HighlightEndFrame > VideoMaxHighlightFrame) {
+            if (HighlightEndFrame > VideoMaxHighlightFrame)
+            {
                 HighlightEndFrame = VideoMaxHighlightFrame;
             }
 
@@ -799,7 +863,6 @@ void Video_HighlightEnd(CBruce *pSkater, int Score) {
         }
         i++;
     } while (i < VideoHighlightCount);
-
 }
 
 
@@ -813,7 +876,8 @@ void Video_HighlightEnd(CBruce *pSkater, int Score) {
  *            ranges, and compact the surviving entries back into GVInfo1.
  *
  */
-void Video_SortAndMerge(void) {
+void Video_SortAndMerge(void)
+{
     SHighlight TempHL[VideoHighlightCount];
     SHighlight NullHL;
 
@@ -824,7 +888,8 @@ void Video_SortAndMerge(void) {
     // Phase 1: Extract entries ordered by earliest start frame
     {
         int i = 0;
-        do {
+        do
+        {
             int BestFrom;
             int BestIndex;
             int j;
@@ -833,15 +898,17 @@ void Video_SortAndMerge(void) {
             BestFrom = VideoNoEndFrame;
             BestIndex = -1;
             j = 0;
-            do {
-                if (static_cast<unsigned int>(
-                        static_cast<int>(GVInfo1.Highlights[j].ToFrame)) >=
-                    GVInfo1.NumFrames) {
+            do
+            {
+                if (static_cast<unsigned int>(static_cast<int>(GVInfo1.Highlights[j].ToFrame)) >=
+                    GVInfo1.NumFrames)
+                {
                     GVInfo1.Highlights[j].ToFrame =
                         static_cast<unsigned short>(GVInfo1.NumFrames) - 1;
                 }
                 if (GVInfo1.Highlights[j].Score != 0 &&
-                    static_cast<int>(GVInfo1.Highlights[j].FromFrame) < BestFrom) {
+                    static_cast<int>(GVInfo1.Highlights[j].FromFrame) < BestFrom)
+                {
                     BestFrom = GVInfo1.Highlights[j].FromFrame;
                     BestIndex = j;
                 }
@@ -849,7 +916,8 @@ void Video_SortAndMerge(void) {
                 j++;
             } while (j < VideoHighlightCount);
 
-            if (BestIndex != -1) {
+            if (BestIndex != -1)
+            {
                 TempHL[i] = GVInfo1.Highlights[BestIndex];
                 GVInfo1.Highlights[BestIndex].Score = 0;
             }
@@ -861,13 +929,14 @@ void Video_SortAndMerge(void) {
     // Phase 2: Merge overlapping/adjacent entries (backward)
     {
         int i;
-        for (i = VideoHighlightCount - 1; i > 0; i--) {
+        for (i = VideoHighlightCount - 1; i > 0; i--)
+        {
             if (static_cast<int>(TempHL[i].FromFrame) <=
                     static_cast<int>(TempHL[i - 1].ToFrame) + 15 &&
-                static_cast<int>(TempHL[i].FromFrame) >
-                    static_cast<int>(TempHL[i - 1].FromFrame)) {
-                if (static_cast<int>(TempHL[i - 1].ToFrame) <
-                    static_cast<int>(TempHL[i].ToFrame)) {
+                static_cast<int>(TempHL[i].FromFrame) > static_cast<int>(TempHL[i - 1].FromFrame))
+            {
+                if (static_cast<int>(TempHL[i - 1].ToFrame) < static_cast<int>(TempHL[i].ToFrame))
+                {
                     TempHL[i - 1].ToFrame = TempHL[i].ToFrame;
                 }
                 TempHL[i - 1].Score += TempHL[i].Score;
@@ -887,9 +956,11 @@ void Video_SortAndMerge(void) {
         SHighlight *pClear = Highlights;
         SHighlight *pCompact = Highlights;
 
-        do {
+        do
+        {
             *pClear = NullHL;
-            if (*pScore != 0) {
+            if (*pScore != 0)
+            {
                 *pCompact = *pSource;
                 pCompact++;
             }
@@ -913,13 +984,15 @@ void Video_SortAndMerge(void) {
  * @param Head  Header to populate.
  * @param SkaterNum  Primary skater index for the recording.
  */
-void Video_SetHeader(SVideoHead *Head, int SkaterNum) {
+void Video_SetHeader(SVideoHead *Head, int SkaterNum)
+{
     SVideoInfo VInfo = SkaterNum != 0 ? GVInfo2 : GVInfo1;
 
     int i = 0;
     Head->NumFrames = VInfo.NumFrames;
 
-    do {
+    do
+    {
         Head->Highlights[i] = VInfo.Highlights[i];
         i++;
     } while (i < VideoHighlightCount);
@@ -929,19 +1002,22 @@ void Video_SetHeader(SVideoHead *Head, int SkaterNum) {
     Head->NumSkaters = numPlayers;
     CBruce *pSkater2 = Video_GetNextBruce(MechList);
 
-    switch (SkaterNum) {
-    case 0:
-        Head->Skater = pSkater->mSkaterType;
-        if (pSkater2 != 0) {
-            Head->Skater2 = pSkater2->mSkaterType;
-        }
-        break;
-    case 1:
-        Head->Skater = pSkater2->mSkaterType;
-        if (pSkater2 != 0) {
-            Head->Skater2 = pSkater->mSkaterType;
-        }
-        break;
+    switch (SkaterNum)
+    {
+        case 0:
+            Head->Skater = pSkater->mSkaterType;
+            if (pSkater2 != 0)
+            {
+                Head->Skater2 = pSkater2->mSkaterType;
+            }
+            break;
+        case 1:
+            Head->Skater = pSkater2->mSkaterType;
+            if (pSkater2 != 0)
+            {
+                Head->Skater2 = pSkater->mSkaterType;
+            }
+            break;
     }
 
     unsigned short level = static_cast<unsigned short>(GLevel);
@@ -960,15 +1036,17 @@ void Video_SetHeader(SVideoHead *Head, int SkaterNum) {
  * Demangled: Video_InitOnce(void)
  *            Allocate replay buffers for active video slots.
  */
-void Video_InitOnce(void) {
+void Video_InitOnce(void)
+{
     GVInfo1.pBlockStart = GVInfo1.pStreamStart =
-        static_cast<ulong *>(
-            Mem_New(VideoStreamWords * sizeof(ulong), 1, 1));
-    if (GNumberOfPlayers == 2) {
+        static_cast<ulong *>(Mem_New(VideoStreamWords * sizeof(ulong), 1, 1));
+    if (GNumberOfPlayers == 2)
+    {
         GVInfo2.pBlockStart = GVInfo2.pStreamStart =
-            static_cast<ulong *>(
-                Mem_New(VideoStreamWords * sizeof(ulong), 1, 1));
-    } else {
+            static_cast<ulong *>(Mem_New(VideoStreamWords * sizeof(ulong), 1, 1));
+    }
+    else
+    {
         GVInfo2.pStreamStart = 0;
         GVInfo2.pBlockStart = 0;
     }
@@ -982,7 +1060,8 @@ void Video_InitOnce(void) {
  * Mangled:   Video_Init__Fv
  * Demangled: Video_Init(void)
  */
-void Video_Init(void) {
+void Video_Init(void)
+{
 }
 
 
@@ -995,16 +1074,19 @@ void Video_Init(void) {
  *
  * @param NumFrames  Number of recorded frames to simulate without replay audio.
  */
-void Video_SyncObs(int NumFrames) {
+void Video_SyncObs(int NumFrames)
+{
     CBruce *pSkater = Video_GetBruce(MechList);
     ReplaySoundLockout = 1;
     CBruce *pSkater2 = Video_GetNextBruce(MechList);
     int i;
-    for (i = 0; i < NumFrames; i++) {
+    for (i = 0; i < NumFrames; i++)
+    {
         Ob_ClearInputFlags(BaddyList);
         Ob_ClearInputFlags(EnvironmentalObjectList);
         GetDataChunk(pSkater, -1);
-        if (pSkater2 != 0) {
+        if (pSkater2 != 0)
+        {
             GetDataChunk(pSkater2, -1);
         }
         Ob_QuickAI(&EnvironmentalObjectList);
@@ -1021,12 +1103,17 @@ void Video_SyncObs(int NumFrames) {
  * Mangled:   Video_SyncObsIfNeeded__Fv
  * Demangled: Video_SyncObsIfNeeded(void)
  */
-void Video_SyncObsIfNeeded(void) {
-    if (GVideoReplay == 1) {
-        if (GVInfo1.Highlights[0].FromFrame != 1) {
+void Video_SyncObsIfNeeded(void)
+{
+    if (GVideoReplay == 1)
+    {
+        if (GVInfo1.Highlights[0].FromFrame != 1)
+        {
             Video_SyncObs(GVInfo1.Highlights[0].FromFrame - 1);
         }
-    } else {
+    }
+    else
+    {
         int t1 = GVInfo1.Highlights[GVideoReplay - 1].FromFrame;
         int t2 = GVInfo1.Highlights[GVideoReplay - 2].ToFrame;
         Video_SyncObs(t1 - t2 - 2);
@@ -1041,7 +1128,8 @@ void Video_SyncObsIfNeeded(void) {
  * Mangled:   Video_Cleanup__Fv
  * Demangled: Video_Cleanup(void)
  */
-void Video_Cleanup(void) {
+void Video_Cleanup(void)
+{
     GVInfo1.VideoMode = VIDEO_OFF;
     GVInfo2.VideoMode = VIDEO_OFF;
 }
@@ -1060,11 +1148,15 @@ void Video_Cleanup(void) {
  * @param startFrame  First playback frame.
  * @param endFrame  Last playback frame, or `0x7fffffff` for the stored frame count.
  */
-void Video_Start(CBruce *pSkater, EVideoMode VMode, int StartFrame, int EndFrame) {
+void Video_Start(CBruce *pSkater, EVideoMode VMode, int StartFrame, int EndFrame)
+{
     SVideoInfo *VInfo;
-    if (&pSkater->CSuper.CBody == MechList) {
+    if (&pSkater->CSuper.CBody == MechList)
+    {
         VInfo = &GVInfo1;
-    } else {
+    }
+    else
+    {
         VInfo = &GVInfo2;
     }
 
@@ -1075,14 +1167,16 @@ void Video_Start(CBruce *pSkater, EVideoMode VMode, int StartFrame, int EndFrame
 
     VInfo->VideoMode = VMode;
 
-    if (VMode == VIDEO_RECORD) {
+    if (VMode == VIDEO_RECORD)
+    {
         // Recording mode: init bit writer
         {
             int i = 0;
             int *pScore = &VInfo->Highlights[0].Score;
             VInfo->NumFrames = 0;
             VInfo->BitsLeft = 32;
-            do {
+            do
+            {
                 *pScore = 0;
                 i++;
                 pScore += 2;
@@ -1094,13 +1188,16 @@ void Video_Start(CBruce *pSkater, EVideoMode VMode, int StartFrame, int EndFrame
             ulong *pWord = VInfo->pBlockStart;
             int i = 0;
             VInfo->ReplayHighlight = 0;
-            do {
+            do
+            {
                 *pWord = 0;
                 i++;
                 pWord++;
             } while (i < VideoStreamWords);
         }
-    } else {
+    }
+    else
+    {
         VInfo->BitsLeft = 0;
     }
 
@@ -1113,7 +1210,8 @@ void Video_Start(CBruce *pSkater, EVideoMode VMode, int StartFrame, int EndFrame
     VInfo->pStream = VInfo->pStreamStart;
     VInfo->FramesLeft = VInfo->NumFrames;
 
-    if (EndFrame != VideoNoEndFrame) {
+    if (EndFrame != VideoNoEndFrame)
+    {
         VInfo->FramesLeft = EndFrame - StartFrame + 1;
     }
 
@@ -1153,14 +1251,19 @@ void Video_Start(CBruce *pSkater, EVideoMode VMode, int StartFrame, int EndFrame
  *
  * @param pSkater  Active skater being processed.
  */
-void Video_Stop(CBruce *pSkater) {
+void Video_Stop(CBruce *pSkater)
+{
     SVideoInfo *VInfo;
-    if (&pSkater->CSuper.CBody == MechList) {
+    if (&pSkater->CSuper.CBody == MechList)
+    {
         VInfo = &GVInfo1;
-    } else {
+    }
+    else
+    {
         VInfo = &GVInfo2;
     }
-    if (VInfo->VideoMode == VIDEO_RECORD) {
+    if (VInfo->VideoMode == VIDEO_RECORD)
+    {
         FlushBits(VInfo);
     }
     VInfo->VideoMode = VIDEO_OFF;
@@ -1178,7 +1281,8 @@ void Video_Stop(CBruce *pSkater) {
  * @param m  Rotation matrix to convert.
  * @param a  Receives the fixed-point Euler angles.
  */
-void Matrix2Euler(MATRIX *m, SVECTOR *a) {
+void Matrix2Euler(MATRIX *m, SVECTOR *a)
+{
     MATRIX mm = *m;
 
     // Negate middle column: m[0][1], m[1][1], m[2][1]
@@ -1213,7 +1317,8 @@ void Matrix2Euler(MATRIX *m, SVECTOR *a) {
  *
  * @param pSkater  Active skater being processed.
  */
-static void PutDataChunk(CBruce *pSkater) {
+static void PutDataChunk(CBruce *pSkater)
+{
     int i;
     int bx;
     int by;
@@ -1235,7 +1340,8 @@ static void PutDataChunk(CBruce *pSkater) {
     else
         VInfo = &GVInfo2;
 
-    if (VInfo->pStream + 6 >= VInfo->pStreamStart + VideoStreamWords) {
+    if (VInfo->pStream + 6 >= VInfo->pStreamStart + VideoStreamWords)
+    {
         Video_Stop(pSkater);
         return;
     }
@@ -1256,12 +1362,11 @@ static void PutDataChunk(CBruce *pSkater) {
     bx = BitsRequired(DeltaX);
     by = BitsRequired(DeltaY);
     bz = BitsRequired(DeltaZ);
-    if (bx < by)
-        bx = by;
-    if (bx < bz)
-        bx = bz;
+    if (bx < by) bx = by;
+    if (bx < bz) bx = bz;
 
-    for (i = 0; i < 6 && PosBits[i] < bx; i++) {
+    for (i = 0; i < 6 && PosBits[i] < bx; i++)
+    {
     }
 
     PutNBits(VInfo, PrefixCode[i], PrefixBits[i]);
@@ -1272,33 +1377,26 @@ static void PutDataChunk(CBruce *pSkater) {
     Matrix2Euler(&pSkater->mRotationMatrix, &VInfo->Euler);
 
     VInfo->Euler.vx &= VideoAngleMask;
-    DeltaX = (VInfo->Euler.vx - VInfo->OldEuler.vx + VideoAngleWrapBias) &
-        VideoAngleMask;
+    DeltaX = (VInfo->Euler.vx - VInfo->OldEuler.vx + VideoAngleWrapBias) & VideoAngleMask;
     VInfo->Euler.vy &= VideoAngleMask;
-    DeltaY = (VInfo->Euler.vy - VInfo->OldEuler.vy + VideoAngleWrapBias) &
-        VideoAngleMask;
+    DeltaY = (VInfo->Euler.vy - VInfo->OldEuler.vy + VideoAngleWrapBias) & VideoAngleMask;
     VInfo->Euler.vz &= VideoAngleMask;
-    DeltaZ = (VInfo->Euler.vz - VInfo->OldEuler.vz + VideoAngleWrapBias) &
-        VideoAngleMask;
+    DeltaZ = (VInfo->Euler.vz - VInfo->OldEuler.vz + VideoAngleWrapBias) & VideoAngleMask;
 
-    if (DeltaX >= VideoHalfTurn)
-        DeltaX -= VideoFullTurn;
-    if (DeltaY >= VideoHalfTurn)
-        DeltaY -= VideoFullTurn;
-    if (DeltaZ >= VideoHalfTurn)
-        DeltaZ -= VideoFullTurn;
+    if (DeltaX >= VideoHalfTurn) DeltaX -= VideoFullTurn;
+    if (DeltaY >= VideoHalfTurn) DeltaY -= VideoFullTurn;
+    if (DeltaZ >= VideoHalfTurn) DeltaZ -= VideoFullTurn;
 
     VInfo->OldEuler = VInfo->Euler;
 
     bx = BitsRequired(DeltaX);
     by = BitsRequired(DeltaY);
     bz = BitsRequired(DeltaZ);
-    if (bx < by)
-        bx = by;
-    if (bx < bz)
-        bx = bz;
+    if (bx < by) bx = by;
+    if (bx < bz) bx = bz;
 
-    for (i = 0; i < 6 && EulerBits[i] < bx; i++) {
+    for (i = 0; i < 6 && EulerBits[i] < bx; i++)
+    {
     }
 
     PutNBits(VInfo, PrefixCode[i], PrefixBits[i]);
@@ -1327,19 +1425,21 @@ static void PutDataChunk(CBruce *pSkater) {
 
     PutNBits(VInfo, (pSkater->CSuper.mExtraFlags >> 1) & 1, 1);
 
-    if (pSkater->mFlipNum == 0) {
+    if (pSkater->mFlipNum == 0)
+    {
         PutNBits(VInfo, 0, 1);
         VInfo->OldFlipAngle = 0;
         VInfo->FlipAngleDelta = 0;
-    } else {
+    }
+    else
+    {
         PutNBits(VInfo, 1, 1);
-        int Delta = pSkater->mFlipAngle -
-                    (VInfo->OldFlipAngle + VInfo->FlipAngleDelta);
+        int Delta = pSkater->mFlipAngle - (VInfo->OldFlipAngle + VInfo->FlipAngleDelta);
         int Bits = 0;
-        if (Delta != 0)
-            Bits = BitsRequired(Delta);
+        if (Delta != 0) Bits = BitsRequired(Delta);
 
-        for (i = 0; i < 6 && FlipAngleBits[i] < Bits; i++) {
+        for (i = 0; i < 6 && FlipAngleBits[i] < Bits; i++)
+        {
         }
 
         PutNBits(VInfo, PrefixCode[i], PrefixBits[i]);
@@ -1349,72 +1449,101 @@ static void PutDataChunk(CBruce *pSkater) {
     }
 
     DeltaX = Xblanks - VInfo->OldXblanks;
-    if (DeltaX >= 6) {
+    if (DeltaX >= 6)
+    {
         VInfo->OldXblanks = Xblanks + 5;
         VInfo->OldXblanks -= DeltaX;
         DeltaX = 5;
-    } else {
+    }
+    else
+    {
         VInfo->OldXblanks = Xblanks;
     }
     PutNBits(VInfo, DeltaX - 2, 2);
 
     // Sound command encoding
-    if (HasSoundCmd()) {
+    if (HasSoundCmd())
+    {
         PutNBits(VInfo, 1, 1);
         ESoundCmdType SoundCmdType;
         int SoundNum;
         DequeueSoundCmd(SoundCmdType, SoundNum);
-        if (SoundCmdType == SFX_PLAY) {
+        if (SoundCmdType == SFX_PLAY)
+        {
             PutNBits(VInfo, 1, 1);
             PutNBits(VInfo, SoundNum, 8);
-        } else if (SoundCmdType == SFX_STOP) {
+        }
+        else if (SoundCmdType == SFX_STOP)
+        {
             PutNBits(VInfo, 0, 1);
             PutNBits(VInfo, SoundNum, 8);
         }
-    } else {
+    }
+    else
+    {
         PutNBits(VInfo, 0, 1);
     }
 
-    if (Splat1 != -1 || Splat2 != -1 ||
-        TrickOb1 != -1 || TrickOb2 != -1) {
+    if (Splat1 != -1 || Splat2 != -1 || TrickOb1 != -1 || TrickOb2 != -1)
+    {
         PutNBits(VInfo, 1, 1);
 
-        if (&pSkater->CSuper.CBody == MechList) {
-            if (Splat1 != -1) {
+        if (&pSkater->CSuper.CBody == MechList)
+        {
+            if (Splat1 != -1)
+            {
                 PutNBits(VInfo, 1, 1);
                 PutNBits(VInfo, Splat1, 2);
                 Splat1 = -1;
-            } else {
+            }
+            else
+            {
                 PutNBits(VInfo, 0, 1);
             }
-        } else {
-            if (Splat2 != -1) {
+        }
+        else
+        {
+            if (Splat2 != -1)
+            {
                 PutNBits(VInfo, 1, 1);
                 PutNBits(VInfo, Splat2, 2);
                 Splat2 = -1;
-            } else {
+            }
+            else
+            {
                 PutNBits(VInfo, 0, 1);
             }
         }
 
-        if (&pSkater->CSuper.CBody == MechList) {
-            if (TrickOb1 != -1) {
+        if (&pSkater->CSuper.CBody == MechList)
+        {
+            if (TrickOb1 != -1)
+            {
                 PutNBits(VInfo, 1, 1);
                 PutNBits(VInfo, TrickOb1, 8);
                 TrickOb1 = -1;
-            } else {
-                PutNBits(VInfo, 0, 1);
             }
-        } else {
-            if (TrickOb2 != -1) {
-                PutNBits(VInfo, 1, 1);
-                PutNBits(VInfo, TrickOb2, 8);
-                TrickOb2 = -1;
-            } else {
+            else
+            {
                 PutNBits(VInfo, 0, 1);
             }
         }
-    } else {
+        else
+        {
+            if (TrickOb2 != -1)
+            {
+                PutNBits(VInfo, 1, 1);
+                PutNBits(VInfo, TrickOb2, 8);
+                TrickOb2 = -1;
+            }
+            else
+            {
+                PutNBits(VInfo, 0, 1);
+            }
+        }
+    }
+    else
+    {
         PutNBits(VInfo, 0, 1);
     }
 }
@@ -1429,10 +1558,14 @@ static void PutDataChunk(CBruce *pSkater) {
  *
  * @param pSkater  Active skater being processed.
  */
-void Video_Record(CBruce *pSkater) {
-    if (GState == 1) {
+void Video_Record(CBruce *pSkater)
+{
+    if (GState == 1)
+    {
         Video_Stop(pSkater);
-    } else {
+    }
+    else
+    {
         PutDataChunk(pSkater);
     }
 }
@@ -1448,7 +1581,8 @@ void Video_Record(CBruce *pSkater) {
  * @param pSkater  Active skater being processed.
  * @param NChunks  Number of replay chunks being applied in this update.
  */
-static void GetDataChunk(CBruce *pSkater, int NChunks) {
+static void GetDataChunk(CBruce *pSkater, int NChunks)
+{
     int i;
     int DeltaX;
     int DeltaY;
@@ -1461,210 +1595,189 @@ static void GetDataChunk(CBruce *pSkater, int NChunks) {
         VInfo = &GVInfo2;
 
     {
-    pSkater->CSuper.CBody.mOldPos = pSkater->CSuper.CBody.CItem.mPos;
+        pSkater->CSuper.CBody.mOldPos = pSkater->CSuper.CBody.CItem.mPos;
 
-    for (i = 0; i < 6; i++) {
+        for (i = 0; i < 6; i++)
+        {
+            if (!GetBit(VInfo)) break;
+        }
+
+        pSkater->CSuper.CBody.CItem.mPos.vx =
+            (VInfo->OldPos.vx << 1) - VInfo->OldPos2.vx + GetNBitsSigned(VInfo, PosBits[i]);
+        pSkater->CSuper.CBody.CItem.mPos.vy =
+            (VInfo->OldPos.vy << 1) - VInfo->OldPos2.vy + GetNBitsSigned(VInfo, PosBits[i]);
+        pSkater->CSuper.CBody.CItem.mPos.vz =
+            (VInfo->OldPos.vz << 1) - VInfo->OldPos2.vz + GetNBitsSigned(VInfo, PosBits[i]);
+
+        VInfo->OldPos2 = VInfo->OldPos;
+        VInfo->OldPos = pSkater->CSuper.CBody.CItem.mPos;
+        pSkater->CSuper.CBody.CItem.mPos <<= 12;
+        pSkater->CSuper.CBody.mVel =
+            pSkater->CSuper.CBody.CItem.mPos - pSkater->CSuper.CBody.mOldPos;
+
+        for (i = 0; i < 6; i++)
+        {
+            if (!GetBit(VInfo)) break;
+        }
+
+        DeltaX = GetNBitsSigned(VInfo, EulerBits[i]) & VideoAngleMask;
+        DeltaY = GetNBitsSigned(VInfo, EulerBits[i]) & VideoAngleMask;
+        DeltaZ = GetNBitsSigned(VInfo, EulerBits[i]) & VideoAngleMask;
+        VInfo->Euler.vx = (VInfo->OldEuler.vx + DeltaX + VideoAngleWrapBias) & VideoAngleMask;
+        VInfo->Euler.vy = (VInfo->OldEuler.vy + DeltaY + VideoAngleWrapBias) & VideoAngleMask;
+        VInfo->Euler.vz = (VInfo->OldEuler.vz + DeltaZ + VideoAngleWrapBias) & VideoAngleMask;
+        VInfo->OldEuler = VInfo->Euler;
+
+        if (NChunks == 1)
+        {
+            RotMatrixYXZ_gte(&VInfo->Euler, &pSkater->mRotationMatrix);
+            pSkater->mRotationMatrix.m[0][1] = -pSkater->mRotationMatrix.m[0][1];
+            pSkater->mRotationMatrix.m[1][1] = -pSkater->mRotationMatrix.m[1][1];
+            pSkater->mRotationMatrix.m[2][1] = -pSkater->mRotationMatrix.m[2][1];
+            pSkater->FRUVectorsFromRotMatrix();
+            M3d_BuildTransform(reinterpret_cast<CSuper *>(&pSkater->CSuper));
+        }
+
+        if (GetBit(VInfo) == 1)
+            pSkater->mPhysicsState = static_cast<EPhysicsState>(GetNBitsUnsigned(VInfo, 4));
+
+        if (GetBit(VInfo) == 1) pSkater->CSuper.mAnim = GetNBitsUnsigned(VInfo, 8);
+        VInfo->OldAnim = pSkater->CSuper.mAnim;
+
         if (!GetBit(VInfo))
-            break;
-    }
-
-    pSkater->CSuper.CBody.CItem.mPos.vx =
-        (VInfo->OldPos.vx << 1) - VInfo->OldPos2.vx +
-        GetNBitsSigned(VInfo, PosBits[i]);
-    pSkater->CSuper.CBody.CItem.mPos.vy =
-        (VInfo->OldPos.vy << 1) - VInfo->OldPos2.vy +
-        GetNBitsSigned(VInfo, PosBits[i]);
-    pSkater->CSuper.CBody.CItem.mPos.vz =
-        (VInfo->OldPos.vz << 1) - VInfo->OldPos2.vz +
-        GetNBitsSigned(VInfo, PosBits[i]);
-
-    VInfo->OldPos2 = VInfo->OldPos;
-    VInfo->OldPos = pSkater->CSuper.CBody.CItem.mPos;
-    pSkater->CSuper.CBody.CItem.mPos <<= 12;
-    pSkater->CSuper.CBody.mVel = pSkater->CSuper.CBody.CItem.mPos -
-                                      pSkater->CSuper.CBody.mOldPos;
-
-    for (i = 0; i < 6; i++) {
-        if (!GetBit(VInfo))
-            break;
-    }
-
-    DeltaX = GetNBitsSigned(VInfo, EulerBits[i]) & VideoAngleMask;
-    DeltaY = GetNBitsSigned(VInfo, EulerBits[i]) & VideoAngleMask;
-    DeltaZ = GetNBitsSigned(VInfo, EulerBits[i]) & VideoAngleMask;
-    VInfo->Euler.vx =
-        (VInfo->OldEuler.vx + DeltaX + VideoAngleWrapBias) & VideoAngleMask;
-    VInfo->Euler.vy =
-        (VInfo->OldEuler.vy + DeltaY + VideoAngleWrapBias) & VideoAngleMask;
-    VInfo->Euler.vz =
-        (VInfo->OldEuler.vz + DeltaZ + VideoAngleWrapBias) & VideoAngleMask;
-    VInfo->OldEuler = VInfo->Euler;
-
-    if (NChunks == 1) {
-        RotMatrixYXZ_gte(&VInfo->Euler, &pSkater->mRotationMatrix);
-        pSkater->mRotationMatrix.m[0][1] =
-            -pSkater->mRotationMatrix.m[0][1];
-        pSkater->mRotationMatrix.m[1][1] =
-            -pSkater->mRotationMatrix.m[1][1];
-        pSkater->mRotationMatrix.m[2][1] =
-            -pSkater->mRotationMatrix.m[2][1];
-        pSkater->FRUVectorsFromRotMatrix();
-        M3d_BuildTransform(reinterpret_cast<CSuper *>(&pSkater->CSuper));
-    }
-
-    if (GetBit(VInfo) == 1)
-        pSkater->mPhysicsState =
-            static_cast<EPhysicsState>(GetNBitsUnsigned(VInfo, 4));
-
-    if (GetBit(VInfo) == 1)
-        pSkater->CSuper.mAnim =
-            GetNBitsUnsigned(VInfo, 8);
-    VInfo->OldAnim = pSkater->CSuper.mAnim;
-
-    if (!GetBit(VInfo))
-        pSkater->CSuper.mFrame =
-            VInfo->OldFrame +
-            GetNBitsUnsigned(VInfo, 2);
-    else
-        pSkater->CSuper.mFrame =
-            GetNBitsUnsigned(VInfo, 8);
-    VInfo->OldFrame = pSkater->CSuper.mFrame;
-
-    if (GetBit(VInfo))
-        pSkater->CSuper.mExtraFlags |= 2;
-    else
-        pSkater->CSuper.mExtraFlags &= ~2;
-
-    // Decode the compressed flip state.
-    if (!GetBit(VInfo)) {
-        VInfo->OldFlipAngle = 0;
-        VInfo->FlipAngleDelta = 0;
-        pSkater->mFlipAngle = 0;
-        pSkater->mFlipNum = 0;
-    } else {
-        pSkater->mFlipNum = 1000;
-        for (i = 0; i < 6; i++) {
-            if (!GetBit(VInfo))
-                break;
-        }
-
-        if (FlipAngleBits[i]) {
-            int Delta = GetNBitsSigned(VInfo, FlipAngleBits[i]);
-            pSkater->mFlipAngle =
-                VInfo->OldFlipAngle + VInfo->FlipAngleDelta + Delta;
-            VInfo->OldFlipAngle = pSkater->mFlipAngle;
-            VInfo->FlipAngleDelta = Delta;
-        }
-    }
-
-    VInfo->Yblanks +=
-        2 + GetNBitsUnsigned(VInfo, 2);
-    if (NChunks == 1) {
-        int Delta = VInfo->Yblanks - Xblanks;
-        for (i = 0; i < Delta; i++)
-            VSync(0);
-    }
-
-    // Read sound command
-    if (GetBit(VInfo)) {
-        if (GetBit(VInfo)) {
-            int SoundNum =
-                GetNBitsUnsigned(VInfo, 8);
-            if (!ReplaySoundLockout)
-                SFX_PlayX(SoundNum, 0x2000, 0);
-        } else {
-            int SoundNum =
-                GetNBitsUnsigned(VInfo, 8);
-            if (!ReplaySoundLockout)
-                SFX_Stop(SoundNum);
-        }
-    }
-
-    // Replay blood-splat and trick-observation events.
-    if (GetBit(VInfo)) {
-        if (GetBit(VInfo))
-            pSkater->BloodSplat(
-                GetNBitsUnsigned(VInfo, 2),
-                50);
-
-        // Read trick observation
-        if (GetBit(VInfo)) {
-            int TrickObIndex =
-                GetNBitsUnsigned(VInfo, 8);
-            CTrickOb *pTrickOb = TrickObList;
-            for (int i = 0; i < TrickObIndex; i++)
-                pTrickOb = pTrickOb->mpNext;
-
-            pTrickOb->mpItem =
-                Spool_FindEnviroItem(pTrickOb->mChecksum);
-            pTrickOb->mpItem->Flags |= 0x400;
-            pTrickOb->mpItem->RGB = 0x202020;
-            pTrickOb->mState = 1;
-            if (&pSkater->CSuper.CBody == MechList)
-                pTrickOb->mPlayer = 1;
-            else
-                pTrickOb->mPlayer = 2;
-            TrickPlayer = pTrickOb->mPlayer;
-            Trig_SendPulse(Trig_GetLinksPointer(pTrickOb->mNode));
-        }
-    }
-
-    // Replay trigger and power-up crossings along a non-zero previous path.
-    if (VInfo->OldPos2.vx || VInfo->OldPos2.vy || VInfo->OldPos2.vz) {
-        SLineInfo LInfo;
-        int Player;
-        CVector nearest;
-        CVector Start;
-        CVector End;
-
-        LInfo.StartCoords.vx = VInfo->OldPos2.vx << 12;
-        LInfo.StartCoords.vy = VInfo->OldPos2.vy << 12;
-        LInfo.StartCoords.vz = VInfo->OldPos2.vz << 12;
-        LInfo.EndCoords.vx = VInfo->OldPos.vx << 12;
-        LInfo.EndCoords.vy = VInfo->OldPos.vy << 12;
-        LInfo.EndCoords.vz = VInfo->OldPos.vz << 12;
-        M3dColij_InitLineInfo(&LInfo);
-
-        Player = pSkater->mIndex + 1;
-        LInfo.RecordTriggerZoneHits = 1;
-        Trig_ResetCPCollisionFlags(Player);
-        pCurrentPlayer = pSkater;
-        M3dZone_LineToItem(&LInfo, 1);
-        pCurrentPlayer = 0;
-        Trig_ResetCPExecutedFlags(Player);
-
-        Start.vx = VInfo->OldPos2.vx << 12;
-        Start.vy = VInfo->OldPos2.vy << 12;
-        Start.vz = VInfo->OldPos2.vz << 12;
-        End.vx = VInfo->OldPos.vx << 12;
-        End.vy = VInfo->OldPos.vy << 12;
-        End.vz = VInfo->OldPos.vz << 12;
-
-        Video_CollectBody(
-            M3dColij_LineToSphere(
-                Start, End, nearest, PowerUpList, 0, 4096));
-    }
-
-    switch (pSkater->CSuper.mAnim) {
-    case 0x2c:
-    case 0x2e:
-    case 0x37:
-        pSkater->BoardOff();
-        break;
-    case 0x36:
-        if (pSkater->CSuper.mFrame < 0x70)
-            pSkater->BoardOff();
+            pSkater->CSuper.mFrame = VInfo->OldFrame + GetNBitsUnsigned(VInfo, 2);
         else
-            pSkater->BoardOn();
-        break;
-    default:
-        pSkater->BoardOn();
-        break;
-    }
+            pSkater->CSuper.mFrame = GetNBitsUnsigned(VInfo, 8);
+        VInfo->OldFrame = pSkater->CSuper.mFrame;
+
+        if (GetBit(VInfo))
+            pSkater->CSuper.mExtraFlags |= 2;
+        else
+            pSkater->CSuper.mExtraFlags &= ~2;
+
+        // Decode the compressed flip state.
+        if (!GetBit(VInfo))
+        {
+            VInfo->OldFlipAngle = 0;
+            VInfo->FlipAngleDelta = 0;
+            pSkater->mFlipAngle = 0;
+            pSkater->mFlipNum = 0;
+        }
+        else
+        {
+            pSkater->mFlipNum = 1000;
+            for (i = 0; i < 6; i++)
+            {
+                if (!GetBit(VInfo)) break;
+            }
+
+            if (FlipAngleBits[i])
+            {
+                int Delta = GetNBitsSigned(VInfo, FlipAngleBits[i]);
+                pSkater->mFlipAngle = VInfo->OldFlipAngle + VInfo->FlipAngleDelta + Delta;
+                VInfo->OldFlipAngle = pSkater->mFlipAngle;
+                VInfo->FlipAngleDelta = Delta;
+            }
+        }
+
+        VInfo->Yblanks += 2 + GetNBitsUnsigned(VInfo, 2);
+        if (NChunks == 1)
+        {
+            int Delta = VInfo->Yblanks - Xblanks;
+            for (i = 0; i < Delta; i++) VSync(0);
+        }
+
+        // Read sound command
+        if (GetBit(VInfo))
+        {
+            if (GetBit(VInfo))
+            {
+                int SoundNum = GetNBitsUnsigned(VInfo, 8);
+                if (!ReplaySoundLockout) SFX_PlayX(SoundNum, 0x2000, 0);
+            }
+            else
+            {
+                int SoundNum = GetNBitsUnsigned(VInfo, 8);
+                if (!ReplaySoundLockout) SFX_Stop(SoundNum);
+            }
+        }
+
+        // Replay blood-splat and trick-observation events.
+        if (GetBit(VInfo))
+        {
+            if (GetBit(VInfo)) pSkater->BloodSplat(GetNBitsUnsigned(VInfo, 2), 50);
+
+            // Read trick observation
+            if (GetBit(VInfo))
+            {
+                int TrickObIndex = GetNBitsUnsigned(VInfo, 8);
+                CTrickOb *pTrickOb = TrickObList;
+                for (int i = 0; i < TrickObIndex; i++) pTrickOb = pTrickOb->mpNext;
+
+                pTrickOb->mpItem = Spool_FindEnviroItem(pTrickOb->mChecksum);
+                pTrickOb->mpItem->Flags |= 0x400;
+                pTrickOb->mpItem->RGB = 0x202020;
+                pTrickOb->mState = 1;
+                if (&pSkater->CSuper.CBody == MechList)
+                    pTrickOb->mPlayer = 1;
+                else
+                    pTrickOb->mPlayer = 2;
+                TrickPlayer = pTrickOb->mPlayer;
+                Trig_SendPulse(Trig_GetLinksPointer(pTrickOb->mNode));
+            }
+        }
+
+        // Replay trigger and power-up crossings along a non-zero previous path.
+        if (VInfo->OldPos2.vx || VInfo->OldPos2.vy || VInfo->OldPos2.vz)
+        {
+            SLineInfo LInfo;
+            int Player;
+            CVector nearest;
+            CVector Start;
+            CVector End;
+
+            LInfo.StartCoords.vx = VInfo->OldPos2.vx << 12;
+            LInfo.StartCoords.vy = VInfo->OldPos2.vy << 12;
+            LInfo.StartCoords.vz = VInfo->OldPos2.vz << 12;
+            LInfo.EndCoords.vx = VInfo->OldPos.vx << 12;
+            LInfo.EndCoords.vy = VInfo->OldPos.vy << 12;
+            LInfo.EndCoords.vz = VInfo->OldPos.vz << 12;
+            M3dColij_InitLineInfo(&LInfo);
+
+            Player = pSkater->mIndex + 1;
+            LInfo.RecordTriggerZoneHits = 1;
+            Trig_ResetCPCollisionFlags(Player);
+            pCurrentPlayer = pSkater;
+            M3dZone_LineToItem(&LInfo, 1);
+            pCurrentPlayer = 0;
+            Trig_ResetCPExecutedFlags(Player);
+
+            Start.vx = VInfo->OldPos2.vx << 12;
+            Start.vy = VInfo->OldPos2.vy << 12;
+            Start.vz = VInfo->OldPos2.vz << 12;
+            End.vx = VInfo->OldPos.vx << 12;
+            End.vy = VInfo->OldPos.vy << 12;
+            End.vz = VInfo->OldPos.vz << 12;
+
+            Video_CollectBody(M3dColij_LineToSphere(Start, End, nearest, PowerUpList, 0, 4096));
+        }
+
+        switch (pSkater->CSuper.mAnim)
+        {
+            case 0x2c:
+            case 0x2e:
+            case 0x37: pSkater->BoardOff(); break;
+            case 0x36:
+                if (pSkater->CSuper.mFrame < 0x70)
+                    pSkater->BoardOff();
+                else
+                    pSkater->BoardOn();
+                break;
+            default: pSkater->BoardOn(); break;
+        }
     }
 
-    if (NChunks != 1)
-        VInfo->Yblanks = Xblanks;
+    if (NChunks != 1) VInfo->Yblanks = Xblanks;
 }
 
 
@@ -1677,7 +1790,8 @@ static void GetDataChunk(CBruce *pSkater, int NChunks) {
  *
  * @param pSkater  Active skater being processed.
  */
-void Video_Playback(CBruce *pSkater) {
+void Video_Playback(CBruce *pSkater)
+{
     SVideoInfo *VInfo;
     int IsAGrind;
     CSVector Angles;
@@ -1686,14 +1800,18 @@ void Video_Playback(CBruce *pSkater) {
 
     CamPt_SetClosestCamera(pSkater);
 
-    if (&pSkater->CSuper.CBody == MechList) {
+    if (&pSkater->CSuper.CBody == MechList)
+    {
         VInfo = &GVInfo1;
-    } else {
+    }
+    else
+    {
         VInfo = &GVInfo2;
     }
 
     if (Status == STATUS_ENDHEATREPLAY || Status == STATUS_ENDHEATLADDER ||
-        Status == STATUS_ENDHEATJUDGES) {
+        Status == STATUS_ENDHEATJUDGES)
+    {
         if (VInfo->FramesLeft != 0) goto has_frames;
         RestartCompFrig();
         Video_Start(pSkater, VIDEO_PLAYBACK, 1, VideoNoEndFrame);
@@ -1708,16 +1826,14 @@ has_frames:
     {
         // Preserve the original branchless absolute-value macro expansion;
         // its Mips_DotProd2 argument is evaluated three times.
-        IsAGrind =
-            (Mips_DotProd2(-pSkater->mFront.vz,
-                 pSkater->CSuper.CBody.mVel.vx, pSkater->mFront.vx,
-                 pSkater->CSuper.CBody.mVel.vz) ^
-             (Mips_DotProd2(-pSkater->mFront.vz,
-                  pSkater->CSuper.CBody.mVel.vx, pSkater->mFront.vx,
-                  pSkater->CSuper.CBody.mVel.vz) >> 31)) -
-            (Mips_DotProd2(-pSkater->mFront.vz,
-                 pSkater->CSuper.CBody.mVel.vx, pSkater->mFront.vx,
-                 pSkater->CSuper.CBody.mVel.vz) >> 31);
+        IsAGrind = (Mips_DotProd2(-pSkater->mFront.vz, pSkater->CSuper.CBody.mVel.vx,
+                                  pSkater->mFront.vx, pSkater->CSuper.CBody.mVel.vz) ^
+                    (Mips_DotProd2(-pSkater->mFront.vz, pSkater->CSuper.CBody.mVel.vx,
+                                   pSkater->mFront.vx, pSkater->CSuper.CBody.mVel.vz) >>
+                     31)) -
+                   (Mips_DotProd2(-pSkater->mFront.vz, pSkater->CSuper.CBody.mVel.vx,
+                                  pSkater->mFront.vx, pSkater->CSuper.CBody.mVel.vz) >>
+                    31);
 
         int inRange = (0x9C3F < IsAGrind) ^ 1;
         if (pSkater->mPhysicsState != PHYSICS_ON_RAIL) goto skip_sparks;
@@ -1744,14 +1860,14 @@ has_frames:
             SparkPos.vy = 0x19000;
 
             int i = 0;
-            do {
+            do
+            {
                 CGrindSpark *pSpark =
-                    static_cast<CGrindSpark *>(
-                        CBit::operator new(BIT2_GRIND_SPARK_STORAGE_SIZE));
-                if (pSpark != 0) {
-                    Bit2_ConstructGrindSpark(
-                        pSpark, &pSkater->CSuper.CBody,
-                        SparkPos, -0x28, 0x1000, 5);
+                    static_cast<CGrindSpark *>(CBit::operator new(BIT2_GRIND_SPARK_STORAGE_SIZE));
+                if (pSpark != 0)
+                {
+                    Bit2_ConstructGrindSpark(pSpark, &pSkater->CSuper.CBody, SparkPos, -0x28,
+                                             0x1000, 5);
                 }
                 i++;
             } while (i < 9);
@@ -1761,8 +1877,8 @@ has_frames:
 
     skip_sparks:
         if (pSkater->mPhysicsState != PHYSICS_ON_GROUND) goto do_shadow;
-        if (Video_Abs(pSkater->CSuper.CBody.CItem.mPos.vy -
-                pSkater->mLastShadowCheckHeight) < 65) {
+        if (Video_Abs(pSkater->CSuper.CBody.CItem.mPos.vy - pSkater->mLastShadowCheckHeight) < 65)
+        {
             goto no_shadow;
         }
     }
@@ -1773,10 +1889,8 @@ do_shadow:
     goto glow;
 
 no_shadow:
-    pSkater->CSuper.CBody.mShadowPos.vx =
-        pSkater->CSuper.CBody.CItem.mPos.vx;
-    pSkater->CSuper.CBody.mShadowPos.vz =
-        pSkater->CSuper.CBody.CItem.mPos.vz;
+    pSkater->CSuper.CBody.mShadowPos.vx = pSkater->CSuper.CBody.CItem.mPos.vx;
+    pSkater->CSuper.CBody.mShadowPos.vz = pSkater->CSuper.CBody.CItem.mPos.vz;
 
 glow:
     pSkater->GlowUpdate();
@@ -1787,12 +1901,14 @@ glow:
 end_playback:
     {
         int ReplayHighlight = VInfo->ReplayHighlight;
-        if (static_cast<unsigned int>(ReplayHighlight - 1) <
-            VideoHighlightCount - 1) {
-            if (VInfo->Highlights[ReplayHighlight].Score != 0) {
+        if (static_cast<unsigned int>(ReplayHighlight - 1) < VideoHighlightCount - 1)
+        {
+            if (VInfo->Highlights[ReplayHighlight].Score != 0)
+            {
                 int EndFrame = VInfo->Highlights[ReplayHighlight].ToFrame;
                 int StartFrame = VInfo->Highlights[ReplayHighlight].FromFrame;
-                if (EndFrame != VideoNoEndFrame) {
+                if (EndFrame != VideoNoEndFrame)
+                {
                     VInfo->FramesLeft = EndFrame - StartFrame + 1;
                 }
                 GVideoReplay = GVideoReplay + 1;
@@ -1823,7 +1939,8 @@ done:;
  * Demangled: Video_HandleStepping(void)
  *
  */
-void Video_HandleStepping(void) {
+void Video_HandleStepping(void)
+{
     static const int RepeatDelay = 12;
 
     if (GVInfo1.VideoMode == VIDEO_PLAYBACK && DemoTimer != 0) goto stepping;
@@ -1832,26 +1949,28 @@ void Video_HandleStepping(void) {
 
     {
         int p;
-        for (p = 0; p < 2; p++) {
-            if (Pad[p].Triangle.Triggered || Pad[p].Square.Triggered ||
-                Pad[p].LeftOne.Triggered || Pad[p].LeftTwo.Triggered ||
-                Pad[p].RightOne.Triggered || Pad[p].RightTwo.Triggered ||
-                Pad[p].Left.Triggered || Pad[p].Right.Triggered ||
-                Pad[p].Up.Triggered || Pad[p].Down.Triggered ||
-                Pad[p].Circle.Triggered || Pad[p].Select.Triggered) {
+        for (p = 0; p < 2; p++)
+        {
+            if (Pad[p].Triangle.Triggered || Pad[p].Square.Triggered || Pad[p].LeftOne.Triggered ||
+                Pad[p].LeftTwo.Triggered || Pad[p].RightOne.Triggered ||
+                Pad[p].RightTwo.Triggered || Pad[p].Left.Triggered || Pad[p].Right.Triggered ||
+                Pad[p].Up.Triggered || Pad[p].Down.Triggered || Pad[p].Circle.Triggered ||
+                Pad[p].Select.Triggered)
+            {
                 Pad[p].X.Triggered = 1;
             }
         }
     }
     return;
 
-    stepping:;
+stepping:;
     {
         if (Status == STATUS_ENDHEATREPLAY) return;
         if (Status == STATUS_ENDHEATLADDER) return;
         if (Status == STATUS_ENDHEATJUDGES) return;
 
-        if (Pad[0].Square.Triggered != 0) {
+        if (Pad[0].Square.Triggered != 0)
+        {
             goto toggle;
         }
         if (GNumberOfPlayers != GVInfo1.VideoMode) goto check_frozen;
@@ -1875,7 +1994,8 @@ void Video_HandleStepping(void) {
         goto check_other;
 
     do_step:
-        if (StepCount != 0) {
+        if (StepCount != 0)
+        {
             StepCount--;
             return;
         }
@@ -1890,7 +2010,8 @@ void Video_HandleStepping(void) {
         goto no_step;
 
     do_step_alt:
-        if (StepCount != 0) {
+        if (StepCount != 0)
+        {
             StepCount--;
             return;
         }

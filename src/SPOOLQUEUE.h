@@ -8,8 +8,7 @@
 #error "SPOOLQUEUE.h requires the SPOOL_QUEUE_LAYOUT view from SPOOL.h"
 #endif
 
-#if defined(SPOOLQUEUE_OWNER_DECLARATION) && \
-    defined(SPOOLQUEUE_CONSUMER_DECLARATION)
+#if defined(SPOOLQUEUE_OWNER_DECLARATION) && defined(SPOOLQUEUE_CONSUMER_DECLARATION)
 #error "Select only one SpoolQ declaration view"
 #elif defined(SPOOLQUEUE_OWNER_DECLARATION)
 #define SPOOLQUEUE_DECL_EXTENT 20

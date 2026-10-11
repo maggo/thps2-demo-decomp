@@ -9,14 +9,12 @@ void Font_Init(void);
 void Font_Reset(void);
 
 /** Queues one string for immediate-mode font rendering. */
-void Font_String(unsigned short x, unsigned short y, char *text,
-                 unsigned char red, unsigned char green, unsigned char blue,
-                 unsigned char bigText);
+void Font_String(unsigned short x, unsigned short y, char *text, unsigned char red,
+                 unsigned char green, unsigned char blue, unsigned char bigText);
 
 /** Queues one integer for immediate-mode font rendering. */
-void Font_Number(unsigned short x, unsigned short y, int number,
-                 unsigned char red, unsigned char green, unsigned char blue,
-                 unsigned char bigText);
+void Font_Number(unsigned short x, unsigned short y, int number, unsigned char red,
+                 unsigned char green, unsigned char blue, unsigned char bigText);
 
 /** Draws the queued font strings. */
 void Font_Display(void);
@@ -41,7 +39,8 @@ extern SAnimFrame *BigFontAnim FONT_SHARED_STATE_DECL_ATTR; // 0x800DA3D8
 struct SDoubleBuffer;
 struct SViewport;
 
-struct SString {
+struct SString
+{
     /** Preserve the original empty, non-trivial construction of Pos. */
     SString() {}
 

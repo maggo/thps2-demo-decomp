@@ -22,7 +22,8 @@ int GetPoolLink(int piece, int side, int rot);
 /** Reports whether two encoded pool-edge links are compatible. */
 int ComparePoolLinks(int link1, int link2);
 
-enum {
+enum
+{
     EditorPieceCount = 151,
     EditorCategoryCount = 18,
     EditorThemeMapCount = 4,
@@ -31,7 +32,8 @@ enum {
 };
 
 /** Metadata and theme mappings for one level-editor piece. */
-struct EditorPiece {
+struct EditorPiece
+{
     unsigned char map[EditorThemeMapCount];
     char iconFile[13];
     char name[32];
@@ -39,18 +41,18 @@ struct EditorPiece {
 };
 
 /** One entry in the level editor's ordered category menu. */
-struct EditorCategory {
+struct EditorCategory
+{
     unsigned char firstPiece;
     char name[32];
     unsigned char lastUsedPiece;
 };
 
-typedef char EditorPiece_size_must_be_50[
-    (sizeof(EditorPiece) == 50) ? 1 : -1];
-typedef char EditorCategory_size_must_be_34[
-    (sizeof(EditorCategory) == 34) ? 1 : -1];
+typedef char EditorPiece_size_must_be_50[(sizeof(EditorPiece) == 50) ? 1 : -1];
+typedef char EditorCategory_size_must_be_34[(sizeof(EditorCategory) == 34) ? 1 : -1];
 
-extern "C" {
+extern "C"
+{
 #ifdef EDITORPIECES_OWNER_DECLARATIONS
 #define NOTINDEMOPIECE_OWNER_DECLARATION
 #else
@@ -86,7 +88,8 @@ extern int Floor2X2Piece[EDITOR_FLOOR_PIECE_DECL_BOUND];
 
 #ifdef EDITORPIECES_OWNER_DECLARATIONS
 
-enum {
+enum
+{
     EditorPoolLinkCount = 6,
     EditorSaveMapCount = 145,
     EditorPoolSideCount = 4,
@@ -97,15 +100,16 @@ enum {
 };
 
 /** Rotation-sensitive edge links used only by the editor-piece owner. */
-struct PoolLinks {
+struct PoolLinks
+{
     unsigned char piece;
     unsigned char link[EditorPoolSideCount];
 };
 
-typedef char PoolLinks_size_must_be_5[
-    (sizeof(PoolLinks) == 5) ? 1 : -1];
+typedef char PoolLinks_size_must_be_5[(sizeof(PoolLinks) == 5) ? 1 : -1];
 
-extern "C" {
+extern "C"
+{
 static int Theme;
 }
 

@@ -1,11 +1,9 @@
 // LEVELGEN.h -- interface of LEVELGEN.cpp
-#if defined(LEVELGEN_GRID_MAP_LAYOUT_ONLY) && \
-    !defined(LEVELGEN_GRID_MAP_LAYOUT)
+#if defined(LEVELGEN_GRID_MAP_LAYOUT_ONLY) && !defined(LEVELGEN_GRID_MAP_LAYOUT)
 #error "LEVELGEN grid/map layout-only mode requires LEVELGEN_GRID_MAP_LAYOUT"
 #endif
 
-#if defined(LEVELGEN_GRID_MAP_LAYOUT_ONLY) && \
-    defined(LEVELGEN_OWNER_DECLARATIONS)
+#if defined(LEVELGEN_GRID_MAP_LAYOUT_ONLY) && defined(LEVELGEN_OWNER_DECLARATIONS)
 #error "LEVELGEN owner declarations cannot be requested in layout-only mode"
 #endif
 
@@ -33,15 +31,12 @@ extern signed char s_EditOutputRegionName[] __attribute__((aligned(4)));
 #undef LEVELGEN_DECLARE_OUTPUT_NAME_ADDRESS_VIEW
 #endif
 
-#if defined(LEVELGEN_OWNER_DECLARATIONS) && \
-    !defined(LEVELGEN_OWNER_DECLARATIONS_HEAD_EMITTED) && \
-    (defined(LEVELGEN_GRID_CELL_LAYOUT_EMITTED) || \
-     defined(LEVELGEN_MAP_CELL_LAYOUT_EMITTED))
+#if defined(LEVELGEN_OWNER_DECLARATIONS) && !defined(LEVELGEN_OWNER_DECLARATIONS_HEAD_EMITTED) && \
+    (defined(LEVELGEN_GRID_CELL_LAYOUT_EMITTED) || defined(LEVELGEN_MAP_CELL_LAYOUT_EMITTED))
 #error "LEVELGEN owner declarations must precede a focused grid/map layout encounter"
 #endif
 
-#if defined(LEVELGEN_OWNER_DECLARATIONS) && \
-    !defined(LEVELGEN_OWNER_DECLARATIONS_HEAD_EMITTED)
+#if defined(LEVELGEN_OWNER_DECLARATIONS) && !defined(LEVELGEN_OWNER_DECLARATIONS_HEAD_EMITTED)
 #define LEVELGEN_OWNER_DECLARATIONS_HEAD_EMITTED
 #define LEVELGEN_OWNER_DECLARATIONS_ACTIVE
 
@@ -52,73 +47,72 @@ extern "C"
 {
 #endif
 
-    // Primitive types
-    typedef unsigned char u8;
-    typedef unsigned short u16;
-    typedef unsigned int u32;
-    typedef signed char s8;
-    typedef signed short s16;
-    typedef signed int s32;
-    typedef unsigned char uchar;
-    typedef unsigned short ushort;
-    typedef unsigned int uint;
-    typedef unsigned char byte;
-    typedef int undefined;
-    typedef char undefined1;
-    typedef short undefined2;
-    typedef int undefined4;
-    typedef unsigned long ulong;
-    typedef unsigned char undefined3[3];
+// Primitive types
+typedef unsigned char u8;
+typedef unsigned short u16;
+typedef unsigned int u32;
+typedef signed char s8;
+typedef signed short s16;
+typedef signed int s32;
+typedef unsigned char uchar;
+typedef unsigned short ushort;
+typedef unsigned int uint;
+typedef unsigned char byte;
+typedef int undefined;
+typedef char undefined1;
+typedef short undefined2;
+typedef int undefined4;
+typedef unsigned long ulong;
+typedef unsigned char undefined3[3];
 
-    #include "PSXREGION.h"
+#include "PSXREGION.h"
 
-    // Forward declarations for large/opaque types
-    struct CBody;
-    struct CSuper;
-    struct EditorOutModel;
-    struct EditorInModel;
-    struct LevelGenerator;
-    struct CBruce;
-    struct CBaddy;
-    struct SModel;
-    struct SHook;
-    struct CPowerUp;
-    struct Item;
-    struct RailInfo;
+// Forward declarations for large/opaque types
+struct CBody;
+struct CSuper;
+struct EditorOutModel;
+struct EditorInModel;
+struct LevelGenerator;
+struct CBruce;
+struct CBaddy;
+struct SModel;
+struct SHook;
+struct CPowerUp;
+struct Item;
+struct RailInfo;
 
-    // Additional shared forward declarations
-    struct CBit;
-    struct CGlow;
-    struct CSpecialDisplay;
-    struct CFlatBit;
-    struct Font;
-    struct TextEffect;
-    struct FontManager;
-    struct RailPoint;
-    struct SCardHead;
-    struct SCamera;
-    struct STexWibVertInfo;
-    struct SViewport;
-    struct SColCache;
-    struct SLineInfo;
-    struct STexWibItemInfo;
-    struct SBlockHeader;
-    struct ControllerData;
+// Additional shared forward declarations
+struct CBit;
+struct CGlow;
+struct CSpecialDisplay;
+struct CFlatBit;
+struct Font;
+struct TextEffect;
+struct FontManager;
+struct RailPoint;
+struct SCardHead;
+struct SCamera;
+struct STexWibVertInfo;
+struct SViewport;
+struct SColCache;
+struct SLineInfo;
+struct STexWibItemInfo;
+struct SBlockHeader;
+struct ControllerData;
 
 #endif // LEVELGEN_OWNER_DECLARATIONS_HEAD_EMITTED
 
-#if defined(LEVELGEN_OWNER_DECLARATIONS_ACTIVE) && \
-    !defined(LEVELGEN_GRID_MAP_LAYOUT)
+#if defined(LEVELGEN_OWNER_DECLARATIONS_ACTIVE) && !defined(LEVELGEN_GRID_MAP_LAYOUT)
 #define LEVELGEN_GRID_MAP_LAYOUT
 #define LEVELGEN_GRID_MAP_LAYOUT_WAS_IMPLIED
 #endif
 
-#if defined(LEVELGEN_GRID_MAP_LAYOUT) && \
-    !defined(LEVELGEN_GRID_CELL_LAYOUT_EMITTED)
+#if defined(LEVELGEN_GRID_MAP_LAYOUT) && !defined(LEVELGEN_GRID_CELL_LAYOUT_EMITTED)
 #define LEVELGEN_GRID_CELL_LAYOUT_EMITTED
 
 /** One five-slot cell in the editor's compact piece grid. */
-struct GridCell {
+struct GridCell
+{
     short modelIndex[5];
     unsigned char rot[5];
     unsigned char numUsedSlots;
@@ -126,25 +120,25 @@ struct GridCell {
 
 #endif // LEVELGEN_GRID_CELL_LAYOUT_EMITTED
 
-#if defined(LEVELGEN_OWNER_DECLARATIONS_ACTIVE) && \
-    !defined(LEVELGEN_ZONE_CELL_LAYOUT_EMITTED)
+#if defined(LEVELGEN_OWNER_DECLARATIONS_ACTIVE) && !defined(LEVELGEN_ZONE_CELL_LAYOUT_EMITTED)
 #define LEVELGEN_ZONE_CELL_LAYOUT_EMITTED
 
 /** One generated-level zone and its indexed item list. */
-struct ZoneCell {
+struct ZoneCell
+{
     unsigned char num;
     unsigned short item[48];
 };
 
 #endif // LEVELGEN_ZONE_CELL_LAYOUT_EMITTED
 
-#if defined(LEVELGEN_GRID_MAP_LAYOUT) && \
-    !defined(LEVELGEN_MAP_CELL_LAYOUT_EMITTED)
+#if defined(LEVELGEN_GRID_MAP_LAYOUT) && !defined(LEVELGEN_MAP_CELL_LAYOUT_EMITTED)
 #define LEVELGEN_MAP_CELL_LAYOUT_EMITTED
 
 /** One five-slot cell in the generated model occupancy map. */
-struct MapCell {
-    struct EditorOutModel (*modelInSlot[5]);
+struct MapCell
+{
+    struct EditorOutModel(*modelInSlot[5]);
 };
 
 #endif // LEVELGEN_MAP_CELL_LAYOUT_EMITTED

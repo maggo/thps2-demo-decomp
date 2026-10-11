@@ -2,7 +2,8 @@
 #define TEXTURE_INC_H
 
 /** Linked runtime texture descriptor managed by the spooler. */
-struct Texture {
+struct Texture
+{
     unsigned char u0;
     unsigned char v0;
     unsigned short clut;

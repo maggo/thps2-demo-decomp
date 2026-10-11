@@ -3,8 +3,7 @@
  * count in small data.  This header is intentionally re-entrant so each
  * translation unit retains its original declaration order and import view.
  */
-#if defined(TRIGSTATE_OWNER_DECLARATION) && \
-    defined(TRIGSTATE_ABSOLUTE_DECLARATION)
+#if defined(TRIGSTATE_OWNER_DECLARATION) && defined(TRIGSTATE_ABSOLUTE_DECLARATION)
 #error "Select only one TRIG state declaration view"
 #elif defined(TRIGSTATE_OWNER_DECLARATION)
 #define TRIGSTATE_DECL_ATTR
@@ -14,10 +13,8 @@
 #error "Select the TRIG state owner or absolute declaration view"
 #endif
 
-#if !defined(TRIGSTATE_DECLARE_TRIG_FILE) && \
-    !defined(TRIGSTATE_DECLARE_OFFSET_LIST) && \
-    !defined(TRIGSTATE_DECLARE_NUM_NODES) && \
-    !defined(TRIGSTATE_DECLARE_FILE_SIZE)
+#if !defined(TRIGSTATE_DECLARE_TRIG_FILE) && !defined(TRIGSTATE_DECLARE_OFFSET_LIST) && \
+    !defined(TRIGSTATE_DECLARE_NUM_NODES) && !defined(TRIGSTATE_DECLARE_FILE_SIZE)
 #error "Select at least one TRIG state declaration"
 #endif
 

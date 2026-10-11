@@ -14,8 +14,7 @@
 #endif
 
 /** Bytes currently consumed by allocated trigger command points. */
-extern int TotalCommandPointMemory
-    TOTALCOMMANDPOINTMEMORY_DECL_ATTR;
+extern int TotalCommandPointMemory TOTALCOMMANDPOINTMEMORY_DECL_ATTR;
 
 #undef TOTALCOMMANDPOINTMEMORY_DECL_ATTR
 #undef TOTALCOMMANDPOINTMEMORY_ABSOLUTE_DECLARATION

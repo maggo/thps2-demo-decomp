@@ -25,14 +25,16 @@ struct CBit;
 struct PowerUpCItemOwner;
 
 /** Deleting-destructor prefix shared by particle vtables. */
-struct PowerUpBitVtable {
+struct PowerUpBitVtable
+{
     void (*Reserved0)(CBit *bit);
     void (*Reserved1)(CBit *bit);
     void (*destroy)(CBit *bit, int flags);
 };
 
 /** Particle-base storage embedded at the start of CGlow. */
-struct CBit {
+struct CBit
+{
     CBit *mPrevious;
     CBit *mNext;
     short mAge;
@@ -60,7 +62,8 @@ struct CBit {
 #include "LOCALTXT.h"
 
 /** Proven CBruce slices needed when awarding a pickup. */
-struct CBruce : CBody {
+struct CBruce : CBody
+{
     /** Start a new airborne trick sequence. */
     void Trick_TakeOff();
     /** Adds one named trick to the active scoring sequence. */
@@ -75,7 +78,8 @@ struct CBruce : CBody {
 };
 
 /** Power-up body and its owner-specific state. */
-struct CPowerUp : CBody {
+struct CPowerUp : CBody
+{
     CGlow *mpGlow;
     unsigned short mGlowRadiusOrg;
     unsigned short mGlowRadiusAmp;
@@ -94,8 +98,8 @@ struct CPowerUp : CBody {
     unsigned short mLifetime;
     unsigned int mTimer;
 
-    CPowerUp(unsigned short PowerupType, const CVector &Pos, const CVector &Vel,
-             unsigned int Flags, int Lifetime);
+    CPowerUp(unsigned short PowerupType, const CVector &Pos, const CVector &Vel, unsigned int Flags,
+             int Lifetime);
     virtual ~CPowerUp();
     void AI();
     void CheckAge();
@@ -110,11 +114,9 @@ struct CPowerUp : CBody {
 };
 
 typedef char powerup_cbit_size_must_be_72[(sizeof(CBit) == 72) ? 1 : -1];
-typedef char powerup_bit_vtable_size_must_be_12[
-    (sizeof(PowerUpBitVtable) == 12) ? 1 : -1];
+typedef char powerup_bit_vtable_size_must_be_12[(sizeof(PowerUpBitVtable) == 12) ? 1 : -1];
 typedef char powerup_cglow_size_must_be_104[(sizeof(CGlow) == 104) ? 1 : -1];
-typedef char powerup_local_text_size_must_be_652[
-    (sizeof(LocalText) == 652) ? 1 : -1];
+typedef char powerup_local_text_size_must_be_652[(sizeof(LocalText) == 652) ? 1 : -1];
 typedef char powerup_cbruce_slice_size_must_be_4208[(sizeof(CBruce) == 4208) ? 1 : -1];
 typedef char powerup_cpowerup_size_must_be_312[(sizeof(CPowerUp) == 312) ? 1 : -1];
 
@@ -128,7 +130,8 @@ typedef char powerup_cpowerup_size_must_be_312[(sizeof(CPowerUp) == 312) ? 1 : -
 #include "UTILS.h"
 
 /** Target-proven power-up type values used by this owner. */
-enum PowerUpType {
+enum PowerUpType
+{
     PowerUpLetterK = 4,
     PowerUpLetterS = 5,
     PowerUpLetterA = 6,
@@ -155,25 +158,29 @@ enum PowerUpType {
 };
 
 /** Flags accepted by the CPowerUp constructor. */
-enum PowerUpCreationFlag {
+enum PowerUpCreationFlag
+{
     PowerUpDropToGround = 4,
     PowerUpUseDropVelocity = 8,
     PowerUpDropForever = 0x10
 };
 
 /** Availability bits in CItem::mFlags. */
-enum PowerUpItemFlag {
+enum PowerUpItemFlag
+{
     PowerUpUnavailable = 1,
     PowerUpUnavailableToSecondPlayer = 0x40,
     PowerUpUnavailableToEveryone = 0x41
 };
 
 /** Death bit in CBody::mCBodyFlags. */
-enum PowerUpBodyFlag {
+enum PowerUpBodyFlag
+{
     PowerUpBodyDead = 0x40
 };
 
-enum PowerUpConstant {
+enum PowerUpConstant
+{
     PowerUpPickupVolume = 0x2000,
     PowerUpLetterSound = 0x14,
     PowerUpBonusSound = 0x12,
@@ -238,140 +245,136 @@ CPowerUp::CPowerUp(unsigned short PowerupType, const CVector &Pos, const CVector
 
     switch (mType)
     {
-    case PowerUpMedalA:
-        InitItem("skmedals");
-        mIs3d = 1;
-        mModel = Spool_GetModel(0x54636518, CurrentMedalsFileRegion);
-        break;
-    case PowerUpMedalB:
-        InitItem("skmedals");
-        mIs3d = 1;
-        mModel = Spool_GetModel(0xBA6D0434, CurrentMedalsFileRegion);
-        break;
-    case PowerUpMedalC:
-        InitItem("skmedals");
-        mIs3d = 1;
-        mModel = Spool_GetModel(0x2364558E, CurrentMedalsFileRegion);
-        break;
-    case PowerUpLetterS:
-        mIs3d = 1;
-        mModel = Spool_GetModel(0x311D55D4, CurrentItemsFileRegion);
-        break;
-    case PowerUpLetterK:
-        mIs3d = 1;
-        mModel = Spool_GetModel(0x2328A71C, CurrentItemsFileRegion);
-        break;
-    case PowerUpLetterA:
-        mIs3d = 1;
-        mModel = Spool_GetModel(0x2EBF22CA, CurrentItemsFileRegion);
-        break;
-    case PowerUpLetterT:
-        mIs3d = 1;
-        mModel = Spool_GetModel(0x34524351, CurrentItemsFileRegion);
-        break;
-    case PowerUpLetterE:
-        mIs3d = 1;
-        mModel = Spool_GetModel(0x29B68A16, CurrentItemsFileRegion);
-        break;
-    case PowerUpSecretTape:
-    case PowerUpSpecial18:
-        mAngVel.vy = 150;
-        mIs3d = 1;
-        mModel = Spool_GetModel(0x7C1B2C4A, CurrentItemsFileRegion);
-        break;
-    case PowerUpTypeBonus100:
-        mAngVel.vy = 200;
-        mIs3d = 1;
-        mModel = Spool_GetModel(0x6F0F6B9F, CurrentItemsFileRegion);
-        break;
-    case PowerUpTypeBonus200:
-        mAngVel.vy = 200;
-        mIs3d = 1;
-        mModel = Spool_GetModel(0xF6063A25, CurrentItemsFileRegion);
-        break;
-    case PowerUpTypeBonus500:
-        mAngVel.vy = 200;
-        mIs3d = 1;
-        mModel = Spool_GetModel(0x81010AB3, CurrentItemsFileRegion);
-        break;
-    case PowerUpTypeBonus20Spot:
-        mAngVel.vy = 200;
-        mIs3d = 1;
-        mModel = Spool_GetModel(0x694ED947, CurrentItemsFileRegion);
-        break;
-    case PowerUpTypeBonusFifty:
-        mAngVel.vy = 200;
-        mIs3d = 1;
-        mModel = Spool_GetModel(0x260F4F80, CurrentItemsFileRegion);
-        break;
-    case PowerUpTypeBonusRich:
-        mAngVel.vy = 200;
-        mIs3d = 1;
-        mModel = Spool_GetModel(0xCC4E141F, CurrentItemsFileRegion);
-        break;
-    case PowerUpTypeBonusRollAgain:
-        mAngVel.vy = 200;
-        mIs3d = 1;
-        mModel = Spool_GetModel(0x483701E6, CurrentItemsFileRegion);
-        break;
-    case PowerUpTypeBonusHead:
-        mAngVel.vy = 200;
-        mIs3d = 1;
-        mModel = Spool_GetModel(0x608E06C7, CurrentItemsFileRegion);
-        break;
-    case PowerUpTypeBonusShoes:
-        mAngVel.vy = 200;
-        mIs3d = 1;
-        mModel = Spool_GetModel(0x10122D2A, CurrentItemsFileRegion);
-        break;
-    case PowerUpTypeBonusFly:
-        mAngVel.vy = 200;
-        mIs3d = 1;
-        mModel = Spool_GetModel(0xC12ED64B, CurrentItemsFileRegion);
-        break;
-    case PowerUpTypeBonusPants:
-        mAngVel.vy = 200;
-        mIs3d = 1;
-        mModel = Spool_GetModel(0x22908B06, CurrentItemsFileRegion);
-        break;
-    case PowerUpTypeBonusBoard:
-        mAngVel.vy = 200;
-        mIs3d = 1;
-        mModel = Spool_GetModel(0x56891A69, CurrentItemsFileRegion);
-        break;
+        case PowerUpMedalA:
+            InitItem("skmedals");
+            mIs3d = 1;
+            mModel = Spool_GetModel(0x54636518, CurrentMedalsFileRegion);
+            break;
+        case PowerUpMedalB:
+            InitItem("skmedals");
+            mIs3d = 1;
+            mModel = Spool_GetModel(0xBA6D0434, CurrentMedalsFileRegion);
+            break;
+        case PowerUpMedalC:
+            InitItem("skmedals");
+            mIs3d = 1;
+            mModel = Spool_GetModel(0x2364558E, CurrentMedalsFileRegion);
+            break;
+        case PowerUpLetterS:
+            mIs3d = 1;
+            mModel = Spool_GetModel(0x311D55D4, CurrentItemsFileRegion);
+            break;
+        case PowerUpLetterK:
+            mIs3d = 1;
+            mModel = Spool_GetModel(0x2328A71C, CurrentItemsFileRegion);
+            break;
+        case PowerUpLetterA:
+            mIs3d = 1;
+            mModel = Spool_GetModel(0x2EBF22CA, CurrentItemsFileRegion);
+            break;
+        case PowerUpLetterT:
+            mIs3d = 1;
+            mModel = Spool_GetModel(0x34524351, CurrentItemsFileRegion);
+            break;
+        case PowerUpLetterE:
+            mIs3d = 1;
+            mModel = Spool_GetModel(0x29B68A16, CurrentItemsFileRegion);
+            break;
+        case PowerUpSecretTape:
+        case PowerUpSpecial18:
+            mAngVel.vy = 150;
+            mIs3d = 1;
+            mModel = Spool_GetModel(0x7C1B2C4A, CurrentItemsFileRegion);
+            break;
+        case PowerUpTypeBonus100:
+            mAngVel.vy = 200;
+            mIs3d = 1;
+            mModel = Spool_GetModel(0x6F0F6B9F, CurrentItemsFileRegion);
+            break;
+        case PowerUpTypeBonus200:
+            mAngVel.vy = 200;
+            mIs3d = 1;
+            mModel = Spool_GetModel(0xF6063A25, CurrentItemsFileRegion);
+            break;
+        case PowerUpTypeBonus500:
+            mAngVel.vy = 200;
+            mIs3d = 1;
+            mModel = Spool_GetModel(0x81010AB3, CurrentItemsFileRegion);
+            break;
+        case PowerUpTypeBonus20Spot:
+            mAngVel.vy = 200;
+            mIs3d = 1;
+            mModel = Spool_GetModel(0x694ED947, CurrentItemsFileRegion);
+            break;
+        case PowerUpTypeBonusFifty:
+            mAngVel.vy = 200;
+            mIs3d = 1;
+            mModel = Spool_GetModel(0x260F4F80, CurrentItemsFileRegion);
+            break;
+        case PowerUpTypeBonusRich:
+            mAngVel.vy = 200;
+            mIs3d = 1;
+            mModel = Spool_GetModel(0xCC4E141F, CurrentItemsFileRegion);
+            break;
+        case PowerUpTypeBonusRollAgain:
+            mAngVel.vy = 200;
+            mIs3d = 1;
+            mModel = Spool_GetModel(0x483701E6, CurrentItemsFileRegion);
+            break;
+        case PowerUpTypeBonusHead:
+            mAngVel.vy = 200;
+            mIs3d = 1;
+            mModel = Spool_GetModel(0x608E06C7, CurrentItemsFileRegion);
+            break;
+        case PowerUpTypeBonusShoes:
+            mAngVel.vy = 200;
+            mIs3d = 1;
+            mModel = Spool_GetModel(0x10122D2A, CurrentItemsFileRegion);
+            break;
+        case PowerUpTypeBonusFly:
+            mAngVel.vy = 200;
+            mIs3d = 1;
+            mModel = Spool_GetModel(0xC12ED64B, CurrentItemsFileRegion);
+            break;
+        case PowerUpTypeBonusPants:
+            mAngVel.vy = 200;
+            mIs3d = 1;
+            mModel = Spool_GetModel(0x22908B06, CurrentItemsFileRegion);
+            break;
+        case PowerUpTypeBonusBoard:
+            mAngVel.vy = 200;
+            mIs3d = 1;
+            mModel = Spool_GetModel(0x56891A69, CurrentItemsFileRegion);
+            break;
     }
 
     if (GGame != 1)
     {
         switch (mType)
         {
-        case PowerUpLetterK:
-        case PowerUpLetterS:
-        case PowerUpLetterA:
-        case PowerUpLetterE:
-        case PowerUpLetterT:
-        case PowerUpSecretTape:
-            mLifetime = 1;
-            break;
+            case PowerUpLetterK:
+            case PowerUpLetterS:
+            case PowerUpLetterA:
+            case PowerUpLetterE:
+            case PowerUpLetterT:
+            case PowerUpSecretTape: mLifetime = 1; break;
         }
     }
     else
     {
         switch (mType)
         {
-        case PowerUpLetterS:     GPowS = this; break;
-        case PowerUpLetterK:     GPowK = this; break;
-        case PowerUpLetterA:     GPowA = this; break;
-        case PowerUpLetterT:     GPowT = this; break;
-        case PowerUpLetterE:     GPowE = this; break;
-        case PowerUpSecretTape:  GPowTape = this; break;
+            case PowerUpLetterS: GPowS = this; break;
+            case PowerUpLetterK: GPowK = this; break;
+            case PowerUpLetterA: GPowA = this; break;
+            case PowerUpLetterT: GPowT = this; break;
+            case PowerUpLetterE: GPowE = this; break;
+            case PowerUpSecretTape: GPowTape = this; break;
         }
     }
 
     AttachTo(&PowerUpList);
-    if (mIs3d == 0)
-        DontDisplay();
-
+    if (mIs3d == 0) DontDisplay();
 }
 
 /**
@@ -501,27 +504,35 @@ void CPowerUp::DoPhysics()
     this->mAngles += this->mAngVel;
     this->mAngles.Mask();
 
-    if (this->mDropping != 0) {
-        if (this->mDropForever == 0 && this->mGroundY < 0 && this->mGroundY > -5) {
-            if (TTime & 1) {
-                int ground = Utils_GetGroundHeight(this->mOrgPos, 0,
-                                                   PowerUpDisplayDistance);
-                if (ground == -1) {
+    if (this->mDropping != 0)
+    {
+        if (this->mDropForever == 0 && this->mGroundY < 0 && this->mGroundY > -5)
+        {
+            if (TTime & 1)
+            {
+                int ground = Utils_GetGroundHeight(this->mOrgPos, 0, PowerUpDisplayDistance);
+                if (ground == -1)
+                {
                     this->mGroundY--;
                     if (this->mGroundY < -4) this->mDropForever = 1;
-                } else {
+                }
+                else
+                {
                     this->mGroundY = ground;
                 }
             }
         }
-        else {
+        else
+        {
             CVector *vel = &this->mVel;
             this->mOrgPos += *vel;
             this->mVel.vy += this->mAcc.vy;
             this->mVel.vy -= this->mVel.vy >> this->mFric.vy;
-            if (this->mDropForever == 0) {
+            if (this->mDropForever == 0)
+            {
                 if (this->mGroundY - (this->mHoverHeight << 12) < this->mOrgPos.vy &&
-                    this->mVel.vy > 0) {
+                    this->mVel.vy > 0)
+                {
                     this->mOrgPos.vy = this->mGroundY - (this->mHoverHeight << 12);
                     vel->vx = 0;
                     vel->vy = 0;
@@ -532,19 +543,23 @@ void CPowerUp::DoPhysics()
             this->mPos = this->mOrgPos;
         }
     }
-    else {
+    else
+    {
         this->mPos = this->mOrgPos;
-        this->mPos.vy +=
-            ((this->mWobbleAmplitude * rcossin_tbl[(this->mT & 0xFFF) * 2]) / 4096) << 12;
+        this->mPos.vy += ((this->mWobbleAmplitude * rcossin_tbl[(this->mT & 0xFFF) * 2]) / 4096)
+                         << 12;
         this->mT += this->mWobbleSpeed;
     }
 
     this->mShadowPos = this->mOrgPos;
     this->mShadowPos.vy = this->mGroundY;
     this->mShadowDist = (this->mGroundY - this->mPos.vy) >> 12;
-    if (this->mShadowDist != 0) {
+    if (this->mShadowDist != 0)
+    {
         this->mShadowScale = 140 - this->mShadowDist * 60 / 128;
-    } else {
+    }
+    else
+    {
         this->mShadowScale = 0;
     }
 }
@@ -561,14 +576,11 @@ void CPowerUp::CheckAge()
 {
     mTimer++;
 
-    if (mLifetime == PowerUpInfiniteLifetime)
-        return;
+    if (mLifetime == PowerUpInfiniteLifetime) return;
 
-    if (mLifetime != 0)
-        mLifetime--;
+    if (mLifetime != 0) mLifetime--;
 
-    if (mLifetime < 60)
-        mWobbleAmplitude = mMaxWobbleAmplitude * mLifetime / 60;
+    if (mLifetime < 60) mWobbleAmplitude = mMaxWobbleAmplitude * mLifetime / 60;
 
     if (mLifetime > 30 && mLifetime < 60)
     {
@@ -611,150 +623,138 @@ void CPowerUp::TakeEffect(CBruce *pMech)
         unavailable = mFlags & PowerUpUnavailable;
 
     int HadEffect = 0;
-    if (unavailable)
-        return;
+    if (unavailable) return;
 
     int sound = 0;
     switch (mType)
     {
-    case PowerUpLetterK:
-    case PowerUpLetterS:
-    case PowerUpLetterA:
-    case PowerUpLetterE:
-    case PowerUpSpecial14:
-    case PowerUpLetterT:
-    case PowerUpSecretTape:
-    {
-        HadEffect = 1;
-        Mess_DeleteAll();
-
-        char *pMess = 0;
-        switch (mType)
-        {
-        case PowerUpLetterS:
-            SFX_PlayX(PowerUpLetterSound, PowerUpPickupVolume, 0);
-            if (!Panel_Letter(0))
-                pMess = GameText.pSPickup;
-            break;
         case PowerUpLetterK:
-            SFX_PlayX(PowerUpLetterSound, PowerUpPickupVolume, 0);
-            if (!Panel_Letter(1))
-                pMess = GameText.pKPickup;
-            break;
+        case PowerUpLetterS:
         case PowerUpLetterA:
-            SFX_PlayX(PowerUpLetterSound, PowerUpPickupVolume, 0);
-            if (!Panel_Letter(2))
-                pMess = GameText.pAPickup;
-            break;
-        case PowerUpLetterT:
-            SFX_PlayX(PowerUpLetterSound, PowerUpPickupVolume, 0);
-            if (!Panel_Letter(3))
-                pMess = GameText.pTPickup;
-            break;
         case PowerUpLetterE:
-            SFX_PlayX(PowerUpLetterSound, PowerUpPickupVolume, 0);
-            if (!Panel_Letter(4))
-                pMess = GameText.pEPickup;
-            break;
+        case PowerUpSpecial14:
+        case PowerUpLetterT:
         case PowerUpSecretTape:
-            Panel_Tape(3);
-            pMess = 0;
-            break;
-        }
-
-        if (pMess)
-            Mess_Message(pMess, Messprog_Zoom, 1, 0, 0);
-        break;
-    }
-
-    case PowerUpTypeBonus100:
-    case PowerUpTypeBonus200:
-    case PowerUpTypeBonus500:
-    case PowerUpTypeBonus20Spot:
-    case PowerUpTypeBonusFifty:
-    case PowerUpTypeBonusRich:
-    case PowerUpTypeBonusRollAgain:
-    case PowerUpTypeBonusHead:
-    case PowerUpTypeBonusShoes:
-    case PowerUpTypeBonusFly:
-    case PowerUpTypeBonusPants:
-    case PowerUpTypeBonusBoard:
-    {
-        if (pMech->mInBail)
-            break;
-
-        HadEffect = 1;
-        if (pMech->mPhysicsState == 0)
-            pMech->Trick_TakeOff();
-
-        int Pong = SFX_PlayX(PowerUpBonusSound, PowerUpPickupVolume, 0);
-        switch (mType)
         {
-        case PowerUpTypeBonus100:
-            pMech->Trick_Trick("Bonus 100", -100, 2);
-            SFX_SetVoicePitch(Pong, 900);
-            break;
-        case PowerUpTypeBonus200:
-            pMech->Trick_Trick("Bonus 200", -200, 2);
-            SFX_SetVoicePitch(Pong, 1114);
-            break;
-        case PowerUpTypeBonus500:
-            pMech->Trick_Trick("Bonus 500", -500, 2);
-            SFX_SetVoicePitch(Pong, 1500);
-            break;
-        case PowerUpTypeBonus20Spot:
-            pMech->Trick_Trick("20 Spot", -100, 2);
-            SFX_SetVoicePitch(Pong, 900);
-            break;
-        case PowerUpTypeBonusFifty:
-            pMech->Trick_Trick("Fitty Bucks", -200, 2);
-            SFX_SetVoicePitch(Pong, 1114);
-            break;
-        case PowerUpTypeBonusRich:
-            pMech->Trick_Trick("100 Bucks! You're rich!", -500, 2);
-            SFX_SetVoicePitch(Pong, 1500);
-            break;
-        case PowerUpTypeBonusRollAgain:
-            pMech->Trick_Trick("Roll Another", -200, -2);
-            SFX_SetVoicePitch(Pong, 1114);
-            break;
-        case PowerUpTypeBonusHead:
-            pMech->Trick_Trick("You got head - excellent", -200, 2);
-            SFX_SetVoicePitch(Pong, 1114);
-            break;
-        case PowerUpTypeBonusShoes:
-            pMech->Trick_Trick("Gotta be the shoes", -200, 2);
-            SFX_SetVoicePitch(Pong, 1114);
-            break;
-        case PowerUpTypeBonusFly:
-            pMech->Trick_Trick("You'll look fly in this", -200, 2);
-            SFX_SetVoicePitch(Pong, 1114);
-            break;
-        case PowerUpTypeBonusPants:
-            pMech->Trick_Trick("Change yo pants!", -200, 2);
-            SFX_SetVoicePitch(Pong, 1114);
-            break;
-        case PowerUpTypeBonusBoard:
-            pMech->Trick_Trick("I'm Board", -200, 2);
-            SFX_SetVoicePitch(Pong, 1114);
+            HadEffect = 1;
+            Mess_DeleteAll();
+
+            char *pMess = 0;
+            switch (mType)
+            {
+                case PowerUpLetterS:
+                    SFX_PlayX(PowerUpLetterSound, PowerUpPickupVolume, 0);
+                    if (!Panel_Letter(0)) pMess = GameText.pSPickup;
+                    break;
+                case PowerUpLetterK:
+                    SFX_PlayX(PowerUpLetterSound, PowerUpPickupVolume, 0);
+                    if (!Panel_Letter(1)) pMess = GameText.pKPickup;
+                    break;
+                case PowerUpLetterA:
+                    SFX_PlayX(PowerUpLetterSound, PowerUpPickupVolume, 0);
+                    if (!Panel_Letter(2)) pMess = GameText.pAPickup;
+                    break;
+                case PowerUpLetterT:
+                    SFX_PlayX(PowerUpLetterSound, PowerUpPickupVolume, 0);
+                    if (!Panel_Letter(3)) pMess = GameText.pTPickup;
+                    break;
+                case PowerUpLetterE:
+                    SFX_PlayX(PowerUpLetterSound, PowerUpPickupVolume, 0);
+                    if (!Panel_Letter(4)) pMess = GameText.pEPickup;
+                    break;
+                case PowerUpSecretTape:
+                    Panel_Tape(3);
+                    pMess = 0;
+                    break;
+            }
+
+            if (pMess) Mess_Message(pMess, Messprog_Zoom, 1, 0, 0);
             break;
         }
 
-        if (pMech->mPhysicsState == 0)
-            pMech->Trick_Land();
-        break;
-    }
+        case PowerUpTypeBonus100:
+        case PowerUpTypeBonus200:
+        case PowerUpTypeBonus500:
+        case PowerUpTypeBonus20Spot:
+        case PowerUpTypeBonusFifty:
+        case PowerUpTypeBonusRich:
+        case PowerUpTypeBonusRollAgain:
+        case PowerUpTypeBonusHead:
+        case PowerUpTypeBonusShoes:
+        case PowerUpTypeBonusFly:
+        case PowerUpTypeBonusPants:
+        case PowerUpTypeBonusBoard:
+        {
+            if (pMech->mInBail) break;
+
+            HadEffect = 1;
+            if (pMech->mPhysicsState == 0) pMech->Trick_TakeOff();
+
+            int Pong = SFX_PlayX(PowerUpBonusSound, PowerUpPickupVolume, 0);
+            switch (mType)
+            {
+                case PowerUpTypeBonus100:
+                    pMech->Trick_Trick("Bonus 100", -100, 2);
+                    SFX_SetVoicePitch(Pong, 900);
+                    break;
+                case PowerUpTypeBonus200:
+                    pMech->Trick_Trick("Bonus 200", -200, 2);
+                    SFX_SetVoicePitch(Pong, 1114);
+                    break;
+                case PowerUpTypeBonus500:
+                    pMech->Trick_Trick("Bonus 500", -500, 2);
+                    SFX_SetVoicePitch(Pong, 1500);
+                    break;
+                case PowerUpTypeBonus20Spot:
+                    pMech->Trick_Trick("20 Spot", -100, 2);
+                    SFX_SetVoicePitch(Pong, 900);
+                    break;
+                case PowerUpTypeBonusFifty:
+                    pMech->Trick_Trick("Fitty Bucks", -200, 2);
+                    SFX_SetVoicePitch(Pong, 1114);
+                    break;
+                case PowerUpTypeBonusRich:
+                    pMech->Trick_Trick("100 Bucks! You're rich!", -500, 2);
+                    SFX_SetVoicePitch(Pong, 1500);
+                    break;
+                case PowerUpTypeBonusRollAgain:
+                    pMech->Trick_Trick("Roll Another", -200, -2);
+                    SFX_SetVoicePitch(Pong, 1114);
+                    break;
+                case PowerUpTypeBonusHead:
+                    pMech->Trick_Trick("You got head - excellent", -200, 2);
+                    SFX_SetVoicePitch(Pong, 1114);
+                    break;
+                case PowerUpTypeBonusShoes:
+                    pMech->Trick_Trick("Gotta be the shoes", -200, 2);
+                    SFX_SetVoicePitch(Pong, 1114);
+                    break;
+                case PowerUpTypeBonusFly:
+                    pMech->Trick_Trick("You'll look fly in this", -200, 2);
+                    SFX_SetVoicePitch(Pong, 1114);
+                    break;
+                case PowerUpTypeBonusPants:
+                    pMech->Trick_Trick("Change yo pants!", -200, 2);
+                    SFX_SetVoicePitch(Pong, 1114);
+                    break;
+                case PowerUpTypeBonusBoard:
+                    pMech->Trick_Trick("I'm Board", -200, 2);
+                    SFX_SetVoicePitch(Pong, 1114);
+                    break;
+            }
+
+            if (pMech->mPhysicsState == 0) pMech->Trick_Land();
+            break;
+        }
     }
 
-    if (mHasNode)
-        Trig_SendPulse(Trig_GetLinksPointer(mNodeIndex));
+    if (mHasNode) Trig_SendPulse(Trig_GetLinksPointer(mNodeIndex));
 
     if (HadEffect)
     {
         Die();
 
-        if (sound)
-            SFX_PlayX(0, PowerUpPickupVolume, 0);
+        if (sound) SFX_PlayX(0, PowerUpPickupVolume, 0);
     }
 }
 
@@ -774,8 +774,7 @@ void CPowerUp::AI()
 
     if (GNumberOfPlayers == 1)
     {
-        if (mFlags & PowerUpUnavailable)
-            return;
+        if (mFlags & PowerUpUnavailable) return;
         if (mPlayerDist > PowerUpDisplayDistance)
         {
             DeleteStuff();
@@ -784,14 +783,10 @@ void CPowerUp::AI()
     }
     else
     {
-        if ((mFlags & PowerUpUnavailableToEveryone) ==
-            PowerUpUnavailableToEveryone)
-            return;
+        if ((mFlags & PowerUpUnavailableToEveryone) == PowerUpUnavailableToEveryone) return;
 
         if (mPlayerDist > PowerUpDisplayDistance &&
-            Utils_CrapDist(
-                MechList->mNextItem->mPos,
-                mPos) > PowerUpDisplayDistance)
+            Utils_CrapDist(MechList->mNextItem->mPos, mPos) > PowerUpDisplayDistance)
         {
             DeleteStuff();
             return;
@@ -799,16 +794,13 @@ void CPowerUp::AI()
     }
 
     DoPhysics();
-    if (!mIs3d)
-        CreateBit();
+    if (!mIs3d) CreateBit();
 
     if (!mpGlow)
     {
         // The target keeps base allocation and conditional construction separate.
-        CGlow *glow = static_cast<CGlow *>(
-            CBit::operator new(sizeof(CGlow)));
-        if (glow)
-            glow = ::new (glow) CGlow(4, 2);
+        CGlow *glow = static_cast<CGlow *>(CBit::operator new(sizeof(CGlow)));
+        if (glow) glow = ::new (glow) CGlow(4, 2);
         mpGlow = glow;
 
         mpGlow->mSkipTriangles = 1;
@@ -820,84 +812,83 @@ void CPowerUp::AI()
 
         switch (mType)
         {
-        case PowerUpSpecial18:
-            for (int i = 0; i < mpGlow->mNumSections; i++)
-            {
-                if (i & 1)
-                    mpGlow->SetRadialRGB(i, 0x60, 0x60, 0);
-                else
-                    mpGlow->SetRadialRGB(i, 0x40, 0x40, 0x40);
-            }
-            mpGlow->SetRGB(0x20, 0, 0);
-            mpGlow->SetFringeRGB(1, 0, 0, 0);
-            mGlowRadiusOrg = 10;
-            mGlowRadiusAmp = 3;
-            break;
+            case PowerUpSpecial18:
+                for (int i = 0; i < mpGlow->mNumSections; i++)
+                {
+                    if (i & 1)
+                        mpGlow->SetRadialRGB(i, 0x60, 0x60, 0);
+                    else
+                        mpGlow->SetRadialRGB(i, 0x40, 0x40, 0x40);
+                }
+                mpGlow->SetRGB(0x20, 0, 0);
+                mpGlow->SetFringeRGB(1, 0, 0, 0);
+                mGlowRadiusOrg = 10;
+                mGlowRadiusAmp = 3;
+                break;
 
-        case PowerUpLetterK:
-        case PowerUpLetterS:
-        case PowerUpLetterA:
-        case PowerUpLetterE:
-        case PowerUpLetterT:
-            for (int i = 0; i < mpGlow->mNumSections; i++)
-            {
-                if (i & 1)
-                    mpGlow->SetRadialRGB(i, 0, 0, 0x60);
-                else
-                    mpGlow->SetRadialRGB(i, 0, 0, 0);
-            }
-            mpGlow->SetRGB(0, 0, 0);
-            mpGlow->SetFringeRGB(1, 0, 0, 0);
-            mGlowRadiusOrg = 60;
-            mGlowRadiusAmp = 10;
-            break;
+            case PowerUpLetterK:
+            case PowerUpLetterS:
+            case PowerUpLetterA:
+            case PowerUpLetterE:
+            case PowerUpLetterT:
+                for (int i = 0; i < mpGlow->mNumSections; i++)
+                {
+                    if (i & 1)
+                        mpGlow->SetRadialRGB(i, 0, 0, 0x60);
+                    else
+                        mpGlow->SetRadialRGB(i, 0, 0, 0);
+                }
+                mpGlow->SetRGB(0, 0, 0);
+                mpGlow->SetFringeRGB(1, 0, 0, 0);
+                mGlowRadiusOrg = 60;
+                mGlowRadiusAmp = 10;
+                break;
 
-        case PowerUpSecretTape:
-            for (int i = 0; i < mpGlow->mNumSections; i++)
-            {
-                if (i & 1)
-                    mpGlow->SetRadialRGB(i, 0x60, 0x60, 0);
-                else
-                    mpGlow->SetRadialRGB(i, 0x40, 0x40, 0x40);
-            }
-            mpGlow->SetRGB(0, 0, 0);
-            mpGlow->SetFringeRGB(1, 0, 0, 0);
-            mGlowRadiusOrg = 60;
-            mGlowRadiusAmp = 10;
-            break;
+            case PowerUpSecretTape:
+                for (int i = 0; i < mpGlow->mNumSections; i++)
+                {
+                    if (i & 1)
+                        mpGlow->SetRadialRGB(i, 0x60, 0x60, 0);
+                    else
+                        mpGlow->SetRadialRGB(i, 0x40, 0x40, 0x40);
+                }
+                mpGlow->SetRGB(0, 0, 0);
+                mpGlow->SetFringeRGB(1, 0, 0, 0);
+                mGlowRadiusOrg = 60;
+                mGlowRadiusAmp = 10;
+                break;
 
-        case PowerUpTypeBonus100:
-            mpGlow->SetFringeRGB(0, 0x30, 0x30, 0);
-            mGlowRadiusOrg = 60;
-            mGlowRadiusAmp = 10;
-            break;
+            case PowerUpTypeBonus100:
+                mpGlow->SetFringeRGB(0, 0x30, 0x30, 0);
+                mGlowRadiusOrg = 60;
+                mGlowRadiusAmp = 10;
+                break;
 
-        case PowerUpTypeBonusFifty:
-            mpGlow->SetFringeRGB(0, 0x30, 0x30, 0);
-            mGlowRadiusOrg = 60;
-            mGlowRadiusAmp = 10;
-            break;
+            case PowerUpTypeBonusFifty:
+                mpGlow->SetFringeRGB(0, 0x30, 0x30, 0);
+                mGlowRadiusOrg = 60;
+                mGlowRadiusAmp = 10;
+                break;
 
-        case PowerUpTypeBonus200:
-        case PowerUpTypeBonusRich:
-            mpGlow->SetFringeRGB(0, 0x40, 0x20, 8);
-            mGlowRadiusOrg = 60;
-            mGlowRadiusAmp = 10;
-            break;
+            case PowerUpTypeBonus200:
+            case PowerUpTypeBonusRich:
+                mpGlow->SetFringeRGB(0, 0x40, 0x20, 8);
+                mGlowRadiusOrg = 60;
+                mGlowRadiusAmp = 10;
+                break;
 
-        case PowerUpTypeBonus500:
-        case PowerUpTypeBonus20Spot:
-            mpGlow->SetFringeRGB(0, 0x30, 0, 0);
-            mGlowRadiusOrg = 60;
-            mGlowRadiusAmp = 10;
-            break;
+            case PowerUpTypeBonus500:
+            case PowerUpTypeBonus20Spot:
+                mpGlow->SetFringeRGB(0, 0x30, 0, 0);
+                mGlowRadiusOrg = 60;
+                mGlowRadiusAmp = 10;
+                break;
         }
     }
 
     static_cast<CBit *>(mpGlow)->SetPos(mPos);
     int m = TTime * 150;
-    int width = mGlowRadiusOrg +
-                mGlowRadiusAmp * rcossin_tbl[(m & 0xFFF) * 2] / 4096;
+    int width = mGlowRadiusOrg + mGlowRadiusAmp * rcossin_tbl[(m & 0xFFF) * 2] / 4096;
     mpGlow->SetFringeWidth(0, width);
     mpGlow->SetFringeWidth(1, width);
 }
@@ -916,16 +907,14 @@ void CPowerUp::AI()
  * @param Vel  Initial velocity for a moving pickup.
  * @return The constructed power-up, or null when allocation fails.
  */
-CPowerUp *PowerUp_Create(unsigned short Type, const CVector &Pos,
-                         unsigned int Flags, int LifeTime, CVector &Vel)
+CPowerUp *PowerUp_Create(unsigned short Type, const CVector &Pos, unsigned int Flags, int LifeTime,
+                         CVector &Vel)
 {
     // Preserve the target's explicit null check before invoking the constructor.
-    CPowerUp *pNewPowerUp = static_cast<CPowerUp *>(
-        ::CItem::operator new(sizeof(CPowerUp)));
+    CPowerUp *pNewPowerUp = static_cast<CPowerUp *>(::CItem::operator new(sizeof(CPowerUp)));
     if (pNewPowerUp)
     {
-        pNewPowerUp = ::new (pNewPowerUp)
-            CPowerUp(Type, Pos, Vel, Flags, LifeTime);
+        pNewPowerUp = ::new (pNewPowerUp) CPowerUp(Type, Pos, Vel, Flags, LifeTime);
     }
     return pNewPowerUp;
 }

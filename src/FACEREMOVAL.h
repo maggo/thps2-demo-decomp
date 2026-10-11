@@ -6,7 +6,8 @@
 #undef GLOBALS_SCENE_VALUES_ONLY
 
 /** Circular point used by the face-clipping polygon routines. */
-struct FP {
+struct FP
+{
     Vector pt;
     unsigned char in;
     FP *next;
@@ -39,13 +40,14 @@ int GetEmbeddedArea(FP *points1, FP *points2);
 
 #ifdef FACEREMOVAL_OWNER_DECLARATIONS
 
-enum FaceRemovalConstant {
+enum FaceRemovalConstant
+{
     FaceRemovalPoolCapacity = 40
 };
 
 // Face-point pool state (gp-relative in this owner).
-extern "C" FP *CurrentFP;  // 0x800DA57C
-extern "C" FP *FPBuf;      // 0x800DA578
+extern "C" FP *CurrentFP; // 0x800DA57C
+extern "C" FP *FPBuf; // 0x800DA578
 extern "C" int NumUsedFps; // 0x800DA580
 
 #endif // FACEREMOVAL_OWNER_DECLARATIONS

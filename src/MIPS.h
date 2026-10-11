@@ -7,7 +7,8 @@ struct CVector;
  * One file-size record whose name occupies eight bytes and which has seven
  * size values.
  */
-struct SizesFileCommonRecord {
+struct SizesFileCommonRecord
+{
     char name[8];
     unsigned int sizes[7];
 };
@@ -16,7 +17,8 @@ struct SizesFileCommonRecord {
  * One file-size record whose name occupies eight bytes and which has six
  * size values.
  */
-struct SizesFileSkateRecord {
+struct SizesFileSkateRecord
+{
     char name[8];
     unsigned int sizes[6];
 };
@@ -25,7 +27,8 @@ struct SizesFileSkateRecord {
  * One file-size record whose name occupies twelve bytes and which has seven
  * size values.
  */
-struct SizesFileSchoolRecord {
+struct SizesFileSchoolRecord
+{
     char name[12];
     unsigned int sizes[7];
 };
@@ -34,7 +37,8 @@ struct SizesFileSchoolRecord {
  * One file-size record whose name occupies twelve bytes and which has six
  * size values.
  */
-struct SizesFileVansRecord {
+struct SizesFileVansRecord
+{
     char name[12];
     unsigned int sizes[6];
 };
@@ -42,7 +46,8 @@ struct SizesFileVansRecord {
 /**
  * Front-end file-size metadata embedded in the original MIPS text section.
  */
-struct SizesFileTable {
+struct SizesFileTable
+{
     SizesFileCommonRecord common;
     SizesFileSkateRecord skate;
     SizesFileSchoolRecord school;

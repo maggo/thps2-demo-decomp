@@ -5,7 +5,8 @@
 struct CRibbonBit;
 
 /** History-backed chain of animated ribbon segments. */
-struct CRibbon : CNonRenderedBit {
+struct CRibbon : CNonRenderedBit
+{
     int mNumBits;
     int mPointsPerBit;
     int mNumPoints;
@@ -14,9 +15,8 @@ struct CRibbon : CNonRenderedBit {
     CRibbonBit **mBits;
 
     /** Construct a ribbon from position history and animated segments. */
-    CRibbon(const CVector &pos, int numbits, int pointsperbit,
-            char *pMiddleAnimName, char *pEndAnimName, int scale,
-            int semitrans);
+    CRibbon(const CVector &pos, int numbits, int pointsperbit, char *pMiddleAnimName,
+            char *pEndAnimName, int scale, int semitrans);
     /** Destroy the ribbon's animated segments and position history. */
     ~CRibbon();
     /** Apply one tint to every animated ribbon segment. */

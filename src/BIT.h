@@ -26,7 +26,8 @@ struct CVector;
 struct CWobblyGlow;
 
 /** Target-proven storage sizes for opaque BIT-derived effects. */
-enum {
+enum
+{
     BIT_SPARK_STORAGE_SIZE = 92,
     BIT_GLASS_STORAGE_SIZE = 120,
 };
@@ -37,13 +38,12 @@ void Bit_DeleteAll(void);
 /** Construct a glass fragment in caller-provided CBit storage. */
 namespace BitConstructorABI
 {
-extern "C" CGlassBit *__9CGlassBitRC7CVectorT1iUcUcUciii(
-    CGlassBit *glass, const CVector &Pos, const CVector &Vel, int GroundY,
-    unsigned char r, unsigned char g, unsigned char b,
-    int dx, int dy, int dz);
+extern "C" CGlassBit *__9CGlassBitRC7CVectorT1iUcUcUciii(CGlassBit *glass, const CVector &Pos,
+                                                         const CVector &Vel, int GroundY,
+                                                         unsigned char r, unsigned char g,
+                                                         unsigned char b, int dx, int dy, int dz);
 }
-#define CGlassBit_Construct \
-    BitConstructorABI::__9CGlassBitRC7CVectorT1iUcUcUciii
+#define CGlassBit_Construct BitConstructorABI::__9CGlassBitRC7CVectorT1iUcUcUciii
 
 #ifdef BIT_OWNER_DECLARATIONS
 #define BITSTATE_OWNER_DECLARATIONS
@@ -64,12 +64,10 @@ void Bit_CalculateSparkVelocity(CVector &velocity, int magnitude);
 void Bit_SetSparkSize(unsigned int size);
 
 /** Set the initial colour assigned to subsequently constructed sparks. */
-void Bit_SetSparkRGB(
-    unsigned char r, unsigned char g, unsigned char b);
+void Bit_SetSparkRGB(unsigned char r, unsigned char g, unsigned char b);
 
 /** Set the per-frame colour fade assigned to new sparks. */
-void Bit_SetSparkFadeRGB(
-    unsigned char r, unsigned char g, unsigned char b);
+void Bit_SetSparkFadeRGB(unsigned char r, unsigned char g, unsigned char b);
 
 #ifdef BIT_OWNER_DECLARATIONS
 #include "globals.h"
@@ -83,31 +81,31 @@ void Bit_SetSparkFadeRGB(
 // === Variables (gp-relative in this TU) ===
 #define BITSTATE_DECLARE_BIT_COUNT
 #include "BITSTATE.h"
-extern "C" CChunkBit *ChunkBitList;                 // 0x800D9AD0
-extern "C" CFlatBit *FlatBitList;                   // 0x800D9ABC
+extern "C" CChunkBit *ChunkBitList; // 0x800D9AD0
+extern "C" CFlatBit *FlatBitList; // 0x800D9ABC
 #define BITSTATE_DECLARE_G_LINE_LIST
 #include "BITSTATE.h"
 #define BITSTATE_DECLARE_G_POLY_LINE_LIST
 #include "BITSTATE.h"
-extern "C" CGenPoly *GenPolyList;                   // 0x800D9ACC
-extern "C" CGlassBit *GlassList;                    // 0x800D9AD8
-extern "C" CGlow *GlowList;                         // 0x800D9AD4
-extern "C" CLinked2EndedBit *Linked2EndedBitList;   // 0x800D9AC0
+extern "C" CGenPoly *GenPolyList; // 0x800D9ACC
+extern "C" CGlassBit *GlassList; // 0x800D9AD8
+extern "C" CGlow *GlowList; // 0x800D9AD4
+extern "C" CLinked2EndedBit *Linked2EndedBitList; // 0x800D9AC0
 #define BITSTATE_DECLARE_NON_RENDERED_BIT_LIST
 #include "BITSTATE.h"
-extern "C" CPixel *PixelList;                       // 0x800D9AC4
+extern "C" CPixel *PixelList; // 0x800D9AC4
 #define BITSTATE_DECLARE_POLY_LINE_LIST
 #include "BITSTATE.h"
-extern "C" CQuadBit *QuadBitList;                   // 0x800D9AC8
-extern "C" CVECTOR SparkFadeRGB;         // 0x800D996C
-extern "C" CVECTOR SparkRGB;             // 0x800D9968
+extern "C" CQuadBit *QuadBitList; // 0x800D9AC8
+extern "C" CVECTOR SparkFadeRGB; // 0x800D996C
+extern "C" CVECTOR SparkRGB; // 0x800D9968
 #define BITSTATE_DECLARE_SPARK_SEMI_TRANS
 #include "BITSTATE.h"
-extern "C" unsigned int SparkSize;       // 0x800D9960
-extern "C" CSVector SparkTrajectory;     // 0x800D9950
+extern "C" unsigned int SparkSize; // 0x800D9960
+extern "C" CSVector SparkTrajectory; // 0x800D9950
 extern "C" CSVector SparkTrajectoryCone; // 0x800D9958
-extern "C" CSpecialDisplay *SpecialDisplayList;     // 0x800D9ADC
-extern "C" DR_TPAGE StoredTPagePrim;     // 0x800D9AEC
+extern "C" CSpecialDisplay *SpecialDisplayList; // 0x800D9ADC
+extern "C" DR_TPAGE StoredTPagePrim; // 0x800D9AEC
 #define BITSTATE_DECLARE_TOTAL_BIT_USAGE
 #include "BITSTATE.h"
 #define BITSTATE_DECLARE_SHADOW_TEXTURE
@@ -176,8 +174,7 @@ struct CLinked2EndedBit;
 namespace BitConstructorABI
 {
 /** Construct a linked two-ended transient bit. */
-extern "C" CLinked2EndedBit *__16CLinked2EndedBit(
-    CLinked2EndedBit *bit);
+extern "C" CLinked2EndedBit *__16CLinked2EndedBit(CLinked2EndedBit *bit);
 }
 #undef BIT_DECLARE_LINKED_2_ENDED_CONSTRUCTOR
 #endif
@@ -198,9 +195,11 @@ struct CVector;
 namespace BitMotionBlurConstructorABI
 {
 /** Construct a motion-blur particle in caller-provided storage. */
-extern "C" CMotionBlur *__11CMotionBlurRC7CVectorR7CVectorPciii(
-    CMotionBlur *blur, CVector *position, CVector *velocity,
-    char *animation, int initialScale, int scaleDecay, int tintDecay);
+extern "C" CMotionBlur *__11CMotionBlurRC7CVectorR7CVectorPciii(CMotionBlur *blur,
+                                                                CVector *position,
+                                                                CVector *velocity, char *animation,
+                                                                int initialScale, int scaleDecay,
+                                                                int tintDecay);
 }
 #undef BIT_DECLARE_MOTION_BLUR_CONSTRUCTOR
 #endif
@@ -209,8 +208,7 @@ extern "C" CMotionBlur *__11CMotionBlurRC7CVectorR7CVectorPciii(
 // only by their owners and by MECH's late destructor block.  Keep these slices
 // opt-in and outside BIT_INC_H so a consumer that already used the opaque BIT
 // interface can request destructor-complete manager types at that later point.
-#if defined(BIT_BLOOD_MANAGER_LAYOUT) && \
-    !defined(BIT_BLOOD_MANAGER_LAYOUT_DEFINED)
+#if defined(BIT_BLOOD_MANAGER_LAYOUT) && !defined(BIT_BLOOD_MANAGER_LAYOUT_DEFINED)
 #define BIT_BLOOD_MANAGER_LAYOUT_DEFINED
 
 #include "globals.h"
@@ -219,21 +217,28 @@ struct BloodBit;
 struct CBruce;
 
 /** Virtual prefix used when retiring a blood particle. */
-struct BloodBitVtable {
+struct BloodBitVtable
+{
     void (*reserved0)(void *object);
     void (*reserved1)(void *object);
     void (*destroy)(BloodBit *object, int flags);
 };
 
 /** Minimal named CBit layout needed for virtual destruction. */
-struct BloodBit {
+struct BloodBit
+{
     unsigned char state[68];
     BloodBitVtable *vtable;
 };
 
 /** Blood particle stack and lifetime state. */
-struct Blood {
-    enum { Capacity = 20, InitialAge = 128 };
+struct Blood
+{
+    enum
+    {
+        Capacity = 20,
+        InitialAge = 128
+    };
 
     struct CClass CClass;
     /** Initialize an empty blood-particle manager. */
@@ -244,24 +249,19 @@ struct Blood {
     /** Update blood particles for the active skater. */
     void Update(CBruce *bruce);
     /** Release manager storage through the original CClass allocator. */
-    static void operator delete(void *p) {
-        ::CClass::operator delete(p);
-    }
+    static void operator delete(void *p) { ::CClass::operator delete(p); }
 
     struct BloodBit *mBloodStack[Capacity];
     int mBloodCount;
     int mAge;
 };
 
-typedef char blood_owner_size_must_be_92[
-    (sizeof(Blood) == 92) ? 1 : -1];
-typedef char blood_bit_size_must_be_72[
-    (sizeof(BloodBit) == 72) ? 1 : -1];
+typedef char blood_owner_size_must_be_92[(sizeof(Blood) == 92) ? 1 : -1];
+typedef char blood_bit_size_must_be_72[(sizeof(BloodBit) == 72) ? 1 : -1];
 
 #endif // BIT_BLOOD_MANAGER_LAYOUT
 
-#if defined(BIT_DUST_MANAGER_LAYOUT) && \
-    !defined(BIT_DUST_MANAGER_LAYOUT_DEFINED)
+#if defined(BIT_DUST_MANAGER_LAYOUT) && !defined(BIT_DUST_MANAGER_LAYOUT_DEFINED)
 #define BIT_DUST_MANAGER_LAYOUT_DEFINED
 
 #include "globals.h"
@@ -272,14 +272,16 @@ struct CBruce;
 struct CBit;
 
 /** Virtual prefix shared by dust-owned bit subclasses. */
-struct DustBitVtable {
+struct DustBitVtable
+{
     void (*reserved0)(void *object);
     void (*reserved1)(void *object);
     void (*destroy)(CBit *object, int flags);
 };
 
 /** Base particle state needed to dispatch particle destruction. */
-struct CBit {
+struct CBit
+{
     struct CBit *mPrevious;
     struct CBit *mNext;
     short mAge;
@@ -300,13 +302,16 @@ struct CBit {
 };
 
 /** Textured four-point particle state embedded in a flat dust particle. */
-struct CFT4Bit {
+struct CFT4Bit
+{
     struct CBit CBit;
     short mTransDecay;
     short mScaleDecay;
-    union {
+    union
+    {
         unsigned int mCodeBGR;
-        struct {
+        struct
+        {
             unsigned char mRed;
             unsigned char mGreen;
             unsigned char mBlue;
@@ -337,7 +342,8 @@ struct CFT4Bit {
 };
 
 /** Flat textured particle allocated and managed by Dust. */
-struct CFlatBit {
+struct CFlatBit
+{
     struct CFT4Bit CFT4Bit;
     short mAngle;
     short mAngVel;
@@ -359,9 +365,11 @@ typedef int DustCloudCount;
 
 /** Dust particle stack and terrain-generation state. */
 #ifdef DUST_POLYMORPHIC_LAYOUT
-struct Dust : CClass {
+struct Dust : CClass
+{
 #else
-struct Dust {
+struct Dust
+{
     struct CClass CClass;
 #endif
     struct CFlatBit *mDustStack[12];
@@ -376,9 +384,7 @@ struct Dust {
 #else
     ~Dust();
     /** Release manager storage through the original CClass allocator. */
-    static void operator delete(void *p) {
-        ::CClass::operator delete(p);
-    }
+    static void operator delete(void *p) { ::CClass::operator delete(p); }
 #endif
 
     /** Reset the pending cloud count and select a dust-generation mode. */
@@ -387,27 +393,28 @@ struct Dust {
     void Update(CBruce *bruce);
     /** Insert a particle, replacing the dimmest live particle when full. */
     void insert_dust(CFlatBit *dust);
-    void get_terrain_parameters(int terrainType, short *scale,
-        unsigned char *tint, short *transDecay, short *scaleDecay,
-        DustCloudCount *numClouds, int *randomOffset);
+    void get_terrain_parameters(int terrainType, short *scale, unsigned char *tint,
+                                short *transDecay, short *scaleDecay, DustCloudCount *numClouds,
+                                int *randomOffset);
     /** Select particle parameters for ordinary landing dust. */
-    void get_land_terrain_parameters(int terrainType, short *scale,
-        unsigned char *tint, short *transDecay, short *scaleDecay,
-        DustCloudCount *numClouds, int *randomOffset);
+    void get_land_terrain_parameters(int terrainType, short *scale, unsigned char *tint,
+                                     short *transDecay, short *scaleDecay,
+                                     DustCloudCount *numClouds, int *randomOffset);
     /** Select particle parameters for bail dust. */
-    void get_bail_terrain_parameters(int terrainType, short *scale,
-        unsigned char *tint, short *transDecay, short *scaleDecay,
-        DustCloudCount *numClouds, int *randomOffset);
+    void get_bail_terrain_parameters(int terrainType, short *scale, unsigned char *tint,
+                                     short *transDecay, short *scaleDecay,
+                                     DustCloudCount *numClouds, int *randomOffset);
     /** Select particle parameters for braking dust. */
-    void get_brake_terrain_parameters(int terrainType, short *scale,
-        unsigned char *tint, short *transDecay, short *scaleDecay,
-        DustCloudCount *numClouds, int *randomOffset);
+    void get_brake_terrain_parameters(int terrainType, short *scale, unsigned char *tint,
+                                      short *transDecay, short *scaleDecay,
+                                      DustCloudCount *numClouds, int *randomOffset);
     /** Apply independent random horizontal offsets to a particle position. */
     void apply_random_offset(CVector &position, int range, int shift);
 };
 
 /** CBruce fields read while carrying dust particles with the skater. */
-struct DustBruceLayout {
+struct DustBruceLayout
+{
     unsigned char pad_to_position[4];
     CVector mPosition;
     unsigned char pad_to_region[11];
@@ -418,52 +425,47 @@ struct DustBruceLayout {
     int mTerrain;
 };
 
-typedef char dust_CBit_size_must_be_72[
-    (sizeof(CBit) == 72) ? 1 : -1];
-typedef char dust_CFT4Bit_size_must_be_96[
-    (sizeof(CFT4Bit) == 96) ? 1 : -1];
-typedef char dust_CFlatBit_size_must_be_112[
-    (sizeof(CFlatBit) == 112) ? 1 : -1];
-typedef char dust_owner_size_must_be_64[
-    (sizeof(Dust) == 64) ? 1 : -1];
-typedef char dust_bruce_region_must_be_27[
-    ((int)&((DustBruceLayout *)0)->mRegion == 27) ? 1 : -1];
-typedef char dust_bruce_velocity_must_be_84[
-    ((int)&((DustBruceLayout *)0)->mVelocity == 84) ? 1 : -1];
-typedef char dust_bruce_terrain_must_be_4196[
-    ((int)&((DustBruceLayout *)0)->mTerrain == 4196) ? 1 : -1];
+typedef char dust_CBit_size_must_be_72[(sizeof(CBit) == 72) ? 1 : -1];
+typedef char dust_CFT4Bit_size_must_be_96[(sizeof(CFT4Bit) == 96) ? 1 : -1];
+typedef char dust_CFlatBit_size_must_be_112[(sizeof(CFlatBit) == 112) ? 1 : -1];
+typedef char dust_owner_size_must_be_64[(sizeof(Dust) == 64) ? 1 : -1];
+typedef char dust_bruce_region_must_be_27[((int)&((DustBruceLayout *)0)->mRegion == 27) ? 1 : -1];
+typedef char
+    dust_bruce_velocity_must_be_84[((int)&((DustBruceLayout *)0)->mVelocity == 84) ? 1 : -1];
+typedef char
+    dust_bruce_terrain_must_be_4196[((int)&((DustBruceLayout *)0)->mTerrain == 4196) ? 1 : -1];
 
 #endif // BIT_DUST_MANAGER_LAYOUT
 
 // Glow element bodies are needed only by the BIT owner.  Keep this phase
 // re-entrant so ordinary pointer-only BIT consumers retain opaque types.
-#if defined(BIT_GLOW_ELEMENT_LAYOUT) && \
-    !defined(BIT_GLOW_ELEMENT_LAYOUT_DEFINED)
+#if defined(BIT_GLOW_ELEMENT_LAYOUT) && !defined(BIT_GLOW_ELEMENT_LAYOUT_DEFINED)
 #define BIT_GLOW_ELEMENT_LAYOUT_DEFINED
 
 /** One radial band in a glow effect. */
-struct SSection {
+struct SSection
+{
     unsigned int Radius;
     unsigned int PadBGR;
 };
 
 /** One outer fringe band in a glow effect. */
-struct SFringeQuad {
+struct SFringeQuad
+{
     unsigned int Width;
     unsigned int CodeBGR;
 };
 
-typedef char SSection_Radius_offset_must_be_0[
-    ((unsigned long)&(((SSection *)0)->Radius) == 0) ? 1 : -1];
-typedef char SSection_PadBGR_offset_must_be_4[
-    ((unsigned long)&(((SSection *)0)->PadBGR) == 4) ? 1 : -1];
-typedef char SSection_size_must_be_8[
-    (sizeof(SSection) == 8) ? 1 : -1];
-typedef char SFringeQuad_Width_offset_must_be_0[
-    ((unsigned long)&(((SFringeQuad *)0)->Width) == 0) ? 1 : -1];
-typedef char SFringeQuad_CodeBGR_offset_must_be_4[
-    ((unsigned long)&(((SFringeQuad *)0)->CodeBGR) == 4) ? 1 : -1];
-typedef char SFringeQuad_size_must_be_8[
-    (sizeof(SFringeQuad) == 8) ? 1 : -1];
+typedef char
+    SSection_Radius_offset_must_be_0[((unsigned long)&(((SSection *)0)->Radius) == 0) ? 1 : -1];
+typedef char
+    SSection_PadBGR_offset_must_be_4[((unsigned long)&(((SSection *)0)->PadBGR) == 4) ? 1 : -1];
+typedef char SSection_size_must_be_8[(sizeof(SSection) == 8) ? 1 : -1];
+typedef char
+    SFringeQuad_Width_offset_must_be_0[((unsigned long)&(((SFringeQuad *)0)->Width) == 0) ? 1 : -1];
+typedef char
+    SFringeQuad_CodeBGR_offset_must_be_4[((unsigned long)&(((SFringeQuad *)0)->CodeBGR) == 4) ? 1
+                                                                                              : -1];
+typedef char SFringeQuad_size_must_be_8[(sizeof(SFringeQuad) == 8) ? 1 : -1];
 
 #endif // BIT_GLOW_ELEMENT_LAYOUT

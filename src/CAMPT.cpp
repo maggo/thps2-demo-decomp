@@ -12,7 +12,8 @@
 #include "CAMPT.h"
 
 /** Video state fields owned by the camera-point selection pass. */
-struct SVideoInfo {
+struct SVideoInfo
+{
     int VideoMode;
     unsigned long *pBlockStart;
     unsigned long *pStreamStart;
@@ -36,7 +37,8 @@ struct SVideoInfo {
 #include "SVIEWPORT.h"
 
 /** CCamera fields written by camera-point mode changes. */
-struct CCamera {
+struct CCamera
+{
     unsigned char _padToPos[4];
     CVector mPos;
     unsigned char _padToTripod[0x3f4 - 0x10];
@@ -58,25 +60,26 @@ struct CCamera {
     int extra_YRot;
 
     /** Select the active gameplay camera mode. */
-    void SetMode(int mode) {
-        mCameraMode = mode;
-    }
+    void SetMode(int mode) { mCameraMode = mode; }
 
     /** Follow a body as the camera's focus target. */
-    void SetFocus(CBruce *focus) {
+    void SetFocus(CBruce *focus)
+    {
         mCalcFocus = true;
         mFocus = focus;
         new_focus = true;
     }
 
     /** Follow a body as the camera's tripod target. */
-    void SetTripod(CBruce *tripod) {
+    void SetTripod(CBruce *tripod)
+    {
         mCalcTripod = true;
         mTripod = tripod;
     }
 
     /** Select an explicit tripod position. */
-    void SetTripodPosition(const CVector &position) {
+    void SetTripodPosition(const CVector &position)
+    {
         mCalcTripod = false;
         mTripodPos = position;
         mTripod = 0;
@@ -85,7 +88,8 @@ struct CCamera {
 };
 
 /** CBruce slice read by the camera-point selection pass. */
-struct CBruce {
+struct CBruce
+{
     unsigned char _padToPos[4];
     CVector mPos;
     unsigned char _padToCamera[0xa74 - 0x10];
@@ -94,12 +98,9 @@ struct CBruce {
     CVector mUp;
 };
 
-typedef char campt_video_info_size_must_be_192[
-    (sizeof(SVideoInfo) == 192) ? 1 : -1];
-typedef char campt_camera_slice_size_must_be_0x5c8[
-    (sizeof(CCamera) == 0x5c8) ? 1 : -1];
-typedef char campt_bruce_slice_size_must_be_0x10c4[
-    (sizeof(CBruce) == 0x10c4) ? 1 : -1];
+typedef char campt_video_info_size_must_be_192[(sizeof(SVideoInfo) == 192) ? 1 : -1];
+typedef char campt_camera_slice_size_must_be_0x5c8[(sizeof(CCamera) == 0x5c8) ? 1 : -1];
+typedef char campt_bruce_slice_size_must_be_0x10c4[(sizeof(CBruce) == 0x10c4) ? 1 : -1];
 
 #include "TRIG.h"
 #include "UTILS.h"
@@ -107,17 +108,13 @@ typedef char campt_bruce_slice_size_must_be_0x10c4[
 
 // === Owner-local globals ===
 // $gp-relative camera point count (0x282c($gp)).
-int CamPtIndex
-    __attribute__((section(".sdata"))) = 0;
+int CamPtIndex __attribute__((section(".sdata"))) = 0;
 
 // === Absolute-addressed tables ===
-int CamModes[70]
-    __attribute__((section(".data"))) = {
-        0x532, 0x550, 0x51e, 0x53c,
-        0x532, 0x550, 0x51e, 0x800,
-    };
-u16 CamPtNode[70]
-    __attribute__((section(".data"))) = {};
+int CamModes[70] __attribute__((section(".data"))) = {
+    0x532, 0x550, 0x51e, 0x53c, 0x532, 0x550, 0x51e, 0x800,
+};
+u16 CamPtNode[70] __attribute__((section(".data"))) = {};
 
 // === Absolute-addressed globals ===
 #include "GSKATER_STATE.h"
@@ -137,7 +134,8 @@ u16 CamPtNode[70]
  * Demangled: CamPt_Init(void)
  *            Assembly: sw $zero, 0x282c($gp); jr $ra; nop
  */
-void CamPt_Init(void) {
+void CamPt_Init(void)
+{
     CamPtIndex = 0;
 }
 
@@ -150,7 +148,8 @@ void CamPt_Init(void) {
  * Demangled: CamPt_Cleanup(void)
  *            Assembly: stores 0x122, 0x96, -0x6c to absolute globals, sets numCamPts=0
  */
-void CamPt_Cleanup(void) {
+void CamPt_Cleanup(void)
+{
     // Restore the camera-point defaults and clear the live count.
     camDist = 0x122;
     CamPtIndex = 0;
@@ -169,7 +168,8 @@ void CamPt_Cleanup(void) {
  *
  * @param Node  Rail / graph node identifier.
  */
-void CamPt_New(int Node) {
+void CamPt_New(int Node)
+{
     CVector Dummy;
     Trig_GetPosition(Dummy, Node);
     CamPtNode[CamPtIndex++] = (u16)Node;
@@ -185,7 +185,8 @@ void CamPt_New(int Node) {
  *
  * @param pSkater  Active skater being processed.
  */
-void CamPt_SetClosestCamera(CBruce *pSkater) {
+void CamPt_SetClosestCamera(CBruce *pSkater)
+{
     unsigned long ClosestDist = 0x7fffffff;
     unsigned long ClosestDist2;
     int Index = -1;
@@ -201,29 +202,40 @@ void CamPt_SetClosestCamera(CBruce *pSkater) {
     AdjustedPlayerPos.vz += pSkater->mUp.vz * 110;
 
     SVideoInfo *VInfo;
-    if (pSkater == GSkater[0]) {
+    if (pSkater == GSkater[0])
+    {
         VInfo = &GVInfo1;
-    } else {
+    }
+    else
+    {
         VInfo = &GVInfo2;
     }
 
-    if (Utils_LineOfSight(AdjustedPlayerPos, pSkater->mpCamera->mPos)) {
+    if (Utils_LineOfSight(AdjustedPlayerPos, pSkater->mpCamera->mPos))
+    {
         VInfo->NoLOS = 0;
-    } else {
+    }
+    else
+    {
         ++VInfo->NoLOS;
-        if (VInfo->NoLOS >= 11) {
+        if (VInfo->NoLOS >= 11)
+        {
             VInfo->TabuCam = VInfo->CurCameraIndex;
         }
     }
 
     int i = 0;
-    if (CamPtIndex > 0) {
+    if (CamPtIndex > 0)
+    {
         short *pNode = (short *)CamPtNode;
-        do {
-            if (i != VInfo->TabuCam) {
+        do
+        {
+            if (i != VInfo->TabuCam)
+            {
                 Trig_GetPosition(CamPos, *pNode);
                 unsigned long Dist = Utils_CrapDist(pSkater->mPos, CamPos);
-                if (Dist < ClosestDist) {
+                if (Dist < ClosestDist)
+                {
                     Index2 = Index;
                     ClosestDist2 = ClosestDist;
                     ClosestDist = Dist;
@@ -237,51 +249,65 @@ void CamPt_SetClosestCamera(CBruce *pSkater) {
     }
 
     if ((Index != VInfo->CurCameraIndex) && (Index != -1) &&
-        !Utils_LineOfSight(AdjustedPlayerPos, ClosestPos)) {
-        if (Index2 != VInfo->CurCameraIndex) {
-            if (Index2 != -1) {
-                if (!Utils_LineOfSight(AdjustedPlayerPos, ClosestPos2)) {
+        !Utils_LineOfSight(AdjustedPlayerPos, ClosestPos))
+    {
+        if (Index2 != VInfo->CurCameraIndex)
+        {
+            if (Index2 != -1)
+            {
+                if (!Utils_LineOfSight(AdjustedPlayerPos, ClosestPos2))
+                {
                     Index = -1;
-                } else {
+                }
+                else
+                {
                     Index = Index2;
                     ClosestPos = ClosestPos2;
                     ClosestDist = ClosestDist2;
                 }
-            } else {
+            }
+            else
+            {
                 Index = -1;
             }
-        } else {
+        }
+        else
+        {
             Index = -1;
         }
     }
 
-    if (ClosestDist >= 9001) {
+    if (ClosestDist >= 9001)
+    {
         Index = -1;
     }
 
     if ((Index != -1) && (Index != VInfo->CurCameraIndex) &&
-        ((Index != VInfo->OldCameraIndex) ||
-         (Xblanks >= (unsigned int)(VInfo->CamXblanks + 60)))) {
+        ((Index != VInfo->OldCameraIndex) || (Xblanks >= (unsigned int)(VInfo->CamXblanks + 60))))
+    {
         // MAIN.SYM records pCam as a signed-word view: camera type and
         // parameter are signed fields in the returned node payload.
-        short *pCam = reinterpret_cast<short *>(
-            Trig_GetPosition(Dummy, (short)CamPtNode[Index]));
+        short *pCam = reinterpret_cast<short *>(Trig_GetPosition(Dummy, (short)CamPtNode[Index]));
         int Type = pCam[0];
         int Param = pCam[1];
 
         CamModes[0] &= ~0xc00;
-        if (Type == 1) {
+        if (Type == 1)
+        {
             CamModes[0] |= 0x400;
-        } else {
+        }
+        else
+        {
             CamModes[0] |= 0x800;
         }
 
-        CamModes[Index] = CamModes[0] =
-            (CamModes[0] & ~0xff) + (Rnd(5) + 5) * 10;
+        CamModes[Index] = CamModes[0] = (CamModes[0] & ~0xff) + (Rnd(5) + 5) * 10;
 
-        if (ClosestDist > 4000) {
+        if (ClosestDist > 4000)
+        {
             int Val = 10000 - (int)ClosestDist;
-            if (Val < 0) {
+            if (Val < 0)
+            {
                 Val = 0;
             }
             Val = Val / 200 + 10;
@@ -296,12 +322,15 @@ void CamPt_SetClosestCamera(CBruce *pSkater) {
         VInfo->CamPos = ClosestPos;
 
         int Mode = CamModes[Index];
-        if (Mode & 0x800) {
+        if (Mode & 0x800)
+        {
             pSkater->mpCamera->SetMode(1);
             pSkater->mpCamera->SetFocus(pSkater);
             pSkater->mpCamera->SetTripod(pSkater);
             VInfo->TrailingCameraType = Param;
-        } else if (Mode & 0x400) {
+        }
+        else if (Mode & 0x400)
+        {
             pSkater->mpCamera->SetMode(2);
             pSkater->mpCamera->SetFocus(pSkater);
             pSkater->mpCamera->SetTripodPosition(ClosestPos);
@@ -312,10 +341,12 @@ void CamPt_SetClosestCamera(CBruce *pSkater) {
         Index = VInfo->CurCameraIndex;
         int Mode = CamModes[Index];
 
-        if (Mode & 0x800) {
+        if (Mode & 0x800)
+        {
             pSkater->mpCamera->extra_YRot = 0;
 
-            switch (VInfo->TrailingCameraType) {
+            switch (VInfo->TrailingCameraType)
+            {
                 case 0:
                     camDist = 0xF5;
                     camPitch = 0xD7;
@@ -358,30 +389,36 @@ void CamPt_SetClosestCamera(CBruce *pSkater) {
                     camYOffset = -0x6C;
                     pSkater->mpCamera->extra_YRot = 0x800;
                     break;
-                default:
-                    break;
+                default: break;
             }
-        } else if (Mode & 0x400) {
-            if (Mode & 0x200) {
-                pCurrentViewport->TanHalf =
-                    (0x100 - (Mode & 0xff)) * 10 + 300;
-            } else if (Mode & 0x100) {
+        }
+        else if (Mode & 0x400)
+        {
+            if (Mode & 0x200)
+            {
+                pCurrentViewport->TanHalf = (0x100 - (Mode & 0xff)) * 10 + 300;
+            }
+            else if (Mode & 0x100)
+            {
                 int FogDist = Utils_Dist(pSkater->mPos, VInfo->CamPos);
                 int Dist;
-                if (FogDist > 2400) {
+                if (FogDist > 2400)
+                {
                     Dist = 2400;
-                } else {
+                }
+                else
+                {
                     Dist = FogDist;
                 }
-                if (Dist < 450) {
+                if (Dist < 450)
+                {
                     Dist = 450;
                 }
 
                 int DpqRange = LastDpqMax - LastDpqMin;
                 DpqMin = FogDist + LastDpqMin;
                 DpqMax = DpqMin + DpqRange;
-                pCurrentViewport->TanHalf =
-                    (unsigned char)CamModes[Index] * 0x8552 / Dist;
+                pCurrentViewport->TanHalf = (unsigned char)CamModes[Index] * 0x8552 / Dist;
             }
         }
     }

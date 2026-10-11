@@ -37,9 +37,8 @@ int GetFree16Slot(void);
 void Free16Slot(unsigned short clut);
 
 /** Load one palette into VRAM and return its allocation record. */
-tag_S_Pal *Pal_LoadPalette(
-    unsigned int checksum, unsigned int *pData,
-    unsigned char flags, int Remap);
+tag_S_Pal *Pal_LoadPalette(unsigned int checksum, unsigned int *pData, unsigned char flags,
+                           int Remap);
 
 /** Copy one palette's VRAM contents into caller-owned memory. */
 void Pal_CopyToMemory(tag_S_Pal *palette, void *buffer);
@@ -58,7 +57,8 @@ void Pal_StoreFromMemory(tag_S_Pal *palette, void *buffer);
 #define PAL_ENTRY_LAYOUT_EMITTED
 
 /** One linked palette allocation record. */
-struct tag_S_Pal {
+struct tag_S_Pal
+{
     unsigned short Clut;
     unsigned char slot;
     unsigned char flags;
@@ -70,26 +70,26 @@ struct tag_S_Pal {
     struct tag_S_Pal *pPrevious;
 };
 
-typedef char tag_S_Pal_size_must_be_20[
-    (sizeof(tag_S_Pal) == 20) ? 1 : -1];
-typedef char tag_S_Pal_Clut_offset_must_be_0[
-    ((unsigned long)&(((tag_S_Pal *)0)->Clut) == 0) ? 1 : -1];
-typedef char tag_S_Pal_slot_offset_must_be_2[
-    ((unsigned long)&(((tag_S_Pal *)0)->slot) == 2) ? 1 : -1];
-typedef char tag_S_Pal_flags_offset_must_be_3[
-    ((unsigned long)&(((tag_S_Pal *)0)->flags) == 3) ? 1 : -1];
-typedef char tag_S_Pal_Usage_offset_must_be_4[
-    ((unsigned long)&(((tag_S_Pal *)0)->Usage) == 4) ? 1 : -1];
-typedef char tag_S_Pal_InVRAM_offset_must_be_6[
-    ((unsigned long)&(((tag_S_Pal *)0)->InVRAM) == 6) ? 1 : -1];
-typedef char tag_S_Pal_RemapIndex_offset_must_be_7[
-    ((unsigned long)&(((tag_S_Pal *)0)->RemapIndex) == 7) ? 1 : -1];
-typedef char tag_S_Pal_Checksum_offset_must_be_8[
-    ((unsigned long)&(((tag_S_Pal *)0)->Checksum) == 8) ? 1 : -1];
-typedef char tag_S_Pal_pNext_offset_must_be_12[
-    ((unsigned long)&(((tag_S_Pal *)0)->pNext) == 12) ? 1 : -1];
-typedef char tag_S_Pal_pPrevious_offset_must_be_16[
-    ((unsigned long)&(((tag_S_Pal *)0)->pPrevious) == 16) ? 1 : -1];
+typedef char tag_S_Pal_size_must_be_20[(sizeof(tag_S_Pal) == 20) ? 1 : -1];
+typedef char
+    tag_S_Pal_Clut_offset_must_be_0[((unsigned long)&(((tag_S_Pal *)0)->Clut) == 0) ? 1 : -1];
+typedef char
+    tag_S_Pal_slot_offset_must_be_2[((unsigned long)&(((tag_S_Pal *)0)->slot) == 2) ? 1 : -1];
+typedef char
+    tag_S_Pal_flags_offset_must_be_3[((unsigned long)&(((tag_S_Pal *)0)->flags) == 3) ? 1 : -1];
+typedef char
+    tag_S_Pal_Usage_offset_must_be_4[((unsigned long)&(((tag_S_Pal *)0)->Usage) == 4) ? 1 : -1];
+typedef char
+    tag_S_Pal_InVRAM_offset_must_be_6[((unsigned long)&(((tag_S_Pal *)0)->InVRAM) == 6) ? 1 : -1];
+typedef char tag_S_Pal_RemapIndex_offset_must_be_7
+    [((unsigned long)&(((tag_S_Pal *)0)->RemapIndex) == 7) ? 1 : -1];
+typedef char tag_S_Pal_Checksum_offset_must_be_8[((unsigned long)&(((tag_S_Pal *)0)->Checksum) == 8)
+                                                     ? 1
+                                                     : -1];
+typedef char
+    tag_S_Pal_pNext_offset_must_be_12[((unsigned long)&(((tag_S_Pal *)0)->pNext) == 12) ? 1 : -1];
+typedef char tag_S_Pal_pPrevious_offset_must_be_16
+    [((unsigned long)&(((tag_S_Pal *)0)->pPrevious) == 16) ? 1 : -1];
 
 #endif // PAL_ENTRY_LAYOUT && !PAL_ENTRY_LAYOUT_EMITTED
 
@@ -102,7 +102,8 @@ typedef char tag_S_Pal_pPrevious_offset_must_be_16[
 #define PAL_OWNER_LAYOUT_EMITTED
 
 /** Palette capacities, record flags, and allocator accounting constants. */
-enum PaletteConstants {
+enum PaletteConstants
+{
     Palette16SlotCount = 256,
     Palette256SlotCount = 75,
     Palette16ColourCount = 16,

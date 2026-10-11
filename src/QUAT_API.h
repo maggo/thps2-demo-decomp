@@ -28,7 +28,6 @@ void QToM(const CQuat &quaternion, MATRIX &matrix);
 void MToQ(const MATRIX &matrix, CQuat &quaternion);
 
 /** Spherically interpolate between two fixed-point quaternions. */
-void Quat_Slerp(
-    CQuat begin, CQuat end, int time, CQuat &result);
+void Quat_Slerp(CQuat begin, CQuat end, int time, CQuat &result);
 
 #endif // QUAT_API_INC_H

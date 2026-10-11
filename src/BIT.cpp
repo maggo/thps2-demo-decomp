@@ -41,7 +41,8 @@ struct tag_S_Pal;
 
 #include "SRIBBONPOINT.h"
 
-struct CFT4Bit : CBit {
+struct CFT4Bit : CBit
+{
     short mTransDecay;
     short mScaleDecay;
     unsigned int mCodeBGR;
@@ -81,7 +82,8 @@ struct CFT4Bit : CBit {
     int Fade(int die);
 };
 
-struct CQuadBit : CBit {
+struct CQuadBit : CBit
+{
     struct CVector mPosB;
     struct CVector mPosC;
     struct CVector mPosD;
@@ -103,12 +105,12 @@ struct CQuadBit : CBit {
     void SetSemiTransparent();
     /** Assign a grayscale transparency value to the quad. */
     void SetTransparency(unsigned char transparency);
-    void OrientUsing(const struct CVector &position,
-                     const SVECTOR &normal,
-                     int dx, int dy, int angle);
+    void OrientUsing(const struct CVector &position, const SVECTOR &normal, int dx, int dy,
+                     int angle);
 };
 
-struct CGenPoly : CBit {
+struct CGenPoly : CBit
+{
     unsigned short mGouraud;
     unsigned short mPad;
     SVECTOR mPosA;
@@ -139,7 +141,8 @@ struct CGenPoly : CBit {
 
 #include "CWOBBLYGLOW.h"
 
-struct CFlatBit : CFT4Bit {
+struct CFlatBit : CFT4Bit
+{
     short mAngle;
     short mAngVel;
     short mAngAcc;
@@ -154,7 +157,8 @@ struct CFlatBit : CFT4Bit {
     ~CFlatBit();
 };
 
-struct CLinked2EndedBit : CFT4Bit {
+struct CLinked2EndedBit : CFT4Bit
+{
     struct CVector mEndPosA;
     struct CVector mEndPosB;
 
@@ -163,7 +167,8 @@ struct CLinked2EndedBit : CFT4Bit {
     ~CLinked2EndedBit();
 };
 
-struct CPixel : CBit {
+struct CPixel : CBit
+{
     unsigned int tag;
     unsigned char r0;
     unsigned char g0;
@@ -175,7 +180,8 @@ struct CPixel : CBit {
     ~CPixel();
 };
 
-struct CSpark : CPixel {
+struct CSpark : CPixel
+{
     unsigned char mFadeR;
     unsigned char mFadeG;
     unsigned char mFadeB;
@@ -187,7 +193,8 @@ struct CSpark : CPixel {
     void Move();
 };
 
-struct CSimpleAnim : CFlatBit {
+struct CSimpleAnim : CFlatBit
+{
     int mDie;
     int mDieFrame;
 
@@ -198,19 +205,22 @@ struct CSimpleAnim : CFlatBit {
 
 #include "CMOTIONBLUR.h"
 
-struct CMotionBlurImmortal : CMotionBlur {
+struct CMotionBlurImmortal : CMotionBlur
+{
     ~CMotionBlurImmortal();
     /** Advance the immortal blur without retiring it on shrink or fade. */
     void Move();
 };
 
-struct CFrag : CFlatBit {
+struct CFrag : CFlatBit
+{
     ~CFrag();
     /** Advance fragment physics and retire it at the end of its lifetime. */
     void Move();
 };
 
-struct CRibbonBit : CLinked2EndedBit {
+struct CRibbonBit : CLinked2EndedBit
+{
     CRibbonBit();
     ~CRibbonBit();
     /** Advance the ribbon segment's animation frame. */
@@ -221,7 +231,8 @@ struct CRibbonBit : CLinked2EndedBit {
 
 #include "CSMOKETRAIL.h"
 
-struct CGouraudRibbon : CSpecialDisplay {
+struct CGouraudRibbon : CSpecialDisplay
+{
     int mTrail;
     int mNumPoints;
     struct SRibbonPoint *mpPoints;
@@ -231,9 +242,10 @@ struct CGouraudRibbon : CSpecialDisplay {
     void Display();
 };
 
-struct CGlassBit : CBit {
-    CGlassBit(const CVector &Pos, const CVector &Vel, int GroundY,
-              u8 r, u8 g, u8 b, int dx, int dy, int dz);
+struct CGlassBit : CBit
+{
+    CGlassBit(const CVector &Pos, const CVector &Vel, int GroundY, u8 r, u8 g, u8 b, int dx, int dy,
+              int dz);
     struct CVector mPosA;
     struct CVector mPosB;
     struct CVector mPosC;
@@ -261,17 +273,21 @@ struct CGlassBit : CBit {
 
 #include "CGLINE.h"
 
-struct SClipLineBuf {
+struct SClipLineBuf
+{
     struct CVector Input[2];
     unsigned int Output[2];
     unsigned int Workspace[16];
 };
 
 /** Scratchpad projection record used by both ribbon display routines. */
-struct SCalcBuffer {
-    union {
+struct SCalcBuffer
+{
+    union
+    {
         int Pos;
-        struct {
+        struct
+        {
             short X;
             short Y;
         } Screen;
@@ -301,8 +317,7 @@ typedef char Bit_SLineSeg_size_must_be_16[(sizeof(SLineSeg) == 16) ? 1 : -1];
 typedef char Bit_CPolyLine_size_must_be_96[(sizeof(CPolyLine) == 96) ? 1 : -1];
 typedef char Bit_CGPolyLine_size_must_be_100[(sizeof(CGPolyLine) == 100) ? 1 : -1];
 typedef char Bit_CGLine_size_must_be_104[(sizeof(CGLine) == 104) ? 1 : -1];
-typedef char Bit_SClipLineBuf_size_must_be_0x60[
-    (sizeof(SClipLineBuf) == 0x60) ? 1 : -1];
+typedef char Bit_SClipLineBuf_size_must_be_0x60[(sizeof(SClipLineBuf) == 0x60) ? 1 : -1];
 typedef char Bit_CChunkBit_size_must_be_192[(sizeof(CChunkBit) == 192) ? 1 : -1];
 typedef char Bit_CSmokeTrail_size_must_be_100[(sizeof(CSmokeTrail) == 100) ? 1 : -1];
 typedef char Bit_CGenPoly_size_must_be_196[(sizeof(CGenPoly) == 196) ? 1 : -1];
@@ -340,10 +355,8 @@ struct SSinCos
     short Sin;
     short Cos;
 };
-#define Sine(angle) \
-    (((SSinCos *)&rcossin_tbl)[(angle) & 0xfff].Sin)
-#define Cosine(angle) \
-    (((SSinCos *)&rcossin_tbl)[(angle) & 0xfff].Cos)
+#define Sine(angle) (((SSinCos *)&rcossin_tbl)[(angle) & 0xfff].Sin)
+#define Cosine(angle) (((SSinCos *)&rcossin_tbl)[(angle) & 0xfff].Cos)
 
 /** Return a word-addressed pointer into the PlayStation scratchpad. */
 #ifndef getScratchAddr
@@ -352,12 +365,7 @@ struct SSinCos
 
 // BIT init tables and their small-data animation-name strings.
 static char *AnimNames[6] = {
-    "SHADOW",
-    "SMOKE",
-    "orbit",
-    "ribbon",
-    "smtile",
-    "Buttons",
+    "SHADOW", "SMOKE", "orbit", "ribbon", "smtile", "Buttons",
 };
 #define QUICKANIMLOOKUP_OWNER_DECLARATION
 #include "QUICKANIMLOOKUP.h"
@@ -377,14 +385,13 @@ CSVector SparkTrajectory __attribute__((section(".sdata")));
 CSVector SparkTrajectoryCone __attribute__((section(".sdata")));
 unsigned int SparkSize __attribute__((section(".sdata"))) = 1;
 void *SparkSemiTrans __attribute__((section(".sdata"))) = (void *)1;
-CVECTOR SparkRGB __attribute__((section(".sdata"))) = {0x80, 0x80, 0x80, 0};
-CVECTOR SparkFadeRGB __attribute__((section(".sdata"))) = {4, 4, 4, 8};
+CVECTOR SparkRGB __attribute__((section(".sdata"))) = { 0x80, 0x80, 0x80, 0 };
+CVECTOR SparkFadeRGB __attribute__((section(".sdata"))) = { 4, 4, 4, 8 };
 namespace BitAddressViewOwners
 {
 extern "C"
 {
-static char s_Ribbon[8]
-    __attribute__((section(".sdata"))) = "Ribbon";
+static char s_Ribbon[8] __attribute__((section(".sdata"))) = "Ribbon";
 }
 }
 
@@ -497,8 +504,7 @@ void DeleteBitList(CBit *pList)
             {
                 delete pList;
             }
-            if (pNext == 0)
-                break;
+            if (pNext == 0) break;
             pList = pNext;
             pNext = pNext->mNext;
         }
@@ -551,8 +557,7 @@ static void RemoveDeadBits(CBit *pBit)
             {
                 delete pBit;
             }
-            if (pNext == 0)
-                break;
+            if (pNext == 0) break;
             pBit = pNext;
             pNext = pNext->mNext;
         }
@@ -599,9 +604,12 @@ void Bit_RemoveDeadBits(void)
 void *CBit::operator new(unsigned int size)
 {
     void *pnew;
-    if (UseCacheForBits != 0) {
+    if (UseCacheForBits != 0)
+    {
         pnew = Mem_New(size, 0, 1);
-    } else {
+    }
+    else
+    {
         pnew = Mem_New(size, 0, 1);
     }
     size = (size + 3) & ~3;
@@ -660,9 +668,9 @@ void CBit::AttachTo(void *p)
 {
     int *pList = (int *)p;
     int next = *pList;
-    mPrevious = 0;          // prev = NULL
-    mNext = (CBit *)next;   // next = old head
-    *pList = (int)this;     // head = this
+    mPrevious = 0; // prev = NULL
+    mNext = (CBit *)next; // next = old head
+    *pList = (int)this; // head = this
     CBit *n = mNext;
     if (n != 0)
     {
@@ -859,7 +867,6 @@ CFT4Bit::CFT4Bit()
  */
 CFT4Bit::~CFT4Bit()
 {
-
 }
 
 /**
@@ -1059,8 +1066,7 @@ int CFT4Bit::Shrink(int die)
     u16 scaleU = *(u16 *)&mScale;
     if (scale == 0)
     {
-        if (die == 0)
-            return 1;
+        if (die == 0) return 1;
         Die();
         return 1;
     }
@@ -1186,8 +1192,7 @@ CQuadBit::~CQuadBit()
 void CQuadBit::SetTexture(char *pAnimName, int Frame)
 {
     SAnimFrame *anim = Spool_FindAnim(pAnimName);
-    SAnimFrame *entry =
-        (SAnimFrame *)(Frame * sizeof(SAnimFrame) + (int)anim);
+    SAnimFrame *entry = (SAnimFrame *)(Frame * sizeof(SAnimFrame) + (int)anim);
     Texture *texInfo = entry->pTexture;
     mpTexture = texInfo;
 }
@@ -1253,8 +1258,8 @@ void CQuadBit::SetTransparency(u8 t)
  * @param dy  Scale along the second derived basis vector.
  * @param Angle  Third scalar argument from the original signature.
  */
-void CQuadBit::OrientUsing(const CVector &Position, const SVECTOR &Normal,
-                           int dx, int dy, int Angle)
+void CQuadBit::OrientUsing(const CVector &Position, const SVECTOR &Normal, int dx, int dy,
+                           int Angle)
 {
     int l1;
     int l2;
@@ -1430,9 +1435,7 @@ void CChunkBit::SetRGB(u8 r, u8 g, u8 b)
  * @param u2  Third vertex U coordinate.
  * @param v2  Third vertex V coordinate.
  */
-void CChunkBit::SetUVs(u16 Clut, u16 TPage,
-                      u8 u0, u8 v0, u8 u1, u8 v1,
-                      u8 u2, u8 v2)
+void CChunkBit::SetUVs(u16 Clut, u16 TPage, u8 u0, u8 v0, u8 u1, u8 v1, u8 u2, u8 v2)
 {
     mClutV0U0 = ((u32)Clut << 16) | ((u32)v0 << 8) | u0;
     mTPageV1U1 = ((u32)TPage << 16) | ((u32)v1 << 8) | u1;
@@ -1482,8 +1485,7 @@ void CChunkBit::CalculateWorldCoords()
  * @param NumPoints  Number of points around half of the glow ring.
  * @param NumFringes  Number of outer fringe rings.
  */
-CGlow::CGlow(u32 NumPoints, u32 NumFringes)
-    : CBit()
+CGlow::CGlow(u32 NumPoints, u32 NumFringes) : CBit()
 {
     CGlow *glow = this;
     int numSections = NumPoints * 2;
@@ -1492,8 +1494,8 @@ CGlow::CGlow(u32 NumPoints, u32 NumFringes)
     glow->mNumFringes = NumFringes;
     glow->mStepAngle = (short)(0x1000u / (u32)numSections);
     // One SSection ring plus one SFringeQuad ring per fringe.
-    SSection *sections = (SSection *)Mem_New(
-        (numSections + numSections * NumFringes) * sizeof(SSection), 0, 1);
+    SSection *sections =
+        (SSection *)Mem_New((numSections + numSections * NumFringes) * sizeof(SSection), 0, 1);
     glow->mpSections = sections;
     int allocSize = Mem_GetBlockSize(sections);
     int i;
@@ -1530,9 +1532,8 @@ CGlow::CGlow(u32 NumPoints, u32 NumFringes)
  * @param g1  Green component for vertex/component 1.
  * @param b1  Blue component for vertex/component 1.
  */
-CGlow::CGlow(
-    const CVector &Pos, int InnerRadius, int FringeRadius,
-    u8 r0, u8 g0, u8 b0, u8 r1, u8 g1, u8 b1)
+CGlow::CGlow(const CVector &Pos, int InnerRadius, int FringeRadius, u8 r0, u8 g0, u8 b0, u8 r1,
+             u8 g1, u8 b1)
     : CBit()
 {
     CGlow *glow = this;
@@ -1544,19 +1545,16 @@ CGlow::CGlow(
     // Eight spokes: one SSection ring plus one SFringeQuad ring.
     glow->mpSections = (SSection *)Mem_New(16 * sizeof(SSection), 0, 1);
     TotalBitUsage += Mem_GetBlockSize(glow->mpSections) + 4;
-    glow->mpFringes =
-        (SFringeQuad *)(glow->mpSections + glow->mNumSections);
+    glow->mpFringes = (SFringeQuad *)(glow->mpSections + glow->mNumSections);
     glow->AttachTo(&GlowList);
 
     glow->mPos = Pos;
 
-    for (u32 i = 0; i < glow->mNumSections; i++)
-        glow->mpSections[i].Radius = InnerRadius;
+    for (u32 i = 0; i < glow->mNumSections; i++) glow->mpSections[i].Radius = InnerRadius;
 
     glow->mCentreCodeBGR = 0x32000000 | ((u32)b0 << 16) | ((u32)g0 << 8) | r0;
     u32 PadBGR = ((u32)b1 << 16) | ((u32)g1 << 8) | r1;
-    for (u32 i = 0; i < glow->mNumSections; i++)
-        glow->mpSections[i].PadBGR = PadBGR;
+    for (u32 i = 0; i < glow->mNumSections; i++) glow->mpSections[i].PadBGR = PadBGR;
 
     for (u32 i = 0; i < glow->mNumSections; i++)
     {
@@ -1603,8 +1601,7 @@ CGlow::~CGlow()
 void CGlow::SetRadius(int Radius)
 {
     u32 count = mNumSections;
-    if (count == 0)
-        return;
+    if (count == 0) return;
     u32 i = 0;
     do
     {
@@ -1675,8 +1672,7 @@ void CGlow::SetCentreRGB(u8 r, u8 g, u8 b)
 void CGlow::SetRGB(u8 r, u8 g, u8 b)
 {
     u32 PadBGR = ((u32)b << 16) | ((u32)g << 8) | r;
-    for (u32 i = 0; i < mNumSections; i++)
-        mpSections[i].PadBGR = PadBGR;
+    for (u32 i = 0; i < mNumSections; i++) mpSections[i].PadBGR = PadBGR;
 }
 
 /**
@@ -1750,17 +1746,8 @@ void CGlow::SetRadialRGB(int Spoke, u8 r, u8 g, u8 b)
 // Address: 0x800389C8
 // Demangled: CWobblyGlow::(const CVector &, int, int, int, unsigned char, unsigned char, unsigned char, unsigned char, unsigned char, unsigned char)
 // Wraps CGlow construction and seeds per-section wobble phase and velocity arrays.
-CWobblyGlow::CWobblyGlow(
-    const CVector &Pos,
-    int InnerRadius,
-    int FringeRadius,
-    int Amp,
-    u8 r0,
-    u8 g0,
-    u8 b0,
-    u8 r1,
-    u8 g1,
-    u8 b1)
+CWobblyGlow::CWobblyGlow(const CVector &Pos, int InnerRadius, int FringeRadius, int Amp, u8 r0,
+                         u8 g0, u8 b0, u8 r1, u8 g1, u8 b1)
     : CGlow(Pos, InnerRadius, FringeRadius, r0, g0, b0, r1, g1, b1)
 {
     CWobblyGlow *glow = this;
@@ -2095,7 +2082,6 @@ CSpark::CSpark(CVector &pos, int vel, int gravity, int life)
  */
 CSpark::~CSpark()
 {
-
 }
 
 /**
@@ -2167,7 +2153,6 @@ void CSpark::Move()
  */
 CSimpleAnim::~CSimpleAnim()
 {
-
 }
 
 /**
@@ -2184,8 +2169,7 @@ void CSimpleAnim::Move()
     IncFrame();
     if (mDie != 0)
     {
-        if ((s8)mFrame >= mDieFrame)
-            Die();
+        if ((s8)mFrame >= mDieFrame) Die();
     }
     else if ((s8)mFrame >= (int)mNumFrames)
     {
@@ -2213,9 +2197,8 @@ void CSimpleAnim::Move()
  * @param transdecay  Tint removed per update.
  * @return `this` pointer (GCC 2.x ctor convention).
  */
-CMotionBlur::CMotionBlur(
-    const CVector &pos, CVector &vel, char *pAnimName,
-    int initialscale, int scaledecay, int transdecay)
+CMotionBlur::CMotionBlur(const CVector &pos, CVector &vel, char *pAnimName, int initialscale,
+                         int scaledecay, int transdecay)
 {
 
     mPos = pos;
@@ -2239,7 +2222,6 @@ CMotionBlur::CMotionBlur(
  */
 CMotionBlur::~CMotionBlur()
 {
-
 }
 
 /**
@@ -2254,10 +2236,8 @@ CMotionBlur::~CMotionBlur()
 void CMotionBlur::Move()
 {
     mPos += mVel;
-    if (Shrink(1))
-        return;
-    if (Fade(1))
-        return;
+    if (Shrink(1)) return;
+    if (Fade(1)) return;
     IncFrameWithWrap();
 }
 
@@ -2275,7 +2255,6 @@ void CMotionBlur::Move()
  */
 CMotionBlurImmortal::~CMotionBlurImmortal()
 {
-
 }
 
 /**
@@ -2290,10 +2269,8 @@ CMotionBlurImmortal::~CMotionBlurImmortal()
 void CMotionBlurImmortal::Move()
 {
     mPos += mVel;
-    if (Shrink(0))
-        return;
-    if (Fade(0))
-        return;
+    if (Shrink(0)) return;
+    if (Fade(0)) return;
     IncFrameWithWrap();
 }
 
@@ -2311,7 +2288,6 @@ void CMotionBlurImmortal::Move()
  */
 CFrag::~CFrag()
 {
-
 }
 
 /**
@@ -2335,11 +2311,9 @@ void CFrag::Move()
     mVel.vy -= mVel.vy >> mFric.vy;
     mVel.vz -= mVel.vz >> mFric.vz;
     mFrame++;
-    if ((s8)mFrame >= mNumFrames)
-        mFrame = mNumFrames - 1;
+    if ((s8)mFrame >= mNumFrames) mFrame = mNumFrames - 1;
     mAge++;
-    if (mAge >= mLifetime)
-        Die();
+    if (mAge >= mLifetime) Die();
 }
 
 /**
@@ -2353,7 +2327,6 @@ void CFrag::Move()
  */
 CRibbonBit::CRibbonBit()
 {
-
 }
 
 /**
@@ -2367,7 +2340,6 @@ CRibbonBit::CRibbonBit()
  */
 CRibbonBit::~CRibbonBit()
 {
-
 }
 
 /**
@@ -2403,9 +2375,8 @@ void CRibbonBit::Move()
  * @param scale Initial segment scale.
  * @param semitrans Nonzero to enable semi-transparency on every segment.
  */
-CRibbon::CRibbon(const CVector &pos, int numbits, int pointsperbit,
-                 char *pMiddleAnimName, char *pEndAnimName, int scale,
-                 int semitrans)
+CRibbon::CRibbon(const CVector &pos, int numbits, int pointsperbit, char *pMiddleAnimName,
+                 char *pEndAnimName, int scale, int semitrans)
 {
 
     mNumBits = numbits;
@@ -2433,10 +2404,8 @@ CRibbon::CRibbon(const CVector &pos, int numbits, int pointsperbit,
     for (int i = mNumBits - 1; i >= 0; i--)
     {
         unsigned short childScale = (unsigned short)scale;
-        CRibbonBit **slot = (CRibbonBit **)((i * sizeof(CRibbonBit *)) +
-                                            (int)mBits);
-        CRibbonBit *child = static_cast<CRibbonBit *>(
-            CBit::operator new(sizeof(CRibbonBit)));
+        CRibbonBit **slot = (CRibbonBit **)((i * sizeof(CRibbonBit *)) + (int)mBits);
+        CRibbonBit *child = static_cast<CRibbonBit *>(CBit::operator new(sizeof(CRibbonBit)));
         if (child != 0)
         {
             child = ::new (child) CRibbonBit;
@@ -2614,11 +2583,8 @@ void CRibbon::SetPos(CVector &pos)
  * @param g  Green component (0-255).
  * @param b  Blue component (0-255).
  */
-CSmokeTrail::CSmokeTrail(
-    CVector &pos, int numbits, int r, int g, int b)
-    : CRibbon(pos, numbits, 2,
-              s_Ribbon,
-              s_Ribbon, 0x190, 1)
+CSmokeTrail::CSmokeTrail(CVector &pos, int numbits, int r, int g, int b)
+    : CRibbon(pos, numbits, 2, s_Ribbon, s_Ribbon, 0x190, 1)
 {
     int count = mNumBits;
     int decr = r / count;
@@ -2632,10 +2598,8 @@ CSmokeTrail::CSmokeTrail(
         {
             int k = i + 1;
             int rem = count - k;
-            mBits[i]->SetTint(
-                (char)(r - rem * decr),
-                (char)(g - rem * decg),
-                (char)(b - rem * decb));
+            mBits[i]->SetTint((char)(r - rem * decr), (char)(g - rem * decg),
+                              (char)(b - rem * decb));
             mBits[i]->SetTransDecay(8);
             count = mNumBits;
             i = k;
@@ -2655,7 +2619,6 @@ CSmokeTrail::CSmokeTrail(
  */
 CSmokeTrail::~CSmokeTrail()
 {
-
 }
 
 /**
@@ -2715,9 +2678,8 @@ void CSmokeTrail::Move()
  * @param dz  Random Z extent around the origin.
  * @return `this` pointer (GCC 2.x ctor convention).
  */
-CGlassBit::CGlassBit(
-    const CVector &Pos, const CVector &Vel, int GroundY,
-    u8 r, u8 g, u8 b, int dx, int dy, int dz)
+CGlassBit::CGlassBit(const CVector &Pos, const CVector &Vel, int GroundY, u8 r, u8 g, u8 b, int dx,
+                     int dy, int dz)
 {
 
     AttachTo(&GlassList);
@@ -2841,15 +2803,12 @@ void CGlassBit::Move()
     int life = glass->mLifetime;
     if ((life == 0) || (life = life - 1, glass->mLifetime = (u16)life, (u16)life == 0))
     {
-        glass->mDefaultR = glass->mDefaultR > glass->mFadeRate
-            ? glass->mDefaultR - glass->mFadeRate
-            : 0;
-        glass->mDefaultG = glass->mDefaultG > glass->mFadeRate
-            ? glass->mDefaultG - glass->mFadeRate
-            : 0;
-        glass->mDefaultB = glass->mDefaultB > glass->mFadeRate
-            ? glass->mDefaultB - glass->mFadeRate
-            : 0;
+        glass->mDefaultR =
+            glass->mDefaultR > glass->mFadeRate ? glass->mDefaultR - glass->mFadeRate : 0;
+        glass->mDefaultG =
+            glass->mDefaultG > glass->mFadeRate ? glass->mDefaultG - glass->mFadeRate : 0;
+        glass->mDefaultB =
+            glass->mDefaultB > glass->mFadeRate ? glass->mDefaultB - glass->mFadeRate : 0;
     }
     if ((glass->mDefaultR | glass->mDefaultG | glass->mDefaultB) == 0)
     {
@@ -2937,16 +2896,13 @@ void Bit_Display(void)
     camera_pos.vz = MikeCamera[Camera_CurrentMikeCamera].Position.vz;
     GTEZedLimit = pCurrentViewport->Zoom >> 1;
 
-    for (pSpecial = SpecialDisplayList;
-         pSpecial != 0;
+    for (pSpecial = SpecialDisplayList; pSpecial != 0;
          pSpecial = (CSpecialDisplay *)pSpecial->mNext)
     {
         pSpecial->Display();
     }
 
-    for (pGlow = GlowList;
-         pGlow != 0;
-         pGlow = (CGlow *)pGlow->mNext)
+    for (pGlow = GlowList; pGlow != 0; pGlow = (CGlow *)pGlow->mNext)
     {
         unsigned int y0x0;
         VECTOR RotCoords;
@@ -2956,8 +2912,7 @@ void Bit_Display(void)
 
         DR_TPAGE *ptpage = (DR_TPAGE *)pPoly;
         unsigned char *newppoly = (unsigned char *)(ptpage + 1);
-        if (PolyBufferEnd < newppoly)
-            return;
+        if (PolyBufferEnd < newppoly) return;
         pPoly = (u32 *)newppoly;
         u32 a = StoredTPagePrim.tag;
         u32 b = StoredTPagePrim.code[0];
@@ -2971,24 +2926,20 @@ void Bit_Display(void)
         short CentreX;
         short CentreY;
         gte_stlvnl(&RotCoords);
-        if ((u32)RotCoords.vz >= 20001)
-            continue;
+        if ((u32)RotCoords.vz >= 20001) continue;
 
         int RGBFade = 0;
-        if (RotCoords.vz < 700)
-            RGBFade = (RotCoords.vz * 255) / 700 + 1;
+        if (RotCoords.vz < 700) RGBFade = (RotCoords.vz * 255) / 700 + 1;
 
         if (RotCoords.vz < GTEZedLimit)
         {
-            CentreX = pCurrentViewport->xC +
-                      pCurrentViewport->Zoom * RotCoords.vx / RotCoords.vz;
+            CentreX = pCurrentViewport->xC + pCurrentViewport->Zoom * RotCoords.vx / RotCoords.vz;
             if (CentreX >= 1024)
                 CentreX = 1023;
             else if (CentreX < -1024)
                 CentreX = -1024;
 
-            CentreY = pCurrentViewport->yC +
-                      pCurrentViewport->Zoom * RotCoords.vy / RotCoords.vz;
+            CentreY = pCurrentViewport->yC + pCurrentViewport->Zoom * RotCoords.vy / RotCoords.vz;
             if (CentreY >= 1024)
                 CentreY = 1023;
             else if (CentreY < -1024)
@@ -3001,29 +2952,21 @@ void Bit_Display(void)
             CentreY = (s16)(y0x0 >> 16);
         }
 
-        if (CentreX == -1024 || CentreX == 1023 ||
-            CentreY == -1024 || CentreY == 1023)
-            continue;
+        if (CentreX == -1024 || CentreX == 1023 || CentreY == -1024 || CentreY == 1023) continue;
 
         u32 *OTPos;
         DVECTOR *pBufA = (DVECTOR *)getScratchAddr(0);
-        DVECTOR *pBufB = (DVECTOR *)getScratchAddr(1) +
-                         pGlow->mNumFringes;
-        OTPos = (u32 *)((int)pDoubleBuffer->ViewportOT +
-                        (RotCoords.vz & 0x3ffc));
+        DVECTOR *pBufB = (DVECTOR *)getScratchAddr(1) + pGlow->mNumFringes;
+        OTPos = (u32 *)((int)pDoubleBuffer->ViewportOT + (RotCoords.vz & 0x3ffc));
         int radius = (pSection[n - 1].Radius * 400) / (unsigned int)RotCoords.vz;
         int MSin = Sine(Ang) * 400 / 256;
         int MCos = Cosine(Ang);
         int x = CentreX + radius * MSin / 4096;
         int y = CentreY - radius * MCos / 4096;
-        if (x > 612)
-            x = 612;
-        if (x < -100)
-            x = -100;
-        if (y > 340)
-            y = 340;
-        if (y < -100)
-            y = -100;
+        if (x > 612) x = 612;
+        if (x < -100) x = -100;
+        if (y > 340) y = 340;
+        if (y < -100) y = -100;
         pBufA[0].vx = x;
         pBufA[0].vy = y;
 
@@ -3036,14 +2979,10 @@ void Bit_Display(void)
             RadA = (Rad * 400) / RotCoords.vz;
             x = CentreX + RadA * MSin / 4096;
             y = CentreY - RadA * MCos / 4096;
-            if (x > 612)
-                x = 612;
-            if (x < -100)
-                x = -100;
-            if (y > 340)
-                y = 340;
-            if (y < -100)
-                y = -100;
+            if (x > 612) x = 612;
+            if (x < -100) x = -100;
+            if (y > 340) y = 340;
+            if (y < -100) y = -100;
             pBufA[f + 1].vx = x;
             pBufA[f + 1].vy = y;
             pFringe += n;
@@ -3053,23 +2992,17 @@ void Bit_Display(void)
         for (int i = 0; i < n; ++i)
         {
             int DoDisplay = (pGlow->mMask >> i) & 1;
-            if (i == n - 1)
-                Ang = pGlow->mAngle;
+            if (i == n - 1) Ang = pGlow->mAngle;
 
-            RadA = (pSection->Radius * 400) /
-                   (unsigned int)RotCoords.vz;
+            RadA = (pSection->Radius * 400) / (unsigned int)RotCoords.vz;
             MSin = Sine(Ang) * 400 / 256;
             MCos = Cosine(Ang);
             x = CentreX + RadA * MSin / 4096;
             y = CentreY - RadA * MCos / 4096;
-            if (x > 612)
-                x = 612;
-            if (x < -100)
-                x = -100;
-            if (y > 340)
-                y = 340;
-            if (y < -100)
-                y = -100;
+            if (x > 612) x = 612;
+            if (x < -100) x = -100;
+            if (y > 340) y = 340;
+            if (y < -100) y = -100;
             pBufB[0].vx = x;
             pBufB[0].vy = y;
             u32 b = pGlow->mSkipTriangles;
@@ -3079,8 +3012,7 @@ void Bit_Display(void)
                 {
                     POLY_G3 *aGou = (POLY_G3 *)pPoly;
                     unsigned char *newppoly = (unsigned char *)(aGou + 1);
-                    if (PolyBufferEnd < newppoly)
-                        return;
+                    if (PolyBufferEnd < newppoly) return;
                     pPoly = (u32 *)newppoly;
                     aGou->tag = 0x06000000;
                     *(u32 *)&aGou->r0 = pGlow->mCentreCodeBGR;
@@ -3115,14 +3047,10 @@ void Bit_Display(void)
                 RadA = (Rad * 400) / RotCoords.vz;
                 x = CentreX + RadA * MSin / 4096;
                 y = CentreY - RadA * MCos / 4096;
-                if (x > 612)
-                    x = 612;
-                if (x < -100)
-                    x = -100;
-                if (y > 340)
-                    y = 340;
-                if (y < -100)
-                    y = -100;
+                if (x > 612) x = 612;
+                if (x < -100) x = -100;
+                if (y > 340) y = 340;
+                if (y < -100) y = -100;
                 pBufB[f + 1].vx = x;
                 pBufB[f + 1].vy = y;
 
@@ -3130,8 +3058,7 @@ void Bit_Display(void)
                 {
                     POLY_G4 *aGou = (POLY_G4 *)pPoly;
                     unsigned char *newppoly = (unsigned char *)(aGou + 1);
-                    if (PolyBufferEnd < newppoly)
-                        return;
+                    if (PolyBufferEnd < newppoly) return;
                     pPoly = (u32 *)newppoly;
                     aGou->tag = 0x08000000;
                     u32 CodeBGR = pFringe->CodeBGR;
@@ -3186,9 +3113,7 @@ void Bit_Display(void)
     }
 
     SClipLineBuf *clip_buffer = (SClipLineBuf *)getScratchAddr(0);
-    for (pGPolyLine = GPolyLineList;
-         pGPolyLine != 0;
-         pGPolyLine = (CGPolyLine *)pGPolyLine->mNext)
+    for (pGPolyLine = GPolyLineList; pGPolyLine != 0; pGPolyLine = (CGPolyLine *)pGPolyLine->mNext)
     {
         u32 LastBGR;
         SLineSeg *pSeg;
@@ -3211,8 +3136,7 @@ void Bit_Display(void)
                 DR_TPAGE *ptpage = (DR_TPAGE *)pPoly;
                 LINE_G2 *aline = (LINE_G2 *)(ptpage + 1);
                 unsigned char *newppoly = (unsigned char *)(aline + 1);
-                if (PolyBufferEnd < newppoly)
-                    return;
+                if (PolyBufferEnd < newppoly) return;
                 pPoly = (u32 *)newppoly;
 
                 aline->tag = 0x04000000;
@@ -3221,8 +3145,7 @@ void Bit_Display(void)
 
                 u32 *otpos;
                 if (pGPolyLine->mForcedPriority != 0)
-                    otpos = pDoubleBuffer->ViewportOT +
-                            pGPolyLine->mForcedPriority;
+                    otpos = pDoubleBuffer->ViewportOT + pGPolyLine->mForcedPriority;
                 else
                     otpos = pDoubleBuffer->ViewportOT + sort;
                 *(u32 *)&aline->x0 = clip_buffer->Output[0];
@@ -3245,9 +3168,7 @@ void Bit_Display(void)
         }
     }
 
-    for (pPolyLine = PolyLineList;
-         pPolyLine != 0;
-         pPolyLine = (CPolyLine *)pPolyLine->mNext)
+    for (pPolyLine = PolyLineList; pPolyLine != 0; pPolyLine = (CPolyLine *)pPolyLine->mNext)
     {
         clip_buffer->Input[0].vx = pPolyLine->mStart.vx;
         clip_buffer->Input[0].vy = pPolyLine->mStart.vy;
@@ -3266,8 +3187,7 @@ void Bit_Display(void)
                 DR_TPAGE *ptpage = (DR_TPAGE *)pPoly;
                 LINE_F2 *aline = (LINE_F2 *)(ptpage + 1);
                 unsigned char *newppoly = (unsigned char *)(aline + 1);
-                if (PolyBufferEnd < newppoly)
-                    return;
+                if (PolyBufferEnd < newppoly) return;
                 pPoly = (u32 *)newppoly;
 
                 aline->tag = 0x03000000;
@@ -3297,9 +3217,7 @@ void Bit_Display(void)
         }
     }
 
-    for (pFlatBit = FlatBitList;
-         pFlatBit != 0;
-         pFlatBit = (CFlatBit *)pFlatBit->mNext)
+    for (pFlatBit = FlatBitList; pFlatBit != 0; pFlatBit = (CFlatBit *)pFlatBit->mNext)
     {
         long zed;
         unsigned int y0x0;
@@ -3323,14 +3241,14 @@ void Bit_Display(void)
 
         Temp.vx = (pFlatBit->mPos.vx >> 12) - camera_pos.vx;
         Temp.vy = (pFlatBit->mPos.vy >> 12) - camera_pos.vy;
-        Temp.vz = (pFlatBit->mPos.vz >> 12) - camera_pos.vz; unsigned int y_post_scale;
+        Temp.vz = (pFlatBit->mPos.vz >> 12) - camera_pos.vz;
+        unsigned int y_post_scale;
         gte_ldlv0(&Temp);
         gte_rtps();
 
         apoly = (POLY_FT4 *)pPoly;
         newppoly = (unsigned char *)(apoly + 1);
-        if ((unsigned char *)PolyBufferEnd < newppoly)
-            return;
+        if ((unsigned char *)PolyBufferEnd < newppoly) return;
 
         pPoly = (u32 *)newppoly;
         apoly->tag = 0x09000000;
@@ -3356,13 +3274,11 @@ void Bit_Display(void)
         foo2 = *(u32 *)&stored->u1;
         foo3 = *(u32 *)&stored->u2;
         foo4 = *(u16 *)&stored->u3;
-        if (pFlatBit->mCLUT != 0)
-            foo1 = (foo1 & 0xffff) | ((u32)pFlatBit->mCLUT << 16);
+        if (pFlatBit->mCLUT != 0) foo1 = (foo1 & 0xffff) | ((u32)pFlatBit->mCLUT << 16);
         *(u32 *)&apoly->u0 = foo1;
         // FIXME(match): asm barrier — keeps the foo1 store ahead of the 0xff9fffff mask lui/ori (unpinned: sched shifts one store, 2 insns off); tried: removal with other sites, statement reordering.
         asm volatile("");
-        *(u32 *)&apoly->u1 = (foo2 & 0xff9fffff) |
-                             ((u32)pFlatBit->mSemiTransparencyRate << 16);
+        *(u32 *)&apoly->u1 = (foo2 & 0xff9fffff) | ((u32)pFlatBit->mSemiTransparencyRate << 16);
         *(u32 *)&apoly->u2 = foo3;
         *(u16 *)&apoly->u3 = foo4;
 
@@ -3392,7 +3308,8 @@ void Bit_Display(void)
         y_post_scale = Scale * (pFlatBit->mPostScale >> 16);
         if (Angle == 0)
         {
-            __typeof__(Scale * OffX) __pt940865 = Scale * OffX; OffX = __pt940865;
+            __typeof__(Scale * OffX) __pt940865 = Scale * OffX;
+            OffX = __pt940865;
             OffX <<= 9;
             OffX >>= 16;
             // FIXME(match): register pin — yp in $v1 (unpinned: score 12); tried: removal, expression splitting.
@@ -3404,13 +3321,11 @@ void Bit_Display(void)
                 Width = w >> 7;
             }
             Height = (Scale * Height >> 7) << 16;
-            if (Width < 5)
-                Width = 2;
+            if (Width < 5) Width = 2;
             unsigned int FrameWidth = Width;
             // FIXME(match): register pin — Width in $t5 via a shadowing copy of FrameWidth (unpinned: score 45); tried: removal.
             register unsigned int Width asm("$13") = FrameWidth;
-            if (Height < 0x50000)
-                Height = 0x10000;
+            if (Height < 0x50000) Height = 0x10000;
 
             if (!Flipped)
             {
@@ -3449,44 +3364,41 @@ void Bit_Display(void)
 
             if (!Flipped)
             {
-                ptr[0] = y0x0 + (x_scale * (xcos - ysin) >> 19)
-                                 + (y_scale * (xsin + ycos) >> 19) * 0x10000;
-                ptr[2] = y0x0 + (x_scale * (xwcos - ysin) >> 19)
-                                 + (y_scale * (xwsin + ycos) >> 19) * 0x10000;
-                ptr[4] = y0x0 + (x_scale * (xcos - yhsin) >> 19)
-                                 + (y_scale * (xsin + yhcos) >> 19) * 0x10000;
-                ptr[6] = y0x0 + (x_scale * (xwcos - yhsin) >> 19)
-                                 + (y_scale * (xwsin + yhcos) >> 19) * 0x10000;
+                ptr[0] = y0x0 + (x_scale * (xcos - ysin) >> 19) +
+                         (y_scale * (xsin + ycos) >> 19) * 0x10000;
+                ptr[2] = y0x0 + (x_scale * (xwcos - ysin) >> 19) +
+                         (y_scale * (xwsin + ycos) >> 19) * 0x10000;
+                ptr[4] = y0x0 + (x_scale * (xcos - yhsin) >> 19) +
+                         (y_scale * (xsin + yhcos) >> 19) * 0x10000;
+                ptr[6] = y0x0 + (x_scale * (xwcos - yhsin) >> 19) +
+                         (y_scale * (xwsin + yhcos) >> 19) * 0x10000;
             }
             else
             {
-                ptr[2] = y0x0 + (x_scale * (xcos - ysin) >> 19)
-                                 + (y_scale * (xsin + ycos) >> 19) * 0x10000;
-                ptr[0] = y0x0 + (x_scale * (xwcos - ysin) >> 19)
-                                 + (y_scale * (xwsin + ycos) >> 19) * 0x10000;
-                ptr[6] = y0x0 + (x_scale * (xcos - yhsin) >> 19)
-                                 + (y_scale * (xsin + yhcos) >> 19) * 0x10000;
-                ptr[4] = y0x0 + (x_scale * (xwcos - yhsin) >> 19)
-                                 + (y_scale * (xwsin + yhcos) >> 19) * 0x10000;
+                ptr[2] = y0x0 + (x_scale * (xcos - ysin) >> 19) +
+                         (y_scale * (xsin + ycos) >> 19) * 0x10000;
+                ptr[0] = y0x0 + (x_scale * (xwcos - ysin) >> 19) +
+                         (y_scale * (xwsin + ycos) >> 19) * 0x10000;
+                ptr[6] = y0x0 + (x_scale * (xcos - yhsin) >> 19) +
+                         (y_scale * (xsin + yhcos) >> 19) * 0x10000;
+                ptr[4] = y0x0 + (x_scale * (xwcos - yhsin) >> 19) +
+                         (y_scale * (xwsin + yhcos) >> 19) * 0x10000;
             }
         }
 
         if (pFlatBit->mForcedPriority != 0)
         {
-            addPrim(pDoubleBuffer->ViewportOT + pFlatBit->mForcedPriority,
-                    apoly);
+            addPrim(pDoubleBuffer->ViewportOT + pFlatBit->mForcedPriority, apoly);
         }
         else
         {
-            addPrim((u32 *)(((zed - pFlatBit->mFrigDeltaZ) & 0x3ffc) +
-                            (int)pDoubleBuffer->ViewportOT),
-                    apoly);
+            addPrim(
+                (u32 *)(((zed - pFlatBit->mFrigDeltaZ) & 0x3ffc) + (int)pDoubleBuffer->ViewportOT),
+                apoly);
         }
     }
 
-    for (pGlass = GlassList;
-         pGlass != 0;
-         pGlass = (CGlassBit *)pGlass->mNext)
+    for (pGlass = GlassList; pGlass != 0; pGlass = (CGlassBit *)pGlass->mNext)
     {
         SVECTOR STemp;
         long zed;
@@ -3514,8 +3426,7 @@ void Bit_Display(void)
         aGou = (POLY_F3 *)pPoly;
         ptpage = (DR_TPAGE *)(aGou + 1);
         newppoly = (unsigned char *)(ptpage + 1);
-        if ((unsigned char *)PolyBufferEnd < newppoly)
-            return;
+        if ((unsigned char *)PolyBufferEnd < newppoly) return;
         pPoly = (u32 *)newppoly;
 
         aGou->tag = 0x04000000;
@@ -3530,15 +3441,12 @@ void Bit_Display(void)
         gte_stsxy3(&aGou->x0, &aGou->x1, &aGou->x2);
         gte_stlvnl2(&zed);
 
-        OTPos = (u32 *)((u8 *)pDoubleBuffer->ViewportOT +
-                        (zed & 0x3ffc));
+        OTPos = (u32 *)((u8 *)pDoubleBuffer->ViewportOT + (zed & 0x3ffc));
         addPrim(OTPos, aGou);
         addPrim(OTPos, ptpage);
     }
 
-    for (pGLine = GLineList;
-         pGLine != 0;
-         pGLine = (CGLine *)pGLine->mNext)
+    for (pGLine = GLineList; pGLine != 0; pGLine = (CGLine *)pGLine->mNext)
     {
         unsigned int y0x01;
         unsigned int y0x02;
@@ -3558,14 +3466,12 @@ void Bit_Display(void)
             gte_rtps();
             gte_stlvnl2(&zed2);
 
-            if (zed2 >= pCurrentViewport->Hither &&
-                zed2 <= pCurrentViewport->Yon)
+            if (zed2 >= pCurrentViewport->Hither && zed2 <= pCurrentViewport->Yon)
             {
                 gte_stsxy(&y0x02);
                 LINE_G2 *aline = (LINE_G2 *)pPoly;
                 unsigned char *newppoly = (unsigned char *)(aline + 1);
-                if (PolyBufferEnd < newppoly)
-                    return;
+                if (PolyBufferEnd < newppoly) return;
                 pPoly = (u32 *)newppoly;
 
                 aline->tag = 0x04000000;
@@ -3573,23 +3479,19 @@ void Bit_Display(void)
                 *(u32 *)&aline->r1 = pGLine->mPadBGR1;
                 *(u32 *)&aline->x0 = y0x01;
                 *(u32 *)&aline->x1 = y0x02;
-                if (zed2 < zed)
-                    zed = zed2;
-                addPrim((u32 *)((zed & 0x3ffc) +
-                                (int)pDoubleBuffer->ViewportOT),
-                        aline);
+                if (zed2 < zed) zed = zed2;
+                addPrim((u32 *)((zed & 0x3ffc) + (int)pDoubleBuffer->ViewportOT), aline);
             }
         }
     }
 
-    for (pQuad = QuadBitList;
-         pQuad != 0;
-         pQuad = (CQuadBit *)pQuad->mNext)
+    for (pQuad = QuadBitList; pQuad != 0; pQuad = (CQuadBit *)pQuad->mNext)
     {
-        
+
         long ZedC;
         long ZedD;
-        long MaxZed; long ZedB;
+        long MaxZed;
+        long ZedB;
         Texture *stored;
         POLY_FT4 *apoly;
         unsigned char *newppoly;
@@ -3598,8 +3500,7 @@ void Bit_Display(void)
         unsigned int foo3;
         unsigned short foo4;
 
-        if (pQuad->mpTexture == 0)
-            continue;
+        if (pQuad->mpTexture == 0) continue;
 
         Temp = (pQuad->mPos >> 12) - camera_pos;
         gte_ldlv0(&Temp);
@@ -3608,8 +3509,7 @@ void Bit_Display(void)
         stored = pQuad->mpTexture;
         apoly = (POLY_FT4 *)pPoly;
         newppoly = (unsigned char *)(apoly + 1);
-        if ((unsigned char *)PolyBufferEnd < newppoly)
-            return;
+        if ((unsigned char *)PolyBufferEnd < newppoly) return;
         pPoly = (u32 *)newppoly;
         gte_stlvnl2(&MaxZed);
         if (MaxZed < pCurrentViewport->Hither || MaxZed > pCurrentViewport->Yon)
@@ -3636,8 +3536,7 @@ void Bit_Display(void)
 
         apoly->tag = 0x09000000;
         *(u32 *)&apoly->r0 = pQuad->mCodeBGR;
-        if (ZedB > MaxZed)
-            MaxZed = ZedB;
+        if (ZedB > MaxZed) MaxZed = ZedB;
 
         gte_stlvnl2(&ZedC);
         if (ZedC < pCurrentViewport->Hither || ZedC > pCurrentViewport->Yon)
@@ -3663,8 +3562,7 @@ void Bit_Display(void)
         {
             apoly->tpage = (apoly->tpage & 0xff9f) | 0x40;
         }
-        if (ZedC > MaxZed)
-            MaxZed = ZedC;
+        if (ZedC > MaxZed) MaxZed = ZedC;
 
         gte_stlvnl2(&ZedD);
         if (ZedD < pCurrentViewport->Hither || ZedD > pCurrentViewport->Yon)
@@ -3674,16 +3572,12 @@ void Bit_Display(void)
         }
         gte_stsxy(&apoly->x3);
 
-        if (MaxZed < ZedD)
-            MaxZed = ZedD;
-        addPrim((u32 *)(((MaxZed - pQuad->mFrigDeltaZ) & 0x3ffc) +
-                        (int)pDoubleBuffer->ViewportOT),
+        if (MaxZed < ZedD) MaxZed = ZedD;
+        addPrim((u32 *)(((MaxZed - pQuad->mFrigDeltaZ) & 0x3ffc) + (int)pDoubleBuffer->ViewportOT),
                 apoly);
     }
 
-    for (p_chunk = ChunkBitList;
-         p_chunk != 0;
-         p_chunk = (CChunkBit *)p_chunk->mNext)
+    for (p_chunk = ChunkBitList; p_chunk != 0; p_chunk = (CChunkBit *)p_chunk->mNext)
     {
         DR_TWIN *p_overflow2;
         long opz;
@@ -3703,10 +3597,8 @@ void Bit_Display(void)
         u32 *pOTPos;
 
         p_overflow2 = (DR_TWIN *)pPoly;
-        newppoly = (unsigned char *)(p_overflow2 + 2) +
-                   4 * sizeof(POLY_FT3);
-        if ((unsigned char *)PolyBufferEnd < newppoly)
-            return;
+        newppoly = (unsigned char *)(p_overflow2 + 2) + 4 * sizeof(POLY_FT3);
+        if ((unsigned char *)PolyBufferEnd < newppoly) return;
 
         Temp = p_chunk->mWorldPosA - camera_pos;
         gte_ldlv0(&Temp);
@@ -3717,42 +3609,30 @@ void Bit_Display(void)
         Temp = p_chunk->mWorldPosB - camera_pos;
         gte_ldlv0(&Temp);
         gte_rtps();
-        if (ZedA < pCurrentViewport->Hither ||
-            ZedA > pCurrentViewport->Yon)
-            continue;
-        if (MaxZed < ZedA)
-            MaxZed = ZedA;
+        if (ZedA < pCurrentViewport->Hither || ZedA > pCurrentViewport->Yon) continue;
+        if (MaxZed < ZedA) MaxZed = ZedA;
         gte_stlvnl2(&ZedB);
         gte_stsxy(&y0x0B);
 
         Temp = p_chunk->mWorldPosC - camera_pos;
         gte_ldlv0(&Temp);
         gte_rtps();
-        if (ZedB < pCurrentViewport->Hither ||
-            ZedB > pCurrentViewport->Yon)
-            continue;
-        if (MaxZed < ZedB)
-            MaxZed = ZedB;
+        if (ZedB < pCurrentViewport->Hither || ZedB > pCurrentViewport->Yon) continue;
+        if (MaxZed < ZedB) MaxZed = ZedB;
         gte_stlvnl2(&ZedC);
         gte_stsxy(&y0x0C);
 
         Temp = p_chunk->mWorldPosD - camera_pos;
         gte_ldlv0(&Temp);
         gte_rtps();
-        if (ZedC < pCurrentViewport->Hither ||
-            ZedC > pCurrentViewport->Yon)
-            continue;
-        if (MaxZed < ZedC)
-            MaxZed = ZedC;
+        if (ZedC < pCurrentViewport->Hither || ZedC > pCurrentViewport->Yon) continue;
+        if (MaxZed < ZedC) MaxZed = ZedC;
         gte_stlvnl2(&ZedD);
-        if (ZedD < pCurrentViewport->Hither || ZedD > pCurrentViewport->Yon)
-            continue;
-        if (MaxZed < ZedD)
-            MaxZed = ZedD;
+        if (ZedD < pCurrentViewport->Hither || ZedD > pCurrentViewport->Yon) continue;
+        if (MaxZed < ZedD) MaxZed = ZedD;
         gte_stsxy(&y0x0D);
 
-        pOTPos = (u32 *)((u8 *)pDoubleBuffer->ViewportOT +
-                         (MaxZed & 0x3ffc));
+        pOTPos = (u32 *)((u8 *)pDoubleBuffer->ViewportOT + (MaxZed & 0x3ffc));
 
         if (p_chunk->mTexWin != 0)
         {
@@ -3763,21 +3643,15 @@ void Bit_Display(void)
             RECT win;
             win.x = win.y = win.w = win.h = 0;
             setlen(pWinOff, 2);
-            pWinOff->code[0] =
-                0xe2000000 |
-                (((win.y & 0xff) >> 3) << 15) |
-                (((win.x & 0xff) >> 3) << 10) |
-                (((~(win.h - 1) & 0xff) >> 3) << 5) |
-                ((~(win.w - 1) & 0xff) >> 3);
+            pWinOff->code[0] = 0xe2000000 | (((win.y & 0xff) >> 3) << 15) |
+                               (((win.x & 0xff) >> 3) << 10) | (((~(win.h - 1) & 0xff) >> 3) << 5) |
+                               ((~(win.w - 1) & 0xff) >> 3);
             pWinOff->code[1] = 0;
 
             setlen(pWinOn, 2);
-            pWinOn->code[0] =
-                0xe2000000 |
-                (((win.y & 0xff) >> 3) << 15) |
-                (((win.x & 0xff) >> 3) << 10) |
-                (((~(win.h - 1) & 0xff) >> 3) << 5) |
-                ((~(win.w - 1) & 0xff) >> 3);
+            pWinOn->code[0] = 0xe2000000 | (((win.y & 0xff) >> 3) << 15) |
+                              (((win.x & 0xff) >> 3) << 10) | (((~(win.h - 1) & 0xff) >> 3) << 5) |
+                              ((~(win.w - 1) & 0xff) >> 3);
             pWinOn->code[1] = 0;
             pWinOn->code[0] = p_chunk->mTexWin;
 
@@ -3867,9 +3741,7 @@ void Bit_Display(void)
         }
     }
 
-    for (pPixel = PixelList;
-         pPixel != 0;
-         pPixel = (CPixel *)pPixel->mNext)
+    for (pPixel = PixelList; pPixel != 0; pPixel = (CPixel *)pPixel->mNext)
     {
         Temp = (pPixel->mPos >> 12) - camera_pos;
         gte_ldlv0(&Temp);
@@ -3880,46 +3752,42 @@ void Bit_Display(void)
         {
             TILE_1 *atile = (TILE_1 *)pPoly;
             unsigned char *newppoly = (unsigned char *)(atile + 1);
-            if (PolyBufferEnd < newppoly)
-                return;
+            if (PolyBufferEnd < newppoly) return;
             pPoly = (u32 *)newppoly;
             atile->tag = pPixel->tag;
             *(u32 *)&atile->r0 = *(u32 *)&pPixel->r0;
 
             gte_stlvnl2(&zed);
-            if (zed < pCurrentViewport->Hither ||
-                zed > pCurrentViewport->Yon)
+            if (zed < pCurrentViewport->Hither || zed > pCurrentViewport->Yon)
             {
                 pPoly = (u32 *)atile;
                 continue;
             }
             gte_stsxy(&atile->x0);
-            addPrim((u32 *)(((zed - pPixel->mFrigDeltaZ) & 0x3ffc) +
-                            (int)pDoubleBuffer->ViewportOT),
-                    atile);
+            addPrim(
+                (u32 *)(((zed - pPixel->mFrigDeltaZ) & 0x3ffc) + (int)pDoubleBuffer->ViewportOT),
+                atile);
         }
         else
         {
             TILE *atile = (TILE *)pPoly;
             unsigned char *newppoly = (unsigned char *)(atile + 1);
-            if (PolyBufferEnd < newppoly)
-                return;
+            if (PolyBufferEnd < newppoly) return;
             pPoly = (u32 *)newppoly;
             atile->tag = pPixel->tag;
             *(u32 *)&atile->r0 = *(u32 *)&pPixel->r0;
             *(u32 *)&atile->w = pPixel->mWidthHeight;
 
             gte_stlvnl2(&zed);
-            if (zed < pCurrentViewport->Hither ||
-                zed > pCurrentViewport->Yon)
+            if (zed < pCurrentViewport->Hither || zed > pCurrentViewport->Yon)
             {
                 pPoly = (u32 *)atile;
                 continue;
             }
             gte_stsxy(&atile->x0);
-            addPrim((u32 *)(((zed - pPixel->mFrigDeltaZ) & 0x3ffc) +
-                            (int)pDoubleBuffer->ViewportOT),
-                    atile);
+            addPrim(
+                (u32 *)(((zed - pPixel->mFrigDeltaZ) & 0x3ffc) + (int)pDoubleBuffer->ViewportOT),
+                atile);
         }
     }
 
@@ -3930,15 +3798,14 @@ void Bit_Display(void)
     int StoredA1x = 0;
     int StoredA1y = 0;
     int StoredA2x = 0;
-    int StoredA2y; StoredA2y = 0;
+    int StoredA2y;
+    StoredA2y = 0;
     int StoredAx = 0;
     int StoredAy = 0;
     int Broken = 0;
     CLinked2EndedBit *pLinked2EndedBit;
-    for (pLinked2EndedBit = Linked2EndedBitList;
-         pLinked2EndedBit != 0;
-         pLinked2EndedBit =
-             (CLinked2EndedBit *)pLinked2EndedBit->mNext)
+    for (pLinked2EndedBit = Linked2EndedBitList; pLinked2EndedBit != 0;
+         pLinked2EndedBit = (CLinked2EndedBit *)pLinked2EndedBit->mNext)
     {
         Texture *stored;
         long zed;
@@ -3968,8 +3835,7 @@ void Bit_Display(void)
         int dx;
         int d;
 
-        NeedToTransformA =
-            (0 != (pLinked2EndedBit->mBitFlags & 0x10)) || Broken;
+        NeedToTransformA = (0 != (pLinked2EndedBit->mBitFlags & 0x10)) || Broken;
 
         if (NeedToTransformA)
         {
@@ -3993,10 +3859,8 @@ void Bit_Display(void)
             gte_stsxy(&Ay0x0);
             Ax = (s16)Ay0x0;
             Ay = (s16)(Ay0x0 >> 16);
-            dA = ((unsigned int)((int)pLinked2EndedBit->mScale * Width) /
-                  (unsigned int)zed) >> 1;
-            if (dA < 2)
-                dA = 2;
+            dA = ((unsigned int)((int)pLinked2EndedBit->mScale * Width) / (unsigned int)zed) >> 1;
+            if (dA < 2) dA = 2;
         }
         else
         {
@@ -4012,8 +3876,7 @@ void Bit_Display(void)
 
         apoly = (POLY_FT4 *)pPoly;
         newppoly = (unsigned char *)(apoly + 1);
-        if ((unsigned char *)PolyBufferEnd < newppoly)
-            return;
+        if ((unsigned char *)PolyBufferEnd < newppoly) return;
         pPoly = (u32 *)newppoly;
         apoly->tag = 0x09000000;
         *(u32 *)&apoly->r0 = pLinked2EndedBit->mCodeBGR;
@@ -4042,10 +3905,8 @@ void Bit_Display(void)
         By = (s16)(By0x0 >> 16);
         StoredAx = Bx;
         StoredAy = By;
-        dB = ((unsigned int)((int)pLinked2EndedBit->mScale * Width) /
-              (unsigned int)zed) >> 1;
-        if (dB < 2)
-            dB = 2;
+        dB = ((unsigned int)((int)pLinked2EndedBit->mScale * Width) / (unsigned int)zed) >> 1;
+        if (dB < 2) dB = 2;
 
         dx = Bx - Ax;
         dy = By - Ay;
@@ -4274,8 +4135,7 @@ void CGouraudRibbon::Display()
             do
             {
                 pBuf->Zed = Transform(pPoint->Pos, pBuf->Pos);
-                if (pBuf->Zed < pCurrentViewport->Hither ||
-                    pCurrentViewport->Yon < pBuf->Zed)
+                if (pBuf->Zed < pCurrentViewport->Hither || pCurrentViewport->Yon < pBuf->Zed)
                 {
                     pBuf->Bad = 1;
                 }
@@ -4332,12 +4192,10 @@ void CGouraudRibbon::Display()
         while (i < mNumPoints)
         {
             u32 *pOTPos;
-            if ((pBuf->NormalX | pBuf->NormalY) &&
-                (pLastBuf->NormalX | pLastBuf->NormalY))
+            if ((pBuf->NormalX | pBuf->NormalY) && (pLastBuf->NormalX | pLastBuf->NormalY))
             {
-                pOTPos = (u32 *)((int)pDoubleBuffer->ViewportOT +
-                                 ((pBuf->Zed - mFrigDeltaZ) &
-                                  0x3ffc));
+                pOTPos =
+                    (u32 *)((int)pDoubleBuffer->ViewportOT + ((pBuf->Zed - mFrigDeltaZ) & 0x3ffc));
                 dx = (pBuf->NormalX * pBuf->ScrWidth) >> 6;
                 dy = (pBuf->NormalY * pBuf->ScrWidth) >> 6;
                 x = (short)pBuf->Pos;
@@ -4351,8 +4209,7 @@ void CGouraudRibbon::Display()
                 unsigned int a;
                 unsigned int b;
 
-                if (PolyBufferEnd < newppoly)
-                    goto SEEYA;
+                if (PolyBufferEnd < newppoly) goto SEEYA;
 
                 a = StoredTPagePrim.tag;
                 b = StoredTPagePrim.code[0];
@@ -4363,31 +4220,24 @@ void CGouraudRibbon::Display()
                 if (2 < mTrail)
                 {
                     {
-                        unsigned char *newppoly =
-                            (unsigned char *)pPoly + sizeof(POLY_G4);
-                        if (PolyBufferEnd < newppoly)
-                            goto SEEYA;
+                        unsigned char *newppoly = (unsigned char *)pPoly + sizeof(POLY_G4);
+                        if (PolyBufferEnd < newppoly) goto SEEYA;
                         pPoly = (u32 *)newppoly;
                     }
                     ((POLY_G4 *)newppoly)->tag = 0x08000000;
                     *(u32 *)&((POLY_G4 *)newppoly)->r0 = 0x3a000000;
                     *(u32 *)&((POLY_G4 *)newppoly)->r1 = 0;
-                    *(u32 *)&((POLY_G4 *)newppoly)->r3 =
-                        *(u32 *)&pLastPoint->r;
-                    *(u32 *)&((POLY_G4 *)newppoly)->r2 =
-                        *(u32 *)&pPoint->r;
-                    *(u32 *)&((POLY_G4 *)newppoly)->x1 =
-                        pLastPoint->Last2Scr;
-                    *(u32 *)&((POLY_G4 *)newppoly)->x0 =
-                        pPoint->Last2Scr;
+                    *(u32 *)&((POLY_G4 *)newppoly)->r3 = *(u32 *)&pLastPoint->r;
+                    *(u32 *)&((POLY_G4 *)newppoly)->r2 = *(u32 *)&pPoint->r;
+                    *(u32 *)&((POLY_G4 *)newppoly)->x1 = pLastPoint->Last2Scr;
+                    *(u32 *)&((POLY_G4 *)newppoly)->x0 = pPoint->Last2Scr;
                     *(u32 *)&((POLY_G4 *)newppoly)->x3 = pLastBuf->Pos;
                     *(u32 *)&((POLY_G4 *)newppoly)->x2 = pBuf->Pos;
                     addPrim(pOTPos, (POLY_G4 *)newppoly);
                 }
 
                 pTopPoly->tag = pBottomPoly->tag = 0x08000000;
-                *(u32 *)&pTopPoly->r0 = *(u32 *)&pBottomPoly->r0 =
-                    0x3a000000;
+                *(u32 *)&pTopPoly->r0 = *(u32 *)&pBottomPoly->r0 = 0x3a000000;
                 *(u32 *)&pTopPoly->r1 = 0;
                 *(u32 *)&pTopPoly->r3 = *(u32 *)&pLastPoint->r;
                 *(u32 *)&pTopPoly->r2 = *(u32 *)&pPoint->r;
@@ -4456,8 +4306,7 @@ SEEYA:
  * @param NumPoints  Number of stored ribbon points.
  * @param LeaveTrail  Nonzero to preserve previous projected positions.
  */
-CTexturedRibbon::CTexturedRibbon(int NumPoints, int LeaveTrail)
-    : CSpecialDisplay()
+CTexturedRibbon::CTexturedRibbon(int NumPoints, int LeaveTrail) : CSpecialDisplay()
 {
     int allocSize = NumPoints * sizeof(SRibbonPoint);
 
@@ -4564,8 +4413,7 @@ void CTexturedRibbon::Display()
                 do
                 {
                     pBuf->Zed = Transform(pPoint->Pos, pBuf->Pos);
-                    if (pBuf->Zed < pCurrentViewport->Hither ||
-                        pCurrentViewport->Yon < pBuf->Zed)
+                    if (pBuf->Zed < pCurrentViewport->Hither || pCurrentViewport->Yon < pBuf->Zed)
                     {
                         pBuf->Bad = 1;
                     }
@@ -4573,8 +4421,7 @@ void CTexturedRibbon::Display()
                     {
                         pBuf->Bad = 0;
                         pBuf->ScrWidth = (pPoint->Width * 400) / pBuf->Zed;
-                        pBuf->ScrWidthB =
-                            (pPoint->WidthB * 400) / pBuf->Zed;
+                        pBuf->ScrWidthB = (pPoint->WidthB * 400) / pBuf->Zed;
                     }
                     pBuf++;
                     pPoint++;
@@ -4608,228 +4455,217 @@ void CTexturedRibbon::Display()
         {
             int i;
 
-        pBuf->NormalX = LastNormalX;
-        pBuf->NormalY = LastNormalY;
+            pBuf->NormalX = LastNormalX;
+            pBuf->NormalY = LastNormalY;
 
-        pBuf = (SCalcBuffer *)0x1f800000;
-        pLastBuf = pBuf;
-        pLastPoint = mpPoints;
-        pPoint = pLastPoint + 1;
-        x = (s16)pBuf->Pos;
-        y = pBuf->Pos >> 16;
-        dx = (pBuf->NormalX * pBuf->ScrWidth) >> 6;
-        dy = (pBuf->NormalY * pBuf->ScrWidth) >> 6;
-        dxB = (pBuf->NormalX * pBuf->ScrWidthB) >> 6;
-        dyB = (pBuf->NormalY * pBuf->ScrWidthB) >> 6;
-        LastTop = ((y + dy) << 16) | ((x + dx) & 0xffff);
-        LastBottom = ((y - dy) << 16) | ((x - dx) & 0xffff);
-        LastTopB = ((y + dyB) << 16) | ((x + dxB) & 0xffff);
-        LastBottomB = ((y - dyB) << 16) | ((x - dxB) & 0xffff);
+            pBuf = (SCalcBuffer *)0x1f800000;
+            pLastBuf = pBuf;
+            pLastPoint = mpPoints;
+            pPoint = pLastPoint + 1;
+            x = (s16)pBuf->Pos;
+            y = pBuf->Pos >> 16;
+            dx = (pBuf->NormalX * pBuf->ScrWidth) >> 6;
+            dy = (pBuf->NormalY * pBuf->ScrWidth) >> 6;
+            dxB = (pBuf->NormalX * pBuf->ScrWidthB) >> 6;
+            dyB = (pBuf->NormalY * pBuf->ScrWidthB) >> 6;
+            LastTop = ((y + dy) << 16) | ((x + dx) & 0xffff);
+            LastBottom = ((y - dy) << 16) | ((x - dx) & 0xffff);
+            LastTopB = ((y + dyB) << 16) | ((x + dxB) & 0xffff);
+            LastBottomB = ((y - dyB) << 16) | ((x - dxB) & 0xffff);
 
             voff = mV;
             pBuf++;
             for (i = 1; i < mNumPoints;)
             {
-            unsigned int *pOTPos;
-            if ((pBuf->NormalX | pBuf->NormalY) != 0)
-            {
-                if ((pLastBuf->NormalX | pLastBuf->NormalY) != 0)
+                unsigned int *pOTPos;
+                if ((pBuf->NormalX | pBuf->NormalY) != 0)
                 {
-                int MinZ = pLastBuf->Zed;
-                if (pBuf->Zed < MinZ)
-                    MinZ = pBuf->Zed;
+                    if ((pLastBuf->NormalX | pLastBuf->NormalY) != 0)
+                    {
+                        int MinZ = pLastBuf->Zed;
+                        if (pBuf->Zed < MinZ) MinZ = pBuf->Zed;
 
-                x = (s16)pBuf->Pos;
-                y = pBuf->Pos >> 16;
-                dx = (pBuf->NormalX * pBuf->ScrWidth) >> 6;
-                dy = (pBuf->NormalY * pBuf->ScrWidth) >> 6;
-                dxB = (pBuf->NormalX * pBuf->ScrWidthB) >> 6;
-                dyB = (pBuf->NormalY * pBuf->ScrWidthB) >> 6;
+                        x = (s16)pBuf->Pos;
+                        y = pBuf->Pos >> 16;
+                        dx = (pBuf->NormalX * pBuf->ScrWidth) >> 6;
+                        dy = (pBuf->NormalY * pBuf->ScrWidth) >> 6;
+                        dxB = (pBuf->NormalX * pBuf->ScrWidthB) >> 6;
+                        dyB = (pBuf->NormalY * pBuf->ScrWidthB) >> 6;
 
-                int NewTop = ((y + dy) << 16) | ((x + dx) & 0xffff);
-                int NewBottom = ((y - dy) << 16) | ((x - dx) & 0xffff);
-                pOTPos =
-                    (unsigned int *)((unsigned char *)pDoubleBuffer->ViewportOT +
-                                     (MinZ & 0x3ffc));
-                int NewTopB = ((y + dyB) << 16) | ((x + dxB) & 0xffff);
-                int NewBottomB = ((y - dyB) << 16) | ((x - dxB) & 0xffff);
+                        int NewTop = ((y + dy) << 16) | ((x + dx) & 0xffff);
+                        int NewBottom = ((y - dy) << 16) | ((x - dx) & 0xffff);
+                        pOTPos = (unsigned int *)((unsigned char *)pDoubleBuffer->ViewportOT +
+                                                  (MinZ & 0x3ffc));
+                        int NewTopB = ((y + dyB) << 16) | ((x + dxB) & 0xffff);
+                        int NewBottomB = ((y - dyB) << 16) | ((x - dxB) & 0xffff);
 
-                if (mWibble != 0 && mNumPoints / 2 <= i)
-                {
-                    NewTop = ((y + dy +
-                               Sine(TTime * 200 + 0x82) / 0x800) << 16) |
-                             ((x + dx) & 0xffff);
+                        if (mWibble != 0 && mNumPoints / 2 <= i)
+                        {
+                            NewTop = ((y + dy + Sine(TTime * 200 + 0x82) / 0x800) << 16) |
+                                     ((x + dx) & 0xffff);
 
-                    y += (Sine(TTime * 250) * 3) / 0x1000;
-                    pBuf->Pos = (pBuf->Pos & 0xffff) | (y << 16);
+                            y += (Sine(TTime * 250) * 3) / 0x1000;
+                            pBuf->Pos = (pBuf->Pos & 0xffff) | (y << 16);
 
-                    NewBottom = ((y - dy +
-                                  Sine(TTime * 150 + 100) / 0x800) << 16) |
-                                ((x - dx) & 0xffff);
+                            NewBottom = ((y - dy + Sine(TTime * 150 + 100) / 0x800) << 16) |
+                                        ((x - dx) & 0xffff);
+                        }
+
+                        POLY_GT4 *pTopPoly = (POLY_GT4 *)pPoly;
+                        POLY_GT4 *pBottomPoly = pTopPoly + 1;
+                        POLY_GT4 *pTopPolyB = pBottomPoly + 1;
+                        POLY_GT4 *pBottomPolyB = pTopPolyB + 1;
+                        DR_TWIN *pWinOn = (DR_TWIN *)(pBottomPolyB + 1);
+                        DR_TWIN *pWinOff = pWinOn + 1;
+                        DR_TPAGE *ptpage = (DR_TPAGE *)(pWinOff + 1);
+                        unsigned char *newppoly = (unsigned char *)(ptpage + 1);
+                        if (PolyBufferEnd < newppoly) return;
+
+                        pPoly = (u32 *)newppoly;
+
+                        RECT win;
+                        win.x = win.y = win.w = win.h = 0;
+                        setlen(pWinOff, 2);
+                        pWinOff->code[0] = 0xe2000000 | (((win.y & 0xff) >> 3) << 15) |
+                                           (((win.x & 0xff) >> 3) << 10) |
+                                           (((~(win.h - 1) & 0xff) >> 3) << 5) |
+                                           ((~(win.w - 1) & 0xff) >> 3);
+                        pWinOff->code[1] = 0;
+
+                        win.x = mpTex->u0;
+                        win.y = mpTex->v0;
+                        win.h = win.w = 64;
+                        setlen(pWinOn, 2);
+                        pWinOn->code[0] = 0xe2000000 | (((win.y & 0xff) >> 3) << 15) |
+                                          (((win.x & 0xff) >> 3) << 10) |
+                                          (((~(win.h - 1) & 0xff) >> 3) << 5) |
+                                          ((~(win.w - 1) & 0xff) >> 3);
+                        pWinOn->code[1] = 0;
+                        addPrim(pOTPos, pWinOff);
+
+                        pBottomPolyB->tag = 0x0c000000;
+                        pTopPolyB->tag = 0x0c000000;
+                        pBottomPoly->tag = 0x0c000000;
+                        pTopPoly->tag = 0x0c000000;
+
+                        pTopPoly->clut = pBottomPoly->clut = pTopPolyB->clut = pBottomPolyB->clut =
+                            mpTex->clut;
+                        pTopPoly->tpage = pBottomPoly->tpage = pTopPolyB->tpage =
+                            pBottomPolyB->tpage = mpTex->tpage;
+
+                        int u;
+                        int v;
+                        unsigned int a;
+                        unsigned int b;
+                        u = mpTex->u0 + (mU & 0x3f);
+                        v = mpTex->v0 + (voff & 0x3f);
+
+                        /* Vertices 0/2 form the current edge; 1/3 form the previous edge. */
+                        pTopPolyB->u0 = u;
+                        pTopPolyB->v0 = v;
+                        pTopPolyB->u2 = u + 16;
+                        pTopPolyB->v2 = v;
+                        pTopPolyB->u1 = u;
+                        pTopPolyB->v1 = v + mDv;
+                        pTopPolyB->u3 = u + 16;
+                        pTopPolyB->v3 = v + mDv;
+
+                        pTopPoly->u0 = u + 16;
+                        pTopPoly->v0 = v;
+                        pTopPoly->u2 = u + 32;
+                        pTopPoly->v2 = v;
+                        pTopPoly->u1 = u + 16;
+                        pTopPoly->v1 = v + mDv;
+                        pTopPoly->u3 = u + 32;
+                        pTopPoly->v3 = v + mDv;
+
+                        pBottomPoly->u0 = u + 48;
+                        pBottomPoly->v0 = v;
+                        pBottomPoly->u2 = u + 32;
+                        pBottomPoly->v2 = v;
+                        pBottomPoly->u1 = u + 48;
+                        pBottomPoly->v1 = v + mDv;
+                        pBottomPoly->u3 = u + 32;
+                        pBottomPoly->v3 = v + mDv;
+
+                        pBottomPolyB->u0 = u + 64;
+                        pBottomPolyB->v0 = v;
+                        pBottomPolyB->u2 = u + 48;
+                        pBottomPolyB->v2 = v;
+                        pBottomPolyB->u1 = u + 64;
+                        pBottomPolyB->v1 = v + mDv;
+                        pBottomPolyB->u3 = u + 48;
+                        pBottomPolyB->v3 = v + mDv;
+                        voff -= mDv;
+
+                        *(u32 *)&pTopPoly->r0 = *(u32 *)&pPoint->rB;
+                        *(u32 *)&pTopPoly->r1 = *(u32 *)&pLastPoint->rB;
+                        *(u32 *)&pTopPoly->r2 = *(u32 *)&pPoint->r;
+                        *(u32 *)&pTopPoly->r3 = *(u32 *)&pLastPoint->r;
+                        *(u32 *)&pTopPoly->x0 = NewTop;
+                        *(u32 *)&pTopPoly->x1 = LastTop;
+                        *(u32 *)&pTopPoly->x2 = pBuf->Pos;
+                        *(u32 *)&pTopPoly->x3 = pLastBuf->Pos;
+
+                        *(u32 *)&pTopPolyB->r0 = 0;
+                        *(u32 *)&pTopPolyB->r1 = 0;
+                        *(u32 *)&pTopPolyB->r2 = *(u32 *)&pPoint->rB;
+                        *(u32 *)&pTopPolyB->r3 = *(u32 *)&pLastPoint->rB;
+                        *(u32 *)&pTopPolyB->x0 = NewTopB;
+                        *(u32 *)&pTopPolyB->x1 = LastTopB;
+                        *(u32 *)&pTopPolyB->x2 = NewTop;
+                        *(u32 *)&pTopPolyB->x3 = LastTop;
+
+                        *(u32 *)&pBottomPoly->r0 = *(u32 *)&pPoint->rB;
+                        *(u32 *)&pBottomPoly->r1 = *(u32 *)&pLastPoint->rB;
+                        *(u32 *)&pBottomPoly->r2 = *(u32 *)&pPoint->r;
+                        *(u32 *)&pBottomPoly->r3 = *(u32 *)&pLastPoint->r;
+                        *(u32 *)&pBottomPoly->x0 = NewBottom;
+                        *(u32 *)&pBottomPoly->x1 = LastBottom;
+                        *(u32 *)&pBottomPoly->x2 = pBuf->Pos;
+                        *(u32 *)&pBottomPoly->x3 = pLastBuf->Pos;
+
+                        *(u32 *)&pBottomPolyB->r0 = 0;
+                        *(u32 *)&pBottomPolyB->r1 = 0;
+                        *(u32 *)&pBottomPolyB->r2 = *(u32 *)&pPoint->rB;
+                        *(u32 *)&pBottomPolyB->r3 = *(u32 *)&pLastPoint->rB;
+                        *(u32 *)&pBottomPolyB->x0 = NewBottomB;
+                        *(u32 *)&pBottomPolyB->x1 = LastBottomB;
+                        *(u32 *)&pBottomPolyB->x2 = NewBottom;
+                        *(u32 *)&pBottomPolyB->x3 = LastBottom;
+
+                        pBottomPolyB->code = 0x3e;
+                        pTopPolyB->code = 0x3e;
+                        pBottomPoly->code = 0x3e;
+                        pTopPoly->code = 0x3e;
+
+                        addPrim(pOTPos, pTopPoly);
+                        addPrim(pOTPos, pTopPolyB);
+                        addPrim(pOTPos, pBottomPoly);
+                        addPrim(pOTPos, pBottomPolyB);
+
+                        LastTop = NewTop;
+                        LastBottom = NewBottom;
+                        LastTopB = NewTopB;
+                        LastBottomB = NewBottomB;
+
+                        addPrim(pOTPos, pWinOn);
+                        a = StoredTPagePrim.tag;
+                        b = StoredTPagePrim.code[0];
+                        ptpage->tag = a;
+                        ptpage->code[0] = b;
+                        addPrim(pOTPos, ptpage);
+                    }
                 }
 
-                POLY_GT4 *pTopPoly = (POLY_GT4 *)pPoly;
-                POLY_GT4 *pBottomPoly = pTopPoly + 1;
-                POLY_GT4 *pTopPolyB = pBottomPoly + 1;
-                POLY_GT4 *pBottomPolyB = pTopPolyB + 1;
-                DR_TWIN *pWinOn = (DR_TWIN *)(pBottomPolyB + 1);
-                DR_TWIN *pWinOff = pWinOn + 1;
-                DR_TPAGE *ptpage = (DR_TPAGE *)(pWinOff + 1);
-                unsigned char *newppoly = (unsigned char *)(ptpage + 1);
-                if (PolyBufferEnd < newppoly)
-                    return;
-
-                pPoly = (u32 *)newppoly;
-
-                RECT win;
-                win.x = win.y = win.w = win.h = 0;
-                setlen(pWinOff, 2);
-                pWinOff->code[0] =
-                    0xe2000000 |
-                    (((win.y & 0xff) >> 3) << 15) |
-                    (((win.x & 0xff) >> 3) << 10) |
-                    (((~(win.h - 1) & 0xff) >> 3) << 5) |
-                    ((~(win.w - 1) & 0xff) >> 3);
-                pWinOff->code[1] = 0;
-
-                win.x = mpTex->u0;
-                win.y = mpTex->v0;
-                win.h = win.w = 64;
-                setlen(pWinOn, 2);
-                pWinOn->code[0] =
-                    0xe2000000 |
-                    (((win.y & 0xff) >> 3) << 15) |
-                    (((win.x & 0xff) >> 3) << 10) |
-                    (((~(win.h - 1) & 0xff) >> 3) << 5) |
-                    ((~(win.w - 1) & 0xff) >> 3);
-                pWinOn->code[1] = 0;
-                addPrim(pOTPos, pWinOff);
-
-                pBottomPolyB->tag = 0x0c000000;
-                pTopPolyB->tag = 0x0c000000;
-                pBottomPoly->tag = 0x0c000000;
-                pTopPoly->tag = 0x0c000000;
-
-                pTopPoly->clut = pBottomPoly->clut =
-                    pTopPolyB->clut = pBottomPolyB->clut =
-                        mpTex->clut;
-                pTopPoly->tpage = pBottomPoly->tpage =
-                    pTopPolyB->tpage = pBottomPolyB->tpage =
-                        mpTex->tpage;
-
-                int u;
-                int v;
-                unsigned int a;
-                unsigned int b;
-                u = mpTex->u0 + (mU & 0x3f);
-                v = mpTex->v0 + (voff & 0x3f);
-
-                /* Vertices 0/2 form the current edge; 1/3 form the previous edge. */
-                pTopPolyB->u0 = u;
-                pTopPolyB->v0 = v;
-                pTopPolyB->u2 = u + 16;
-                pTopPolyB->v2 = v;
-                pTopPolyB->u1 = u;
-                pTopPolyB->v1 = v + mDv;
-                pTopPolyB->u3 = u + 16;
-                pTopPolyB->v3 = v + mDv;
-
-                pTopPoly->u0 = u + 16;
-                pTopPoly->v0 = v;
-                pTopPoly->u2 = u + 32;
-                pTopPoly->v2 = v;
-                pTopPoly->u1 = u + 16;
-                pTopPoly->v1 = v + mDv;
-                pTopPoly->u3 = u + 32;
-                pTopPoly->v3 = v + mDv;
-
-                pBottomPoly->u0 = u + 48;
-                pBottomPoly->v0 = v;
-                pBottomPoly->u2 = u + 32;
-                pBottomPoly->v2 = v;
-                pBottomPoly->u1 = u + 48;
-                pBottomPoly->v1 = v + mDv;
-                pBottomPoly->u3 = u + 32;
-                pBottomPoly->v3 = v + mDv;
-
-                pBottomPolyB->u0 = u + 64;
-                pBottomPolyB->v0 = v;
-                pBottomPolyB->u2 = u + 48;
-                pBottomPolyB->v2 = v;
-                pBottomPolyB->u1 = u + 64;
-                pBottomPolyB->v1 = v + mDv;
-                pBottomPolyB->u3 = u + 48;
-                pBottomPolyB->v3 = v + mDv;
-                voff -= mDv;
-
-                *(u32 *)&pTopPoly->r0 = *(u32 *)&pPoint->rB;
-                *(u32 *)&pTopPoly->r1 = *(u32 *)&pLastPoint->rB;
-                *(u32 *)&pTopPoly->r2 = *(u32 *)&pPoint->r;
-                *(u32 *)&pTopPoly->r3 = *(u32 *)&pLastPoint->r;
-                *(u32 *)&pTopPoly->x0 = NewTop;
-                *(u32 *)&pTopPoly->x1 = LastTop;
-                *(u32 *)&pTopPoly->x2 = pBuf->Pos;
-                *(u32 *)&pTopPoly->x3 = pLastBuf->Pos;
-
-                *(u32 *)&pTopPolyB->r0 = 0;
-                *(u32 *)&pTopPolyB->r1 = 0;
-                *(u32 *)&pTopPolyB->r2 = *(u32 *)&pPoint->rB;
-                *(u32 *)&pTopPolyB->r3 = *(u32 *)&pLastPoint->rB;
-                *(u32 *)&pTopPolyB->x0 = NewTopB;
-                *(u32 *)&pTopPolyB->x1 = LastTopB;
-                *(u32 *)&pTopPolyB->x2 = NewTop;
-                *(u32 *)&pTopPolyB->x3 = LastTop;
-
-                *(u32 *)&pBottomPoly->r0 = *(u32 *)&pPoint->rB;
-                *(u32 *)&pBottomPoly->r1 = *(u32 *)&pLastPoint->rB;
-                *(u32 *)&pBottomPoly->r2 = *(u32 *)&pPoint->r;
-                *(u32 *)&pBottomPoly->r3 = *(u32 *)&pLastPoint->r;
-                *(u32 *)&pBottomPoly->x0 = NewBottom;
-                *(u32 *)&pBottomPoly->x1 = LastBottom;
-                *(u32 *)&pBottomPoly->x2 = pBuf->Pos;
-                *(u32 *)&pBottomPoly->x3 = pLastBuf->Pos;
-
-                *(u32 *)&pBottomPolyB->r0 = 0;
-                *(u32 *)&pBottomPolyB->r1 = 0;
-                *(u32 *)&pBottomPolyB->r2 = *(u32 *)&pPoint->rB;
-                *(u32 *)&pBottomPolyB->r3 = *(u32 *)&pLastPoint->rB;
-                *(u32 *)&pBottomPolyB->x0 = NewBottomB;
-                *(u32 *)&pBottomPolyB->x1 = LastBottomB;
-                *(u32 *)&pBottomPolyB->x2 = NewBottom;
-                *(u32 *)&pBottomPolyB->x3 = LastBottom;
-
-                pBottomPolyB->code = 0x3e;
-                pTopPolyB->code = 0x3e;
-                pBottomPoly->code = 0x3e;
-                pTopPoly->code = 0x3e;
-
-                addPrim(pOTPos, pTopPoly);
-                addPrim(pOTPos, pTopPolyB);
-                addPrim(pOTPos, pBottomPoly);
-                addPrim(pOTPos, pBottomPolyB);
-
-                LastTop = NewTop;
-                LastBottom = NewBottom;
-                LastTopB = NewTopB;
-                LastBottomB = NewBottomB;
-
-                addPrim(pOTPos, pWinOn);
-                a = StoredTPagePrim.tag;
-                b = StoredTPagePrim.code[0];
-                ptpage->tag = a;
-                ptpage->code[0] = b;
-                addPrim(pOTPos, ptpage);
-                }
+                pLastBuf++;
+                pBuf++;
+                pLastPoint++;
+                pPoint++;
+                i++;
             }
-
-            pLastBuf++;
-            pBuf++;
-            pLastPoint++;
-            pPoint++;
-            i++;
-            }
-}
-}
+        }
+    }
 }
 
 /** Default movement hook for a transient bit. */

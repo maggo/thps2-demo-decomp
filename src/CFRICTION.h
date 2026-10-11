@@ -2,7 +2,8 @@
 #define CFRICTION_INC_H
 
 /** Three component-specific binary friction shifts. */
-struct CFriction {
+struct CFriction
+{
     unsigned char vx;
     unsigned char vy;
     unsigned char vz;
@@ -12,8 +13,7 @@ struct CFriction {
     CFriction() {}
 
     /** Construct three component-specific friction shifts. */
-    CFriction(unsigned char x, unsigned char y, unsigned char z)
-        : vx(x), vy(y), vz(z) {}
+    CFriction(unsigned char x, unsigned char y, unsigned char z) : vx(x), vy(y), vz(z) {}
 
     /** Assign all three component-specific friction shifts. */
     void Set(unsigned char x, unsigned char y, unsigned char z)

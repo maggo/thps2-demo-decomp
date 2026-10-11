@@ -25,7 +25,8 @@ unsigned char InShell __attribute__((section(".sdata"))) = 0;
  *
  * @param n Value to mix into the state.
  */
-void frug(unsigned int n) {
+void frug(unsigned int n)
+{
     CheatCheck = (((CheatCheck ^ n) << 1) ^ ((CheatCheck ^ n) >> 31)) * 521;
     CheatCheck += arccos(CheatCheck);
 }
@@ -37,36 +38,45 @@ void frug(unsigned int n) {
  *
  * @return Zero after processing the current controller state.
  */
-int Shell_DoCheatProcessing(void) {
-    if (Pad[0].Up.Triggered != 0) {
+int Shell_DoCheatProcessing(void)
+{
+    if (Pad[0].Up.Triggered != 0)
+    {
         frug(0x01234567U);
         return 0;
     }
-    if (Pad[0].Right.Triggered != 0) {
+    if (Pad[0].Right.Triggered != 0)
+    {
         frug(0xab432901U);
         return 0;
     }
-    if (Pad[0].Down.Triggered != 0) {
+    if (Pad[0].Down.Triggered != 0)
+    {
         frug(0x776643d1U);
         return 0;
     }
-    if (Pad[0].Left.Triggered != 0) {
+    if (Pad[0].Left.Triggered != 0)
+    {
         frug(0x93fe1682U);
         return 0;
     }
-    if (Pad[0].Triangle.Triggered != 0) {
+    if (Pad[0].Triangle.Triggered != 0)
+    {
         frug(0x31415926U);
         return 0;
     }
-    if (Pad[0].Circle.Triggered != 0) {
+    if (Pad[0].Circle.Triggered != 0)
+    {
         frug(0xdeadbeefU);
         return 0;
     }
-    if (Pad[0].X.Triggered != 0) {
+    if (Pad[0].X.Triggered != 0)
+    {
         frug(0xb87610dbU);
         return 0;
     }
-    if (Pad[0].Square.Triggered != 0) {
+    if (Pad[0].Square.Triggered != 0)
+    {
         frug(0x03185332U);
         return 0;
     }
@@ -77,5 +87,6 @@ int Shell_DoCheatProcessing(void) {
 /**
  * Placeholder for the shell pause-screen hook.
  */
-void Shell_PauseScreen(void) {
+void Shell_PauseScreen(void)
+{
 }

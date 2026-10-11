@@ -15,13 +15,13 @@
 #include <STDIO.H>
 
 /** Status bytes followed by the disc position returned by CD control calls. */
-struct Redbook_CdResponse {
+struct Redbook_CdResponse
+{
     unsigned char status[5];
     CdlLOC position;
 };
 
-typedef char Redbook_CdResponse_size_must_be_9[
-    sizeof(Redbook_CdResponse) == 9 ? 1 : -1];
+typedef char Redbook_CdResponse_size_must_be_9[sizeof(Redbook_CdResponse) == 9 ? 1 : -1];
 
 #define SPOOLQUEUE_CONSUMER_DECLARATION
 #include "SPOOLQUEUE.h"
@@ -29,16 +29,22 @@ typedef char Redbook_CdResponse_size_must_be_9[
 /** Locate the CdlLOC payload embedded in a CD command response. */
 static inline CdlLOC *Redbook_ResponsePosition(unsigned char *result)
 {
-    Redbook_CdResponse *response =
-        reinterpret_cast<Redbook_CdResponse *>(result);
+    Redbook_CdResponse *response = reinterpret_cast<Redbook_CdResponse *>(result);
     return &response->position;
 }
 
 // === External declarations (C linkage) ===
 // $gp-relative globals (≤8 bytes, accessible via $gp+offset with -G8)
-int XAGroupSectorLengths[1][8] __attribute__((section(".data"))) = {{
-    2251, 2250, -1, -1, -1, -1, -1, -1,
-}};
+int XAGroupSectorLengths[1][8] __attribute__((section(".data"))) = { {
+    2251,
+    2250,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+} };
 
 /*
  * Original REDBOOK.CPP small-data contribution, in target address order.  These
@@ -50,7 +56,7 @@ int XAGroupSectorLengths[1][8] __attribute__((section(".data"))) = {{
  */
 // Not `const`: GCC 2.x discards an unreferenced const array outright, and this
 // word is the first of the owner's small-data contribution.
-int XAGroupStartingSector[1] __attribute__((section(".sdata"))) = {0};
+int XAGroupStartingSector[1] __attribute__((section(".sdata"))) = { 0 };
 int Redbook_XACurrentPriority __attribute__((section(".sdata"))) = -1;
 int Redbook_XAStartSector __attribute__((section(".sdata"))) = 0;
 int Redbook_XACompleteTimer __attribute__((section(".sdata"))) = 0;
@@ -66,15 +72,13 @@ int Redbook_XAFadeScale __attribute__((section(".sdata"))) = 255;
 int Redbook_XAFading __attribute__((section(".sdata"))) = 0;
 
 /** XA disc path and the CD error diagnostic in original small-data order. */
-static char XA_FileName[16]
-    __attribute__((section(".sdata"))) = "\\COMPILED.XA;1";
-static char XA_ErrorMsg[16]
-    __attribute__((section(".sdata"))) = "CdlDiskError!\n";
+static char XA_FileName[16] __attribute__((section(".sdata"))) = "\\COMPILED.XA;1";
+static char XA_ErrorMsg[16] __attribute__((section(".sdata"))) = "CdlDiskError!\n";
 
 /* Small-data words that follow the two strings in the original contribution. */
 int Redbook_XAEndSector __attribute__((section(".sdata"))) = 0;
 int Redbook_XACurrentSector __attribute__((section(".sdata"))) = 0;
-u8 CdControlComeback[8] __attribute__((section(".sdata"))) = {0};
+u8 CdControlComeback[8] __attribute__((section(".sdata"))) = { 0 };
 
 static void Redbook_InitialRand(int a);
 static int Redbook_Rnd(int n);
@@ -94,7 +98,8 @@ static int RandB;
  *
  * @param a  Initial generator state.
  */
-static void Redbook_InitialRand(int a) {
+static void Redbook_InitialRand(int a)
+{
     RandSeed = a;
     RandA = 0x12B9B0A1;
     RandB = 0x0AA2FB3F;
@@ -109,11 +114,10 @@ static void Redbook_InitialRand(int a) {
  * @param n  Exclusive upper bound.
  * @return A pseudo-random value scaled by n.
  */
-static int Redbook_Rnd(int n) {
-    RandSeed = RandSeed * RandA +
-        RandB;
-    RandA = (RandA ^ RandSeed) +
-        (RandSeed >> 4);
+static int Redbook_Rnd(int n)
+{
+    RandSeed = RandSeed * RandA + RandB;
+    RandA = (RandA ^ RandSeed) + (RandSeed >> 4);
     int addend = RandB + 0xEFEFEFF0;
     RandB = addend + (RandSeed >> 3);
     return ((RandSeed & 0xFFFF) * n) >> 16;
@@ -125,11 +129,13 @@ static int Redbook_Rnd(int n) {
  *
  * Address: 0x80032910
  */
-void Redbook_SetXAMode(void) {
+void Redbook_SetXAMode(void)
+{
     u8 mode;
     mode = 0xC8;
     CdControl(0x0E, &mode, CdControlComeback);
-    if (CdControlComeback[0]) {
+    if (CdControlComeback[0])
+    {
         Redbook_XAModeSet = 1;
     }
 }
@@ -142,7 +148,8 @@ void Redbook_SetXAMode(void) {
  *
  * @param allow  Requested playback permission; unused by this build.
  */
-void Redbook_XAAllow(bool allow) {
+void Redbook_XAAllow(bool allow)
+{
 }
 
 
@@ -151,27 +158,33 @@ void Redbook_XAAllow(bool allow) {
  *
  * Address: 0x8003295C
  */
-void Redbook_XAUpdateVolume(void) {
+void Redbook_XAUpdateVolume(void)
+{
     int vl;
     int vr;
     CdlATV atv;
 
-    if (Redbook_XAFading) {
+    if (Redbook_XAFading)
+    {
         Redbook_XAFadeScale -= 3;
-        if (Redbook_XAFadeScale < 0) {
+        if (Redbook_XAFadeScale < 0)
+        {
             Redbook_XAFadeScale = 0;
         }
     }
 
-    if (Redbook_XAFading) {
+    if (Redbook_XAFading)
+    {
         Redbook_XAFadeScale = 0;
     }
 
     vl = vr = XALEVEL * Redbook_XAFadeScale / 255;
-    if (vl > 255) {
+    if (vl > 255)
+    {
         vl = 255;
     }
-    if (vr > 255) {
+    if (vr > 255)
+    {
         vr = 255;
     }
 
@@ -189,15 +202,19 @@ void Redbook_XAUpdateVolume(void) {
  *
  * Address: 0x80032A5C
  */
-void Redbook_XAInit(void) {
+void Redbook_XAInit(void)
+{
     CdlFILE p_xa_file;
 
     Redbook_InitialRand(0x75DE7);
     CdlFILE *found = CdSearchFile(&p_xa_file, XA_FileName);
-    if (found) {
+    if (found)
+    {
         Redbook_XAStartSector = CdPosToInt(&p_xa_file.pos);
         Redbook_XAValid = 1;
-    } else {
+    }
+    else
+    {
         Redbook_XAValid = 0;
     }
     Redbook_XACompleteTimer = 30;
@@ -218,10 +235,12 @@ void Redbook_XAInit(void) {
  *
  * Address: 0x80032AE4
  */
-bool Redbook_XAPlayRandom(void) {
+bool Redbook_XAPlayRandom(void)
+{
     int group;
     int channel;
-    do {
+    do
+    {
         int track = Redbook_Rnd(8);
         channel = track / 8;
         group = channel;
@@ -238,20 +257,23 @@ bool Redbook_XAPlayRandom(void) {
  *
  * @return 1 after read-ahead begins, otherwise 0 while seeking continues.
  */
-int Redbook_XASeek(void) {
+int Redbook_XASeek(void)
+{
     CdlLOC pos;
     CdIntToPos(Redbook_XACurrentSector, &pos);
     CdControl(0x11, 0, CdControlComeback);
-    int diff = CdPosToInt(Redbook_ResponsePosition(CdControlComeback)) -
-        Redbook_XACurrentSector;
-    if (diff < 0) {
+    int diff = CdPosToInt(Redbook_ResponsePosition(CdControlComeback)) - Redbook_XACurrentSector;
+    if (diff < 0)
+    {
         diff = -diff;
     }
-    if (diff >= 17) {
+    if (diff >= 17)
+    {
         return 0;
     }
     CdControl(0x1B, reinterpret_cast<u_char *>(&pos), CdControlComeback);
-    if (!CdControlComeback[0]) {
+    if (!CdControlComeback[0])
+    {
         return 0;
     }
     CdControlF(0x0C, 0);
@@ -270,11 +292,13 @@ int Redbook_XASeek(void) {
  * @param channel  Channel within the group.
  * @return true once playback has started seeking; false when it must retry.
  */
-bool Redbook_XAPlay(int group, int channel) {
+bool Redbook_XAPlay(int group, int channel)
+{
     CdlFILTER filter;
     CdlLOC pos;
 
-    if (!Redbook_XAValid) {
+    if (!Redbook_XAValid)
+    {
         return false;
     }
     Redbook_XAFadeScale = 255;
@@ -284,27 +308,32 @@ bool Redbook_XAPlay(int group, int channel) {
     Redbook_XACurrentChannel = channel;
     Redbook_XACurrentSector = Redbook_XAStartSector + XAGroupStartingSector[group] * 8;
     Redbook_XARemember(&Paused_SongPos);
-    Redbook_XAEndSector = Redbook_XACurrentSector +
-        XAGroupSectorLengths[group][channel] * 8 - 131;
+    Redbook_XAEndSector = Redbook_XACurrentSector + XAGroupSectorLengths[group][channel] * 8 - 131;
 
-    if (Loading != 0) {
+    if (Loading != 0)
+    {
         goto try_again;
     }
 
-    if (SpoolQ[SpoolPos].Occupied != 0) {
+    if (SpoolQ[SpoolPos].Occupied != 0)
+    {
         goto try_again;
     }
 
-    if (SpoolerBlocksFileIO != 0) {
+    if (SpoolerBlocksFileIO != 0)
+    {
         goto try_again;
     }
-    if (GameFMV_Active != 0) {
+    if (GameFMV_Active != 0)
+    {
         goto try_again;
     }
 
-    if (!Redbook_XAModeSet) {
+    if (!Redbook_XAModeSet)
+    {
         Redbook_SetXAMode();
-        if (!Redbook_XAModeSet) {
+        if (!Redbook_XAModeSet)
+        {
             goto try_again;
         }
     }
@@ -313,12 +342,14 @@ bool Redbook_XAPlay(int group, int channel) {
         filter.file = 1;
         filter.chan = channel;
         CdControl(0x0d, reinterpret_cast<u8 *>(&filter), CdControlComeback);
-        if (!CdControlComeback[0]) {
+        if (!CdControlComeback[0])
+        {
             goto try_again;
         }
         CdIntToPos(Redbook_XACurrentSector, &pos);
         CdControlF(0x16, reinterpret_cast<u_char *>(&pos));
-        if (!CdControlComeback[0]) {
+        if (!CdControlComeback[0])
+        {
             goto try_again;
         }
         Redbook_XAUpdateVolume();
@@ -339,7 +370,8 @@ try_again:
  *
  * Address: 0x80032DB8
  */
-void Redbook_XAStop(void) {
+void Redbook_XAStop(void)
+{
     Redbook_XACheckSectorOnVSync = 0;
     Redbook_XACompleteTimer = 30;
     Redbook_XACurrentPriority = -1;
@@ -352,17 +384,21 @@ void Redbook_XAStop(void) {
  *
  * Address: 0x80032DF4
  */
-void Redbook_XANextTrack(void) {
+void Redbook_XANextTrack(void)
+{
     Redbook_XAStop();
     int group = Redbook_XACurrentGroup;
     int channel = Redbook_XACurrentChannel;
-    do {
+    do
+    {
         channel = channel + 1;
-        if (channel >= 8) {
+        if (channel >= 8)
+        {
             group = group + 1;
             channel = 0;
         }
-        if (group > 0) {
+        if (group > 0)
+        {
             group = 0;
         }
     } while (XAGroupSectorLengths[group][channel] == -1);
@@ -377,20 +413,25 @@ void Redbook_XANextTrack(void) {
  *
  * @param pauseIt  True to pause; false to resume.
  */
-void Redbook_XAPause(bool pauseIt) {
-    if (pauseIt == Redbook_XAPaused) {
+void Redbook_XAPause(bool pauseIt)
+{
+    if (pauseIt == Redbook_XAPaused)
+    {
         return;
     }
-    if (pauseIt) {
+    if (pauseIt)
+    {
         CdControlF(0x0B, 0);
         CdControlB(0x09, 0, 0);
         CdControl(0x11, 0, CdControlComeback);
-        Redbook_XACurrentSector =
-            CdPosToInt(Redbook_ResponsePosition(CdControlComeback));
-    } else {
+        Redbook_XACurrentSector = CdPosToInt(Redbook_ResponsePosition(CdControlComeback));
+    }
+    else
+    {
         CdlLOC pos;
         CdIntToPos(Redbook_XACurrentSector, &pos);
-        do {
+        do
+        {
         } while (CdControl(0x02, reinterpret_cast<u_char *>(&pos), 0) == 0);
         CdControl(0x1B, reinterpret_cast<u_char *>(&pos), CdControlComeback);
         CdControlF(0x0C, 0);
@@ -404,25 +445,30 @@ void Redbook_XAPause(bool pauseIt) {
  *
  * Address: 0x80032F2C
  */
-void Redbook_XAUpdate(void) {
+void Redbook_XAUpdate(void)
+{
     if (!Redbook_XAValid) return;
     if (Redbook_XAPaused) return;
 
-    if (Redbook_XAFading) {
+    if (Redbook_XAFading)
+    {
         Redbook_XAUpdateVolume();
     }
 
-    if (Redbook_XACompleteTimer) {
+    if (Redbook_XACompleteTimer)
+    {
         Redbook_XACompleteTimer = Redbook_XACompleteTimer - 1;
         return;
     }
 
-    if (Redbook_XATryAgain) {
+    if (Redbook_XATryAgain)
+    {
         Redbook_XAPlay(Redbook_XACurrentGroup, Redbook_XACurrentChannel);
         return;
     }
 
-    if (Redbook_XASeeking) {
+    if (Redbook_XASeeking)
+    {
         Redbook_XASeek();
         return;
     }
@@ -430,7 +476,8 @@ void Redbook_XAUpdate(void) {
     if (!Redbook_XACheckSectorOnVSync) return;
 
     int ret = CdSync(1, CdControlComeback);
-    if (ret == 5) {
+    if (ret == 5)
+    {
         Redbook_XACheckSectorOnVSync = 0;
         printf(XA_ErrorMsg);
         Redbook_XANextTrack();
@@ -438,25 +485,29 @@ void Redbook_XAUpdate(void) {
     }
     if (ret != 2) return;
 
-    if (Redbook_XACurrentSector >= Redbook_XAEndSector) {
+    if (Redbook_XACurrentSector >= Redbook_XAEndSector)
+    {
         Redbook_XANextTrack();
         return;
     }
 
     int lastCmd = CdLastCom();
-    if (lastCmd != 0x11) {
+    if (lastCmd != 0x11)
+    {
         CdControlF(0x11, 0);
         return;
     }
 
     ret = CdPosToInt(Redbook_ResponsePosition(CdControlComeback));
-    if (ret <= 0) {
+    if (ret <= 0)
+    {
         CdControlF(0x11, 0);
         return;
     }
 
     CdControl(0x01, 0, CdControlComeback);
-    if ((CdControlComeback[0] & 0x40) == 0) {
+    if ((CdControlComeback[0] & 0x40) == 0)
+    {
         Redbook_XACurrentSector = ret;
     }
     Redbook_XACompleteTimer = 4;
@@ -470,7 +521,8 @@ void Redbook_XAUpdate(void) {
  *
  * Address: 0x800330B8
  */
-void Redbook_XABeginFade(void) {
+void Redbook_XABeginFade(void)
+{
     Redbook_XAFadeScale = 255;
     Redbook_XAFading = 1;
 }
@@ -483,7 +535,8 @@ void Redbook_XABeginFade(void) {
  *
  * @param pSongPos  SongPos to operate on.
  */
-void Redbook_XARemember(SONG_POS *pSongPos) {
+void Redbook_XARemember(SONG_POS *pSongPos)
+{
     // Keep all three source loads ahead of the destination stores.
     int group = Redbook_XACurrentGroup;
     int channel = Redbook_XACurrentChannel;
@@ -501,11 +554,14 @@ void Redbook_XARemember(SONG_POS *pSongPos) {
  *
  * @param pSongPos  SongPos to operate on.
  */
-void Redbook_XARestore(SONG_POS *pSongPos) {
-    if (pSongPos->group == Redbook_XACurrentGroup &&
-        pSongPos->channel == Redbook_XACurrentChannel) {
+void Redbook_XARestore(SONG_POS *pSongPos)
+{
+    if (pSongPos->group == Redbook_XACurrentGroup && pSongPos->channel == Redbook_XACurrentChannel)
+    {
         Redbook_XACurrentSector = pSongPos->sector;
-    } else {
+    }
+    else
+    {
         Redbook_XAStop();
         Redbook_XAPlay(pSongPos->group, pSongPos->channel);
     }

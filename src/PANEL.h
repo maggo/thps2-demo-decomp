@@ -5,8 +5,8 @@ struct CBruce;
 struct SAnimFrame;
 
 /** Draw the vertical balance meter used by the gameplay display. */
-void Panel_BalanceUD(int balance, int max, int length, int x, int y,
-                     int lineColor, int markerColor);
+void Panel_BalanceUD(int balance, int max, int length, int x, int y, int lineColor,
+                     int markerColor);
 
 /** Add one primitive to the active panel ordering table. */
 void Panel_addPrim(void *primitive);
@@ -57,26 +57,23 @@ void Panel_GoalCounter(int count);
 POLY_FT4 *Panel_DrawTexturedPoly(SAnimFrame *frame);
 
 /** Stretch one textured panel primitive to the requested screen position. */
-void Panel_SetStretchedScreenCoords(
-    int x, int y, POLY_FT4 *poly, SAnimFrame *frame);
+void Panel_SetStretchedScreenCoords(int x, int y, POLY_FT4 *poly, SAnimFrame *frame);
 
 /** Build one flat-shaded panel rectangle. */
-POLY_F4 *Panel_DrawFlatShadedPoly(
-    int x, int y, int width, int height,
-    unsigned char red, unsigned char green, unsigned char blue, int sort);
+POLY_F4 *Panel_DrawFlatShadedPoly(int x, int y, int width, int height, unsigned char red,
+                                  unsigned char green, unsigned char blue, int sort);
 
 #endif // PANEL_PRIMITIVE_API && !THPS2_PANEL_PRIMITIVE_API_EMITTED
 
 #ifdef PANEL_DECLARE_DATA_CONSTRUCTOR_ABI
-#if !defined(PANEL_DATA_CONSTRUCTOR_RECEIVER) || \
-    !defined(PANEL_DATA_CONSTRUCTOR_PLAYER)
+#if !defined(PANEL_DATA_CONSTRUCTOR_RECEIVER) || !defined(PANEL_DATA_CONSTRUCTOR_PLAYER)
 #error "Select the panel constructor receiver and player view"
 #endif
 
 /** Construct one panel-data object through its target ABI entry. */
-extern "C" PANEL_DATA_CONSTRUCTOR_RECEIVER *__10CPanelDataP6CBruce(
-    PANEL_DATA_CONSTRUCTOR_RECEIVER *panel,
-    PANEL_DATA_CONSTRUCTOR_PLAYER *player);
+extern "C" PANEL_DATA_CONSTRUCTOR_RECEIVER *
+__10CPanelDataP6CBruce(PANEL_DATA_CONSTRUCTOR_RECEIVER *panel,
+                       PANEL_DATA_CONSTRUCTOR_PLAYER *player);
 
 #undef PANEL_DATA_CONSTRUCTOR_PLAYER
 #undef PANEL_DATA_CONSTRUCTOR_RECEIVER

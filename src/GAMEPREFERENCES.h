@@ -4,7 +4,8 @@
 #include "SOPTIONS.h"
 
 /** Runtime wrapper for the player's persistent option settings. */
-struct GamePreferences {
+struct GamePreferences
+{
     struct SOptions Options;
 };
 

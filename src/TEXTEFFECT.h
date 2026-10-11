@@ -3,7 +3,8 @@
 
 #ifdef TEXTEFFECT_POLYMORPHIC_LAYOUT
 /** Polymorphic base of every font text effect (TEXTEFFECTS.cpp owner view). */
-struct TextEffect : CClass {
+struct TextEffect : CClass
+{
     int mEnabled;
 
     TextEffect();
@@ -17,8 +18,7 @@ struct TextEffect : CClass {
     /** Apply the effect's screen-position adjustment. */
     virtual void getScreenPos(int *pX, int *pY);
     /** Apply the effect's color adjustment. */
-    virtual void getColor(unsigned char *pR, unsigned char *pG,
-                          unsigned char *pB);
+    virtual void getColor(unsigned char *pR, unsigned char *pG, unsigned char *pB);
     virtual int handleComplete() = 0;
     /** Run the effect after drawing one character. */
     virtual void PostEffect(int oldX, int oldY, int screenX, int screenY);
@@ -27,7 +27,8 @@ struct TextEffect : CClass {
 };
 #else
 /** Base state and non-pure operations shared by all font text effects. */
-struct TextEffect {
+struct TextEffect
+{
 #ifdef CCLASS_POLY_H
     CClassData CClass;
 #else
@@ -45,8 +46,7 @@ struct TextEffect {
     void getScreenPos(int *pX, int *pY);
 
     /** Apply the effect's color adjustment. */
-    void getColor(unsigned char *pR, unsigned char *pG,
-                  unsigned char *pB);
+    void getColor(unsigned char *pR, unsigned char *pG, unsigned char *pB);
 
     /** Run the effect after drawing one character. */
     void PostEffect(int oldX, int oldY, int screenX, int screenY);

@@ -21,14 +21,16 @@
 #include "M3DCOLIJ.h"
 #undef M3DCOLIJ_LINE_INFO_LAYOUT
 
-struct UtilsBodyVTable {
+struct UtilsBodyVTable
+{
     void *reserved[2];
     void (*Destroy)(CBody *body, int reason);
     void (*Die)(CBody *body);
 };
 
 /** Complete CBody storage with the CItem fields used by this owner named. */
-struct CBody {
+struct CBody
+{
     unsigned short mFlags;
     unsigned short mInquiry;
     CVector mPos;
@@ -42,14 +44,13 @@ struct CBody {
     int IsDead() const;
 };
 
-typedef char utils_body_size_must_be_264[
-    (sizeof(CBody) == 264) ? 1 : -1
-];
+typedef char utils_body_size_must_be_264[(sizeof(CBody) == 264) ? 1 : -1];
 
 #include "CFRICTION.h"
 
 /** Base particle fields used to find non-rendered light objects. */
-struct CBit {
+struct CBit
+{
     CBit *mPrevious;
     CBit *mNext;
     short mAge;
@@ -74,21 +75,11 @@ struct CBit {
 
 #include "SCAMERA.h"
 
-typedef char utils_bit_size_must_be_72[
-    (sizeof(CBit) == 72) ? 1 : -1
-];
-typedef char utils_light_size_must_be_100[
-    (sizeof(CLight) == 100) ? 1 : -1
-];
-typedef char utils_matrix_size_must_be_32[
-    (sizeof(MATRIX) == 32) ? 1 : -1
-];
-typedef char utils_sdk_vector_size_must_be_16[
-    (sizeof(VECTOR) == 16) ? 1 : -1
-];
-typedef char utils_sdk_svector_size_must_be_8[
-    (sizeof(SVECTOR) == 8) ? 1 : -1
-];
+typedef char utils_bit_size_must_be_72[(sizeof(CBit) == 72) ? 1 : -1];
+typedef char utils_light_size_must_be_100[(sizeof(CLight) == 100) ? 1 : -1];
+typedef char utils_matrix_size_must_be_32[(sizeof(MATRIX) == 32) ? 1 : -1];
+typedef char utils_sdk_vector_size_must_be_16[(sizeof(VECTOR) == 16) ? 1 : -1];
+typedef char utils_sdk_svector_size_must_be_8[(sizeof(SVECTOR) == 8) ? 1 : -1];
 #include "OB.h"
 #include "POWERUP.h"
 #include "DB.h"
@@ -305,11 +296,9 @@ void Utils_RotateY(CVector &ans, const CVector &in, int a)
     // One shared table base is load-bearing; the typed helper form changes
     // three instructions, while direct array spelling changes thirty-three.
     SSinCos *table = Utils_TrigEntries();
-    ans.vx = ((in.vx >> 3) * table[a].Cos +
-              (in.vz >> 3) * table[a].Sin) >> 9;
+    ans.vx = ((in.vx >> 3) * table[a].Cos + (in.vz >> 3) * table[a].Sin) >> 9;
     ans.vy = in.vy;
-    ans.vz = ((in.vz >> 3) * table[a].Cos -
-              (in.vx >> 3) * table[a].Sin) >> 9;
+    ans.vz = ((in.vz >> 3) * table[a].Cos - (in.vx >> 3) * table[a].Sin) >> 9;
 }
 
 /**
@@ -377,8 +366,7 @@ unsigned int Utils_Dist(const CVector &a, const CVector &b)
     u.vx = (a.vx - b.vx) >> 12;
     u.vy = (a.vy - b.vy) >> 12;
     u.vz = (a.vz - b.vz) >> 12;
-    return M3dMaths_SquareRoot0(
-        u.vx * u.vx + u.vy * u.vy + u.vz * u.vz);
+    return M3dMaths_SquareRoot0(u.vx * u.vx + u.vy * u.vy + u.vz * u.vz);
 }
 
 /**
@@ -408,12 +396,9 @@ unsigned int Utils_CrapDist(const CVector &a, const CVector &b)
     u.vx = a.vx - b.vx;
     u.vy = a.vy - b.vy;
     u.vz = a.vz - b.vz;
-    if (u.vx < 0)
-        u.vx = -u.vx;
-    if (u.vy < 0)
-        u.vy = -u.vy;
-    if (u.vz < 0)
-        u.vz = -u.vz;
+    if (u.vx < 0) u.vx = -u.vx;
+    if (u.vy < 0) u.vy = -u.vy;
+    if (u.vz < 0) u.vz = -u.vz;
     if (u.vx < u.vy)
     {
         if (u.vy < u.vz)
@@ -508,8 +493,8 @@ int Utils_CalcAim(CSVector &Dir, const CVector &From, const CVector &To)
  * @param Ideal Desired orientation.
  * @param accfactor Acceleration scale.
  */
-void Utils_TurnTowards(CSVector Current, CSVector &AngVel, CSVector &AngAcc,
-                       CSVector Ideal, int accfactor)
+void Utils_TurnTowards(CSVector Current, CSVector &AngVel, CSVector &AngAcc, CSVector Ideal,
+                       int accfactor)
 {
     CSVector angdiff;
     angdiff.vx = Ideal.vx - Current.vx;
@@ -563,30 +548,24 @@ int Utils_CompareStrings(const char *pA, const char *pB, unsigned int MaxLen)
     unsigned int lettera, letterb;
     if (pA == 0)
     {
-        if (pB != 0)
-            goto return_zero;
+        if (pB != 0) goto return_zero;
         return 1;
     }
-    if (pB != 0)
-        goto start;
+    if (pB != 0) goto start;
 return_zero:
     return 0;
 
     do
     {
-        if (MaxLen == 0)
-            goto done;
+        if (MaxLen == 0) goto done;
     start:
         lettera = static_cast<unsigned char>(*pA);
         pA++;
         letterb = static_cast<unsigned char>(*pB);
         pB++;
-        if (static_cast<unsigned int>(lettera - 0x41) < 0x1A)
-            lettera = (lettera + 0x20) & 0xFF;
-        if (static_cast<unsigned int>(letterb - 0x41) < 0x1A)
-            letterb = (letterb + 0x20) & 0xFF;
-        if (lettera != letterb)
-            goto done;
+        if (static_cast<unsigned int>(lettera - 0x41) < 0x1A) lettera = (lettera + 0x20) & 0xFF;
+        if (static_cast<unsigned int>(letterb - 0x41) < 0x1A) letterb = (letterb + 0x20) & 0xFF;
+        if (lettera != letterb) goto done;
         MaxLen--;
     } while (lettera != 0);
 done:
@@ -647,8 +626,7 @@ int Utils_ArcCos(int a)
             t -= d;
         }
         d >>= 1;
-        if (d == 0)
-            break;
+        if (d == 0) break;
     }
 
     if (flag)
@@ -746,8 +724,7 @@ int Utils_KillObjectsInBox(const CVector &min, const CVector &max, CBody *p_list
         if (!p_list->IsDead())
         {
             CVector pos = p_list->mPos;
-            if (pos.vx >= min.vx && pos.vx <= max.vx &&
-                pos.vz >= min.vz && pos.vz <= max.vz &&
+            if (pos.vx >= min.vx && pos.vx <= max.vx && pos.vz >= min.vz && pos.vz <= max.vz &&
                 pos.vy >= min.vy && pos.vy <= max.vy)
             {
                 if (use_die)
@@ -779,15 +756,10 @@ int Utils_KillObjectsInBox(const CVector &min, const CVector &max, CBody *p_list
 int Utils_KillEverythingInBox(const CVector &min, const CVector &max)
 {
     int killed;
-    killed = Utils_KillObjectsInBox(min, max,
-                                    BaddyList, true) +
-             Utils_KillObjectsInBox(
-                 min, max,
-                 EnvironmentalObjectList, true);
-    killed += Utils_KillObjectsInBox(
-        min, max, PowerUpList, true);
-    killed += Utils_KillObjectsInBox(
-        min, max, SuspendedList, false);
+    killed = Utils_KillObjectsInBox(min, max, BaddyList, true) +
+             Utils_KillObjectsInBox(min, max, EnvironmentalObjectList, true);
+    killed += Utils_KillObjectsInBox(min, max, PowerUpList, true);
+    killed += Utils_KillObjectsInBox(min, max, SuspendedList, false);
     return killed;
 }
 
@@ -847,8 +819,7 @@ void Utils_SetVisibilityInBox(const CVector &min, const CVector &max, bool visib
 
             if (in)
             {
-                if (posvx >= minvx && posvx <= maxvx &&
-                    posvz >= minvz && posvz <= maxvz &&
+                if (posvx >= minvx && posvx <= maxvx && posvz >= minvz && posvz <= maxvz &&
                     posvy >= minvy && posvy <= maxvy)
                 {
                     p_item->Flags = (p_item->Flags & ClearFlags) | SetFlags;
@@ -856,8 +827,7 @@ void Utils_SetVisibilityInBox(const CVector &min, const CVector &max, bool visib
             }
             else
             {
-                if ((posvx < minvx || posvx > maxvx) &&
-                    (posvz < minvz || posvz > maxvz) &&
+                if ((posvx < minvx || posvx > maxvx) && (posvz < minvz || posvz > maxvz) &&
                     (posvy < minvy || posvy > maxvy))
                 {
                     p_item->Flags = (p_item->Flags & ClearFlags) | SetFlags;
@@ -872,9 +842,8 @@ void Utils_SetVisibilityInBox(const CVector &min, const CVector &max, bool visib
     {
         if (in)
         {
-            if (pUp->mPos.vx >= minvx && pUp->mPos.vx <= maxvx &&
-                pUp->mPos.vz >= minvz && pUp->mPos.vz <= maxvz &&
-                pUp->mPos.vy >= minvy && pUp->mPos.vy <= maxvy)
+            if (pUp->mPos.vx >= minvx && pUp->mPos.vx <= maxvx && pUp->mPos.vz >= minvz &&
+                pUp->mPos.vz <= maxvz && pUp->mPos.vy >= minvy && pUp->mPos.vy <= maxvy)
             {
                 pUp->mFlags = (pUp->mFlags & ClearFlags) | SetFlags;
             }
@@ -946,9 +915,8 @@ void Utils_SetVisibilityInBox(const CVector &min, const CVector &max, bool visib
         {
             if (in)
             {
-                if (pBit->mPos.vx >= minvx && pBit->mPos.vx <= maxvx &&
-                    pBit->mPos.vz >= minvz && pBit->mPos.vz <= maxvz &&
-                    pBit->mPos.vy >= minvy && pBit->mPos.vy <= maxvy)
+                if (pBit->mPos.vx >= minvx && pBit->mPos.vx <= maxvx && pBit->mPos.vz >= minvz &&
+                    pBit->mPos.vz <= maxvz && pBit->mPos.vy >= minvy && pBit->mPos.vy <= maxvy)
                 {
                     if (visible)
                     {
@@ -1000,10 +968,8 @@ unsigned int Utils_CalculateSpatialAttenuation(const CVector &pos, int near, int
     camera_position->vz = MikeCamera[Camera_CurrentMikeCamera].Position.vz << 12;
 
     int d = Utils_CrapDist(pos, *camera_position);
-    if (d <= near)
-        return 0x0fff0fff;
-    if (d >= far)
-        return 0;
+    if (d <= near) return 0x0fff0fff;
+    if (d >= far) return 0;
 
     int vol = ((far - d) * 0x0fff) / far;
 
@@ -1019,11 +985,9 @@ unsigned int Utils_CalculateSpatialAttenuation(const CVector &pos, int near, int
     gte_stlvl(&centre);
 
     if (!(centre.vx | centre.vz))
-        return static_cast<unsigned int>(vol) |
-               (static_cast<unsigned int>(vol) << 16);
+        return static_cast<unsigned int>(vol) | (static_cast<unsigned int>(vol) << 16);
 
-    short heading = static_cast<short>(
-        (0x400 - ratan2(centre.vz, centre.vx)) & 0x0fff);
+    short heading = static_cast<short>((0x400 - ratan2(centre.vz, centre.vx)) & 0x0fff);
     unsigned int behind = 0;
     if (static_cast<unsigned int>(heading - 0x401) < 0x07ff)
     {

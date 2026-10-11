@@ -12,21 +12,28 @@ struct BloodBit;
 struct CBruce;
 
 /** Virtual prefix used when retiring a blood particle. */
-struct BloodBitVtable {
+struct BloodBitVtable
+{
     void (*reserved0)(void *object);
     void (*reserved1)(void *object);
     void (*destroy)(BloodBit *object, int flags);
 };
 
 /** Minimal named CBit layout needed for virtual destruction. */
-struct BloodBit {
+struct BloodBit
+{
     unsigned char state[68];
     BloodBitVtable *vtable;
 };
 
 /** Blood particle stack and lifetime state. */
-struct Blood : CClass {
-    enum { Capacity = 20, InitialAge = 128 };
+struct Blood : CClass
+{
+    enum
+    {
+        Capacity = 20,
+        InitialAge = 128
+    };
 
     /** Initialize an empty blood-particle manager. */
     Blood();
@@ -41,10 +48,8 @@ struct Blood : CClass {
     int mAge;
 };
 
-typedef char blood_owner_size_must_be_92[
-    (sizeof(Blood) == 92) ? 1 : -1];
-typedef char blood_bit_size_must_be_72[
-    (sizeof(BloodBit) == 72) ? 1 : -1];
+typedef char blood_owner_size_must_be_92[(sizeof(Blood) == 92) ? 1 : -1];
+typedef char blood_bit_size_must_be_72[(sizeof(BloodBit) == 72) ? 1 : -1];
 
 // === Function implementations (address order) ===
 
@@ -56,10 +61,12 @@ typedef char blood_bit_size_must_be_72[
  * Demangled: Blood::Blood(void)
  *
  */
-Blood::Blood() {
+Blood::Blood()
+{
     int i = 0;
     BloodBit **ptr = mBloodStack;
-    do {
+    do
+    {
         *ptr = 0;
         i++;
         ptr++;
@@ -78,7 +85,8 @@ Blood::Blood() {
  *            Destructor: sets Blood vtable, calls Reset, sets base CClass vtable, conditionally deletes
  *
  */
-Blood::~Blood() {
+Blood::~Blood()
+{
     Reset();
 }
 
@@ -92,13 +100,17 @@ Blood::~Blood() {
  *            Clears active blood bits and resets Blood's counters.
  *
  */
-void Blood::Reset() {
+void Blood::Reset()
+{
     int i = 0;
-    if (0 < mBloodCount) {
+    if (0 < mBloodCount)
+    {
         BloodBit **p = mBloodStack;
-        do {
+        do
+        {
             BloodBit *bit = *p;
-            if (bit != 0) {
+            if (bit != 0)
+            {
                 bit->vtable->destroy(bit, 3);
             }
             *p++ = 0;
@@ -121,7 +133,8 @@ void Blood::Reset() {
  *
  * @param pBruce  Active skater (CBruce) being processed.
  */
-void Blood::Update(CBruce *pBruce) {
+void Blood::Update(CBruce *pBruce)
+{
     CSVector traj;
     CSVector cone;
     CVector SparkPos;

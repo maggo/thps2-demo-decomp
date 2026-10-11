@@ -38,16 +38,16 @@ struct CVector;
 void M3dColij_FlushCache(void);
 
 /** Test a swept line against the spheres in a body list. */
-CBody *M3dColij_LineToSphere(
-    const CVector &OldPos, const CVector &NewPos, CVector &ColijPos,
-    CBody *pBody, CBody *pIgnore, int ScaleFactor);
+CBody *M3dColij_LineToSphere(const CVector &OldPos, const CVector &NewPos, CVector &ColijPos,
+                             CBody *pBody, CBody *pIgnore, int ScaleFactor);
 #endif
 
 #ifdef M3DCOLIJ_OWNER_DECLARATIONS
 #define M3DCOLIJ_OWNER_DECLARATIONS_ACTIVE
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 // Primitive types
@@ -77,7 +77,8 @@ typedef unsigned char undefined3[3];
 // Palette entry (20 bytes)
 
 // MeshHeader (28 bytes)
-typedef struct MeshHeader {
+typedef struct MeshHeader
+{
     u16 meshFlags;
     u16 vertexCount;
     u16 normalCount;
@@ -135,8 +136,7 @@ struct ControllerData;
  * include so each declaration can retain its target-proven encounter point.
  * These per-service selectors are intentionally re-entrant.
  */
-#if defined(M3DCOLIJ_DECLARE_FLUSH_CACHE_SERVICE) && \
-    !defined(M3DCOLIJ_FLUSH_CACHE_SERVICE_DECLARED)
+#if defined(M3DCOLIJ_DECLARE_FLUSH_CACHE_SERVICE) && !defined(M3DCOLIJ_FLUSH_CACHE_SERVICE_DECLARED)
 #define M3DCOLIJ_FLUSH_CACHE_SERVICE_DECLARED
 /** Reset collision-cache cursors and clear every cached item. */
 void M3dColij_FlushCache(void);
@@ -147,19 +147,18 @@ void M3dColij_FlushCache(void);
     !defined(M3DCOLIJ_LINE_TO_SPHERE_SERVICE_DECLARED)
 #define M3DCOLIJ_LINE_TO_SPHERE_SERVICE_DECLARED
 /** Test a swept line against the spheres in a body list. */
-CBody *M3dColij_LineToSphere(
-    const CVector &OldPos, const CVector &NewPos, CVector &ColijPos,
-    CBody *pBody, CBody *pIgnore, int ScaleFactor);
+CBody *M3dColij_LineToSphere(const CVector &OldPos, const CVector &NewPos, CVector &ColijPos,
+                             CBody *pBody, CBody *pIgnore, int ScaleFactor);
 #endif
 #undef M3DCOLIJ_DECLARE_LINE_TO_SPHERE_SERVICE
 
-#if (defined(M3DCOLIJ_OWNER_DECLARATIONS_ACTIVE) || \
-     defined(M3DCOLIJ_LAYOUT_PREREQUISITES)) && \
+#if (defined(M3DCOLIJ_OWNER_DECLARATIONS_ACTIVE) || defined(M3DCOLIJ_LAYOUT_PREREQUISITES)) && \
     !defined(M3DCOLIJ_COL_CACHE_LAYOUT_EMITTED)
 #define M3DCOLIJ_COL_CACHE_LAYOUT_EMITTED
 
 /** One cached item's model and contiguous face span. */
-struct SColCache {
+struct SColCache
+{
     struct Item *pItem;
     struct SModel *pModel;
     int Faces;
@@ -172,7 +171,8 @@ struct SColCache {
     !defined(M3DCOLIJ_OWNER_DECLARATIONS_TAIL_EMITTED)
 #define M3DCOLIJ_OWNER_DECLARATIONS_TAIL_EMITTED
 
-struct SFaceCache {
+struct SFaceCache
+{
     int Flags;
     int XMin;
     int YMin;
@@ -187,26 +187,26 @@ struct SFaceCache {
 #endif
 
 // === Variables (gp-relative in this TU) ===
-extern "C" int CollidedTriggerModel;       // 0x800DC570
-extern "C" int FaceCacheIndex;       // 0x800DC544
-extern "C" int FaceCacheStart;       // 0x800DC548
-extern "C" u16 Inquiry;       // 0x800DC524
-extern "C" int ItemCacheIndex;       // 0x800DC53C
-extern "C" int ItemCacheStart;       // 0x800DC540
+extern "C" int CollidedTriggerModel; // 0x800DC570
+extern "C" int FaceCacheIndex; // 0x800DC544
+extern "C" int FaceCacheStart; // 0x800DC548
+extern "C" u16 Inquiry; // 0x800DC524
+extern "C" int ItemCacheIndex; // 0x800DC53C
+extern "C" int ItemCacheStart; // 0x800DC540
 #define M3DCOLIJMASKS_OWNER_DECLARATION
 #include "M3DCOLIJMASKS.h"
-extern "C" CBody *pBodyHit;       // 0x800DC56C
+extern "C" CBody *pBodyHit; // 0x800DC56C
 
 // === Variables (absolute in this TU) ===
 #define ENVIROLIST_ABSOLUTE_DECLARATION
 #include "ENVIROLIST.h"
 #define BODYLISTS_DECLARE_ENVIRONMENTAL_OBJECT_LIST
 #include "BODYLISTS.h"
-extern "C" SHit NearestHit;     // 0x800C84F0
+extern "C" SHit NearestHit; // 0x800C84F0
 #define SPOOLENV_DECLARE_OTHER_ENV_INDEX
 #include "SPOOLENV.h"
 #include "PROJECTEDVERTICES.h"
-extern "C" MATRIX Tfm;     // 0x800C85B8
+extern "C" MATRIX Tfm; // 0x800C85B8
 
 #endif // M3DCOLIJ_OWNER_DECLARATIONS_TAIL_EMITTED
 
@@ -227,7 +227,8 @@ extern "C" MATRIX Tfm;     // 0x800C85B8
 #endif
 
 /** Complete collision line-query state shared across gameplay owners. */
-struct SLineInfo {
+struct SLineInfo
+{
     Vector StartCoords;
     Vector EndCoords;
     Vector MinCoords;
@@ -256,31 +257,60 @@ struct SLineInfo {
 };
 
 typedef char SLineInfo_size_must_be_164[(sizeof(SLineInfo) == 164) ? 1 : -1];
-typedef char SLineInfo_StartCoords_offset_must_be_0[((unsigned long)&(((SLineInfo *)0)->StartCoords) == 0) ? 1 : -1];
-typedef char SLineInfo_EndCoords_offset_must_be_12[((unsigned long)&(((SLineInfo *)0)->EndCoords) == 12) ? 1 : -1];
-typedef char SLineInfo_MinCoords_offset_must_be_24[((unsigned long)&(((SLineInfo *)0)->MinCoords) == 24) ? 1 : -1];
-typedef char SLineInfo_MaxCoords_offset_must_be_36[((unsigned long)&(((SLineInfo *)0)->MaxCoords) == 36) ? 1 : -1];
-typedef char SLineInfo_iLo_offset_must_be_48[((unsigned long)&(((SLineInfo *)0)->iLo) == 48) ? 1 : -1];
-typedef char SLineInfo_iHi_offset_must_be_52[((unsigned long)&(((SLineInfo *)0)->iHi) == 52) ? 1 : -1];
-typedef char SLineInfo_jLo_offset_must_be_56[((unsigned long)&(((SLineInfo *)0)->jLo) == 56) ? 1 : -1];
-typedef char SLineInfo_jHi_offset_must_be_60[((unsigned long)&(((SLineInfo *)0)->jHi) == 60) ? 1 : -1];
-typedef char SLineInfo_Distance_offset_must_be_64[((unsigned long)&(((SLineInfo *)0)->Distance) == 64) ? 1 : -1];
-typedef char SLineInfo_Length_offset_must_be_68[((unsigned long)&(((SLineInfo *)0)->Length) == 68) ? 1 : -1];
-typedef char SLineInfo_WorldCst_offset_must_be_72[((unsigned long)&(((SLineInfo *)0)->WorldCst) == 72) ? 1 : -1];
-typedef char SLineInfo_pItem_offset_must_be_104[((unsigned long)&(((SLineInfo *)0)->pItem) == 104) ? 1 : -1];
-typedef char SLineInfo_Position_offset_must_be_108[((unsigned long)&(((SLineInfo *)0)->Position) == 108) ? 1 : -1];
-typedef char SLineInfo_Normal_offset_must_be_120[((unsigned long)&(((SLineInfo *)0)->Normal) == 120) ? 1 : -1];
-typedef char SLineInfo_pFace_offset_must_be_128[((unsigned long)&(((SLineInfo *)0)->pFace) == 128) ? 1 : -1];
-typedef char SLineInfo_Model_offset_must_be_132[((unsigned long)&(((SLineInfo *)0)->Model) == 132) ? 1 : -1];
-typedef char SLineInfo_RecordTriggerZoneHits_offset_must_be_136[((unsigned long)&(((SLineInfo *)0)->RecordTriggerZoneHits) == 136) ? 1 : -1];
-typedef char SLineInfo_DropDown_offset_must_be_137[((unsigned long)&(((SLineInfo *)0)->DropDown) == 137) ? 1 : -1];
-typedef char SLineInfo_Inquiry_offset_must_be_138[((unsigned long)&(((SLineInfo *)0)->Inquiry) == 138) ? 1 : -1];
-typedef char SLineInfo_tNear_offset_must_be_140[((unsigned long)&(((SLineInfo *)0)->tNear) == 140) ? 1 : -1];
-typedef char SLineInfo_tNumtrLo_offset_must_be_144[((unsigned long)&(((SLineInfo *)0)->tNumtrLo) == 144) ? 1 : -1];
-typedef char SLineInfo_tNumtrHi_offset_must_be_148[((unsigned long)&(((SLineInfo *)0)->tNumtrHi) == 148) ? 1 : -1];
-typedef char SLineInfo_tDenomLo_offset_must_be_152[((unsigned long)&(((SLineInfo *)0)->tDenomLo) == 152) ? 1 : -1];
-typedef char SLineInfo_tDenomHi_offset_must_be_156[((unsigned long)&(((SLineInfo *)0)->tDenomHi) == 156) ? 1 : -1];
-typedef char SLineInfo_NormalOffset_offset_must_be_160[((unsigned long)&(((SLineInfo *)0)->NormalOffset) == 160) ? 1 : -1];
+typedef char SLineInfo_StartCoords_offset_must_be_0
+    [((unsigned long)&(((SLineInfo *)0)->StartCoords) == 0) ? 1 : -1];
+typedef char SLineInfo_EndCoords_offset_must_be_12
+    [((unsigned long)&(((SLineInfo *)0)->EndCoords) == 12) ? 1 : -1];
+typedef char SLineInfo_MinCoords_offset_must_be_24
+    [((unsigned long)&(((SLineInfo *)0)->MinCoords) == 24) ? 1 : -1];
+typedef char SLineInfo_MaxCoords_offset_must_be_36
+    [((unsigned long)&(((SLineInfo *)0)->MaxCoords) == 36) ? 1 : -1];
+typedef char
+    SLineInfo_iLo_offset_must_be_48[((unsigned long)&(((SLineInfo *)0)->iLo) == 48) ? 1 : -1];
+typedef char
+    SLineInfo_iHi_offset_must_be_52[((unsigned long)&(((SLineInfo *)0)->iHi) == 52) ? 1 : -1];
+typedef char
+    SLineInfo_jLo_offset_must_be_56[((unsigned long)&(((SLineInfo *)0)->jLo) == 56) ? 1 : -1];
+typedef char
+    SLineInfo_jHi_offset_must_be_60[((unsigned long)&(((SLineInfo *)0)->jHi) == 60) ? 1 : -1];
+typedef char
+    SLineInfo_Distance_offset_must_be_64[((unsigned long)&(((SLineInfo *)0)->Distance) == 64) ? 1
+                                                                                              : -1];
+typedef char
+    SLineInfo_Length_offset_must_be_68[((unsigned long)&(((SLineInfo *)0)->Length) == 68) ? 1 : -1];
+typedef char
+    SLineInfo_WorldCst_offset_must_be_72[((unsigned long)&(((SLineInfo *)0)->WorldCst) == 72) ? 1
+                                                                                              : -1];
+typedef char
+    SLineInfo_pItem_offset_must_be_104[((unsigned long)&(((SLineInfo *)0)->pItem) == 104) ? 1 : -1];
+typedef char SLineInfo_Position_offset_must_be_108
+    [((unsigned long)&(((SLineInfo *)0)->Position) == 108) ? 1 : -1];
+typedef char SLineInfo_Normal_offset_must_be_120[((unsigned long)&(((SLineInfo *)0)->Normal) == 120)
+                                                     ? 1
+                                                     : -1];
+typedef char
+    SLineInfo_pFace_offset_must_be_128[((unsigned long)&(((SLineInfo *)0)->pFace) == 128) ? 1 : -1];
+typedef char
+    SLineInfo_Model_offset_must_be_132[((unsigned long)&(((SLineInfo *)0)->Model) == 132) ? 1 : -1];
+typedef char SLineInfo_RecordTriggerZoneHits_offset_must_be_136
+    [((unsigned long)&(((SLineInfo *)0)->RecordTriggerZoneHits) == 136) ? 1 : -1];
+typedef char SLineInfo_DropDown_offset_must_be_137
+    [((unsigned long)&(((SLineInfo *)0)->DropDown) == 137) ? 1 : -1];
+typedef char
+    SLineInfo_Inquiry_offset_must_be_138[((unsigned long)&(((SLineInfo *)0)->Inquiry) == 138) ? 1
+                                                                                              : -1];
+typedef char
+    SLineInfo_tNear_offset_must_be_140[((unsigned long)&(((SLineInfo *)0)->tNear) == 140) ? 1 : -1];
+typedef char SLineInfo_tNumtrLo_offset_must_be_144
+    [((unsigned long)&(((SLineInfo *)0)->tNumtrLo) == 144) ? 1 : -1];
+typedef char SLineInfo_tNumtrHi_offset_must_be_148
+    [((unsigned long)&(((SLineInfo *)0)->tNumtrHi) == 148) ? 1 : -1];
+typedef char SLineInfo_tDenomLo_offset_must_be_152
+    [((unsigned long)&(((SLineInfo *)0)->tDenomLo) == 152) ? 1 : -1];
+typedef char SLineInfo_tDenomHi_offset_must_be_156
+    [((unsigned long)&(((SLineInfo *)0)->tDenomHi) == 156) ? 1 : -1];
+typedef char SLineInfo_NormalOffset_offset_must_be_160
+    [((unsigned long)&(((SLineInfo *)0)->NormalOffset) == 160) ? 1 : -1];
 
 #endif // M3DCOLIJ_LINE_INFO_LAYOUT
 
@@ -300,7 +330,8 @@ static inline SVECTOR *M3dColij_GteAngles(SVector *angles)
 }
 
 /** Nearest collision result owned by M3DCOLIJ. */
-struct SHit {
+struct SHit
+{
     struct Item *pItem;
     unsigned int *pFace;
     struct CVector Normal;
@@ -311,7 +342,8 @@ struct SHit {
 };
 
 /** Complete item prefix embedded in a collision body (76 bytes). */
-struct M3dColijBodyItem {
+struct M3dColijBodyItem
+{
     u16 mFlags;
     u16 mInquiry;
     struct CVector mPos;
@@ -339,7 +371,8 @@ struct M3dColijBodyItem {
 };
 
 /** Collision-body layout recovered from `MAIN_STRUCTS.h` (264 bytes). */
-struct CBody {
+struct CBody
+{
     struct M3dColijBodyItem CItem;
     struct CBody **mppOriginalList;
     u16 mInputFlags;
@@ -387,7 +420,8 @@ struct CVector operator>>(const CVector &vector, const int &shift);
 struct CVector operator<<(const CVector &vector, const int &shift);
 struct CVector operator/(const CVector &vector, const int &divisor);
 
-extern "C" {
+extern "C"
+{
 /** Unmangled matrix helper. */
 MATRIX *MulMatrix(MATRIX *m0, MATRIX *m1);
 
@@ -400,10 +434,8 @@ MATRIX *MulMatrix(MATRIX *m0, MATRIX *m1);
 }
 
 typedef char M3dColij_Model_size_must_be_36[(sizeof(SModel) == 36) ? 1 : -1];
-typedef char M3dColij_BodyItem_size_must_be_76[
-    (sizeof(M3dColijBodyItem) == 76) ? 1 : -1];
-typedef char M3dColij_Body_size_must_be_264[
-    (sizeof(CBody) == 264) ? 1 : -1];
+typedef char M3dColij_BodyItem_size_must_be_76[(sizeof(M3dColijBodyItem) == 76) ? 1 : -1];
+typedef char M3dColij_Body_size_must_be_264[(sizeof(CBody) == 264) ? 1 : -1];
 typedef char M3dColij_Cache_size_must_be_16[(sizeof(SColCache) == 16) ? 1 : -1];
 typedef char M3dColij_Hit_size_must_be_36[(sizeof(SHit) == 36) ? 1 : -1];
 

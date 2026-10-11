@@ -4,7 +4,8 @@
 struct Item;
 
 /** Hand-written M3D assembly entry points with flat linker names. */
-extern "C" {
+extern "C"
+{
 void M3dAsm_BoundingSpherePreprocessing(Item *items, int cameraMask);
 void M3dAsm_OutcodeVerticesInWater(int count, int clipValue);
 void CompactOTagR(unsigned int *orderingTable, int size);

@@ -17,18 +17,17 @@ struct SVideoRestart
     int GGame;
 };
 
-typedef char SVideoRestart_size_must_be_20[
-    (sizeof(SVideoRestart) == 20) ? 1 : -1];
-typedef char SVideoRestart_NumSkaters_offset_must_be_0[
-    ((unsigned long)&(((SVideoRestart *)0)->NumSkaters) == 0) ? 1 : -1];
-typedef char SVideoRestart_Skater_offset_must_be_4[
-    ((unsigned long)&(((SVideoRestart *)0)->Skater) == 4) ? 1 : -1];
-typedef char SVideoRestart_Skater2_offset_must_be_8[
-    ((unsigned long)&(((SVideoRestart *)0)->Skater2) == 8) ? 1 : -1];
-typedef char SVideoRestart_Level_offset_must_be_12[
-    ((unsigned long)&(((SVideoRestart *)0)->Level) == 12) ? 1 : -1];
-typedef char SVideoRestart_GGame_offset_must_be_16[
-    ((unsigned long)&(((SVideoRestart *)0)->GGame) == 16) ? 1 : -1];
+typedef char SVideoRestart_size_must_be_20[(sizeof(SVideoRestart) == 20) ? 1 : -1];
+typedef char SVideoRestart_NumSkaters_offset_must_be_0
+    [((unsigned long)&(((SVideoRestart *)0)->NumSkaters) == 0) ? 1 : -1];
+typedef char SVideoRestart_Skater_offset_must_be_4
+    [((unsigned long)&(((SVideoRestart *)0)->Skater) == 4) ? 1 : -1];
+typedef char SVideoRestart_Skater2_offset_must_be_8
+    [((unsigned long)&(((SVideoRestart *)0)->Skater2) == 8) ? 1 : -1];
+typedef char SVideoRestart_Level_offset_must_be_12
+    [((unsigned long)&(((SVideoRestart *)0)->Level) == 12) ? 1 : -1];
+typedef char SVideoRestart_GGame_offset_must_be_16
+    [((unsigned long)&(((SVideoRestart *)0)->GGame) == 16) ? 1 : -1];
 
 /** Replay restart descriptor shared by gameplay and the front end. */
 extern "C" SVideoRestart GVideoRestart RFRONT_SHARED_STATE_DECL_ATTR; // 0x800B5138
@@ -54,8 +53,10 @@ extern "C" int SizeUp RFRONT_SHARED_STATE_DECL_ATTR; // 0x800D7E18
 
 #ifdef RFRONT_DECLARE_SAVE_NAME_ADDRESS_VIEWS
 /** Scalar compiler identities for RFRONT's four eleven-byte name buffers. */
-namespace RFrontSaveNameViews {
-extern "C" {
+namespace RFrontSaveNameViews
+{
+extern "C"
+{
 extern char SaveGameName;
 extern char LastCareerName;
 extern char LastVideoName;

@@ -9,9 +9,8 @@ void Flash_Reset(void);
 int Flash_FadeFinished(void);
 
 /** Starts a colored screen flash when its importance is high enough. */
-void Flash_Screen(
-    unsigned char StartR, unsigned char StartG, unsigned char StartB,
-    int Frames, unsigned char Importance, int Sort);
+void Flash_Screen(unsigned char StartR, unsigned char StartG, unsigned char StartB, int Frames,
+                  unsigned char Importance, int Sort);
 
 /** Starts a full-screen fade over the requested number of frames. */
 void Flash_Fade(int Frames, int Sort);

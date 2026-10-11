@@ -15,7 +15,8 @@
 #undef PAL_ENTRY_LAYOUT
 
 /** Palette sizes and Q20 fixed-point limits used by this owner. */
-enum CreateColorConstants {
+enum CreateColorConstants
+{
     FullPaletteColourCount = 256,
     SmallPaletteColourCount = 16,
     Palette16ColourFlag = 1,
@@ -37,11 +38,8 @@ enum CreateColorConstants {
  * contribution recovered from the original executable.
  */
 int saturationCurve[33] = {
-      8,  12,  14,  18,  24,  36,  46,  60,
-     76,  94, 114, 140, 168, 192, 214, 230,
-    240, 246, 250, 254, 256, 256, 254, 252,
-    246, 230, 210, 192, 180, 168, 154, 130,
-      0,
+    8,   12,  14,  18,  24,  36,  46,  60,  76,  94,  114, 140, 168, 192, 214, 230, 240,
+    246, 250, 254, 256, 256, 254, 252, 246, 230, 210, 192, 180, 168, 154, 130, 0,
 };
 
 // === Function implementations (address order) ===
@@ -54,7 +52,8 @@ int saturationCurve[33] = {
  * @param b  Blue component (0-255).
  * @return The smallest component.
  */
-unsigned char MIN3(unsigned char r, unsigned char g, unsigned char b) {
+unsigned char MIN3(unsigned char r, unsigned char g, unsigned char b)
+{
     char min = r;
     if (g < min) min = g;
     if (b < min) min = b;
@@ -70,7 +69,8 @@ unsigned char MIN3(unsigned char r, unsigned char g, unsigned char b) {
  * @param b  Blue component (0-255).
  * @return The largest component.
  */
-unsigned char MAX3(unsigned char r, unsigned char g, unsigned char b) {
+unsigned char MAX3(unsigned char r, unsigned char g, unsigned char b)
+{
     unsigned char max = r;
     if (max < g) max = g;
     if (max < b) max = b;
@@ -88,9 +88,8 @@ unsigned char MAX3(unsigned char r, unsigned char g, unsigned char b) {
  * @param pS  Receives saturation in the Q20 range [0, 1].
  * @param pV  Receives value in the Q20 range [0, 255].
  */
-void Create_RGB2HSV(
-    unsigned char r, unsigned char g, unsigned char b,
-    int *pH, int *pS, int *pV) {
+void Create_RGB2HSV(unsigned char r, unsigned char g, unsigned char b, int *pH, int *pS, int *pV)
+{
     int min;
     int max;
     int delta;
@@ -102,29 +101,36 @@ void Create_RGB2HSV(
 
     *pV = (max << FixedFractionBits) / FullPaletteColourCount;
     delta = max - min;
-    if (max != 0) {
+    if (max != 0)
+    {
         *pS = (delta << FixedFractionBits) / max;
     }
-    if (max == 0) {
+    if (max == 0)
+    {
         *pS = 0;
         *pH = 0;
         return;
     }
 
-    if (r == max) {
+    if (r == max)
+    {
         diff = g - b;
         rotOffset = 0;
-    } else if (g == max) {
+    }
+    else if (g == max)
+    {
         diff = b - r;
         rotOffset = 2;
-    } else {
+    }
+    else
+    {
         diff = r - g;
         rotOffset = 4;
     }
 
-    *pH = (
-        rotOffset * FixedOne + ((diff << FixedFractionBits) / delta)) * 60;
-    if (*pH < 0) {
+    *pH = (rotOffset * FixedOne + ((diff << FixedFractionBits) / delta)) * 60;
+    if (*pH < 0)
+    {
         *pH += HueCycle;
     }
 }
@@ -140,16 +146,16 @@ void Create_RGB2HSV(
  * @param pG  Receives the green component (0-255).
  * @param pB  Receives the blue component (0-255).
  */
-void Create_HSV2RGB(
-    int h, int s, int v,
-    unsigned char *pR, unsigned char *pG, unsigned char *pB) {
+void Create_HSV2RGB(int h, int s, int v, unsigned char *pR, unsigned char *pG, unsigned char *pB)
+{
     int i;
     int f;
     int p;
     int q;
     int t;
 
-    if (s == 0) {
+    if (s == 0)
+    {
         v >>= 12;
         *pB = v;
         *pG = v;
@@ -161,45 +167,45 @@ void Create_HSV2RGB(
     f = h & FixedMaximum;
     p = (v >> 10) * ((FixedOne - s) >> 10);
     q = (v >> 10) * ((FixedOne - ((s >> 10) * (f >> 10))) >> 10);
-    t = (v >> 10) * (
-        (FixedOne - ((s >> 10) * ((FixedOne - f) >> 10))) >> 10);
+    t = (v >> 10) * ((FixedOne - ((s >> 10) * ((FixedOne - f) >> 10))) >> 10);
     v >>= 12;
     p >>= 12;
     q >>= 12;
     t >>= 12;
     i = static_cast<unsigned int>(h) >> FixedFractionBits;
 
-    switch (i) {
-    case 0:
-        *pR = v;
-        *pG = t;
-        *pB = p;
-        break;
-    case 1:
-        *pR = q;
-        *pG = v;
-        *pB = p;
-        break;
-    case 2:
-        *pR = p;
-        *pG = v;
-        *pB = t;
-        break;
-    case 3:
-        *pR = p;
-        *pG = q;
-        *pB = v;
-        break;
-    case 4:
-        *pR = t;
-        *pG = p;
-        *pB = v;
-        break;
-    case 5:
-        *pR = v;
-        *pG = p;
-        *pB = q;
-        break;
+    switch (i)
+    {
+        case 0:
+            *pR = v;
+            *pG = t;
+            *pB = p;
+            break;
+        case 1:
+            *pR = q;
+            *pG = v;
+            *pB = p;
+            break;
+        case 2:
+            *pR = p;
+            *pG = v;
+            *pB = t;
+            break;
+        case 3:
+            *pR = p;
+            *pG = q;
+            *pB = v;
+            break;
+        case 4:
+            *pR = t;
+            *pG = p;
+            *pB = v;
+            break;
+        case 5:
+            *pR = v;
+            *pG = p;
+            *pB = q;
+            break;
     }
 }
 
@@ -210,7 +216,8 @@ void Create_HSV2RGB(
  * @param pPal  Palette structure.
  * @param pDestPalette  Destination HSV entries.
  */
-void Create_RememberPalette(tag_S_Pal *pPal, HSV_VALUE *pDestPalette) {
+void Create_RememberPalette(tag_S_Pal *pPal, HSV_VALUE *pDestPalette)
+{
     unsigned short colour;
     // Interior induction pointers reproduce the target's field-wise loop.
     int *pValueField;
@@ -232,19 +239,23 @@ void Create_RememberPalette(tag_S_Pal *pPal, HSV_VALUE *pDestPalette) {
     Pal_CopyToMemory(pPal, pEntry16);
     DrawSync(0);
     PalSize = FullPaletteColourCount;
-    if ((pPal->flags & Palette16ColourFlag) != 0) {
+    if ((pPal->flags & Palette16ColourFlag) != 0)
+    {
         PalSize = SmallPaletteColourCount;
     }
     i = 0;
-    if (PalSize != 0) {
+    if (PalSize != 0)
+    {
         pFlagsField = &pEntry32->flags;
         pValueField = &pEntry32->v;
-        do {
+        do
+        {
             colour = *pEntry16;
             r = (colour & 0x1f) << 3;
             g = (colour >> 2) & 0xf8;
             b = (colour >> 7) & 0xf8;
-            if (i < FullPaletteColourCount) {
+            if (i < FullPaletteColourCount)
+            {
                 h = 0;
                 s = 0;
                 v = 0;
@@ -273,55 +284,62 @@ void Create_RememberPalette(tag_S_Pal *pPal, HSV_VALUE *pDestPalette) {
  * @param sXForm  Saturation scale; 256 is neutral.
  * @param vXForm  Value scale; 128 is neutral.
  */
-void Create_UpdatePalette(
-    tag_S_Pal *pPal, HSV_VALUE *pSourcePalette,
-    unsigned short hXForm, unsigned short sXForm,
-    unsigned short vXForm) {
+void Create_UpdatePalette(tag_S_Pal *pPal, HSV_VALUE *pSourcePalette, unsigned short hXForm,
+                          unsigned short sXForm, unsigned short vXForm)
+{
     unsigned short TempPalette[256];
     HSV_VALUE *pEntry32 = pSourcePalette;
     unsigned short *pEntry16 = TempPalette;
     int PalSize = FullPaletteColourCount;
 
-    if ((pPal->flags & Palette16ColourFlag) != 0) {
+    if ((pPal->flags & Palette16ColourFlag) != 0)
+    {
         PalSize = SmallPaletteColourCount;
     }
 
-    for (int i = 0; i < PalSize; i++) {
+    for (int i = 0; i < PalSize; i++)
+    {
         HSV_VALUE bgr = *pEntry32;
         int h = bgr.h;
         int s = bgr.s;
         int v = bgr.v;
         pEntry32++;
 
-        if (i < FullPaletteColourCount) {
+        if (i < FullPaletteColourCount)
+        {
             h += hXForm << FixedFractionBits;
 
-            s = (s >> 10) * (
-                ((sXForm << FixedFractionBits) / NeutralSaturationScale) >> 10);
-            v = (v >> 10) * (
-                ((vXForm << FixedFractionBits) / NeutralValueScale) >> 10);
+            s = (s >> 10) * (((sXForm << FixedFractionBits) / NeutralSaturationScale) >> 10);
+            v = (v >> 10) * (((vXForm << FixedFractionBits) / NeutralValueScale) >> 10);
         }
 
-        if (h < 0) {
+        if (h < 0)
+        {
             h += HueCycle;
         }
-        if (h > HueMaximum) {
+        if (h > HueMaximum)
+        {
             h -= HueCycle;
-            if (h > HueMaximum) {
+            if (h > HueMaximum)
+            {
                 h -= HueCycle;
             }
         }
 
-        if (v > FixedMaximum) {
+        if (v > FixedMaximum)
+        {
             v = FixedMaximum;
         }
-        if (v < 0) {
+        if (v < 0)
+        {
             v = 0;
         }
-        if (s > FixedMaximum) {
+        if (s > FixedMaximum)
+        {
             s = FixedMaximum;
         }
-        if (s < 0) {
+        if (s < 0)
+        {
             s = 0;
         }
 
@@ -333,17 +351,18 @@ void Create_UpdatePalette(
         g >>= 3;
         b >>= 3;
 
-        if (r == 0) {
+        if (r == 0)
+        {
             r = 1;
         }
-        if (i >= FullPaletteColourCount) {
+        if (i >= FullPaletteColourCount)
+        {
             r = 0;
             g = 0;
             b = 0;
         }
 
-        *pEntry16++ =
-            (bgr.flags & 0x8000) + (b << 10) + (g << 5) + r;
+        *pEntry16++ = (bgr.flags & 0x8000) + (b << 10) + (g << 5) + r;
     }
 
     Pal_StoreFromMemory(pPal, TempPalette);

@@ -6,7 +6,8 @@
 #endif
 
 /** One coloured endpoint in a rendered polyline. */
-struct SLineSeg {
+struct SLineSeg
+{
     struct CVector End;
     unsigned char r;
     unsigned char g;

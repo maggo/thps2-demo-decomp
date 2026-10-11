@@ -14,13 +14,16 @@ struct CGrindSpark;
 struct CVector;
 
 /** Target-proven storage size of one grind spark. */
-enum { BIT2_GRIND_SPARK_STORAGE_SIZE = 120 };
+enum
+{
+    BIT2_GRIND_SPARK_STORAGE_SIZE = 120
+};
 
 #ifndef BIT2_OWNER_DECLARATIONS
 /** ABI entry for constructing a grind spark in CBit-owned storage. */
-extern "C" CGrindSpark *__11CGrindSparkP5CBodyR7CVectoriii(
-    CGrindSpark *storage, CBody *parent, CVector &position,
-    int velocity, int gravity, int lifetime);
+extern "C" CGrindSpark *__11CGrindSparkP5CBodyR7CVectoriii(CGrindSpark *storage, CBody *parent,
+                                                           CVector &position, int velocity,
+                                                           int gravity, int lifetime);
 
 /** Semantic source name for the client-visible constructor entry. */
 #define Bit2_ConstructGrindSpark __11CGrindSparkP5CBodyR7CVectoriii

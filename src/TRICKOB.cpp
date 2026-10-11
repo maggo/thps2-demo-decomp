@@ -12,20 +12,16 @@
 #include "MAIN.h"
 #include "UTILS.h"
 
-typedef char trickob_owner_size_must_be_24[
-    (sizeof(CTrickOb) == 24) ? 1 : -1];
+typedef char trickob_owner_size_must_be_24[(sizeof(CTrickOb) == 24) ? 1 : -1];
 #include "SPOOL.h"
 
 // === Owner-local $gp-relative globals ===
-CTrickOb *TrickObList
-    __attribute__((section(".sdata"))) = 0;
-unsigned short DarkenTimer[3]
-    __attribute__((section(".sdata"))) = {1800, 600, 900};
+CTrickOb *TrickObList __attribute__((section(".sdata"))) = 0;
+unsigned short DarkenTimer[3] __attribute__((section(".sdata"))) = { 1800, 600, 900 };
 static int MapX __attribute__((section(".sdata"))) = 256;
 static int MapY __attribute__((section(".sdata"))) = 220;
 static int MapScale __attribute__((section(".sdata"))) = 128;
-int Missed
-    __attribute__((section(".sdata"))) = 0;
+int Missed __attribute__((section(".sdata"))) = 0;
 
 // === Function implementations (address order) ===
 
@@ -93,8 +89,7 @@ CTrickOb::CTrickOb(unsigned short Node, unsigned short DelayLevel)
     unsigned short count = pNode[1];
     // The command pointer is aligned after skipping the variable short payload.
     pNode += count + 2;
-    if (reinterpret_cast<unsigned int>(pNode) & 3)
-        pNode++;
+    if (reinterpret_cast<unsigned int>(pNode) & 3) pNode++;
     mChecksum = *reinterpret_cast<unsigned int *>(pNode);
 }
 
@@ -110,8 +105,7 @@ CTrickOb::~CTrickOb()
 {
     CTrickOb *pLast = 0;
     CTrickOb *pTrickOb = TrickObList;
-    if (pTrickOb == this)
-        goto found;
+    if (pTrickOb == this) goto found;
     do
     {
         pLast = pTrickOb;
@@ -166,23 +160,19 @@ void TrickOb_DarkenNode(int NodeIndex)
 
             do
             {
-                if (pTrickOb->mNode != NodeIndex)
-                    goto next;
+                if (pTrickOb->mNode != NodeIndex) goto next;
 
                 if (pTrickOb->mState != 0)
                 {
-                    if (GGame != scoreMode)
-                        goto done;
+                    if (GGame != scoreMode) goto done;
                 }
 
                 {
                     Item *pItem = Spool_FindEnviroItem(pTrickOb->mChecksum);
-                    unsigned short score =
-                        static_cast<unsigned short>(TrickScore);
+                    unsigned short score = static_cast<unsigned short>(TrickScore);
                     pTrickOb->mpItem = pItem;
                     pTrickOb->mScore = score;
-                    pTrickOb->mPlayer =
-                        static_cast<unsigned char>(TrickPlayer);
+                    pTrickOb->mPlayer = static_cast<unsigned char>(TrickPlayer);
                     unsigned short flags = pItem->Flags;
                     pItem->RGB = darkColor;
                     pItem->Flags = flags | 0x400;
@@ -213,26 +203,22 @@ done:;
 void TrickOb_Update(void)
 {
     CTrickOb *pTrickOb = TrickObList;
-    if (pTrickOb == 0)
-        return;
+    if (pTrickOb == 0) return;
     int game = GGame;
 
     do
     {
         Item *pItem;
-        if (pTrickOb->mState != 0 &&
-            (pItem = pTrickOb->mpItem) != 0)
+        if (pTrickOb->mState != 0 && (pItem = pTrickOb->mpItem) != 0)
         {
             if (game == 8)
             {
                 int Red;
-                unsigned int pulsePhase =
-                    static_cast<unsigned int>(Xblanks * 4);
+                unsigned int pulsePhase = static_cast<unsigned int>(Xblanks * 4);
                 if (pTrickOb->mScore < 2001)
                 {
                     Red = pulsePhase %
-                          static_cast<unsigned int>(
-                              ((pTrickOb->mScore << 6) / 2000 + 1) * 2);
+                          static_cast<unsigned int>(((pTrickOb->mScore << 6) / 2000 + 1) * 2);
                 }
                 else
                 {
@@ -259,12 +245,10 @@ void TrickOb_Update(void)
                 }
                 if (pTrickOb->mPlayer == 1)
                 {
-                    pItem->RGB =
-                        (pItem->RGB & 0xff00ffff) | ((Red + 64) * 0x10000);
+                    pItem->RGB = (pItem->RGB & 0xff00ffff) | ((Red + 64) * 0x10000);
                     goto next;
                 }
-                pItem->RGB =
-                    (pItem->RGB & 0xffffff00) | (Red + 64);
+                pItem->RGB = (pItem->RGB & 0xffffff00) | (Red + 64);
             }
             else
             {
@@ -273,12 +257,10 @@ void TrickOb_Update(void)
                 {
                     Red = 64 - Red;
                 }
-                pItem->RGB =
-                    (pItem->RGB & 0xffffff00) | (Red + 32);
+                pItem->RGB = (pItem->RGB & 0xffffff00) | (Red + 32);
             }
         }
     next:
         pTrickOb = pTrickOb->mpNext;
     } while (pTrickOb != 0);
-
 }

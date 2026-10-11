@@ -26,7 +26,8 @@ typedef unsigned char undefined3[3];
 
 #include "globals.h"
 
-typedef struct MeshHeader {
+typedef struct MeshHeader
+{
     u16 meshFlags;
     u16 vertexCount;
     u16 normalCount;
@@ -48,7 +49,8 @@ struct EditorOutModel;
 struct EditorInModel;
 struct LevelGenerator;
 /** Pointer-only skater surface used by PANEL's score presentation. */
-struct CBruce {
+struct CBruce
+{
     /** Count completed half-turns for the active trick. */
     int Get180s();
     /** Add one trick occurrence to the skater's history. */
@@ -62,7 +64,8 @@ struct SCareer;
 struct SVideoInfo;
 struct SDoubleBuffer;
 
-enum EPausedStatus {
+enum EPausedStatus
+{
     STATUS_NORMAL = 0,
     STATUS_PAUSEDMENU = 1,
     STATUS_SKIPTORESTART = 2,
@@ -135,7 +138,8 @@ struct Item;
 
 #include "TEXTURE.h"
 
-struct SVideoInfo {
+struct SVideoInfo
+{
     int VideoMode;
     unsigned char reservedStream[0x1c - 0x04];
     unsigned long NumFrames;
@@ -148,18 +152,21 @@ struct SVideoInfo {
 #include "SANIMFRAME.h"
 
 /** Ordering-table prefix of the active renderer buffer. */
-struct PanelDoubleBuffer {
+struct PanelDoubleBuffer
+{
     unsigned char reserved[132];
     unsigned int *PanelOT;
 };
 
 /** Polymorphic base used to preserve the leading PSY-Q class vtable slot. */
-struct PanelPolymorphicBase {
+struct PanelPolymorphicBase
+{
     virtual ~PanelPolymorphicBase();
 };
 
 /** Assignment-only view preserving Font's original polymorphic copy shape. */
-struct PanelAssignableFont : PanelPolymorphicBase {
+struct PanelAssignableFont : PanelPolymorphicBase
+{
     int JustX;
     int JustY;
     int SpaceX;
@@ -181,23 +188,22 @@ struct PanelAssignableFont : PanelPolymorphicBase {
     unsigned char OldR;
     unsigned char OldG;
     unsigned char OldB;
-
 };
 
 /** Switch-stance sprite; only the CClass vtable slot matters to PANEL. */
-struct Sprite2 {
+struct Sprite2
+{
     CClass CClass;
     unsigned char reserved[60 - sizeof(CClass)];
 
-    static void *operator new(unsigned int size) throw() {
-        return ::CClass::operator new(size);
-    }
+    static void *operator new(unsigned int size) throw() { return ::CClass::operator new(size); }
     /** Build a sprite from a bitmap file. */
     Sprite2(char *name, int pack, int sliceWidth, int sliceHeight);
 };
 
 /** Callable prefix of the target Sprite2 dispatch table. */
-struct PanelSpriteDispatchTable {
+struct PanelSpriteDispatchTable
+{
     void *reserved0;
     void *reserved1;
     void (*Destroy)(Sprite2 *sprite, int flags);
@@ -207,7 +213,8 @@ struct PanelSpriteDispatchTable {
 };
 
 /** Callable prefix of the target TextEffect dispatch table. */
-struct PanelTextEffectDispatchTable {
+struct PanelTextEffectDispatchTable
+{
     void *baseOffset;
     void *typeInfo;
     void (*Destroy)(TextEffect *effect, int flags);
@@ -217,18 +224,16 @@ struct PanelTextEffectDispatchTable {
 
 static inline PanelSpriteDispatchTable *PanelSpriteDispatch(Sprite2 *sprite)
 {
-    return reinterpret_cast<PanelSpriteDispatchTable *>(
-        sprite->CClass.vtable);
+    return reinterpret_cast<PanelSpriteDispatchTable *>(sprite->CClass.vtable);
 }
 
-static inline PanelTextEffectDispatchTable *PanelTextEffectDispatch(
-    TextEffect *effect)
+static inline PanelTextEffectDispatchTable *PanelTextEffectDispatch(TextEffect *effect)
 {
-    return reinterpret_cast<PanelTextEffectDispatchTable *>(
-        effect->CClass.vtable);
+    return reinterpret_cast<PanelTextEffectDispatchTable *>(effect->CClass.vtable);
 }
 
-struct CPanelData {
+struct CPanelData
+{
     /** Shared panel sprite used to mark a switch stance. */
     static Sprite2 *mpSwitchSprite;
 
@@ -295,11 +300,11 @@ struct CPanelData {
     int mHoldingTankMultiplierTimer;
     int mHoldingTankScore;
     int mHoldingTankFlashTimer;
-
 };
 
 /** Owner-local CBruce slice through the last panel field read by this TU. */
-struct PanelBruceScoreView {
+struct PanelBruceScoreView
+{
     unsigned char reserved[28];
     void *mNextItem;
     unsigned char reservedAfterNext[264 - 32];
@@ -325,7 +330,8 @@ struct PanelBruceScoreView {
 };
 
 /** Owner-local SCareer prefix through SOptions::ScoreDisplayEnabled. */
-struct PanelCareerScoreView {
+struct PanelCareerScoreView
+{
     unsigned char reserved[2396];
     int ScoreDisplayEnabled;
 };
@@ -374,24 +380,22 @@ static inline FallingTextEffect *PanelFallingEffect(TextEffect *effect)
 typedef char panel_texture_size_must_be_40[(sizeof(Texture) == 40) ? 1 : -1];
 typedef char panel_video_info_size_must_be_192[(sizeof(SVideoInfo) == 192) ? 1 : -1];
 typedef char panel_font_size_must_be_80[(sizeof(Font) == 80) ? 1 : -1];
-typedef char panel_assignable_font_size_must_be_80[
-    (sizeof(PanelAssignableFont) == 80) ? 1 : -1];
+typedef char panel_assignable_font_size_must_be_80[(sizeof(PanelAssignableFont) == 80) ? 1 : -1];
 typedef char panel_text_effect_size_must_be_8[(sizeof(TextEffect) == 8) ? 1 : -1];
-typedef char panel_falling_text_effect_size_must_be_288[(sizeof(FallingTextEffect) == 288) ? 1 : -1];
+typedef char
+    panel_falling_text_effect_size_must_be_288[(sizeof(FallingTextEffect) == 288) ? 1 : -1];
 typedef char panel_trick_text_effect_size_must_be_24[(sizeof(TrickTextEffect) == 24) ? 1 : -1];
 typedef char panel_trick_size_must_be_36[(sizeof(CTrick) == 36) ? 1 : -1];
 typedef char panel_sprite2_size_must_be_60[(sizeof(Sprite2) == 60) ? 1 : -1];
-typedef char panel_sprite_dispatch_size_must_be_24[
-    (sizeof(PanelSpriteDispatchTable) == 24) ? 1 : -1];
-typedef char panel_text_effect_dispatch_prefix_size_must_be_20[
-    (sizeof(PanelTextEffectDispatchTable) == 20) ? 1 : -1];
+typedef char
+    panel_sprite_dispatch_size_must_be_24[(sizeof(PanelSpriteDispatchTable) == 24) ? 1 : -1];
+typedef char panel_text_effect_dispatch_prefix_size_must_be_20
+    [(sizeof(PanelTextEffectDispatchTable) == 20) ? 1 : -1];
 typedef char panel_data_size_must_be_2276[(sizeof(CPanelData) == 2276) ? 1 : -1];
-typedef char panel_double_buffer_prefix_size_must_be_136[
-    (sizeof(PanelDoubleBuffer) == 136) ? 1 : -1];
-typedef char panel_bruce_view_size_must_be_4208[
-    (sizeof(PanelBruceScoreView) == 4208) ? 1 : -1];
-typedef char panel_career_view_size_must_be_2400[
-    (sizeof(PanelCareerScoreView) == 2400) ? 1 : -1];
+typedef char
+    panel_double_buffer_prefix_size_must_be_136[(sizeof(PanelDoubleBuffer) == 136) ? 1 : -1];
+typedef char panel_bruce_view_size_must_be_4208[(sizeof(PanelBruceScoreView) == 4208) ? 1 : -1];
+typedef char panel_career_view_size_must_be_2400[(sizeof(PanelCareerScoreView) == 2400) ? 1 : -1];
 
 /** Readable, typed ABI bridges to services owned by other translation units. */
 #include "PDOUBLEBUFFER.h"
@@ -426,9 +430,8 @@ inline void *operator new(unsigned int, void *storage)
 }
 
 /** Diagnostic emitted while constructing the player's panel state. */
-static char str_cpanel_print[]
-    __attribute__((section(".rdata"))) =
-        "CPanelData::CPanelData() called\n";
+static char str_cpanel_print[] __attribute__((section(".rdata"))) =
+    "CPanelData::CPanelData() called\n";
 
 /**
  * Complete PANEL small-data prefix through the S-K-A-T-E label strings.
@@ -446,24 +449,16 @@ namespace PanelAddressViewOwners
 {
 extern "C"
 {
-static char str_panel_anim[8]
-    __attribute__((section(".sdata"))) = "Font";
+static char str_panel_anim[8] __attribute__((section(".sdata"))) = "Font";
 }
 }
-static char str_panel_sfx[16]
-    __attribute__((section(".sdata"))) = "Panel_Init()\n";
-static char str_panel_font1[12]
-    __attribute__((section(".sdata"))) = "time.fnt";
-static char str_panel_font2[12]
-    __attribute__((section(".sdata"))) = "score.fnt";
-static char str_panel_font3[16]
-    __attribute__((section(".sdata"))) = "s2tricks.fnt";
-static char str_panel_messfont[12]
-    __attribute__((section(".sdata"))) = "ingame1.fnt";
-static char str_panel_sprite[16]
-    __attribute__((section(".sdata"))) = "s2switch.bmp";
-static char str_panel_uninit[16]
-    __attribute__((section(".sdata"))) = "Panel_Uninit()\n";
+static char str_panel_sfx[16] __attribute__((section(".sdata"))) = "Panel_Init()\n";
+static char str_panel_font1[12] __attribute__((section(".sdata"))) = "time.fnt";
+static char str_panel_font2[12] __attribute__((section(".sdata"))) = "score.fnt";
+static char str_panel_font3[16] __attribute__((section(".sdata"))) = "s2tricks.fnt";
+static char str_panel_messfont[12] __attribute__((section(".sdata"))) = "ingame1.fnt";
+static char str_panel_sprite[16] __attribute__((section(".sdata"))) = "s2switch.bmp";
+static char str_panel_uninit[16] __attribute__((section(".sdata"))) = "Panel_Uninit()\n";
 
 int TAPES_Display = 0;
 int TAPES_Pos = 0x214;
@@ -474,16 +469,11 @@ namespace PanelAddressViewOwners
 {
 extern "C"
 {
-static char str_letter_S[4]
-    __attribute__((section(".sdata"))) = "S";
-static char str_letter_K[4]
-    __attribute__((section(".sdata"))) = "K";
-static char str_letter_A[4]
-    __attribute__((section(".sdata"))) = "A";
-static char str_letter_T[4]
-    __attribute__((section(".sdata"))) = "T";
-static char str_letter_E[4]
-    __attribute__((section(".sdata"))) = "E";
+static char str_letter_S[4] __attribute__((section(".sdata"))) = "S";
+static char str_letter_K[4] __attribute__((section(".sdata"))) = "K";
+static char str_letter_A[4] __attribute__((section(".sdata"))) = "A";
+static char str_letter_T[4] __attribute__((section(".sdata"))) = "T";
+static char str_letter_E[4] __attribute__((section(".sdata"))) = "E";
 }
 }
 
@@ -499,13 +489,11 @@ int Spin_Mult_Values[6] __attribute__((section(".data"))) = {
 
 /** Multiplier applied to a completed chain by its trick-count bucket. */
 int Num_Mult_Values[15] __attribute__((section(".data"))) = {
-    0, 2, 4, 6, 8, 10, 12, 14,
-    16, 18, 20, 22, 24, 26, 28,
+    0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28,
 };
 
 /** Fixed score-overflow message emitted before the late PANEL formats. */
-static char Panel_ScoreOverflow_owner[8] asm("$LC0")
-    __attribute__((section(".sdata"))) = "Yowza!";
+static char Panel_ScoreOverflow_owner[8] asm("$LC0") __attribute__((section(".sdata"))) = "Yowza!";
 
 /*
  * These address-only views intentionally omit the storage section.  GCC 2.x
@@ -537,71 +525,54 @@ namespace PanelAddressViewOwners
 {
 extern "C"
 {
-static char str_score_fmt[4]
-    __attribute__((section(".sdata"))) = "%ld";
+static char str_score_fmt[4] __attribute__((section(".sdata"))) = "%ld";
 }
 }
-static char Panel_HalfMultiplierFormat[8]
-    __attribute__((section(".sdata"))) = " x%d.5";
+static char Panel_HalfMultiplierFormat[8] __attribute__((section(".sdata"))) = " x%d.5";
 namespace PanelAddressViewOwners
 {
 extern "C"
 {
-static char str_mult_fmt[8]
-    __attribute__((section(".sdata"))) = " x%d";
+static char str_mult_fmt[8] __attribute__((section(".sdata"))) = " x%d";
 }
 }
-static char str_time_fmt[12]
-    __attribute__((section(".sdata"))) = "%ld:%02ld";
+static char str_time_fmt[12] __attribute__((section(".sdata"))) = "%ld:%02ld";
 namespace PanelAddressViewOwners
 {
 extern "C"
 {
-static char str_goalcounter_name[8]
-    __attribute__((section(".sdata"))) = "spank";
+static char str_goalcounter_name[8] __attribute__((section(".sdata"))) = "spank";
 }
 }
-static char str_goalcounter_fmt[12]
-    __attribute__((section(".sdata"))) = "%d OF 5 %s";
+static char str_goalcounter_fmt[12] __attribute__((section(".sdata"))) = "%d OF 5 %s";
 
-static char str_tmr_perfect_spin[16]
-    __attribute__((section(".sdata"))) = "~PERFECT& %d %s";
-static char str_tmr_perfect[16]
-    __attribute__((section(".sdata"))) = "~PERFECT& %s";
-static char str_tmr_sloppy_spin[16]
-    __attribute__((section(".sdata"))) = "|SLOPPY` %d %s";
-static char str_tmr_sloppy[12]
-    __attribute__((section(".sdata"))) = "|SLOPPY` %s";
+static char str_tmr_perfect_spin[16] __attribute__((section(".sdata"))) = "~PERFECT& %d %s";
+static char str_tmr_perfect[16] __attribute__((section(".sdata"))) = "~PERFECT& %s";
+static char str_tmr_sloppy_spin[16] __attribute__((section(".sdata"))) = "|SLOPPY` %d %s";
+static char str_tmr_sloppy[12] __attribute__((section(".sdata"))) = "|SLOPPY` %s";
 namespace PanelAddressViewOwners
 {
 extern "C"
 {
-static char str_tmr_spin[8]
-    __attribute__((section(".sdata"))) = "%d %s";
-static char str_tmr_name[4]
-    __attribute__((section(".sdata"))) = "%s";
+static char str_tmr_spin[8] __attribute__((section(".sdata"))) = "%d %s";
+static char str_tmr_name[4] __attribute__((section(".sdata"))) = "%s";
 }
 }
-static char str_tmr_cont_spin[12]
-    __attribute__((section(".sdata"))) = "%s + %d %s";
+static char str_tmr_cont_spin[12] __attribute__((section(".sdata"))) = "%s + %d %s";
 namespace PanelAddressViewOwners
 {
 extern "C"
 {
-static char str_tmr_cont[8]
-    __attribute__((section(".sdata"))) = "%s + %s";
+static char str_tmr_cont[8] __attribute__((section(".sdata"))) = "%s + %s";
 }
 }
-static char str_tmr_overflow[12]
-    __attribute__((section(".sdata"))) = "%s + ...";
+static char str_tmr_overflow[12] __attribute__((section(".sdata"))) = "%s + ...";
 namespace PanelAddressViewOwners
 {
 extern "C"
 {
-static char str_tmr_break_spin[8]
-    __attribute__((section(".sdata"))) = "+ %d %s";
-static char str_tmr_break[8]
-    __attribute__((section(".sdata"))) = "+ %s";
+static char str_tmr_break_spin[8] __attribute__((section(".sdata"))) = "+ %d %s";
+static char str_tmr_break[8] __attribute__((section(".sdata"))) = "+ %s";
 }
 }
 
@@ -649,11 +620,9 @@ static inline int PanelShadowBottom(int y, int length)
 void Panel_Line(int x0, int y0, int x1, int y1, int Color)
 {
     LINE_F2 *aline = reinterpret_cast<LINE_F2 *>(pPoly);
-    unsigned char *newppoly =
-        reinterpret_cast<unsigned char *>(pPoly) + sizeof(LINE_F2);
+    unsigned char *newppoly = reinterpret_cast<unsigned char *>(pPoly) + sizeof(LINE_F2);
     pPoly = reinterpret_cast<unsigned int *>(newppoly);
-    *reinterpret_cast<unsigned int *>(&aline->r0) =
-        static_cast<unsigned int>(Color) + 0x40000000;
+    *reinterpret_cast<unsigned int *>(&aline->r0) = static_cast<unsigned int>(Color) + 0x40000000;
     aline->tag = 0x03000000;
     aline->x0 = x0;
     aline->y0 = y0;
@@ -678,13 +647,11 @@ void Panel_Line(int x0, int y0, int x1, int y1, int Color)
  * @param LineColor  Main meter color.
  * @param MarkerColor  Current-position marker color.
  */
-void Panel_BalanceUD(int Balance, int Max, int Length, int x, int y,
-                     int LineColor, int MarkerColor)
+void Panel_BalanceUD(int Balance, int Max, int Length, int x, int y, int LineColor, int MarkerColor)
 {
     int ShadowColor;
 
-    Panel_Line(x, y + Balance * Length / Max,
-               x + 6, y + Balance * Length / Max, MarkerColor);
+    Panel_Line(x, y + Balance * Length / Max, x + 6, y + Balance * Length / Max, MarkerColor);
 
     ShadowColor = (LineColor >> 3) & 0x001F1F1F;
     Panel_Line(x, y - Length, x, y + Length, LineColor);
@@ -692,13 +659,11 @@ void Panel_BalanceUD(int Balance, int Max, int Length, int x, int y,
     Panel_Line(x, y, x + 6, y, LineColor);
     Panel_Line(x, y + Length, x + 6, y + Length, LineColor);
 
-    Panel_Line(x + 1, PanelShadowTop(y, Length),
-               x + 1, PanelShadowBottom(y, Length), ShadowColor);
-    Panel_Line(x + 1, PanelShadowTop(y, Length),
-               x + 7, PanelShadowTop(y, Length), ShadowColor);
+    Panel_Line(x + 1, PanelShadowTop(y, Length), x + 1, PanelShadowBottom(y, Length), ShadowColor);
+    Panel_Line(x + 1, PanelShadowTop(y, Length), x + 7, PanelShadowTop(y, Length), ShadowColor);
     Panel_Line(x + 1, y + 1, x + 7, y + 1, ShadowColor);
-    Panel_Line(x + 1, PanelShadowBottom(y, Length),
-               x + 7, PanelShadowBottom(y, Length), ShadowColor);
+    Panel_Line(x + 1, PanelShadowBottom(y, Length), x + 7, PanelShadowBottom(y, Length),
+               ShadowColor);
 }
 
 /**
@@ -714,8 +679,7 @@ void Panel_BalanceUD(int Balance, int Max, int Length, int x, int y,
  */
 void Panel_addPrim(void *prim)
 {
-    PanelDoubleBuffer *buffer =
-        reinterpret_cast<PanelDoubleBuffer *>(pDoubleBuffer);
+    PanelDoubleBuffer *buffer = reinterpret_cast<PanelDoubleBuffer *>(pDoubleBuffer);
     addPrim(buffer->PanelOT, prim);
     prim_added = reinterpret_cast<void *>(1);
 }
@@ -733,8 +697,7 @@ void Panel_Init(void)
     FontManager::LoadFont(str_panel_font2);
     FontManager::LoadFont(str_panel_font3);
     GGameFont = Mess_LoadFont(str_panel_messfont, 2, 2, -1);
-    Sprite2 *ptr = new Sprite2(
-        str_panel_sprite, 1, 0, 0);
+    Sprite2 *ptr = new Sprite2(str_panel_sprite, 1, 0, 0);
     CPanelData::mpSwitchSprite = ptr;
     FallingTextEffect::InitSprite();
 }
@@ -786,8 +749,7 @@ void Panel_Update(void)
 POLY_FT4 *Panel_DrawTexturedPoly(SAnimFrame *pFrame)
 {
     POLY_FT4 *apoly = reinterpret_cast<POLY_FT4 *>(pPoly);
-    unsigned char *newppoly =
-        reinterpret_cast<unsigned char *>(pPoly) + sizeof(POLY_FT4);
+    unsigned char *newppoly = reinterpret_cast<unsigned char *>(pPoly) + sizeof(POLY_FT4);
     if (newppoly > PolyBufferEnd)
     {
         return 0;
@@ -801,8 +763,7 @@ POLY_FT4 *Panel_DrawTexturedPoly(SAnimFrame *pFrame)
     unsigned int foo1 = *reinterpret_cast<unsigned int *>(&stored->u0);
     unsigned int foo2 = *reinterpret_cast<unsigned int *>(&stored->u1);
     unsigned int foo3 = *reinterpret_cast<unsigned int *>(&stored->u2);
-    unsigned short lastUV =
-        *reinterpret_cast<unsigned short *>(&stored->u3);
+    unsigned short lastUV = *reinterpret_cast<unsigned short *>(&stored->u3);
     *reinterpret_cast<unsigned int *>(&apoly->u0) = foo1;
     *reinterpret_cast<unsigned int *>(&apoly->u1) = foo2;
     *reinterpret_cast<unsigned int *>(&apoly->u2) = foo3;
@@ -824,8 +785,7 @@ POLY_FT4 *Panel_DrawTexturedPoly(SAnimFrame *pFrame)
  * @param pPol  Pol to operate on.
  * @param pFrame  Frame to operate on.
  */
-void Panel_SetStretchedScreenCoords(int x, int y, POLY_FT4 *pPol,
-                                    SAnimFrame *pFrame)
+void Panel_SetStretchedScreenCoords(int x, int y, POLY_FT4 *pPol, SAnimFrame *pFrame)
 {
     int Width = static_cast<int>(pFrame->Width) * 512 / 320;
     int Height = pFrame->Height;
@@ -858,14 +818,13 @@ void Panel_SetStretchedScreenCoords(int x, int y, POLY_FT4 *pPol,
  * @param sort  Panel ordering-table bucket.
  * @return The allocated primitive, or null when the primitive buffer is full.
  */
-POLY_F4 *Panel_DrawFlatShadedPoly(int x, int y, int w, int h, unsigned char r, unsigned char g, unsigned char b, int sort)
+POLY_F4 *Panel_DrawFlatShadedPoly(int x, int y, int w, int h, unsigned char r, unsigned char g,
+                                  unsigned char b, int sort)
 {
     POLY_F4 *apoly = reinterpret_cast<POLY_F4 *>(pPoly);
-    unsigned char *newppoly =
-        reinterpret_cast<unsigned char *>(pPoly) + sizeof(POLY_F4);
+    unsigned char *newppoly = reinterpret_cast<unsigned char *>(pPoly) + sizeof(POLY_F4);
 
-    if (newppoly > PolyBufferEnd)
-        return 0;
+    if (newppoly > PolyBufferEnd) return 0;
 
     pPoly = reinterpret_cast<unsigned int *>(newppoly);
     (setlen(apoly, 5), apoly->code = 0x28);
@@ -904,14 +863,14 @@ POLY_F4 *Panel_DrawFlatShadedPoly(int x, int y, int w, int h, unsigned char r, u
  * @param sort  Panel ordering-table bucket.
  * @return The allocated primitive, or null when the primitive buffer is full.
  */
-POLY_G4 *DrawGouraudPoly(int x, int y, int w, int h, unsigned char rtop, unsigned char gtop, unsigned char btop, unsigned char rbottom, unsigned char gbottom, unsigned char bbottom, int sort)
+POLY_G4 *DrawGouraudPoly(int x, int y, int w, int h, unsigned char rtop, unsigned char gtop,
+                         unsigned char btop, unsigned char rbottom, unsigned char gbottom,
+                         unsigned char bbottom, int sort)
 {
     POLY_G4 *apoly = reinterpret_cast<POLY_G4 *>(pPoly);
-    unsigned char *newppoly =
-        reinterpret_cast<unsigned char *>(pPoly) + sizeof(POLY_G4);
+    unsigned char *newppoly = reinterpret_cast<unsigned char *>(pPoly) + sizeof(POLY_G4);
 
-    if (newppoly > PolyBufferEnd)
-        return 0;
+    if (newppoly > PolyBufferEnd) return 0;
 
     pPoly = reinterpret_cast<unsigned int *>(newppoly);
     (setlen(apoly, 8), apoly->code = 0x38);
@@ -975,39 +934,32 @@ void DisplayTapesSkate(void)
             Mess_SetScale(0xff);
             if (player->mPanelData.SKATE[0] != 0)
             {
-                Mess_DrawPanelText(SKATE_Pos, 80,
-                                   str_letter_S, 0, 0, 0x100);
+                Mess_DrawPanelText(SKATE_Pos, 80, str_letter_S, 0, 0, 0x100);
             }
             if (player->mPanelData.SKATE[1] != 0)
             {
-                Mess_DrawPanelText(SKATE_Pos, 105,
-                                   str_letter_K, 0, 0, 0x100);
+                Mess_DrawPanelText(SKATE_Pos, 105, str_letter_K, 0, 0, 0x100);
             }
             if (player->mPanelData.SKATE[2] != 0)
             {
-                Mess_DrawPanelText(SKATE_Pos, 130,
-                                   str_letter_A, 0, 0, 0x100);
+                Mess_DrawPanelText(SKATE_Pos, 130, str_letter_A, 0, 0, 0x100);
             }
             if (player->mPanelData.SKATE[3] != 0)
             {
-                Mess_DrawPanelText(SKATE_Pos, 155,
-                                   str_letter_T, 0, 0, 0x100);
+                Mess_DrawPanelText(SKATE_Pos, 155, str_letter_T, 0, 0, 0x100);
             }
             if (player->mPanelData.SKATE[4] != 0)
             {
-                Mess_DrawPanelText(SKATE_Pos, 180,
-                                   str_letter_E, 0, 0, 0x100);
+                Mess_DrawPanelText(SKATE_Pos, 180, str_letter_E, 0, 0, 0x100);
             }
         }
         if (TAPES_Display != 0)
         {
             if (TAPES_Pos >= 482)
             {
-                if (TAPES_Display >= 11)
-                    TAPES_Pos -= 4;
+                if (TAPES_Display >= 11) TAPES_Pos -= 4;
             }
-            if (TAPES_Display < 11)
-                TAPES_Pos = 511 - (TAPES_Display << 2);
+            if (TAPES_Display < 11) TAPES_Pos = 511 - (TAPES_Display << 2);
             --TAPES_Display;
         }
     }
@@ -1088,17 +1040,14 @@ void DisplayScore(CBruce *pBruce, unsigned short xpos, unsigned short ypos)
                 barWidth = player->mMagicTime * 120 / 750;
                 DrawGouraudPoly(x - 1, y + 10, barWidth, 3,
                                 (static_cast<unsigned int>(Xblanks) % 40) * 6,
+                                (static_cast<unsigned int>(Xblanks) % 40) * 6, 50,
                                 (static_cast<unsigned int>(Xblanks) % 40) * 6,
-                                50,
-                                (static_cast<unsigned int>(Xblanks) % 40) * 6,
-                                (static_cast<unsigned int>(Xblanks) % 40) * 6,
-                                50, 0);
+                                (static_cast<unsigned int>(Xblanks) % 40) * 6, 50, 0);
             }
             else if (barWidth != 0)
             {
                 barWidth /= 25;
-                DrawGouraudPoly(x - 1, y + 10, barWidth, 3,
-                                0, 150, 0, 0, 150, 50, 0);
+                DrawGouraudPoly(x - 1, y + 10, barWidth, 3, 0, 150, 0, 0, 150, 50, 0);
             }
         }
 
@@ -1131,11 +1080,8 @@ void DisplayScore(CBruce *pBruce, unsigned short xpos, unsigned short ypos)
             }
             else
             {
-                pBarSprite->draw(
-                    x - 4, y, 1,
-                    (static_cast<unsigned int>(Xblanks) % 40) * 6,
-                    (static_cast<unsigned int>(Xblanks) % 40) * 6,
-                    50);
+                pBarSprite->draw(x - 4, y, 1, (static_cast<unsigned int>(Xblanks) % 40) * 6,
+                                 (static_cast<unsigned int>(Xblanks) % 40) * 6, 50);
             }
         }
     }
@@ -1174,13 +1120,11 @@ void DisplayScore(CBruce *pBruce, unsigned short xpos, unsigned short ypos)
     {
         if (GGame == 1 && Levels[GLevel].isCompetition == 0)
         {
-            if (player->mPanelData.mTotalScore >= Levels[GLevel].HiScore &&
-                Career_Got(0) == 0)
+            if (player->mPanelData.mTotalScore >= Levels[GLevel].HiScore && Career_Got(0) == 0)
             {
                 Panel_Tape(0);
             }
-            if (player->mPanelData.mTotalScore >= Levels[GLevel].ProScore &&
-                Career_Got(4) == 0)
+            if (player->mPanelData.mTotalScore >= Levels[GLevel].ProScore && Career_Got(4) == 0)
             {
                 Panel_Tape(4);
             }
@@ -1194,10 +1138,9 @@ void DisplayScore(CBruce *pBruce, unsigned short xpos, unsigned short ypos)
         {
             // The original variadic call supplied the score even though this
             // fixed overflow message does not consume it.
-            sprintf(score, Panel_ScoreOverflow_reference,
-                    player->mPanelData.mTotalScore);
-            player->mPanelData.mScoreFont.setRGB(
-                (static_cast<unsigned int>(Xblanks) % 20) * 12, 100, 100);
+            sprintf(score, Panel_ScoreOverflow_reference, player->mPanelData.mTotalScore);
+            player->mPanelData.mScoreFont.setRGB((static_cast<unsigned int>(Xblanks) % 20) * 12,
+                                                 100, 100);
         }
         else
         {
@@ -1212,7 +1155,6 @@ void DisplayScore(CBruce *pBruce, unsigned short xpos, unsigned short ypos)
         }
         player->mPanelData.mScoreFont.draw(x + 125, y - 4, score, 0);
     }
-
 }
 
 /**
@@ -1293,9 +1235,7 @@ void DisplayHolding(CBruce *pBruce, unsigned short xpos, unsigned short ypos)
         {
             char score[15];
             sprintf(score, str_score_fmt,
-                    bailing != 0
-                        ? static_cast<unsigned int>(LastHoldingScore)
-                        : HoldingScore);
+                    bailing != 0 ? static_cast<unsigned int>(LastHoldingScore) : HoldingScore);
             player->mPanelData.mTrickFont.setRGB(0x80, 0x80, 0x80);
             GraffitiColor(pBruce);
             if (Mult >= 3)
@@ -1304,11 +1244,9 @@ void DisplayHolding(CBruce *pBruce, unsigned short xpos, unsigned short ypos)
                 player->mPanelData.mTrickFont.JustX = 1;
             if (DoDisplay != 0)
             {
-                player->mPanelData.mFallingTextEffect.bind(
-                    &player->mPanelData.mTrickFont);
+                player->mPanelData.mFallingTextEffect.bind(&player->mPanelData.mTrickFont);
                 player->mPanelData.mTrickFont.Scale = 0x1000;
-                player->mPanelData.mTrickFont.draw(static_cast<int>(xpos),
-                                                   static_cast<int>(ypos),
+                player->mPanelData.mTrickFont.draw(static_cast<int>(xpos), static_cast<int>(ypos),
                                                    score, 0);
                 player->mPanelData.mFallingTextEffect.TextEffect.unbind(
                     &player->mPanelData.mTrickFont);
@@ -1326,20 +1264,18 @@ void DisplayHolding(CBruce *pBruce, unsigned short xpos, unsigned short ypos)
                 player->mPanelData.mTrickFont.JustX = 0;
                 if (DoDisplay != 0)
                 {
-                    player->mPanelData.mFallingTextEffect.bind(
-                        &player->mPanelData.mTrickFont);
+                    player->mPanelData.mFallingTextEffect.bind(&player->mPanelData.mTrickFont);
                     player->mPanelData.mTrickFont.Scale = 0x1000;
                     player->mPanelData.mTrickFont.draw(static_cast<int>(xpos),
-                                                       static_cast<int>(ypos),
-                                                       mult, 0);
+                                                       static_cast<int>(ypos), mult, 0);
                     player->mPanelData.mFallingTextEffect.TextEffect.unbind(
                         &player->mPanelData.mTrickFont);
                 }
             }
             if (HoldingScore != 0)
             {
-                LastHoldingScore = static_cast<int>(
-                    (HoldingScore * static_cast<unsigned int>(Mult)) >> 1);
+                LastHoldingScore =
+                    static_cast<int>((HoldingScore * static_cast<unsigned int>(Mult)) >> 1);
             }
         }
 
@@ -1347,8 +1283,7 @@ void DisplayHolding(CBruce *pBruce, unsigned short xpos, unsigned short ypos)
         {
             if (player->mNum180Spins > player->mPanelData.old_180spins)
             {
-                if (player->mPhysicsState != 2 ||
-                    player->mNum180Spins >= 2)
+                if (player->mPhysicsState != 2 || player->mNum180Spins >= 2)
                 {
                     player->mPanelData.TrickMessage();
                     player->mPanelData.old_180spins = player->mNum180Spins;
@@ -1403,27 +1338,19 @@ void DisplayTime(CBruce *pBruce, unsigned short xpos, unsigned short ypos)
                 sprintf(time, str_time_fmt, mins, secs);
                 if (GGame == 7)
                 {
-                    if (mins != 0)
-                        goto dt_draw_ot;
-                    if (secs >= 4)
-                        goto dt_draw_ot;
-                    if (static_cast<unsigned int>(Xblanks) % 30u < 15u)
-                        return;
+                    if (mins != 0) goto dt_draw_ot;
+                    if (secs >= 4) goto dt_draw_ot;
+                    if (static_cast<unsigned int>(Xblanks) % 30u < 15u) return;
                 dt_draw_ot:
                     timer->mPanelData.mTimerFont.draw(static_cast<int>(xpos),
-                                                      static_cast<int>(ypos),
-                                                      time, 0);
+                                                      static_cast<int>(ypos), time, 0);
                     return;
                 }
-                if (mins != 0)
-                    goto dt_draw;
-                if (secs >= 11)
-                    goto dt_draw;
-                if (static_cast<unsigned int>(Xblanks) % 60u < 30u)
-                    goto dt_skip;
+                if (mins != 0) goto dt_draw;
+                if (secs >= 11) goto dt_draw;
+                if (static_cast<unsigned int>(Xblanks) % 60u < 30u) goto dt_skip;
             dt_draw:
-                timer->mPanelData.mTimerFont.draw(static_cast<int>(xpos),
-                                                  static_cast<int>(ypos),
+                timer->mPanelData.mTimerFont.draw(static_cast<int>(xpos), static_cast<int>(ypos),
                                                   time, 0);
             dt_skip:
                 if (timer->mIndex == 0)
@@ -1436,8 +1363,7 @@ void DisplayTime(CBruce *pBruce, unsigned short xpos, unsigned short ypos)
                     {
                         SFX_PlayX(0x16, 0x2000, 0);
                         sub = Urgent / 10;
-                        if (sub < 10)
-                            sub = 10;
+                        if (sub < 10) sub = 10;
                         Urgent -= sub;
                     }
                 }
@@ -1461,35 +1387,35 @@ void Panel_GetViewportMessOffset(int viewportMode, short *pOffsetX, short *pOffs
 {
     switch (viewportMode)
     {
-    case 0:
-    case 1:
-        *pOffsetX = 0;
-        *pOffsetY = 0;
-        break;
-    case 4:
-        *pOffsetX = 0;
-        *pOffsetY = 60;
-        break;
-    case 6:
-        *pOffsetX = 128;
-        *pOffsetY = 60;
-        break;
-    case 2:
-        *pOffsetX = 128;
-        *pOffsetY = 0;
-        break;
-    case 5:
-        *pOffsetX = 0;
-        *pOffsetY = -60;
-        break;
-    case 7:
-        *pOffsetX = -128;
-        *pOffsetY = -60;
-        break;
-    case 3:
-        *pOffsetX = -128;
-        *pOffsetY = 0;
-        break;
+        case 0:
+        case 1:
+            *pOffsetX = 0;
+            *pOffsetY = 0;
+            break;
+        case 4:
+            *pOffsetX = 0;
+            *pOffsetY = 60;
+            break;
+        case 6:
+            *pOffsetX = 128;
+            *pOffsetY = 60;
+            break;
+        case 2:
+            *pOffsetX = 128;
+            *pOffsetY = 0;
+            break;
+        case 5:
+            *pOffsetX = 0;
+            *pOffsetY = -60;
+            break;
+        case 7:
+            *pOffsetX = -128;
+            *pOffsetY = -60;
+            break;
+        case 3:
+            *pOffsetX = -128;
+            *pOffsetY = 0;
+            break;
     }
 }
 
@@ -1504,34 +1430,23 @@ void DisplayOutOfBounds(CBruce *pBruce, unsigned short xpos, unsigned short ypos
     {
         short offsetX;
         short offsetY;
-        Panel_GetViewportMessOffset(
-            ViewportMode * 2 + player->mPanelData.mPlayerNum,
-            &offsetX, &offsetY);
+        Panel_GetViewportMessOffset(ViewportMode * 2 + player->mPanelData.mPlayerNum, &offsetX,
+                                    &offsetY);
         char *pString;
         switch (player->mPanelData.mOutOfBounds)
         {
-        case 1:
-            pString = GameText.pOutOfBounds1;
-            break;
-        case 2:
-            pString = GameText.pOutOfBounds2;
-            break;
-        case 3:
-            pString = GameText.pOutOfBounds3;
-            break;
-        default:
-            pString = GameText.pOutOfBounds4;
-            break;
+            case 1: pString = GameText.pOutOfBounds1; break;
+            case 2: pString = GameText.pOutOfBounds2; break;
+            case 3: pString = GameText.pOutOfBounds3; break;
+            default: pString = GameText.pOutOfBounds4; break;
         }
         player->mPanelData.mOutOfBoundsText.update();
-        player->mPanelData.mOutOfBoundsText.bind(
-            &player->mPanelData.mTrickFont);
+        player->mPanelData.mOutOfBoundsText.bind(&player->mPanelData.mTrickFont);
         player->mPanelData.mTrickFont.Scale = 0x1000;
-        player->mPanelData.mTrickFont.draw(
-            static_cast<int>(xpos) + static_cast<int>(offsetX),
-            static_cast<int>(ypos) + static_cast<int>(offsetY), pString, 0);
-        player->mPanelData.mOutOfBoundsText.TextEffect.unbind(
-            &player->mPanelData.mTrickFont);
+        player->mPanelData.mTrickFont.draw(static_cast<int>(xpos) + static_cast<int>(offsetX),
+                                           static_cast<int>(ypos) + static_cast<int>(offsetY),
+                                           pString, 0);
+        player->mPanelData.mOutOfBoundsText.TextEffect.unbind(&player->mPanelData.mTrickFont);
         if (player->mPanelData.mOutOfBoundsText.handleComplete() != 0)
         {
             player->mPanelData.mOutOfBounds = 0;
@@ -1550,21 +1465,14 @@ void Panel_ReplayInstructions(void)
     if (info->VideoMode == 2 && DemoTimer != 0)
     {
         int status = Status;
-        if (status == 0x14)
-            return;
-        if (status == 0x16)
-            return;
-        if (status == 0x15)
-            return;
+        if (status == 0x14) return;
+        if (status == 0x16) return;
+        if (status == 0x15) return;
         int phase = info->ReplayHighlight;
-        if (phase != 0)
-            goto check_phase;
-        if (static_cast<unsigned int>(info->NumFrames - info->FramesLeft) <
-            90u)
-            goto draw;
+        if (phase != 0) goto check_phase;
+        if (static_cast<unsigned int>(info->NumFrames - info->FramesLeft) < 90u) goto draw;
     check_phase:
-        if (phase != 1)
-            return;
+        if (phase != 1) return;
     draw:
         Mess_SetRGB(0x80, 0x80, 0x80, 0);
         Mess_SetScale(0xbc);
@@ -1572,8 +1480,7 @@ void Panel_ReplayInstructions(void)
         int width = 256;
         int y = 220;
         int width_last = 256;
-        Mess_DrawPanelText(width, y, GameText.pReplayInstructions,
-                           0, 0, width_last);
+        Mess_DrawPanelText(width, y, GameText.pReplayInstructions, 0, 0, width_last);
     }
 }
 
@@ -1599,8 +1506,7 @@ int CPanelData::TQ_SpinDisplay(int i)
     else
     {
         int first = i;
-        while (first > 0 && mTQ[first - 1].locked != 1)
-            --first;
+        while (first > 0 && mTQ[first - 1].locked != 1) --first;
 
         result = first == i ? TQ_SpinMultiplier(first) : 0;
     }
@@ -1622,8 +1528,7 @@ int CPanelData::TQ_SpinDisplay(int i)
 int CPanelData::TQ_SpinMultiplier(int i)
 {
     int first = i;
-    while (first > 0 && mTQ[first - 1].locked != 1)
-        --first;
+    while (first > 0 && mTQ[first - 1].locked != 1) --first;
 
     int spins = 0;
     while (first < mTQStack && mTQ[first].locked != 1)
@@ -1632,8 +1537,7 @@ int CPanelData::TQ_SpinMultiplier(int i)
         ++first;
     }
 
-    if (first < mTQStack)
-        spins += mTQ[first].spins;
+    if (first < mTQStack) spins += mTQ[first].spins;
 
     return spins;
 }
@@ -1661,29 +1565,26 @@ int CPanelData::TotalTrickScore()
             do
             {
                 int count = mTQ[i].count;
-                if (mTQ[i].depreciate == 0)
-                    count = 1;
+                if (mTQ[i].depreciate == 0) count = 1;
                 --count;
-                if (count > 4)
-                    count = 4;
+                if (count > 4) count = 4;
 
                 int trickScore = mTQ[i].point_value;
                 int depreciation = Depreciation_Values[count];
                 int updatedScore;
                 if (TQ_SpinMultiplier(i) < 6)
                 {
-                    updatedScore = score +
-                                   ((trickScore *
-                                     (Spin_Mult_Values[TQ_SpinMultiplier(i)] + 2)) / 2) *
-                                       depreciation / 100;
+                    updatedScore =
+                        score + ((trickScore * (Spin_Mult_Values[TQ_SpinMultiplier(i)] + 2)) / 2) *
+                                    depreciation / 100;
                 }
                 else
                 {
-                    updatedScore = score +
-                                   ((trickScore *
-                                     (TQ_SpinMultiplier(i) * 4 +
-                                      Spin_Mult_Values[5] - 0x12)) / 2) *
-                                       depreciation / 100;
+                    updatedScore =
+                        score +
+                        ((trickScore * (TQ_SpinMultiplier(i) * 4 + Spin_Mult_Values[5] - 0x12)) /
+                         2) *
+                            depreciation / 100;
                 }
                 score = updatedScore;
 
@@ -1741,13 +1642,10 @@ int CPanelData::TotalScore()
  * @param xpos  X coordinate.
  * @param ypos  Y coordinate.
  */
-void CPanelData::DisplayTrick(CBruce *pBruce, unsigned short xpos,
-                              unsigned short ypos)
+void CPanelData::DisplayTrick(CBruce *pBruce, unsigned short xpos, unsigned short ypos)
 {
-    if ((GVInfo1.VideoMode ^ 2) == 0)
-        return;
-    if (PanelCareer(&GCareer)->ScoreDisplayEnabled == 0)
-        return;
+    if ((GVInfo1.VideoMode ^ 2) == 0) return;
+    if (PanelCareer(&GCareer)->ScoreDisplayEnabled == 0) return;
     mTrickFont.setRGB(0x80, 0x80, 0x80);
     GraffitiColor(pBruce);
     mTrickFont.JustX = 1;
@@ -1757,8 +1655,7 @@ void CPanelData::DisplayTrick(CBruce *pBruce, unsigned short xpos,
     }
     else
     {
-        if (mpTextEffect != &mFallingTextEffect.TextEffect)
-            return;
+        if (mpTextEffect != &mFallingTextEffect.TextEffect) return;
         mFallingTextEffect.bind(&mTrickFont);
     }
     // Draw line 3 if non-empty
@@ -1774,10 +1671,8 @@ void CPanelData::DisplayTrick(CBruce *pBruce, unsigned short xpos,
         ypos -= mTrickFont.height(mTrickName2) + 5;
     }
     // Main trick text line
-    mFallingTextEffect.drawBloodyFrame(
-        xpos, ypos, mTrickFont.width(mTrickName));
-    mTrickFont.draw(
-        xpos, ypos, PanelBruce(pBruce)->mPanelData.mTrickName, 0);
+    mFallingTextEffect.drawBloodyFrame(xpos, ypos, mTrickFont.width(mTrickName));
+    mTrickFont.draw(xpos, ypos, PanelBruce(pBruce)->mPanelData.mTrickName, 0);
     // Virtual call: activeEffect->update(font)
     TextEffect *effect = mpTextEffect;
     PanelTextEffectDispatch(effect)->Unbind(effect, &mTrickFont);
@@ -1821,88 +1716,87 @@ void Panel_Display(void)
         Panel_ReplayInstructions();
         for (; pBruce != 0; pBruce = PanelNextBruce(pBruce))
         {
-        PanelBruce(pBruce)->mPanelData.mFallingTextEffect.update();
-        PanelBruce(pBruce)->mPanelData.mTrickTextEffect.update();
-        DisplayOutOfBounds(pBruce, 256, 90);
-        DisplayTapesSkate();
-        if (GamePaused != 0)
-        {
-            SKATE_Display = 30;
-            TAPES_Display = 30;
-            return;
-        }
-        {
-            int vm = ViewportMode;
-            unsigned short playerNum = PanelBruce(pBruce)->mPanelData.mPlayerNum;
-            unsigned int vpIdx = vm * 2 + playerNum;
-            switch (vpIdx)
+            PanelBruce(pBruce)->mPanelData.mFallingTextEffect.update();
+            PanelBruce(pBruce)->mPanelData.mTrickTextEffect.update();
+            DisplayOutOfBounds(pBruce, 256, 90);
+            DisplayTapesSkate();
+            if (GamePaused != 0)
             {
-            case 0:
-            case 1:
-                PanelBruce(pBruce)->mPanelData.mTrickFont.SpaceX = 1;
-                TrickTips_Display();
-                DisplaySwitchness(pBruce, 430, 30);
-                DisplayHolding(pBruce, 256, 224);
-                PanelBruce(pBruce)->mPanelData.DisplayTrick(pBruce, 256, 205);
-                DisplayScore(pBruce, 25, 45);
-                DisplayTime(pBruce, 256, 48);
-                break;
-            case 2:
-                PanelBruce(pBruce)->mPanelData.mTrickFont.SpaceX = 0;
-                DisplaySwitchness(pBruce, 443, 210);
-                DisplayHolding(pBruce, 384, 224);
-                PanelBruce(pBruce)->mPanelData.DisplayTrick(pBruce, 384, 205);
-                DisplayScore(pBruce, 358, 45);
-                break;
-            case 4:
-                PanelBruce(pBruce)->mPanelData.mTrickFont.SpaceX = 1;
-                DisplaySwitchness(pBruce, 443, 210);
-                PanelBruce(pBruce)->mPanelData.DisplayTrick(pBruce, 256, 205);
-                DisplayHolding(pBruce, 256, 224);
-                DisplayScore(pBruce, 25, 145);
-                DisplayTime(pBruce, 452, 145);
-                break;
-            case 6:
-                PanelBruce(pBruce)->mPanelData.mTrickFont.SpaceX = 0;
-                DisplaySwitchness(pBruce, 55, 150);
-                DisplayHolding(pBruce, 128, 234);
-                PanelBruce(pBruce)->mPanelData.DisplayTrick(pBruce, 128, 215);
-                DisplayScore(pBruce, 112, 150);
-                DisplayTime(pBruce, 55, 145);
-                Panel_DrawFlatShadedPoly(256, 0, 256, 120, 30, 30, 30, 1);
-                break;
-            case 3:
-                PanelBruce(pBruce)->mPanelData.mTrickFont.SpaceX = 0;
-                DisplaySwitchness(pBruce, 25, 210);
-                DisplayHolding(pBruce, 128, 224);
-                PanelBruce(pBruce)->mPanelData.DisplayTrick(pBruce, 128, 205);
-                DisplayScore(pBruce, 25, 45);
-                DisplayTime(pBruce, 256, 48);
-                break;
-            case 5:
-                PanelBruce(pBruce)->mPanelData.mTrickFont.SpaceX = 1;
-                DisplaySwitchness(pBruce, 443, 95);
-                PanelBruce(pBruce)->mPanelData.DisplayTrick(pBruce, 256, 85);
-                DisplayHolding(pBruce, 256, 104);
-                DisplayScore(pBruce, 25, 35);
-                DisplayTime(pBruce, 452, 35);
-                break;
-            case 7:
-                PanelBruce(pBruce)->mPanelData.mTrickFont.SpaceX = 0;
-                DisplaySwitchness(pBruce, 457, 35);
-                DisplayHolding(pBruce, 384, 119);
-                PanelBruce(pBruce)->mPanelData.DisplayTrick(pBruce, 384, 98);
-                DisplayScore(pBruce, 276, 35);
-                DisplayTime(pBruce, 457, 30);
-                Panel_DrawFlatShadedPoly(0, 120, 257, 2, 30, 30, 30, 1);
-                Panel_DrawFlatShadedPoly(0, 120, 257, 120, 20, 20, 20, 1);
-                Panel_DrawFlatShadedPoly(256, 119, 512, 2, 30, 30, 30, 1);
-                break;
-            case 8:
-            case 9:
-                break;
+                SKATE_Display = 30;
+                TAPES_Display = 30;
+                return;
             }
-        }
+            {
+                int vm = ViewportMode;
+                unsigned short playerNum = PanelBruce(pBruce)->mPanelData.mPlayerNum;
+                unsigned int vpIdx = vm * 2 + playerNum;
+                switch (vpIdx)
+                {
+                    case 0:
+                    case 1:
+                        PanelBruce(pBruce)->mPanelData.mTrickFont.SpaceX = 1;
+                        TrickTips_Display();
+                        DisplaySwitchness(pBruce, 430, 30);
+                        DisplayHolding(pBruce, 256, 224);
+                        PanelBruce(pBruce)->mPanelData.DisplayTrick(pBruce, 256, 205);
+                        DisplayScore(pBruce, 25, 45);
+                        DisplayTime(pBruce, 256, 48);
+                        break;
+                    case 2:
+                        PanelBruce(pBruce)->mPanelData.mTrickFont.SpaceX = 0;
+                        DisplaySwitchness(pBruce, 443, 210);
+                        DisplayHolding(pBruce, 384, 224);
+                        PanelBruce(pBruce)->mPanelData.DisplayTrick(pBruce, 384, 205);
+                        DisplayScore(pBruce, 358, 45);
+                        break;
+                    case 4:
+                        PanelBruce(pBruce)->mPanelData.mTrickFont.SpaceX = 1;
+                        DisplaySwitchness(pBruce, 443, 210);
+                        PanelBruce(pBruce)->mPanelData.DisplayTrick(pBruce, 256, 205);
+                        DisplayHolding(pBruce, 256, 224);
+                        DisplayScore(pBruce, 25, 145);
+                        DisplayTime(pBruce, 452, 145);
+                        break;
+                    case 6:
+                        PanelBruce(pBruce)->mPanelData.mTrickFont.SpaceX = 0;
+                        DisplaySwitchness(pBruce, 55, 150);
+                        DisplayHolding(pBruce, 128, 234);
+                        PanelBruce(pBruce)->mPanelData.DisplayTrick(pBruce, 128, 215);
+                        DisplayScore(pBruce, 112, 150);
+                        DisplayTime(pBruce, 55, 145);
+                        Panel_DrawFlatShadedPoly(256, 0, 256, 120, 30, 30, 30, 1);
+                        break;
+                    case 3:
+                        PanelBruce(pBruce)->mPanelData.mTrickFont.SpaceX = 0;
+                        DisplaySwitchness(pBruce, 25, 210);
+                        DisplayHolding(pBruce, 128, 224);
+                        PanelBruce(pBruce)->mPanelData.DisplayTrick(pBruce, 128, 205);
+                        DisplayScore(pBruce, 25, 45);
+                        DisplayTime(pBruce, 256, 48);
+                        break;
+                    case 5:
+                        PanelBruce(pBruce)->mPanelData.mTrickFont.SpaceX = 1;
+                        DisplaySwitchness(pBruce, 443, 95);
+                        PanelBruce(pBruce)->mPanelData.DisplayTrick(pBruce, 256, 85);
+                        DisplayHolding(pBruce, 256, 104);
+                        DisplayScore(pBruce, 25, 35);
+                        DisplayTime(pBruce, 452, 35);
+                        break;
+                    case 7:
+                        PanelBruce(pBruce)->mPanelData.mTrickFont.SpaceX = 0;
+                        DisplaySwitchness(pBruce, 457, 35);
+                        DisplayHolding(pBruce, 384, 119);
+                        PanelBruce(pBruce)->mPanelData.DisplayTrick(pBruce, 384, 98);
+                        DisplayScore(pBruce, 276, 35);
+                        DisplayTime(pBruce, 457, 30);
+                        Panel_DrawFlatShadedPoly(0, 120, 257, 2, 30, 30, 30, 1);
+                        Panel_DrawFlatShadedPoly(0, 120, 257, 120, 20, 20, 20, 1);
+                        Panel_DrawFlatShadedPoly(256, 119, 512, 2, 30, 30, 30, 1);
+                        break;
+                    case 8:
+                    case 9: break;
+                }
+            }
         }
     }
 }
@@ -1962,8 +1856,7 @@ void Panel_HoldTrick(CBruce *pPlayer, int Points)
     PanelBruceScoreView *player = PanelBruce(pPlayer);
     if (player->mPanelData.mTQStack > 0)
     {
-        player->mPanelData.mTQ[player->mPanelData.mTQStack - 1].point_value +=
-            Points;
+        player->mPanelData.mTQ[player->mPanelData.mTQStack - 1].point_value += Points;
         player->mPanelData.TrickMessageRefresh();
     }
 }
@@ -2018,16 +1911,11 @@ int Panel_Letter(int Letter)
         player->mPanelData.SKATE[Letter] = reinterpret_cast<void *>(1);
     }
     PanelBruceScoreView *p = PanelBruce(MechList);
-    if (p->mPanelData.SKATE[0] != reinterpret_cast<void *>(1))
-        return 0;
-    if (p->mPanelData.SKATE[1] != reinterpret_cast<void *>(1))
-        return 0;
-    if (p->mPanelData.SKATE[2] != reinterpret_cast<void *>(1))
-        return 0;
-    if (p->mPanelData.SKATE[3] != reinterpret_cast<void *>(1))
-        return 0;
-    if (p->mPanelData.SKATE[4] != reinterpret_cast<void *>(1))
-        return 0;
+    if (p->mPanelData.SKATE[0] != reinterpret_cast<void *>(1)) return 0;
+    if (p->mPanelData.SKATE[1] != reinterpret_cast<void *>(1)) return 0;
+    if (p->mPanelData.SKATE[2] != reinterpret_cast<void *>(1)) return 0;
+    if (p->mPanelData.SKATE[3] != reinterpret_cast<void *>(1)) return 0;
+    if (p->mPanelData.SKATE[4] != reinterpret_cast<void *>(1)) return 0;
     Panel_Tape(2);
     return 1;
 }
@@ -2044,29 +1932,25 @@ void Panel_Tape(int Tape)
     Career_GiveTape(GLevel, Tape);
     switch (Tape)
     {
-    case 2:
-        Mess_Message(GameText.pSKATETape, Messprog_Goal, 1, 0, 0);
-        return;
-    case 0:
-        SFX_PlayX(0x13, 0x2000, 0);
-        Mess_Message(GameText.p20000Tape, Messprog_Goal, 1, 0, 0);
-        return;
-    case 4:
-        SFX_PlayX(0x13, 0x2000, 0);
-        Mess_Message(GameText.p40000Tape, Messprog_Goal, 1, 0, 0);
-        return;
-    case 1:
-        SFX_PlayX(0x13, 0x2000, 0);
-        sprintf(buf, GameText.p5GoalsTape,
-                str_goalcounter_name);
-        Mess_Message(buf, Messprog_Goal, 1, 0, 0);
-        return;
-    case 3:
-        SFX_PlayX(0x9f, 0x2000, 0);
-        Mess_Message(GameText.pHiddenTape, Messprog_Goal, 1, 0, 0);
-        return;
-    default:
-        return;
+        case 2: Mess_Message(GameText.pSKATETape, Messprog_Goal, 1, 0, 0); return;
+        case 0:
+            SFX_PlayX(0x13, 0x2000, 0);
+            Mess_Message(GameText.p20000Tape, Messprog_Goal, 1, 0, 0);
+            return;
+        case 4:
+            SFX_PlayX(0x13, 0x2000, 0);
+            Mess_Message(GameText.p40000Tape, Messprog_Goal, 1, 0, 0);
+            return;
+        case 1:
+            SFX_PlayX(0x13, 0x2000, 0);
+            sprintf(buf, GameText.p5GoalsTape, str_goalcounter_name);
+            Mess_Message(buf, Messprog_Goal, 1, 0, 0);
+            return;
+        case 3:
+            SFX_PlayX(0x9f, 0x2000, 0);
+            Mess_Message(GameText.pHiddenTape, Messprog_Goal, 1, 0, 0);
+            return;
+        default: return;
     }
 }
 
@@ -2096,9 +1980,7 @@ void Panel_GoalCounter(int N)
         }
         else
         {
-            sprintf(Msg, str_goalcounter_fmt,
-                    player->mPanelData.Goals,
-                    str_goalcounter_name);
+            sprintf(Msg, str_goalcounter_fmt, player->mPanelData.Goals, str_goalcounter_name);
             Mess_Message(Msg, Messprog_Zoom, 1, 0, 0);
         }
     }
@@ -2135,8 +2017,7 @@ void CTrick::Set(Message *m, char *n, int p)
  *
  * @param pBruce Skater whose score and trick state the panel presents.
  */
-CPanelData *__10CPanelDataP6CBruce(CPanelData *self,
-                                   CBruce *pBruce)
+CPanelData *__10CPanelDataP6CBruce(CPanelData *self, CBruce *pBruce)
 {
     self->mpBruce = pBruce;
     self->mTotalScore = 0;
@@ -2158,12 +2039,11 @@ CPanelData *__10CPanelDataP6CBruce(CPanelData *self,
         self->SKATE[i++] = 0;
     } while (i < 5);
 
-        printf(str_cpanel_print);
+    printf(str_cpanel_print);
     self->Goals = 0;
 
     *reinterpret_cast<PanelAssignableFont *>(&self->mTimerFont) =
-        *reinterpret_cast<PanelAssignableFont *>(
-            FontManager::GetFont(str_panel_font1));
+        *reinterpret_cast<PanelAssignableFont *>(FontManager::GetFont(str_panel_font1));
     self->mTimerFont.JustX = 1;
     self->mTimerFont.JustY = 3;
     self->mTimerFont.setRGB(0x80, 0x30, 0x30);
@@ -2175,8 +2055,7 @@ CPanelData *__10CPanelDataP6CBruce(CPanelData *self,
     self->mTimerFont.FixedWidth = 1;
 
     *reinterpret_cast<PanelAssignableFont *>(&self->mScoreFont) =
-        *reinterpret_cast<PanelAssignableFont *>(
-            FontManager::GetFont(str_panel_font2));
+        *reinterpret_cast<PanelAssignableFont *>(FontManager::GetFont(str_panel_font2));
     self->mScoreFont.JustX = 2;
     self->mScoreFont.JustY = 3;
     self->mScoreFont.setRGB(0x80, 0x80, 0x80);
@@ -2189,8 +2068,7 @@ CPanelData *__10CPanelDataP6CBruce(CPanelData *self,
     self->mScoreFont.ShadowDy = GNumberOfPlayers == 1 ? 2 : 1;
 
     *reinterpret_cast<PanelAssignableFont *>(&self->mTrickFont) =
-        *reinterpret_cast<PanelAssignableFont *>(
-            FontManager::GetFont(str_panel_font3));
+        *reinterpret_cast<PanelAssignableFont *>(FontManager::GetFont(str_panel_font3));
     self->mTrickFont.JustX = 1;
     self->mTrickFont.JustY = 3;
     self->mTrickFont.setRGB(0x80, 0x80, 0x80);
@@ -2226,22 +2104,18 @@ void CPanelData::TrickMessageRefresh()
     this->mTrickName3[0] = 0;
 
     int viewport = ViewportMode * 2 +
-                   reinterpret_cast<PanelBruceScoreView *>(this->mpBruce)
-                       ->mPanelData.mPlayerNum;
+                   reinterpret_cast<PanelBruceScoreView *>(this->mpBruce)->mPanelData.mPlayerNum;
     if (viewport < 2)
     {
         goto width_480;
     }
 
     lineWidth = 240;
-    if (viewport < 4)
-        goto width_done;
-    if (viewport >= 8)
-        goto width_480;
+    if (viewport < 4) goto width_done;
+    if (viewport >= 8) goto width_480;
 
     lineWidth = 480;
-    if (viewport < 6)
-        goto width_done;
+    if (viewport < 6) goto width_done;
     lineWidth = 240;
     goto width_done;
 
@@ -2249,8 +2123,7 @@ width_480:
     lineWidth = 480;
 width_done:
     steadyScale = 0xbc0;
-    if (GNumberOfPlayers >= 2)
-        steadyScale = 0x940;
+    if (GNumberOfPlayers >= 2) steadyScale = 0x940;
 
     if (this->mTQStack == 0)
     {
@@ -2262,37 +2135,29 @@ width_done:
     if (this->mTQ[last].locked == 0)
     {
         if (this->mTQ[last].spins !=
-            reinterpret_cast<PanelBruceScoreView *>(this->mpBruce)
-                ->mNum180Spins)
+            reinterpret_cast<PanelBruceScoreView *>(this->mpBruce)->mNum180Spins)
         {
             this->mTQ[last].spins =
-                reinterpret_cast<PanelBruceScoreView *>(this->mpBruce)
-                    ->mNum180Spins;
+                reinterpret_cast<PanelBruceScoreView *>(this->mpBruce)->mNum180Spins;
         }
     }
 
-    if (reinterpret_cast<PanelBruceScoreView *>(this->mpBruce)
-            ->mPerfectLanding != 0)
+    if (reinterpret_cast<PanelBruceScoreView *>(this->mpBruce)->mPerfectLanding != 0)
     {
         if (this->TQ_SpinDisplay(0) != 0)
         {
-            sprintf(p, str_tmr_perfect_spin,
-                    this->TQ_SpinDisplay(0) * 180,
-                    this->mTQ[0].name);
+            sprintf(p, str_tmr_perfect_spin, this->TQ_SpinDisplay(0) * 180, this->mTQ[0].name);
         }
         else
         {
             sprintf(p, str_tmr_perfect, this->mTQ[0].name);
         }
     }
-    else if (reinterpret_cast<PanelBruceScoreView *>(this->mpBruce)
-                 ->mSloppyLanding != 0)
+    else if (reinterpret_cast<PanelBruceScoreView *>(this->mpBruce)->mSloppyLanding != 0)
     {
         if (this->TQ_SpinDisplay(0) != 0)
         {
-            sprintf(p, str_tmr_sloppy_spin,
-                    this->TQ_SpinDisplay(0) * 180,
-                    this->mTQ[0].name);
+            sprintf(p, str_tmr_sloppy_spin, this->TQ_SpinDisplay(0) * 180, this->mTQ[0].name);
         }
         else
         {
@@ -2303,9 +2168,7 @@ width_done:
     {
         if (this->TQ_SpinDisplay(0) != 0)
         {
-            sprintf(p, str_tmr_spin,
-                    this->TQ_SpinDisplay(0) * 180,
-                    this->mTQ[0].name);
+            sprintf(p, str_tmr_spin, this->TQ_SpinDisplay(0) * 180, this->mTQ[0].name);
         }
         else
         {
@@ -2322,14 +2185,12 @@ width_done:
             {
                 if (this->TQ_SpinDisplay(i) != 0)
                 {
-                    sprintf(tbuf, str_tmr_cont_spin, p,
-                            this->TQ_SpinDisplay(i) * 180,
+                    sprintf(tbuf, str_tmr_cont_spin, p, this->TQ_SpinDisplay(i) * 180,
                             this->mTQ[i].name);
                 }
                 else
                 {
-                    sprintf(tbuf, str_tmr_cont, p,
-                            this->mTQ[i].name);
+                    sprintf(tbuf, str_tmr_cont, p, this->mTQ[i].name);
                 }
 
                 if (lineWidth < this->mTrickFont.width(tbuf))
@@ -2348,14 +2209,12 @@ width_done:
 
                     if (this->TQ_SpinDisplay(i) != 0)
                     {
-                        sprintf(p, str_tmr_break_spin,
-                                this->TQ_SpinDisplay(i) * 180,
+                        sprintf(p, str_tmr_break_spin, this->TQ_SpinDisplay(i) * 180,
                                 this->mTQ[i].name);
                     }
                     else
                     {
-                        sprintf(p, str_tmr_break,
-                                this->mTQ[i].name);
+                        sprintf(p, str_tmr_break, this->mTQ[i].name);
                     }
                 }
                 else
@@ -2446,64 +2305,63 @@ void CPanelData::Trick(char *pName, int Points, int Lock, int Dep)
         goto after_lock;
     }
 check_lock:
-{
-    if (Lock == 2)
-        goto skip_lock;
-    if (Lock == 1)
     {
-        CBruce *bruce = mpBruce;
-        int halfTurns = bruce->Get180s();
-        CBruce *bruce2 = mpBruce;
-        PanelBruce(bruce2)->mNum180Spins = halfTurns;
+        if (Lock == 2) goto skip_lock;
+        if (Lock == 1)
+        {
+            CBruce *bruce = mpBruce;
+            int halfTurns = bruce->Get180s();
+            CBruce *bruce2 = mpBruce;
+            PanelBruce(bruce2)->mNum180Spins = halfTurns;
+            count = mTQStack;
+        }
+        {
+            CBruce *bruce3 = mpBruce;
+            int val = PanelBruce(bruce3)->mNum180Spins;
+            mTQ[count].spins = val;
+        }
+    after_lock:
         count = mTQStack;
     }
-    {
-        CBruce *bruce3 = mpBruce;
-        int val = PanelBruce(bruce3)->mNum180Spins;
-        mTQ[count].spins = val;
-    }
-after_lock:
-    count = mTQStack;
-}
 skip_lock:
-{
-    // Switchness check
-    PanelBruceScoreView *bruce = PanelBruce(mpBruce);
-    unsigned int flags = bruce->mExtraFlags;
-    int skaterType = bruce->mSkaterType;
-    Flipped = (flags >> 1) & 1;
-    // Switched-stance value in this skater's Stats entry.
-    SStats *stats = Stats;
-    int isZero = stats[skaterType].Ability[11] < 1;
-    if (Flipped != isZero)
     {
-        mTQ[count].switched = 1;
+        // Switchness check
+        PanelBruceScoreView *bruce = PanelBruce(mpBruce);
+        unsigned int flags = bruce->mExtraFlags;
+        int skaterType = bruce->mSkaterType;
+        Flipped = (flags >> 1) & 1;
+        // Switched-stance value in this skater's Stats entry.
+        SStats *stats = Stats;
+        int isZero = stats[skaterType].Ability[11] < 1;
+        if (Flipped != isZero)
+        {
+            mTQ[count].switched = 1;
+        }
+        else
+        {
+            mTQ[count].switched = 0;
+        }
+        // History_Add
+        int cnt3 = mTQStack;
+        CBruce *bruce4 = mpBruce;
+        char *name = mTQ[cnt3].name;
+        int bc = mTQ[cnt3].spins;
+        int sc = mTQ[cnt3].switched;
+        int histVal = bruce4->History_Add(name, bc * 2 + sc);
+        // Store results
+        int cnt4 = mTQStack;
+        mTQ[cnt4].count = histVal;
+        int cnt5 = mTQStack;
+        mTQ[cnt5].locked = Lock;
+        int cnt6 = mTQStack;
+        mTQ[cnt6].depreciate = Dep;
+        int cnt7 = mTQStack;
+        if (cnt7 < 19)
+        {
+            mTQStack = cnt7 + 1;
+        }
+        TrickMessage();
     }
-    else
-    {
-        mTQ[count].switched = 0;
-    }
-    // History_Add
-    int cnt3 = mTQStack;
-    CBruce *bruce4 = mpBruce;
-    char *name = mTQ[cnt3].name;
-    int bc = mTQ[cnt3].spins;
-    int sc = mTQ[cnt3].switched;
-    int histVal = bruce4->History_Add(name, bc * 2 + sc);
-    // Store results
-    int cnt4 = mTQStack;
-    mTQ[cnt4].count = histVal;
-    int cnt5 = mTQStack;
-    mTQ[cnt5].locked = Lock;
-    int cnt6 = mTQStack;
-    mTQ[cnt6].depreciate = Dep;
-    int cnt7 = mTQStack;
-    if (cnt7 < 19)
-    {
-        mTQStack = cnt7 + 1;
-    }
-    TrickMessage();
-}
 }
 
 /**
@@ -2520,8 +2378,7 @@ void CPanelData::Land()
     mFallingEnabled = 0;
     if (mTQStack > 0)
     {
-        mNumTricksLanded =
-            mNumTricksLanded + static_cast<unsigned short>(mTQStack);
+        mNumTricksLanded = mNumTricksLanded + static_cast<unsigned short>(mTQStack);
         mLandedScore = TotalScore();
         mLandedTotal += mLandedScore;
         if (mBestComboScore < mLandedScore)

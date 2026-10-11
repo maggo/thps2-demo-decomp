@@ -28,7 +28,10 @@ typedef unsigned long ulong;
 typedef unsigned char undefined3[3];
 
 /** Return caller-owned storage for an ordinary placement construction. */
-inline void *operator new(unsigned int, void *storage) { return storage; }
+inline void *operator new(unsigned int, void *storage)
+{
+    return storage;
+}
 
 // Game vector types
 struct CBruce;
@@ -137,13 +140,15 @@ struct SGapTrick;
 #undef M3DCOLIJ_LINE_INFO_LAYOUT
 
 /** Short vector retaining the original inline component setter. */
-struct CSVectorPhysicsOwner {
+struct CSVectorPhysicsOwner
+{
     short vx;
     short vy;
     short vz;
 
     /** Assign all three fixed-point components. */
-    void Set(int _x, int _y, int _z) {
+    void Set(int _x, int _y, int _z)
+    {
         vx = _x;
         vy = _y;
         vz = _z;
@@ -151,13 +156,27 @@ struct CSVectorPhysicsOwner {
 };
 
 /** Long game vector with the original inline component setter. */
-struct CVectorPhysicsOwner {
-    union { int x; int vx; };
-    union { int y; int vy; };
-    union { int z; int vz; };
+struct CVectorPhysicsOwner
+{
+    union
+    {
+        int x;
+        int vx;
+    };
+    union
+    {
+        int y;
+        int vy;
+    };
+    union
+    {
+        int z;
+        int vz;
+    };
 
     /** Assign all three game-space components. */
-    void Set(int _x, int _y, int _z) {
+    void Set(int _x, int _y, int _z)
+    {
         x = _x;
         y = _y;
         z = _z;
@@ -171,7 +190,8 @@ struct CVectorPhysicsOwner {
  * without turning the returned pointer into an integer or spelling a field
  * offset in PHYSICS.cpp.
  */
-struct CBitVelocityPhysicsOwner {
+struct CBitVelocityPhysicsOwner
+{
     CBitVelocityPhysicsOwner *mPrevious;
     CBitVelocityPhysicsOwner *mNext;
     short mAge;
@@ -181,11 +201,12 @@ struct CBitVelocityPhysicsOwner {
     CVector mVel;
 };
 
-typedef char CBitVelocityPhysicsOwner_size_must_be_48[
-    (sizeof(CBitVelocityPhysicsOwner) == 48) ? 1 : -1];
+typedef char
+    CBitVelocityPhysicsOwner_size_must_be_48[(sizeof(CBitVelocityPhysicsOwner) == 48) ? 1 : -1];
 
 /** Exact spark layout through the velocity field used by terrain effects. */
-struct CSpark {
+struct CSpark
+{
     unsigned char _padToVelocity[36];
     CVector mVel;
     unsigned char _opaqueTail[92 - 48];
@@ -194,13 +215,13 @@ struct CSpark {
     CSpark(CVector &position, int velocity, int gravity, int life);
 };
 
-typedef char Physics_CSpark_size_must_be_92[
-    (sizeof(CSpark) == 92) ? 1 : -1];
+typedef char Physics_CSpark_size_must_be_92[(sizeof(CSpark) == 92) ? 1 : -1];
 
 #include "CTRICK.h"
 
 /** Owner-local panel slice containing the fields read when a trick lands. */
-struct CPanelData {
+struct CPanelData
+{
     /** Rebuild the three-line message for the current trick chain. */
     void TrickMessageRefresh();
     /** Queue a trick and update its spin, stance, and lock state. */
@@ -222,13 +243,15 @@ struct CPanelData {
  * `SCareer::Options` starts at 0x7d4. Within `SOptions`, `AutoKickEnabled`
  * starts at 0x104 and `VibrationEnabled` follows it at 0x10c.
  */
-struct SCareerOptionsPhysicsOwner {
+struct SCareerOptionsPhysicsOwner
+{
     u8 pad_to_AutoKickEnabled[0x8D8];
     int AutoKickEnabled[2];
     int VibrationEnabled[2];
 };
 
-struct CBruceScriptQueueSlice {
+struct CBruceScriptQueueSlice
+{
     struct CSuperOwner CSuper;
     u8 pad_to_mpTrick[2292];
     short *mpTrick;
@@ -260,7 +283,8 @@ struct CBruceScriptQueueSlice {
  * Owner-local view of the button history and state consulted while matching
  * trick-key sequences.
  */
-struct CBruceTrickTriggerSlice {
+struct CBruceTrickTriggerSlice
+{
     u8 pad_to_mEventQueue[0xAB4];
     struct SButtonEvent mEventQueue[32];
     int mEventQueuePos;
@@ -275,20 +299,22 @@ struct CBruceTrickTriggerSlice {
 };
 
 /** Whether a bail should clamp the skater's velocity. */
-enum ELimitBailVel {
+enum ELimitBailVel
+{
     DO_LIMIT = 0,
     DONT_LIMIT = 1
 };
 
-struct CBrucePhysicsSlice {
+struct CBrucePhysicsSlice
+{
     struct CSuperOwner CSuper;
-    struct CPanelData mPanelData;                 /* 0x0190 */
-    struct CCamera *mpCamera;                     /* 0x0A74 */
-    struct BoardStats *mpBoardStats;              /* 0x0A78 */
-    struct CCar *mIgnoreCar;                      /* 0x0A7C */
-    struct CBruce *mpOtherPlayer;                 /* 0x0A80 */
+    struct CPanelData mPanelData; /* 0x0190 */
+    struct CCamera *mpCamera; /* 0x0A74 */
+    struct BoardStats *mpBoardStats; /* 0x0A78 */
+    struct CCar *mIgnoreCar; /* 0x0A7C */
+    struct CBruce *mpOtherPlayer; /* 0x0A80 */
     /* Script and trick-queue block (also mirrored in CBruceScriptQueueSlice). */
-    short *mpTrick;                               /* 0x0A84 */
+    short *mpTrick; /* 0x0A84 */
     short mTrickPoints;
     u8 pad_after_trickPoints[2];
     char *mpTrickName;
@@ -303,28 +329,28 @@ struct CBrucePhysicsSlice {
     short *mpReturn;
     int mActionButton;
     int mActionButtonEventTime;
-    struct SButtonEvent mEventQueue[32];          /* 0x0AB4 */
+    struct SButtonEvent mEventQueue[32]; /* 0x0AB4 */
     int mEventQueuePos;
     u8 mCurrentButtonState[32];
     struct STrickQueue mTrickQueue[10];
     int mTricksQueued;
     int mTrickQueueTail;
     short *mpRailTrickQueued;
-    int mRailTrickTime;                           /* 0x0C84 */
+    int mRailTrickTime; /* 0x0C84 */
     /* The rail-state flag block the grind and rail-physics paths read. */
-    int mRail_Parallel;                           /* 0x0C88 */
-    int mRail_Backwards;                          /* 0x0C8C */
-    int mRail_RightOfRail;                        /* 0x0C90 */
-    int mRail_FrontSide;                          /* 0x0C94 */
-    int mRail_SkaterFlipped;                      /* 0x0C98 */
-    int mRail_LedgeType;                          /* 0x0C9C */
-    int mRail_Direction;                          /* 0x0CA0 */
-    int mRail_BadLedge;                           /* 0x0CA4 */
-    int mRailSparks;                              /* 0x0CA8 */
-    int mHeavyFriction;                           /* 0x0CAC */
+    int mRail_Parallel; /* 0x0C88 */
+    int mRail_Backwards; /* 0x0C8C */
+    int mRail_RightOfRail; /* 0x0C90 */
+    int mRail_FrontSide; /* 0x0C94 */
+    int mRail_SkaterFlipped; /* 0x0C98 */
+    int mRail_LedgeType; /* 0x0C9C */
+    int mRail_Direction; /* 0x0CA0 */
+    int mRail_BadLedge; /* 0x0CA4 */
+    int mRailSparks; /* 0x0CA8 */
+    int mHeavyFriction; /* 0x0CAC */
     /* Embedded Dust and Blood emitters, addressed by their owning helpers. */
-    u8 mDust[64];                                 /* 0x0CB0 */
-    u8 mBlood[92];                                /* 0x0CF0 */
+    u8 mDust[64]; /* 0x0CB0 */
+    u8 mBlood[92]; /* 0x0CF0 */
     short mFrozen;
     u8 pad_after_frozen[2];
     int mDoingATrick;
@@ -502,17 +528,17 @@ struct CBrucePhysicsSlice {
     u8 mAnalogue;
     char mAX;
     char mAY;
-    u8 mAnalogueAimInput;                         /* 0x1137 */
+    u8 mAnalogueAimInput; /* 0x1137 */
     char mAnalogueAimForwardsBackwards;
     char mAnalogueAimLeftRight;
     u8 mDPadAimInput;
-    short mAnalogueMotionAngle;                   /* 0x113C */
+    short mAnalogueMotionAngle; /* 0x113C */
     short mAnalogueAimAngle;
-    int mSessionTapes;                            /* 0x1140 */
-    u16 mInAirTimer;                              /* 0x1144 */
+    int mSessionTapes; /* 0x1140 */
+    u16 mInAirTimer; /* 0x1144 */
     u8 pad_after_mInAirTimer[2];
-    int mHistoryPos;                              /* 0x1148 */
-    struct SHistory mHistory[100];                /* 0x114C */
+    int mHistoryPos; /* 0x1148 */
+    struct SHistory mHistory[100]; /* 0x114C */
 };
 
 struct SLight;
@@ -520,7 +546,8 @@ struct SLight;
 /**
  * Offset-zero CItem prefix recovered for naturally spelled physics methods.
  */
-struct CItemPhysicsNatural {
+struct CItemPhysicsNatural
+{
     u16 mFlags;
     u16 mInquiry;
     CVector mPos;
@@ -550,7 +577,8 @@ struct CItemPhysicsNatural {
 /**
  * Offset-zero CBody prefix recovered for naturally spelled physics methods.
  */
-struct CBodyPhysicsNatural : CItemPhysicsNatural {
+struct CBodyPhysicsNatural : CItemPhysicsNatural
+{
     CBodyPhysicsNatural **mppOriginalList;
     u16 mInputFlags;
     u16 mCBodyFlags;
@@ -591,7 +619,8 @@ struct CBodyPhysicsNatural : CItemPhysicsNatural {
 /**
  * Offset-zero CSuper prefix recovered for naturally spelled physics methods.
  */
-struct CSuperPhysicsNatural : CBodyPhysicsNatural {
+struct CSuperPhysicsNatural : CBodyPhysicsNatural
+{
     u32 mExtraFlags;
     u16 *mpCalculationOrder;
     void *mpDecompressedFrame;
@@ -633,7 +662,8 @@ struct CSuperPhysicsNatural : CBodyPhysicsNatural {
  * Natural CBruce spelling for methods that use the proven inheritance prefix.
  * The remaining object is kept opaque and accessed through owner-local slices.
  */
-struct CBruce : CSuperPhysicsNatural {
+struct CBruce : CSuperPhysicsNatural
+{
     u8 pad_to_mEventQueue[0xAB4 - sizeof(CSuperPhysicsNatural)];
     SButtonEvent mEventQueue[32];
     int mEventQueuePos;
@@ -821,112 +851,88 @@ struct CBruce : CSuperPhysicsNatural {
     void OrientToNormal();
 };
 
-typedef char CItemPhysicsNatural_size_must_be_76[
-    (sizeof(CItemPhysicsNatural) == 76) ? 1 : -1];
-typedef char CBodyPhysicsNatural_size_must_be_264[
-    (sizeof(CBodyPhysicsNatural) == 264) ? 1 : -1];
-typedef char CSuperPhysicsNatural_size_must_be_400[
-    (sizeof(CSuperPhysicsNatural) == 400) ? 1 : -1];
-typedef char CSuperPhysicsNatural_shadow_source_offset_must_be_316[
-    ((unsigned long)&(((CSuperPhysicsNatural *)0)->mpShadowSource) == 316)
-        ? 1 : -1];
-typedef char CSuperPhysicsNatural_shadow_rgb_offset_must_be_320[
-    ((unsigned long)&(((CSuperPhysicsNatural *)0)->mpShadowRGB) == 320)
-        ? 1 : -1];
-typedef char CSuperPhysicsNatural_transform_offset_must_be_324[
-    ((unsigned long)&(((CSuperPhysicsNatural *)0)->mTransform) == 324) ? 1 : -1];
-typedef char CSuperPhysicsNatural_pose_buffer_offset_must_be_356[
-    ((unsigned long)&(((CSuperPhysicsNatural *)0)->mpPoseBuffer) == 356) ? 1 : -1];
-typedef char CBruceNatural_size_must_be_5228[
-    (sizeof(CBruce) == 5228) ? 1 : -1];
-typedef char CBruceNatural_event_queue_offset_must_be_0xAB4[
-    ((unsigned long)&(((CBruce *)0)->mEventQueue) == 0xAB4) ? 1 : -1];
+typedef char CItemPhysicsNatural_size_must_be_76[(sizeof(CItemPhysicsNatural) == 76) ? 1 : -1];
+typedef char CBodyPhysicsNatural_size_must_be_264[(sizeof(CBodyPhysicsNatural) == 264) ? 1 : -1];
+typedef char CSuperPhysicsNatural_size_must_be_400[(sizeof(CSuperPhysicsNatural) == 400) ? 1 : -1];
+typedef char CSuperPhysicsNatural_shadow_source_offset_must_be_316
+    [((unsigned long)&(((CSuperPhysicsNatural *)0)->mpShadowSource) == 316) ? 1 : -1];
+typedef char CSuperPhysicsNatural_shadow_rgb_offset_must_be_320
+    [((unsigned long)&(((CSuperPhysicsNatural *)0)->mpShadowRGB) == 320) ? 1 : -1];
+typedef char CSuperPhysicsNatural_transform_offset_must_be_324
+    [((unsigned long)&(((CSuperPhysicsNatural *)0)->mTransform) == 324) ? 1 : -1];
+typedef char CSuperPhysicsNatural_pose_buffer_offset_must_be_356
+    [((unsigned long)&(((CSuperPhysicsNatural *)0)->mpPoseBuffer) == 356) ? 1 : -1];
+typedef char CBruceNatural_size_must_be_5228[(sizeof(CBruce) == 5228) ? 1 : -1];
+typedef char CBruceNatural_event_queue_offset_must_be_0xAB4
+    [((unsigned long)&(((CBruce *)0)->mEventQueue) == 0xAB4) ? 1 : -1];
 
-typedef char SDK_VECTOR_size_must_be_16[
-    (sizeof(VECTOR) == 16) ? 1 : -1];
-typedef char SDK_SVECTOR_size_must_be_8[
-    (sizeof(SVECTOR) == 8) ? 1 : -1];
-typedef char SDK_CVECTOR_size_must_be_4[
-    (sizeof(CVECTOR) == 4) ? 1 : -1];
-typedef char SDK_MATRIX_size_must_be_32[
-    (sizeof(MATRIX) == 32) ? 1 : -1];
-typedef char MATRIX_translation_offset_must_be_20[
-    ((unsigned long)&(((MATRIX *)0)->t) == 20) ? 1 : -1];
-typedef char SButtonEvent_size_must_be_8[
-    (sizeof(SButtonEvent) == 8) ? 1 : -1];
-typedef char SButtonEvent_Button_offset_must_be_0[
-    ((unsigned long)&(((SButtonEvent *)0)->Button) == 0) ? 1 : -1];
-typedef char SButtonEvent_Pressed_offset_must_be_1[
-    ((unsigned long)&(((SButtonEvent *)0)->Pressed) == 1) ? 1 : -1];
-typedef char SButtonEvent_Time_offset_must_be_4[
-    ((unsigned long)&(((SButtonEvent *)0)->Time) == 4) ? 1 : -1];
-typedef char CBruceTrickTriggerSlice_size_must_be_0x1070[
-    (sizeof(CBruceTrickTriggerSlice) == 0x1070) ? 1 : -1];
-typedef char CBruceTrickTriggerSlice_event_queue_offset_must_be_0xAB4[
-    ((unsigned long)&(((CBruceTrickTriggerSlice *)0)->mEventQueue) == 0xAB4)
-        ? 1 : -1];
-typedef char STrickQueue_size_must_be_16[
-    (sizeof(STrickQueue) == 16) ? 1 : -1];
-typedef char STrickQueue_pTrick_offset_must_be_0[
-    ((unsigned long)&(((STrickQueue *)0)->pTrick) == 0) ? 1 : -1];
-typedef char STrickQueue_Time_offset_must_be_4[
-    ((unsigned long)&(((STrickQueue *)0)->Time) == 4) ? 1 : -1];
-typedef char STrickQueue_Button_offset_must_be_8[
-    ((unsigned long)&(((STrickQueue *)0)->Button) == 8) ? 1 : -1];
-typedef char STrickQueue_EventTime_offset_must_be_12[
-    ((unsigned long)&(((STrickQueue *)0)->EventTime) == 12) ? 1 : -1];
-typedef char CSVectorPhysicsOwner_size_must_be_6[
-    (sizeof(CSVectorPhysicsOwner) == 6) ? 1 : -1];
-typedef char CVectorPhysicsOwner_size_must_be_12[
-    (sizeof(CVectorPhysicsOwner) == 12) ? 1 : -1];
-typedef char CTrick_size_must_be_36[
-    (sizeof(CTrick) == 36) ? 1 : -1];
-typedef char CPanelData_size_must_be_2276[
-    (sizeof(CPanelData) == 2276) ? 1 : -1];
-typedef char SCareerOptionsPhysicsOwner_prefix_size_check[
-    (sizeof(SCareerOptionsPhysicsOwner) == 0x8E8) ? 1 : -1];
-typedef char SCareerOptionsPhysicsOwner_vibration_at_0x8E0[
-    ((unsigned long)&(((SCareerOptionsPhysicsOwner *)0)->VibrationEnabled)
-     == 0x8E0) ? 1 : -1];
-typedef char CBruceScriptQueueSlice_size_must_be_3208[
-    (sizeof(CBruceScriptQueueSlice) == 3208) ? 1 : -1];
-typedef char CBruceScriptQueueSlice_event_queue_offset_must_be_0xAB4[
-    ((unsigned long)&(((CBruceScriptQueueSlice *)0)->mEventQueue) == 0xAB4)
-        ? 1 : -1];
-typedef char CBruceScriptQueueSlice_trick_queue_offset_must_be_0xBD8[
-    ((unsigned long)&(((CBruceScriptQueueSlice *)0)->mTrickQueue) == 0xBD8)
-        ? 1 : -1];
-typedef char CBruceScriptQueueSlice_pressed_at_0xAB5[
-    ((unsigned long)&(((CBruceScriptQueueSlice *)0)->mEventQueue[0].Pressed)
-     == 0xAB5) ? 1 : -1];
-typedef char CBrucePhysicsSlice_size_must_be_5228[
-    (sizeof(CBrucePhysicsSlice) == 5228) ? 1 : -1];
-typedef char CBrucePhysicsSlice_event_queue_offset_must_be_0xAB4[
-    ((unsigned long)&(((CBrucePhysicsSlice *)0)->mEventQueue) == 0xAB4)
-        ? 1 : -1];
-typedef char CBrucePhysicsSlice_trick_queue_offset_must_be_0xBD8[
-    ((unsigned long)&(((CBrucePhysicsSlice *)0)->mTrickQueue) == 0xBD8)
-        ? 1 : -1];
-typedef char CBrucePhysicsSlice_history_pos_offset_must_be_0x1148[
-    ((unsigned long)&(((CBrucePhysicsSlice *)0)->mHistoryPos) == 0x1148)
-        ? 1 : -1];
-typedef char CBrucePhysicsSlice_old_rotation_offset_must_be_0xe70[
-    ((unsigned long)&(((CBrucePhysicsSlice *)0)->mOldRotationMatrix) == 0xE70)
-        ? 1 : -1];
-typedef char CBrucePhysicsSlice_rotation_offset_must_be_0xe90[
-    ((unsigned long)&(((CBrucePhysicsSlice *)0)->mRotationMatrix) == 0xE90)
-        ? 1 : -1];
-typedef char CBrucePhysicsSlice_temp_rotation_offset_must_be_0x1074[
-    ((unsigned long)&(((CBrucePhysicsSlice *)0)->mTempRotationMatrix) == 0x1074)
-        ? 1 : -1];
-typedef char CBrucePhysicsSlice_panel_at_0x190[
-    ((unsigned long)&(((CBrucePhysicsSlice *)0)->mPanelData) == 0x190) ? 1 : -1];
-typedef char CBrucePhysicsSlice_rail_flags_at_0xC88[
-    ((unsigned long)&(((CBrucePhysicsSlice *)0)->mRail_Parallel) == 0xC88) ? 1 : -1];
-typedef char CBrucePhysicsSlice_physics_state_at_0x106C[
-    ((unsigned long)&(((CBrucePhysicsSlice *)0)->mPhysicsState) == 0x106C) ? 1 : -1];
-typedef char CBrucePhysicsSlice_history_at_0x114C[
-    ((unsigned long)&(((CBrucePhysicsSlice *)0)->mHistory) == 0x114C) ? 1 : -1];
+typedef char SDK_VECTOR_size_must_be_16[(sizeof(VECTOR) == 16) ? 1 : -1];
+typedef char SDK_SVECTOR_size_must_be_8[(sizeof(SVECTOR) == 8) ? 1 : -1];
+typedef char SDK_CVECTOR_size_must_be_4[(sizeof(CVECTOR) == 4) ? 1 : -1];
+typedef char SDK_MATRIX_size_must_be_32[(sizeof(MATRIX) == 32) ? 1 : -1];
+typedef char
+    MATRIX_translation_offset_must_be_20[((unsigned long)&(((MATRIX *)0)->t) == 20) ? 1 : -1];
+typedef char SButtonEvent_size_must_be_8[(sizeof(SButtonEvent) == 8) ? 1 : -1];
+typedef char
+    SButtonEvent_Button_offset_must_be_0[((unsigned long)&(((SButtonEvent *)0)->Button) == 0) ? 1
+                                                                                              : -1];
+typedef char SButtonEvent_Pressed_offset_must_be_1
+    [((unsigned long)&(((SButtonEvent *)0)->Pressed) == 1) ? 1 : -1];
+typedef char
+    SButtonEvent_Time_offset_must_be_4[((unsigned long)&(((SButtonEvent *)0)->Time) == 4) ? 1 : -1];
+typedef char CBruceTrickTriggerSlice_size_must_be_0x1070[(sizeof(CBruceTrickTriggerSlice) == 0x1070)
+                                                             ? 1
+                                                             : -1];
+typedef char CBruceTrickTriggerSlice_event_queue_offset_must_be_0xAB4
+    [((unsigned long)&(((CBruceTrickTriggerSlice *)0)->mEventQueue) == 0xAB4) ? 1 : -1];
+typedef char STrickQueue_size_must_be_16[(sizeof(STrickQueue) == 16) ? 1 : -1];
+typedef char STrickQueue_pTrick_offset_must_be_0[((unsigned long)&(((STrickQueue *)0)->pTrick) == 0)
+                                                     ? 1
+                                                     : -1];
+typedef char
+    STrickQueue_Time_offset_must_be_4[((unsigned long)&(((STrickQueue *)0)->Time) == 4) ? 1 : -1];
+typedef char STrickQueue_Button_offset_must_be_8[((unsigned long)&(((STrickQueue *)0)->Button) == 8)
+                                                     ? 1
+                                                     : -1];
+typedef char STrickQueue_EventTime_offset_must_be_12
+    [((unsigned long)&(((STrickQueue *)0)->EventTime) == 12) ? 1 : -1];
+typedef char CSVectorPhysicsOwner_size_must_be_6[(sizeof(CSVectorPhysicsOwner) == 6) ? 1 : -1];
+typedef char CVectorPhysicsOwner_size_must_be_12[(sizeof(CVectorPhysicsOwner) == 12) ? 1 : -1];
+typedef char CTrick_size_must_be_36[(sizeof(CTrick) == 36) ? 1 : -1];
+typedef char CPanelData_size_must_be_2276[(sizeof(CPanelData) == 2276) ? 1 : -1];
+typedef char SCareerOptionsPhysicsOwner_prefix_size_check
+    [(sizeof(SCareerOptionsPhysicsOwner) == 0x8E8) ? 1 : -1];
+typedef char SCareerOptionsPhysicsOwner_vibration_at_0x8E0
+    [((unsigned long)&(((SCareerOptionsPhysicsOwner *)0)->VibrationEnabled) == 0x8E0) ? 1 : -1];
+typedef char
+    CBruceScriptQueueSlice_size_must_be_3208[(sizeof(CBruceScriptQueueSlice) == 3208) ? 1 : -1];
+typedef char CBruceScriptQueueSlice_event_queue_offset_must_be_0xAB4
+    [((unsigned long)&(((CBruceScriptQueueSlice *)0)->mEventQueue) == 0xAB4) ? 1 : -1];
+typedef char CBruceScriptQueueSlice_trick_queue_offset_must_be_0xBD8
+    [((unsigned long)&(((CBruceScriptQueueSlice *)0)->mTrickQueue) == 0xBD8) ? 1 : -1];
+typedef char CBruceScriptQueueSlice_pressed_at_0xAB5
+    [((unsigned long)&(((CBruceScriptQueueSlice *)0)->mEventQueue[0].Pressed) == 0xAB5) ? 1 : -1];
+typedef char CBrucePhysicsSlice_size_must_be_5228[(sizeof(CBrucePhysicsSlice) == 5228) ? 1 : -1];
+typedef char CBrucePhysicsSlice_event_queue_offset_must_be_0xAB4
+    [((unsigned long)&(((CBrucePhysicsSlice *)0)->mEventQueue) == 0xAB4) ? 1 : -1];
+typedef char CBrucePhysicsSlice_trick_queue_offset_must_be_0xBD8
+    [((unsigned long)&(((CBrucePhysicsSlice *)0)->mTrickQueue) == 0xBD8) ? 1 : -1];
+typedef char CBrucePhysicsSlice_history_pos_offset_must_be_0x1148
+    [((unsigned long)&(((CBrucePhysicsSlice *)0)->mHistoryPos) == 0x1148) ? 1 : -1];
+typedef char CBrucePhysicsSlice_old_rotation_offset_must_be_0xe70
+    [((unsigned long)&(((CBrucePhysicsSlice *)0)->mOldRotationMatrix) == 0xE70) ? 1 : -1];
+typedef char CBrucePhysicsSlice_rotation_offset_must_be_0xe90
+    [((unsigned long)&(((CBrucePhysicsSlice *)0)->mRotationMatrix) == 0xE90) ? 1 : -1];
+typedef char CBrucePhysicsSlice_temp_rotation_offset_must_be_0x1074
+    [((unsigned long)&(((CBrucePhysicsSlice *)0)->mTempRotationMatrix) == 0x1074) ? 1 : -1];
+typedef char CBrucePhysicsSlice_panel_at_0x190
+    [((unsigned long)&(((CBrucePhysicsSlice *)0)->mPanelData) == 0x190) ? 1 : -1];
+typedef char CBrucePhysicsSlice_rail_flags_at_0xC88
+    [((unsigned long)&(((CBrucePhysicsSlice *)0)->mRail_Parallel) == 0xC88) ? 1 : -1];
+typedef char CBrucePhysicsSlice_physics_state_at_0x106C
+    [((unsigned long)&(((CBrucePhysicsSlice *)0)->mPhysicsState) == 0x106C) ? 1 : -1];
+typedef char CBrucePhysicsSlice_history_at_0x114C
+    [((unsigned long)&(((CBrucePhysicsSlice *)0)->mHistory) == 0x114C) ? 1 : -1];
 
 #include "BIT.h"
 #include "CROWD.h"
@@ -938,7 +944,8 @@ typedef char CBrucePhysicsSlice_history_at_0x114C[
 // Narrow typed dependencies used only by the PHYSICS owner.
 struct CBruce;
 /** Narrow natural interface for the embedded blood manager. */
-struct Blood {
+struct Blood
+{
     void Reset();
     void Update(CBruce *bruce);
 };
@@ -950,20 +957,19 @@ struct CSVector;
 struct CSVectorPhysicsOwner;
 struct CVector;
 /** Narrow natural interface for the embedded dust manager. */
-struct Dust {
+struct Dust
+{
     void Reset(int terrainType, int dustType);
     void Update(CBruce *bruce);
 };
 struct Item;
 
 /** Lowered aggregate-return ABI for unary CVector negation. */
-extern "C" void __mi__C7CVector(
-    CVector *result, const CVector *vector);
+extern "C" void __mi__C7CVector(CVector *result, const CVector *vector);
 /** Lowered aggregate-return ABI for fixed-point CVector scaling. */
 namespace PhysicsVectorAbi
 {
-extern "C" void __ml__FRC7CVectorRCi(
-    CVector *result, const CVector *vector, const int *scale);
+extern "C" void __ml__FRC7CVectorRCi(CVector *result, const CVector *vector, const int *scale);
 }
 #define Physics_VectorMultiply PhysicsVectorAbi::__ml__FRC7CVectorRCi
 #include "M3DMATHS.h"
@@ -1026,12 +1032,10 @@ static inline int PhysicsMaxSpeed(CBrucePhysicsSlice *bruce);
 #include "DEFAULTANIMATIONS.h"
 /** Default animation IDs followed by the writable extra-animation workspace. */
 s16 DefaultAnimations[362] = {
-    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
-    12, 13, 14, 16, 17, 25, 26, 27, 33, 34, 35, 36,
-    37, 38, 39, 40, 41, 42, 44, 45, 46, 47, 48, 49,
-    54, 55, 56, 57, 58, 65, 66, 67, 68, 69, 70, 71,
-    72, 99, 100, 101, 102, 103, 104, 123, 124, 125, 126, 128,
-    129, 132, 133, 130, 131, 135, 136, 137, 69, 145, -1, -1,
+    0,   1,   2,   3,   4,   5,   6,   7,   8,   9,   10,  11,  12,  13,  14,  16,  17,  25,
+    26,  27,  33,  34,  35,  36,  37,  38,  39,  40,  41,  42,  44,  45,  46,  47,  48,  49,
+    54,  55,  56,  57,  58,  65,  66,  67,  68,  69,  70,  71,  72,  99,  100, 101, 102, 103,
+    104, 123, 124, 125, 126, 128, 129, 132, 133, 130, 131, 135, 136, 137, 69,  145, -1,  -1,
 };
 
 /**
@@ -1042,17 +1046,14 @@ namespace PhysicsDirectionTableOwner
 extern "C"
 {
 static int DirectionTable[16] = {
-    0, 1, 2, 2,
-    3, 5, 7, 7,
-    4, 6, 8, 8,
-    4, 6, 8, 8,
+    0, 1, 2, 2, 3, 5, 7, 7, 4, 6, 8, 8, 4, 6, 8, 8,
 };
 }
 }
 
 /** Physics stat override, shared up axis, and active control scheme. */
 int Cheat_StatsOverride __attribute__((section(".sdata"))) = 0;
-CVector WorldUp __attribute__((section(".sdata"))) = {0, 0, 0};
+CVector WorldUp __attribute__((section(".sdata"))) = { 0, 0, 0 };
 int SelectedControlScheme __attribute__((section(".sdata"))) = 1;
 
 /**
@@ -1081,15 +1082,13 @@ struct PhysicsTransitionNames
     char Handplant[12];
     char Trick[8];
 };
-typedef char PhysicsTransitionNames_size_must_be_40[
-    (sizeof(PhysicsTransitionNames) == 40) ? 1 : -1];
+typedef char
+    PhysicsTransitionNames_size_must_be_40[(sizeof(PhysicsTransitionNames) == 40) ? 1 : -1];
 
 /** Physics normal and compact trick-name table. */
-CVector UpNormal __attribute__((section(".sdata"))) = {0, 0, 0};
+CVector UpNormal __attribute__((section(".sdata"))) = { 0, 0, 0 };
 static PhysicsTransitionNames PhysicsTrickNames
-    __attribute__((section(".sdata"))) = {
-        "OLLIE", "WALL RIDE", "Handplant", "Trick"
-    };
+    __attribute__((section(".sdata"))) = { "OLLIE", "WALL RIDE", "Handplant", "Trick" };
 
 /** Writable extra-animation cursor. */
 short *pExtraAnim __attribute__((section(".sdata"))) = 0;
@@ -1099,19 +1098,16 @@ short *pExtraAnim __attribute__((section(".sdata"))) = 0;
  * The 76-byte extent is target-proven and keeps accesses absolute under
  * PHYSICS's recovered -G16 threshold.
  */
-static char GTricksFilename[76]
-    __attribute__((section(".sdata"))) =
-    "tricks.bin\0\0"
-    "FOOTPLANT\0\0\0"
-    "MANUAL\0\0"
-    "NOSE MANUAL\0"
-    "FASTPLANT\0\0\0"
-    "BONELESS\0\0\0\0"
-    "NOLLIE\0";
+static char GTricksFilename[76] __attribute__((section(".sdata"))) = "tricks.bin\0\0"
+                                                                     "FOOTPLANT\0\0\0"
+                                                                     "MANUAL\0\0"
+                                                                     "NOSE MANUAL\0"
+                                                                     "FASTPLANT\0\0\0"
+                                                                     "BONELESS\0\0\0\0"
+                                                                     "NOLLIE\0";
 
 /** One-time trigger-probe initialization flag. */
-static int PhysicsTriggerInitialized
-    __attribute__((section(".sdata"))) = 0;
+static int PhysicsTriggerInitialized __attribute__((section(".sdata"))) = 0;
 
 /** Player-one multiplayer wins, losses, streak, and high-tag record. */
 int GWins1 __attribute__((section(".sdata"))) = 0;
@@ -1134,15 +1130,16 @@ int Face_Terrain __attribute__((section(".sdata"))) = 0;
 int NumExtraAnims __attribute__((section(".sdata"))) = 0;
 
 #include "ZEROVECTOR.h"
-struct Vec3 { int a, b, c; };
+struct Vec3
+{
+    int a, b, c;
+};
 // === Readable owner-local names with MAIN.SYM-proven ABI labels ===
 #define MECH_DECLARE_PHYSICS_OWNER_ABI
 #define MECH_PHYSICS_OWNER_RECEIVER CBrucePhysicsSlice
 #include "MECH.h"
-#define Physics_StateTransition \
-    PhysicsOwnerAbi::StateTransition__6CBruce13EPhysicsStatei
-#define Physics_CheckSideCollisions \
-    PhysicsOwnerAbi::CheckSideCollisions__6CBruce
+#define Physics_StateTransition PhysicsOwnerAbi::StateTransition__6CBruce13EPhysicsStatei
+#define Physics_CheckSideCollisions PhysicsOwnerAbi::CheckSideCollisions__6CBruce
 
 /**
  * PHYSICS.CPP diagnostic strings in their original owner-local order.
@@ -1151,7 +1148,8 @@ struct Vec3 { int a, b, c; };
  * configuration removes the corresponding debug calls.  Fixed field widths
  * preserve the original padding and keep the pool indivisible.
  */
-struct PhysicsDiagnostics {
+struct PhysicsDiagnostics
+{
     char collision[0x1C];
     char script[0x1C];
     char scriptError[0x14];
@@ -1163,8 +1161,7 @@ struct PhysicsDiagnostics {
     char loopRestart[0x28];
 };
 
-typedef char PhysicsDiagnostics_size_must_be_0x110[
-    (sizeof(PhysicsDiagnostics) == 0x110) ? 1 : -1];
+typedef char PhysicsDiagnostics_size_must_be_0x110[(sizeof(PhysicsDiagnostics) == 0x110) ? 1 : -1];
 
 #define PHYSICS_DECLARE_DIAGNOSTIC_POOL
 #include "PHYSICS.h"
@@ -1251,8 +1248,7 @@ int PingPong(int a, int b, int fps)
  */
 void CBruce::TempTransform()
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
     MATRIX SurfaceRotMatrix;
     SVECTOR RotAngle;
 
@@ -1280,12 +1276,9 @@ void CBruce::TempTransform()
         RotAngle.vz = 0;
         RotAngle.vy = 0;
         RotAngle.vx = 0;
-        if (bruce->mRotateCount[0])
-            RotAngle.vx = bruce->mRotateTotal[0] & 0xFFF;
-        if (bruce->mRotateCount[2])
-            RotAngle.vz = bruce->mRotateTotal[2] & 0xFFF;
-        if (bruce->mFlipNum)
-            RotAngle.vx = bruce->mFlipAngle & 0xFFF;
+        if (bruce->mRotateCount[0]) RotAngle.vx = bruce->mRotateTotal[0] & 0xFFF;
+        if (bruce->mRotateCount[2]) RotAngle.vz = bruce->mRotateTotal[2] & 0xFFF;
+        if (bruce->mFlipNum) RotAngle.vx = bruce->mFlipAngle & 0xFFF;
 
         RotMatrixYXZ(&RotAngle, &SurfaceRotMatrix);
         MulMatrix(&bruce->mRotationMatrix, &SurfaceRotMatrix);
@@ -1325,8 +1318,7 @@ void CBruce::TempTransform()
  */
 void CBruce::TempRestore()
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
     int a;
     int b;
     int c;
@@ -1380,14 +1372,11 @@ void CBruce::Trick_PlayerInit(unsigned short player_num)
  */
 void CBruce::Trick_TakeOff()
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
     int state = bruce->mPhysicsState;
-    if (state == 5)
-        return;
+    if (state == 5) return;
     int playTime = bruce->mPlayTime;
-    if (playTime == 0)
-        return;
+    if (playTime == 0) return;
     bruce->mPerfectLanding = 0;
     bruce->mSloppyLanding = 0;
     bruce->mTrickTookOff = 1;
@@ -1421,14 +1410,11 @@ void CBruce::Trick_TakeOff()
  */
 void CBruce::Trick_Trick(char *pName, int Points, int Lock)
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
-    if (bruce->mTrickTookOff == 0)
-        return;
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
+    if (bruce->mTrickTookOff == 0) return;
 
     int game = GGame;
-    if (game != 7)
-        goto score_phase;
+    if (game != 7) goto score_phase;
     bruce->mPlayTime = 0;
 
 score_phase:
@@ -1467,8 +1453,7 @@ void CBruce::Trick_HoldTrick(int Points)
  */
 void CBruce::EndManual()
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
     if (bruce->mManual != 0)
     {
         bruce->mManual = 0;
@@ -1486,8 +1471,7 @@ void CBruce::EndManual()
  */
 int CBruce::Get180s()
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
     int count = bruce->mNum180Spins;
     if (bruce->mManual == 0)
     {
@@ -1519,44 +1503,36 @@ int CBruce::Get180s()
  */
 void CBruce::Trick_Land()
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
     bruce->mFlipNum = 0;
     bruce->mTricks++;
     bruce->mNum180Spins = Get180s();
-    if (bruce->mNum180Spins == 1 && bruce->mOldPhysicsState == 2)
-        bruce->mNum180Spins = 0;
+    if (bruce->mNum180Spins == 1 && bruce->mOldPhysicsState == 2) bruce->mNum180Spins = 0;
 
     if (bruce->mNum180Spins == 0)
     {
         bruce->mPerfectLanding = 0;
         bruce->mSloppyLanding = 0;
     }
-    if (bruce->mPerfectLanding)
-        SFX_PlayX(0xBC, 0x2000, 0);
-    if (bruce->mSloppyLanding)
-        SFX_PlayX(0xBD, 0x2000, 0);
+    if (bruce->mPerfectLanding) SFX_PlayX(0xBC, 0x2000, 0);
+    if (bruce->mSloppyLanding) SFX_PlayX(0xBD, 0x2000, 0);
 
     bruce->mPanelData.TrickMessageRefresh();
     int trick_count = bruce->mPanelData.mTQStack;
-    if ((trick_count == 0
-         || (trick_count > 0
-             && bruce->mPanelData.mTQ[trick_count - 1].locked != 0))
-        && bruce->mNum180Spins != 0
-        && (bruce->mOldPhysicsState != 2 || bruce->mNum180Spins > 1))
+    if ((trick_count == 0 ||
+         (trick_count > 0 && bruce->mPanelData.mTQ[trick_count - 1].locked != 0)) &&
+        bruce->mNum180Spins != 0 && (bruce->mOldPhysicsState != 2 || bruce->mNum180Spins > 1))
     {
-        reinterpret_cast<CBruce *>(bruce)->Trick_Trick(
-            PhysicsTrickNames.Ollie, bruce->mNum180Spins * -50, 0);
+        reinterpret_cast<CBruce *>(bruce)->Trick_Trick(PhysicsTrickNames.Ollie,
+                                                       bruce->mNum180Spins * -50, 0);
         bruce->mTrickAwarded = 1;
     }
 
     Panel_Land(reinterpret_cast<CBruce *>(bruce));
     bruce->mNoSpinScore = 0;
     bruce->mNoSpin = 0;
-    if (bruce->mTrickAwarded && bruce->mLastSItem)
-        bruce->mLastSItem = 0;
-    if (bruce->mTrickAwarded && GGame == 7)
-        bruce->mPlayTime = 0;
+    if (bruce->mTrickAwarded && bruce->mLastSItem) bruce->mLastSItem = 0;
+    if (bruce->mTrickAwarded && GGame == 7) bruce->mPlayTime = 0;
 
     Crowd_Cheer(bruce->mPanelData.mLandedTotal);
     if (bruce->mTrickAwarded)
@@ -1573,8 +1549,7 @@ void CBruce::Trick_Land()
         else
         {
             bruce->mMagicTime += bruce->mPanelData.mLandedTotal / 5;
-            if (bruce->mMagicTime >= 751)
-                bruce->mMagicTime = 750;
+            if (bruce->mMagicTime >= 751) bruce->mMagicTime = 750;
         }
     }
 
@@ -1591,8 +1566,7 @@ void CBruce::Trick_Land()
 // Demangled: CBruce::Trick_Bail(void)
 void CBruce::Trick_Bail()
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
     int game = GGame;
     if (game == 7)
     {
@@ -1641,8 +1615,7 @@ void CBruce::Trick_Bail()
  */
 void CBruce::Vibrate(int time, int motor, int value)
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
     int game = GGame;
     int index = bruce->mIndex;
     if (game == 7)
@@ -1698,8 +1671,7 @@ void Physics_StateTransition(CBrucePhysicsSlice *bruce, int NewState, int line)
         CVector v40;
         CVector v30;
         CVector v20;
-        reinterpret_cast<CBruce *>(bruce)->Trick_Trick(
-            PhysicsTrickNames.WallRide, 0x1F4, 1);
+        reinterpret_cast<CBruce *>(bruce)->Trick_Trick(PhysicsTrickNames.WallRide, 0x1F4, 1);
         if (bruce->CSuper.mAnim == 0x23)
         {
             if ((bruce->CSuper.mExtraFlags & 2) == 0)
@@ -1740,10 +1712,8 @@ done:
  */
 void CBruce::MaybeFlipAnimationTransition()
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
-    if (bruce->CSuper.mAnim == 0x82
-        && bruce->CSuper.mFrame >= 0x10)
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
+    if (bruce->CSuper.mAnim == 0x82 && bruce->CSuper.mFrame >= 0x10)
     {
         bruce->mCess = 0;
         bruce->CSuper.mExtraFlags ^= 2;
@@ -1756,18 +1726,12 @@ void CBruce::MaybeFlipAnimationTransition()
     if (bruce->mRotateAfter != 0)
     {
         bruce->mRotateAfter = 0;
-        bruce->mFront.x = bruce->mRotationMatrix.m[0][2] =
-            -(short)(u16)bruce->mFront.x;
-        bruce->mFront.y = bruce->mRotationMatrix.m[1][2] =
-            -(short)(u16)bruce->mFront.y;
-        bruce->mFront.z = bruce->mRotationMatrix.m[2][2] =
-            -(short)(u16)bruce->mFront.z;
-        bruce->mRight.x = bruce->mRotationMatrix.m[0][0] =
-            -(short)(u16)bruce->mRight.x;
-        bruce->mRight.y = bruce->mRotationMatrix.m[1][0] =
-            -(short)(u16)bruce->mRight.y;
-        bruce->mRight.z = bruce->mRotationMatrix.m[2][0] =
-            -(short)(u16)bruce->mRight.z;
+        bruce->mFront.x = bruce->mRotationMatrix.m[0][2] = -(short)(u16)bruce->mFront.x;
+        bruce->mFront.y = bruce->mRotationMatrix.m[1][2] = -(short)(u16)bruce->mFront.y;
+        bruce->mFront.z = bruce->mRotationMatrix.m[2][2] = -(short)(u16)bruce->mFront.z;
+        bruce->mRight.x = bruce->mRotationMatrix.m[0][0] = -(short)(u16)bruce->mRight.x;
+        bruce->mRight.y = bruce->mRotationMatrix.m[1][0] = -(short)(u16)bruce->mRight.y;
+        bruce->mRight.z = bruce->mRotationMatrix.m[2][0] = -(short)(u16)bruce->mRight.z;
     }
 }
 
@@ -1783,8 +1747,7 @@ void CBruce::MaybeFlipAnimationTransition()
  */
 void CBruce::Debug_RunAnim(int x, int line)
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
     MaybeFlipAnimationTransition();
     int big = 0x10000;
     int neg = -1;
@@ -1805,8 +1768,7 @@ void CBruce::Debug_RunAnim(int x, int line)
  */
 void CBruce::Debug_RunAnim1(int x, int y, int line)
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
     (void)line;
     MaybeFlipAnimationTransition();
     bruce->CSuper.mAnimSpeed = 0x10000;
@@ -1827,8 +1789,7 @@ void CBruce::Debug_RunAnim1(int x, int y, int line)
  */
 void CBruce::Debug_RunAnim2(int x, int y, int z, int line)
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
     (void)line;
     MaybeFlipAnimationTransition();
     bruce->CSuper.mAnimSpeed = 0x10000;
@@ -1850,8 +1811,7 @@ void CBruce::Debug_RunAnim2(int x, int y, int z, int line)
  */
 void CBruce::Debug_RunAnim3(int x, int y, int z, int zz, int line)
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
     (void)line;
     MaybeFlipAnimationTransition();
     bruce->CSuper.mAnimSpeed = 0x10000;
@@ -1868,8 +1828,7 @@ void CBruce::Debug_RunAnim3(int x, int y, int z, int zz, int line)
  */
 void CBruce::ResetTrickBuffers()
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
     bruce->mTapTurn = 0;
 }
 
@@ -1887,10 +1846,8 @@ void CBruce::ResetTrickBuffers()
 void CBruce::Bail(int BailNumber, ELimitBailVel LimitBailVel)
 {
     int frame_pad[2];
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
-    CBruceScriptQueueSlice *script =
-        reinterpret_cast<CBruceScriptQueueSlice *>(bruce);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBruceScriptQueueSlice *script = reinterpret_cast<CBruceScriptQueueSlice *>(bruce);
     int bailCount = bruce->mBails;
     int maxValue = 0x64;
 
@@ -1919,7 +1876,8 @@ void CBruce::Bail(int BailNumber, ELimitBailVel LimitBailVel)
     Physics_StateTransition(bruce, 1, 0x411);
     if (BailNumber == 0)
     {
-        int dot = Mips_CVecDotProd((CVector *)&bruce->CSuper.CBody.mVel, (CVector *)&bruce->CSuper.CBody.mVel);
+        int dot = Mips_CVecDotProd((CVector *)&bruce->CSuper.CBody.mVel,
+                                   (CVector *)&bruce->CSuper.CBody.mVel);
         int Speed = M3dMaths_SquareRoot0(dot);
         if ((Speed << 6) <= 0x2CFFF)
         {
@@ -1995,8 +1953,7 @@ void UberFrig(CBruce *pSkater, CVector v, char *pc)
 {
     (void)pc;
     CBrucePhysicsSlice *bruce = (CBrucePhysicsSlice *)pSkater;
-    if (bruce->mOnRail != 0)
-        return;
+    if (bruce->mOnRail != 0) return;
 
     SLineInfo li;
 
@@ -2010,8 +1967,7 @@ void UberFrig(CBruce *pSkater, CVector v, char *pc)
     M3dZone_LineToItem(&li, 1);
     if (li.pItem != 0)
     {
-        reinterpret_cast<CBruce *>(bruce)->CalculateDynamicLighting(
-            li.pFace, li.pItem);
+        reinterpret_cast<CBruce *>(bruce)->CalculateDynamicLighting(li.pFace, li.pItem);
         return;
     }
 
@@ -2047,8 +2003,7 @@ void UberFrig(CBruce *pSkater, CVector v, char *pc)
     li.EndCoords.vy += 0x190000;
     M3dColij_InitLineInfo(&li);
     M3dZone_LineToItem(&li, 1);
-    if (li.pItem != 0)
-        return;
+    if (li.pItem != 0) return;
 
     // raycast 4
     int e4c = bruce->mSafePos.z;
@@ -2063,8 +2018,7 @@ void UberFrig(CBruce *pSkater, CVector v, char *pc)
     li.EndCoords.vy += 0x190000;
     M3dColij_InitLineInfo(&li);
     M3dZone_LineToItem(&li, 1);
-    if (li.pItem != 0)
-        return;
+    if (li.pItem != 0) return;
 
     // all raycasts missed
     bruce->CSuper.CBody.CItem.mPos = bruce->mSafePos;
@@ -2083,8 +2037,7 @@ void UberFrig(CBruce *pSkater, CVector v, char *pc)
  */
 void CBruce::FrigDarkenObject()
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
     if (bruce->mLastSItem != 0)
     {
         if (bruce->mLastPSX != 0)
@@ -2093,8 +2046,7 @@ void CBruce::FrigDarkenObject()
             if (score > 0)
             {
                 // The legacy target return is incidental and intentionally ignored.
-                TrickOb_TrickedOnItem(
-                    bruce->mLastSItem, reinterpret_cast<void *>(bruce), score);
+                TrickOb_TrickedOnItem(bruce->mLastSItem, reinterpret_cast<void *>(bruce), score);
             }
         }
     }
@@ -2120,8 +2072,7 @@ void CBruce::TrickObRail()
 // Demangled: CBruce::StartHandPlant(void)
 void CBruce::StartHandPlant()
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
     bruce->mHandPlantTweaked = 0;
     if (bruce->mTrickTookOff == 0)
     {
@@ -2132,38 +2083,31 @@ void CBruce::StartHandPlant()
             goto epilogue;
         }
     }
-    reinterpret_cast<CBruce *>(bruce)->Trick_Trick(
-        PhysicsTrickNames.Handplant, 0x3E8, 1);
+    reinterpret_cast<CBruce *>(bruce)->Trick_Trick(PhysicsTrickNames.Handplant, 0x3E8, 1);
     reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim1(0x22, 8, 0x586);
     bruce->mDoingWhatTrick = bruce->mDoingWhatTrick | 0x4000;
     Physics_StateTransition(bruce, 8, 0x588);
     SFX_PlayX(0xE7, 0x1000, 0);
     bruce->CSuper.CBody.CItem.mPos = bruce->mRailPos;
-    bruce->CSuper.CBody.CItem.mPos.y =
-        bruce->CSuper.CBody.CItem.mPos.y - 0x1E;
+    bruce->CSuper.CBody.CItem.mPos.y = bruce->CSuper.CBody.CItem.mPos.y - 0x1E;
     TrickObRail();
     bruce->mDontStickRail = bruce->mCurrentRailStart;
     bruce->CSuper.CBody.mVel.x = 0;
     bruce->CSuper.CBody.mVel.z = 0;
     bruce->CSuper.CBody.mVel.y = -bruce->CSuper.CBody.mVel.y;
-epilogue:
-    ;
+epilogue:;
 }
 
 /*
  * PHYSICS_RECON_* identifiers are reconstruction-local expression names;
  * original preprocessor identifiers are not present in the target artifacts.
  */
-#define PHYSICS_RECON_EFFECTIVE_BALANCE(self)                                      \
-    (Cheat_StatsOverride != 0                                                \
-         ? Cheat_StatsOverride                                              \
-         : Stats[((CBrucePhysicsSlice *)(self))->mSkaterType].Balance        \
-               + ((((CBrucePhysicsSlice *)(self))->mMagicTime != 0          \
-                   || Cheat_Fire != 0)                                      \
-                      ? 3                                                    \
-                      : 0)                                                   \
-               + (unsigned char)                                             \
-                     ((CBrucePhysicsSlice *)(self))->mpBoardStats->balance)
+#define PHYSICS_RECON_EFFECTIVE_BALANCE(self) \
+    (Cheat_StatsOverride != 0 \
+         ? Cheat_StatsOverride \
+         : Stats[((CBrucePhysicsSlice *)(self))->mSkaterType].Balance + \
+               ((((CBrucePhysicsSlice *)(self))->mMagicTime != 0 || Cheat_Fire != 0) ? 3 : 0) + \
+               (unsigned char)((CBrucePhysicsSlice *)(self))->mpBoardStats->balance)
 
 /** Return the branch-free absolute value used by the rail proximity tests. */
 static inline int PhysicsAbsolute(int value)
@@ -2209,8 +2153,7 @@ void CBruce::StartGrind()
     if (bruce->mCurrentRailStart != bruce->mLastRailStart)
     {
         bruce->mGrindTime = bruce->mGrindTime - 0x1E;
-        if (bruce->mGrindTime < 0)
-            bruce->mGrindTime = 0;
+        if (bruce->mGrindTime < 0) bruce->mGrindTime = 0;
         bruce->mGrindLeanDir = 0;
         bruce->mLastRailStart = bruce->mCurrentRailStart;
     }
@@ -2229,43 +2172,44 @@ void CBruce::StartGrind()
         asm("" : "+r"(leanCopy));
         bruce->mGrindLeanDir =
             (override == 0
-                 ? leanCopy * (100 - (Stats[bruce->mSkaterType].Balance
-                       + ((bruce->mMagicTime != 0 || Cheat_Fire != 0) ? 3 : 0)
-                       + (unsigned char)bruce->mpBoardStats->balance) * 15)
-                 : lean * (100 - override * 15))
-            / 100 * (grindTime + 60) / 80;
+                 ? leanCopy * (100 - (Stats[bruce->mSkaterType].Balance +
+                                      ((bruce->mMagicTime != 0 || Cheat_Fire != 0) ? 3 : 0) +
+                                      (unsigned char)bruce->mpBoardStats->balance) *
+                                         15)
+                 : lean * (100 - override * 15)) /
+            100 * (grindTime + 60) / 80;
     }
 
     bruce->mNumGrinds = bruce->mNumGrinds + 1;
 
     switch (bruce->mRailType)
     {
-    case 0:
-        /* Both rail-spark variants use the same demo-build sound ID. */
-        if (bruce->mRailSparks != 0)
-            SFX_PlayX(5, 0x2000, 0);
-        else
-            SFX_PlayX(5, 0x2000, 0);
-        break;
-    case 1:
-        if (bruce->mRailSparks != 0)
-            SFX_PlayX(0xD5, 0x2000, 0);
-        else
-            SFX_PlayX(0xD6, 0x2000, 0);
-        break;
-    case 2:
-        /* Both rail-spark variants use the same demo-build sound ID. */
-        if (bruce->mRailSparks != 0)
-            SFX_PlayX(0xC8, 0x2000, 0);
-        else
-            SFX_PlayX(0xC8, 0x2000, 0);
-        break;
-    case 3:
-        if (bruce->mRailSparks != 0)
-            SFX_PlayX(0xD7, 0x2000, 0);
-        else
-            SFX_PlayX(0xD6, 0x2000, 0);
-        break;
+        case 0:
+            /* Both rail-spark variants use the same demo-build sound ID. */
+            if (bruce->mRailSparks != 0)
+                SFX_PlayX(5, 0x2000, 0);
+            else
+                SFX_PlayX(5, 0x2000, 0);
+            break;
+        case 1:
+            if (bruce->mRailSparks != 0)
+                SFX_PlayX(0xD5, 0x2000, 0);
+            else
+                SFX_PlayX(0xD6, 0x2000, 0);
+            break;
+        case 2:
+            /* Both rail-spark variants use the same demo-build sound ID. */
+            if (bruce->mRailSparks != 0)
+                SFX_PlayX(0xC8, 0x2000, 0);
+            else
+                SFX_PlayX(0xC8, 0x2000, 0);
+            break;
+        case 3:
+            if (bruce->mRailSparks != 0)
+                SFX_PlayX(0xD7, 0x2000, 0);
+            else
+                SFX_PlayX(0xD6, 0x2000, 0);
+            break;
     }
 
     Physics_StateTransition(bruce, 4, 0x5DE);
@@ -2275,31 +2219,24 @@ void CBruce::StartGrind()
     TrickObRail();
 
     /* Rail right-hand normal, as the cross of the segment with world up. */
-    CVector mSideVel =
-        *(CVector *)&bruce->mRailPos - *(CVector *)&bruce->mLastGroundPos;
+    CVector mSideVel = *(CVector *)&bruce->mRailPos - *(CVector *)&bruce->mLastGroundPos;
     mSideVel.vy = 0;
     temp = mSideVel.vx;
     mSideVel.vx = mSideVel.vz;
     mSideVel.vz = -temp;
 
-    FrontDot = Mips_CVecDotProd(
-        (CVector *)&bruce->mRailDir, (CVector *)&bruce->mFront);
-    RightDot = Mips_CVecDotProd(
-        (CVector *)&bruce->mRailDir, (CVector *)&bruce->mRight);
-    VelDot = Mips_CVecDotProd(
-        (CVector *)&bruce->mRailDir, &mSideVel);
+    FrontDot = Mips_CVecDotProd((CVector *)&bruce->mRailDir, (CVector *)&bruce->mFront);
+    RightDot = Mips_CVecDotProd((CVector *)&bruce->mRailDir, (CVector *)&bruce->mRight);
+    VelDot = Mips_CVecDotProd((CVector *)&bruce->mRailDir, &mSideVel);
 
     if (bruce->mDontStickRail != bruce->mCurrentRailStart)
     {
         bruce->mRail_RightOfRail = 0;
         bruce->mRail_FrontSide = 0;
-        if (VelDot > 0)
-            bruce->mRail_RightOfRail = 1;
+        if (VelDot > 0) bruce->mRail_RightOfRail = 1;
         bruce->mRail_SkaterFlipped = 0;
-        if ((bruce->CSuper.mExtraFlags & 2) != 0)
-            bruce->mRail_SkaterFlipped = 1;
-        if (bruce->mRail_RightOfRail != bruce->mRail_SkaterFlipped)
-            bruce->mRail_FrontSide = 1;
+        if ((bruce->CSuper.mExtraFlags & 2) != 0) bruce->mRail_SkaterFlipped = 1;
+        if (bruce->mRail_RightOfRail != bruce->mRail_SkaterFlipped) bruce->mRail_FrontSide = 1;
     }
 
     bruce->mRail_Backwards = 0;
@@ -2307,15 +2244,12 @@ void CBruce::StartGrind()
     if (PhysicsAbsolute(RightDot) < 0xB33)
     {
         bruce->mRail_Parallel = 1;
-        if (FrontDot > 0)
-            bruce->mRail_Backwards = 1;
+        if (FrontDot > 0) bruce->mRail_Backwards = 1;
     }
     else
     {
-        if ((bruce->CSuper.mExtraFlags & 2) != 0)
-            RightDot = -RightDot;
-        if (RightDot < 0)
-            bruce->mRail_Backwards = 1;
+        if ((bruce->CSuper.mExtraFlags & 2) != 0) RightDot = -RightDot;
+        if (RightDot < 0) bruce->mRail_Backwards = 1;
     }
     bruce->mDontStickRail = bruce->mCurrentRailStart;
 
@@ -2324,65 +2258,47 @@ void CBruce::StartGrind()
     {
         int LastEvent = bruce->mEventQueuePos - 1;
         int FoundFirst = 0;
-        if (LastEvent < 0)
-            LastEvent = 0x1F;
+        if (LastEvent < 0) LastEvent = 0x1F;
 
-        int Event = reinterpret_cast<CBruce *>(bruce)
-                        ->GetPreviousPressedEvent(
-                            LastEvent, 0, 0x3C, LastEvent);
+        int Event = reinterpret_cast<CBruce *>(bruce)->GetPreviousPressedEvent(LastEvent, 0, 0x3C,
+                                                                               LastEvent);
         while (Event >= 0)
         {
-            if (bruce->mEventQueue[Event].Button == Direction &&
-                FoundFirst)
+            if (bruce->mEventQueue[Event].Button == Direction && FoundFirst)
             {
                 Direction += 8;
                 break;
             }
-            if (bruce->mEventQueue[Event].Button == Direction)
-                FoundFirst = 1;
-            Event = reinterpret_cast<CBruce *>(bruce)
-                        ->GetPreviousPressedEvent(
-                            Event, 1, 0x3C, LastEvent);
+            if (bruce->mEventQueue[Event].Button == Direction) FoundFirst = 1;
+            Event = reinterpret_cast<CBruce *>(bruce)->GetPreviousPressedEvent(Event, 1, 0x3C,
+                                                                               LastEvent);
         }
     }
 
     bruce->mRail_BadLedge = 0;
     if (bruce->mRail_LedgeType != 0)
     {
-        bruce->mRail_BadLedge =
-            (unsigned int)(bruce->mRail_LedgeType >> 1) ^
-            bruce->mRail_RightOfRail ^
-            (unsigned int)((bruce->mRail_Direction + 1) >> 1);
+        bruce->mRail_BadLedge = (unsigned int)(bruce->mRail_LedgeType >> 1) ^
+                                bruce->mRail_RightOfRail ^
+                                (unsigned int)((bruce->mRail_Direction + 1) >> 1);
     }
 
-    RailTrick =
-        bruce->mRail_RightOfRail
-        + bruce->mRail_Parallel * 2
-        + bruce->mRail_Backwards * 4
-        + bruce->mRail_SkaterFlipped * 8
-        + Direction * 0x10;
+    RailTrick = bruce->mRail_RightOfRail + bruce->mRail_Parallel * 2 + bruce->mRail_Backwards * 4 +
+                bruce->mRail_SkaterFlipped * 8 + Direction * 0x10;
     CVector Vel = *(CVector *)&bruce->mRailDir;
 
-    Vel *=
-        (Cheat_StatsOverride != 0
-             ? Cheat_StatsOverride
-             : Stats[bruce->mSkaterType].Speed
-                   + ((bruce->mMagicTime != 0
-                       || Cheat_Fire != 0)
-                          ? 3
-                          : 0)
-                   + (unsigned char)
-                         bruce->mpBoardStats->speed)
-        + 5;
+    Vel *= (Cheat_StatsOverride != 0 ? Cheat_StatsOverride
+                                     : Stats[bruce->mSkaterType].Speed +
+                                           ((bruce->mMagicTime != 0 || Cheat_Fire != 0) ? 3 : 0) +
+                                           (unsigned char)bruce->mpBoardStats->speed) +
+           5;
     *(CVector *)&bruce->CSuper.CBody.mVel += Vel;
     bruce->mRailFlip = 1;
     bruce->mRailSparks = 0;
 
-    if (bruce->mpRailTrickQueued != 0 &&
-        XFrames - bruce->mRailTrickTime < 0x1E)
+    if (bruce->mpRailTrickQueued != 0 && XFrames - bruce->mRailTrickTime < 0x1E)
     {
-        reinterpret_cast<CBruce *>(bruce)->TriggerTrick(
-            bruce->mpRailTrickQueued);
+        reinterpret_cast<CBruce *>(bruce)->TriggerTrick(bruce->mpRailTrickQueued);
         bruce->mpRailTrickQueued = 0;
     }
     else
@@ -2403,16 +2319,12 @@ void CBruce::StartGrind()
  */
 void CBruce::HandleStickToRail()
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
-    if (bruce->mPad->Triangle.Pressed == 0)
-        bruce->mJumpInhibit = 0;
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
+    if (bruce->mPad->Triangle.Pressed == 0) bruce->mJumpInhibit = 0;
 
-    if (bruce->mSameRailTimer != 0)
-        bruce->mSameRailTimer = bruce->mSameRailTimer - 1;
+    if (bruce->mSameRailTimer != 0) bruce->mSameRailTimer = bruce->mSameRailTimer - 1;
 
-    if (bruce->mDontStickTimer <= 0)
-        goto try_stick;
+    if (bruce->mDontStickTimer <= 0) goto try_stick;
     bruce->mDontStickTimer = bruce->mDontStickTimer - 1;
     bruce->mOnRail = 0;
 
@@ -2421,18 +2333,12 @@ cleanup:
     return;
 
 try_stick:
-    if (bruce->mPad->Triangle.Pressed == 0)
-        goto cleanup;
-    if (bruce->mInBail != 0)
-        goto cleanup;
-    if (bruce->mPhysicsState == 2 && bruce->CSuper.CBody.mVel.y > 0)
-        goto cleanup;
-    if (bruce->mRailInhibit != 0)
-        goto cleanup;
-    if (bruce->mStickToRail == 0)
-        return;
-    if (bruce->mOnRail != 0)
-        goto cleanup;
+    if (bruce->mPad->Triangle.Pressed == 0) goto cleanup;
+    if (bruce->mInBail != 0) goto cleanup;
+    if (bruce->mPhysicsState == 2 && bruce->CSuper.CBody.mVel.y > 0) goto cleanup;
+    if (bruce->mRailInhibit != 0) goto cleanup;
+    if (bruce->mStickToRail == 0) return;
+    if (bruce->mOnRail != 0) goto cleanup;
 
     bruce->mDontStickTimer = 0;
     if (bruce->mPhysicsState == 0)
@@ -2468,30 +2374,30 @@ try_stick:
                 int current = (int)bruce->CSuper.mFrame;
                 bail = current < ((int)*(signed char *)&bruce->CSuper.mTargetFrame - e64);
             }
-            else if ((int)bruce->CSuper.mFrame <= ((int)*(signed char *)&bruce->CSuper.mTargetFrame + e64))
+            else if ((int)bruce->CSuper.mFrame <=
+                     ((int)*(signed char *)&bruce->CSuper.mTargetFrame + e64))
             {
                 bail = 0;
             }
         }
         if (bail)
         {
-            reinterpret_cast<CBruce *>(bruce)->Bail(
-                (int)bruce->mRailBailNumber, DO_LIMIT);
+            reinterpret_cast<CBruce *>(bruce)->Bail((int)bruce->mRailBailNumber, DO_LIMIT);
             ++bruce->mTrickBails;
             bruce->mRailBailNumber = 0;
             return;
         }
     }
 
-    if (d50 != 0)
-        bruce->mTrickAwarded = 1;
+    if (d50 != 0) bruce->mTrickAwarded = 1;
 
     if (bruce->CSuper.CBody.mVel.y < 0)
     {
         int x = PhysicsAbsolute(bruce->mUp.y);
         if (x < 3000)
         {
-            int y = PhysicsAbsolute((int)(short)*(unsigned short *)((int)&bruce->CSuper.CBody.mNormal.y));
+            int y = PhysicsAbsolute(
+                (int)(short)*(unsigned short *)((int)&bruce->CSuper.CBody.mNormal.y));
             if (y < 0x5DC)
             {
                 int z = PhysicsAbsolute(bruce->mRight.y);
@@ -2523,16 +2429,13 @@ try_stick:
  */
 void CBruce::HandleBailOnLanding(int line)
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
-    if (bruce->mInBail != 0)
-        return;
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
+    if (bruce->mInBail != 0) return;
 
     if (bruce->mDoingATrick == 0)
     {
         int early_landing = bruce->mFlipNum;
-        if (early_landing == 0)
-            return;
+        if (early_landing == 0) return;
     }
 
     register int flags = bruce->mDoingWhatTrick;
@@ -2559,24 +2462,21 @@ void CBruce::HandleBailOnLanding(int line)
         if (bruce->mFlipSpeed > 0)
         {
             int angle = bruce->mFlipAngle & 0xFFF;
-            if (angle < 0xED4)
-                goto set_bail;
+            if (angle < 0xED4) goto set_bail;
             goto check_bail;
         }
         else
         {
             int angle = bruce->mFlipAngle & 0xFFF;
-            if (angle < 0x12D)
-                goto check_bail;
+            if (angle < 0x12D) goto check_bail;
         }
-set_bail:
+    set_bail:
         Bailing = 1;
     }
 check_bail:
     if (Bailing != 0)
     {
-        reinterpret_cast<CBruce *>(bruce)->Bail(
-            (int)bruce->mBailNumber, DO_LIMIT);
+        reinterpret_cast<CBruce *>(bruce)->Bail((int)bruce->mBailNumber, DO_LIMIT);
         register int bail_count = bruce->mTrickBails;
         bruce->mBailNumber = 0;
         bail_count++;
@@ -2598,8 +2498,7 @@ check_bail:
 void CBruce::HandleBailPerpendicular(SVECTOR Normal)
 {
     CVector InplaneVel;
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
 
     bruce->mPerfectLanding = 0;
     bruce->mSloppyLanding = 0;
@@ -2607,8 +2506,7 @@ void CBruce::HandleBailPerpendicular(SVECTOR Normal)
     InplaneVel = *(CVector *)&bruce->CSuper.CBody.mVel;
     ProjectCVectorToPlane(&InplaneVel, Normal);
 
-    int Speed = M3dMaths_SquareRoot0(
-        Mips_CVecDotProd(&InplaneVel, &InplaneVel)) << 6;
+    int Speed = M3dMaths_SquareRoot0(Mips_CVecDotProd(&InplaneVel, &InplaneVel)) << 6;
     if (Speed > 0x1E000)
     {
         CVector PlaneUnitVector;
@@ -2622,13 +2520,10 @@ void CBruce::HandleBailPerpendicular(SVECTOR Normal)
         ProjectCVectorToPlane(&InplaneFront, Normal);
         M3dUtils_NormaliseVector((CVector *)&InplaneFront);
 
-        int rawDot = Mips_CVecDotProd(
-            &PlaneUnitVector, &InplaneFront);
+        int rawDot = Mips_CVecDotProd(&PlaneUnitVector, &InplaneFront);
         int Dot = PhysicsAbsolute(rawDot);
-        if (Dot >= 0xFC2)
-            bruce->mPerfectLanding = 1;
-        if (Dot < 0xB50)
-            bruce->mSloppyLanding = 1;
+        if (Dot >= 0xFC2) bruce->mPerfectLanding = 1;
+        if (Dot < 0xB50) bruce->mSloppyLanding = 1;
 
         if (Dot < 0x666)
         {
@@ -2672,8 +2567,7 @@ void CBruce::HandleBailPerpendicular(SVECTOR Normal)
             gte_stlvnl(Front);
             reinterpret_cast<CBruce *>(bruce)->RotMatrixFromFRUVectors();
 
-            if (bruce->CSuper.mExtraFlags & 2)
-                RightDot = -RightDot;
+            if (bruce->CSuper.mExtraFlags & 2) RightDot = -RightDot;
             if (RightDot <= 0)
                 reinterpret_cast<CBruce *>(bruce)->Bail(2, DO_LIMIT);
             else
@@ -2694,10 +2588,8 @@ void CBruce::HandleBailPerpendicular(SVECTOR Normal)
  */
 void CBruce::TriggerTrick(short *pTrick)
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
-    CBruceScriptQueueSlice *script =
-        reinterpret_cast<CBruceScriptQueueSlice *>(bruce);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBruceScriptQueueSlice *script = reinterpret_cast<CBruceScriptQueueSlice *>(bruce);
     int one = 1;
     bruce->mDoingATrick = one;
     script->mDoingAScript = one;
@@ -2726,8 +2618,7 @@ void CBruce::TriggerTrick(short *pTrick)
  */
 void CBruce::TriggerTrick(int Trick)
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
     short *table1 = GGrindTricksList;
     short val = table1[Trick];
     short half = val / 2;
@@ -2746,15 +2637,12 @@ void CBruce::TriggerTrick(int Trick)
  */
 void CBruce::ButtonRecord(unsigned char Button, unsigned char Pressed)
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
-    CBruceScriptQueueSlice *queue =
-        reinterpret_cast<CBruceScriptQueueSlice *>(bruce);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBruceScriptQueueSlice *queue = reinterpret_cast<CBruceScriptQueueSlice *>(bruce);
     u8 btn = Button & 0xFF;
     u8 st = Pressed & 0xFF;
     u8 *buf = queue->mCurrentButtonState;
-    if (buf[btn] == st)
-        return;
+    if (buf[btn] == st) return;
     buf[btn] = st;
     {
         int idx = queue->mEventQueuePos;
@@ -2794,19 +2682,15 @@ void CBruce::ButtonRecord(unsigned char Button, unsigned char Pressed)
  */
 void CBruce::ButtonRemoveLast(unsigned char Button, unsigned char Pressed)
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
-    CBruceScriptQueueSlice *queue =
-        reinterpret_cast<CBruceScriptQueueSlice *>(bruce);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBruceScriptQueueSlice *queue = reinterpret_cast<CBruceScriptQueueSlice *>(bruce);
     char *queueBase = reinterpret_cast<char *>(bruce);
     int idx = queue->mEventQueuePos;
     Button &= 0xFF;
     int Event = idx - 1;
     Pressed &= 0xFF;
-    if (Event < 0)
-        Event = 0x1F;
-    if (Event == idx)
-        return;
+    if (Event < 0) Event = 0x1F;
+    if (Event == idx) return;
     int origIdx = idx;
     int offset = Event << 3;
     u8 *p0 = (u8 *)(offset + (int)&((CBruceScriptQueueSlice *)0)->mEventQueue[0].Button);
@@ -2846,8 +2730,7 @@ void CBruce::ButtonRemoveLast(unsigned char Button, unsigned char Pressed)
  */
 int CBruce::GetDirection()
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
     int pad = (int)bruce->mPad;
     SControl *control = (SControl *)pad;
     u8 leftX = control->Down.Pressed;
@@ -2887,8 +2770,7 @@ int CBruce::GetDirection()
  */
 void CBruce::UpdateButtons()
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
     unsigned int dir = GetDirection();
     ButtonRecord(1, (dir ^ 1) < 1u);
     ButtonRecord(2, (dir ^ 2) < 1u);
@@ -2925,11 +2807,9 @@ void CBruce::UpdateButtons()
  */
 void CBruce::QueueTrick(short *pTrick, int Button, int EventTime)
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
     CBruceScriptQueueSlice *queue = (CBruceScriptQueueSlice *)bruce;
-    if (queue->mTricksQueued == 10)
-        return;
+    if (queue->mTricksQueued == 10) return;
     if (Button == 12)
     {
         queue->mpRailTrickQueued = pTrick;
@@ -2956,16 +2836,12 @@ void CBruce::QueueTrick(short *pTrick, int Button, int EventTime)
  */
 void CBruce::UpdateQueue()
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
     CBruceScriptQueueSlice *queue = (CBruceScriptQueueSlice *)bruce;
 
-    if (bruce->mDoingATrick != 0)
-        return;
-    if (bruce->mInBail != 0)
-        return;
-    if (queue->mTricksQueued == 0)
-        return;
+    if (bruce->mDoingATrick != 0) return;
+    if (bruce->mInBail != 0) return;
+    if (queue->mTricksQueued == 0) return;
 
     if ((u32)(bruce->mPhysicsState - 1) >= 2U)
     {
@@ -2979,8 +2855,7 @@ void CBruce::UpdateQueue()
         {
             queue->mActionButton = queue->mTrickQueue[idx].Button;
             queue->mActionButtonEventTime = queue->mTrickQueue[idx].EventTime;
-            reinterpret_cast<CBruce *>(bruce)->TriggerTrick(
-                queue->mTrickQueue[idx].pTrick);
+            reinterpret_cast<CBruce *>(bruce)->TriggerTrick(queue->mTrickQueue[idx].pTrick);
             idx = queue->mTrickQueueTail;
         }
         queue->mTrickQueueTail = (idx + 1) % 10;
@@ -2999,8 +2874,7 @@ void CBruce::UpdateQueue()
  */
 int CBruce::ActionButtonHeld()
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
     CBruceScriptQueueSlice *queue = (CBruceScriptQueueSlice *)bruce;
     int obj = (int)bruce;
     int head = queue->mEventQueuePos;
@@ -3014,9 +2888,7 @@ int CBruce::ActionButtonHeld()
         int last = queue->mActionButton;
         int *timeBase = (int *)&queue->mEventQueue[0].Time;
         int originalHead = head;
-        int heldOffset =
-            (Event << 3) +
-            (int)&((CBruceScriptQueueSlice *)0)->mEventQueue[0].Pressed;
+        int heldOffset = (Event << 3) + (int)&((CBruceScriptQueueSlice *)0)->mEventQueue[0].Pressed;
         u8 *heldPtr = (u8 *)(heldOffset + obj);
         int eventOffset = (Event << 3) + 0xAB4;
         u8 *eventPtr = (u8 *)(eventOffset + obj);
@@ -3063,8 +2935,7 @@ int CBruce::ActionButtonHeld()
  */
 int CBruce::GetPreviousPressedEvent(int Event, int Skip, int Time, int Top)
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
     char *queueBase = reinterpret_cast<char *>(bruce);
     Event -= Skip;
     if (Event < 0)
@@ -3072,26 +2943,21 @@ int CBruce::GetPreviousPressedEvent(int Event, int Skip, int Time, int Top)
         Event += 0x20;
     }
     /* MAIN.SYM records no source locals here; these names are descriptive. */
-    u32 *queueTimeBase =
-        &((CBruceScriptQueueSlice *)bruce)->mEventQueue[0].Time;
+    u32 *queueTimeBase = &((CBruceScriptQueueSlice *)bruce)->mEventQueue[0].Time;
     int current_frame = XFrames;
     int event_offset = (Event * 8) + 0xAB4;
-    u8 *event_ptr =
-        (u8 *)(event_offset + reinterpret_cast<int>(queueBase));
+    u8 *event_ptr = (u8 *)(event_offset + reinterpret_cast<int>(queueBase));
     for (;;)
     {
         int slot_offset = Event * 8;
         char *event_base = queueBase + slot_offset;
         if (*event_ptr != 0)
         {
-            if ((u32)Time <
-                (u32)(current_frame -
-                      *(u32 *)((char *)queueTimeBase + slot_offset)))
+            if ((u32)Time < (u32)(current_frame - *(u32 *)((char *)queueTimeBase + slot_offset)))
             {
                 return -1;
             }
-            if (((CBruceScriptQueueSlice *)event_base)
-                    ->mEventQueue[0].Pressed != 0)
+            if (((CBruceScriptQueueSlice *)event_base)->mEventQueue[0].Pressed != 0)
             {
                 return Event;
             }
@@ -3100,12 +2966,10 @@ int CBruce::GetPreviousPressedEvent(int Event, int Skip, int Time, int Top)
         event_ptr -= 8;
         if (Event < 0)
         {
-            event_ptr =
-                &((CBruceScriptQueueSlice *)bruce)->mEventQueue[31].Button;
+            event_ptr = &((CBruceScriptQueueSlice *)bruce)->mEventQueue[31].Button;
             Event = 0x1F;
         }
-        if (Event == Top)
-            return -1;
+        if (Event == Top) return -1;
     }
 }
 
@@ -3125,9 +2989,9 @@ void CBruce::MaybeTriggerTrick()
 
     if (mInBail == 0)
     {
-        pKeys = (short *)(reinterpret_cast<unsigned char *>(GTricks) +
-                         *(short *)(reinterpret_cast<unsigned char *>(GTricksKeys) +
-                                   mSkaterType * 2));
+        pKeys =
+            (short *)(reinterpret_cast<unsigned char *>(GTricks) +
+                      *(short *)(reinterpret_cast<unsigned char *>(GTricksKeys) + mSkaterType * 2));
         if ((unsigned int)(mPhysicsState - 1) < 3)
         {
             while (*pKeys != 0)
@@ -3152,8 +3016,7 @@ void CBruce::MaybeTriggerTrick()
                 pKey = pKeys - 5;
                 Button1 = pKeys[-4];
                 LastEvent = mEventQueuePos - 1;
-                if (LastEvent < 0)
-                    LastEvent = 31;
+                if (LastEvent < 0) LastEvent = 31;
 
                 if (Special == 0 || mMagicTime != 0)
                 {
@@ -3163,44 +3026,36 @@ void CBruce::MaybeTriggerTrick()
                         int Direction;
                         int Event1;
 
-                        Event1 = GetPreviousPressedEvent(
-                            LastEvent, 0, Time, LastEvent);
-                        if (Event1 == -1)
-                            continue;
+                        Event1 = GetPreviousPressedEvent(LastEvent, 0, Time, LastEvent);
+                        if (Event1 == -1) continue;
 
-                        Event2 = GetPreviousPressedEvent(
-                            Event1, 1, Time, LastEvent);
+                        Event2 = GetPreviousPressedEvent(Event1, 1, Time, LastEvent);
                         Direction = GetDirection();
-                        if (Direction == 0 && Event2 == -1)
-                            continue;
+                        if (Direction == 0 && Event2 == -1) continue;
 
                         if (Event2 != -1)
                         {
                             if (mEventQueue[Event1].Button == Button1 &&
                                 mEventQueue[Event2].Button == ActionButton)
                             {
-                                ActionButtonEventTime =
-                                    mEventQueue[Event2].Time;
+                                ActionButtonEventTime = mEventQueue[Event2].Time;
                                 ButtonRemoveLast(Button1, 1);
                             }
                             else if (mEventQueue[Event2].Button == Button1 &&
                                      mEventQueue[Event1].Button == ActionButton)
                             {
                                 ButtonRemoveLast(Button1, 1);
-                                ActionButtonEventTime =
-                                    mEventQueue[Event1].Time;
+                                ActionButtonEventTime = mEventQueue[Event1].Time;
                             }
                             else if (Direction == Button1)
                             {
                                 if (mEventQueue[Event1].Button == ActionButton)
                                 {
-                                    ActionButtonEventTime =
-                                        mEventQueue[Event1].Time;
+                                    ActionButtonEventTime = mEventQueue[Event1].Time;
                                 }
                                 else if (mEventQueue[Event2].Button == ActionButton)
                                 {
-                                    ActionButtonEventTime =
-                                        mEventQueue[Event2].Time;
+                                    ActionButtonEventTime = mEventQueue[Event2].Time;
                                 }
                                 else
                                 {
@@ -3214,11 +3069,9 @@ void CBruce::MaybeTriggerTrick()
                         }
                         else
                         {
-                            if (Direction != Button1 ||
-                                mEventQueue[Event1].Button != ActionButton)
+                            if (Direction != Button1 || mEventQueue[Event1].Button != ActionButton)
                                 continue;
-                            ActionButtonEventTime =
-                                mEventQueue[Event1].Time;
+                            ActionButtonEventTime = mEventQueue[Event1].Time;
                         }
 
                         ButtonRemoveLast(ActionButton, 1);
@@ -3232,12 +3085,9 @@ void CBruce::MaybeTriggerTrick()
                         int OtherButton[10];
                         int OtherButtonIndex;
 
-                        Event1 = GetPreviousPressedEvent(
-                            LastEvent, 0, Time, LastEvent);
-                        if (Event1 == -1)
-                            return;
-                        Event2 = GetPreviousPressedEvent(
-                            Event1, 1, Time, LastEvent);
+                        Event1 = GetPreviousPressedEvent(LastEvent, 0, Time, LastEvent);
+                        if (Event1 == -1) return;
+                        Event2 = GetPreviousPressedEvent(Event1, 1, Time, LastEvent);
                         OtherButtonIndex = 0;
                         if (Event2 != -1)
                         {
@@ -3259,10 +3109,8 @@ void CBruce::MaybeTriggerTrick()
                                 while (ButtonsLeft != 0)
                                 {
                                     const short WantButton = *pKey--;
-                                    EventX = GetPreviousPressedEvent(
-                                        EventX, 1, Time, LastEvent);
-                                    if (EventX == -1 ||
-                                        mEventQueue[EventX].Button != WantButton)
+                                    EventX = GetPreviousPressedEvent(EventX, 1, Time, LastEvent);
+                                    if (EventX == -1 || mEventQueue[EventX].Button != WantButton)
                                         break;
                                     if (OtherButtonIndex < 10)
                                     {
@@ -3279,8 +3127,7 @@ void CBruce::MaybeTriggerTrick()
                                     int i;
                                     for (i = 0; i < OtherButtonIndex; ++i)
                                         ButtonRemoveLast(OtherButton[i], 1);
-                                    QueueTrick(
-                                        pTrick, ActionButton, ActionButtonEventTime);
+                                    QueueTrick(pTrick, ActionButton, ActionButtonEventTime);
                                     return;
                                 }
                             }
@@ -3303,8 +3150,7 @@ void CBruce::MaybeTriggerTrick()
  */
 short CBruce::GetScriptFrame(int Frame)
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
     if (Frame == 0x2711)
     {
         return (signed char)bruce->CSuper.mTargetFrame;
@@ -3360,8 +3206,7 @@ short CBruce::GetScriptFrame(int Frame)
  */
 void CBruce::UpdateScript()
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
     // Keep each access tied to the owner field.  A persistent pointer-to-field
     // local changes the original allocator's treatment of the skater pointer.
 #define scriptCursor (&bruce->mpTrick)
@@ -3372,762 +3217,712 @@ void CBruce::UpdateScript()
         short *command = *scriptCursor;
         switch (*command)
         {
-        case 1:
-        {
-            (*scriptCursor)++;
-            unsigned short animation = (unsigned short)**scriptCursor;
-            (*scriptCursor)++;
-            bruce->CSuper.mFrame = 0;
-            *(short *)((int)&bruce->CSuper.mAnim) = animation;
-            break;
-        }
-
-        case 10:
-            (*scriptCursor)++;
+            case 1:
             {
-                unsigned short points = (unsigned short)**scriptCursor;
                 (*scriptCursor)++;
-                bruce->mTrickPoints = points;
-            }
-            break;
-
-        case 0xB:
-        {
-            (*scriptCursor)++;
-            *(char **)((int)&bruce->mpTrickName) = (char *)*scriptCursor;
-            char *pSkip = (char *)*scriptCursor;
-            if (*pSkip != '\0')
-            {
-                do
-                {
-                    ++pSkip;
-                } while (*pSkip != '\0');
-            }
-            pSkip = (char *)(((unsigned int)pSkip + 2U) & ~1U);
-            *scriptCursor = (short *)pSkip;
-            break;
-        }
-
-        case 2:
-            (*scriptCursor)++;
-            reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim(
-                (unsigned short)*(short *)((int)&bruce->CSuper.mAnim), 0xA64);
-            break;
-
-        case 3:
-        {
-            (*scriptCursor)++;
-            short oldEndFrame = bruce->CSuper.mStartFrame;
-            bruce->CSuper.mAnimFinished = 0;
-            bruce->CSuper.mAnimDir =
-                -(signed char)bruce->CSuper.mAnimDir;
-            bruce->CSuper.mStartFrame =
-                (signed char)*(signed char *)((int)&bruce->CSuper.mTargetFrame);
-            *(signed char *)((int)&bruce->CSuper.mTargetFrame) = (signed char)oldEndFrame;
-            break;
-        }
-
-        case 9:
-        {
-            (*scriptCursor)++;
-            short frameDelta = **scriptCursor;
-            (*scriptCursor)++;
-            int Frames = *(unsigned short *)((int)&bruce->CSuper.mFrame)
-                         + bruce->CSuper.mAnimDir * frameDelta;
-            bruce->CSuper.mFrame = Frames;
-
-            if (bruce->CSuper.mAnimDir > 0)
-            {
-                if ((short)Frames < bruce->CSuper.mStartFrame)
-                    bruce->CSuper.mFrame =
-                        bruce->CSuper.mStartFrame;
-                if (*(signed char *)((int)&bruce->CSuper.mTargetFrame)
-                    < bruce->CSuper.mFrame)
-                {
-                    bruce->CSuper.mFrame =
-                        *(signed char *)((int)&bruce->CSuper.mTargetFrame);
-                }
-            }
-            else
-            {
-                if (bruce->CSuper.mStartFrame < (short)Frames)
-                    bruce->CSuper.mFrame =
-                        bruce->CSuper.mStartFrame;
-                if (bruce->CSuper.mFrame
-                    < *(signed char *)((int)&bruce->CSuper.mTargetFrame))
-                {
-                    bruce->CSuper.mFrame =
-                        *(signed char *)((int)&bruce->CSuper.mTargetFrame);
-                }
-            }
-            break;
-        }
-
-        case 0xC:
-            (*scriptCursor)++;
-            if (bruce->mPhysicsState == 4)
-            {
-                reinterpret_cast<CBruce *>(bruce)->Trick_Trick(
-                    bruce->mpTrickName,
-                    bruce->mTrickPoints,
-                    1);
-            }
-            else
-            {
-                reinterpret_cast<CBruce *>(bruce)->Trick_Trick(
-                    bruce->mpTrickName,
-                    bruce->mTrickPoints,
-                    0);
-            }
-            bruce->mTrickAwarded = 1;
-            break;
-
-        case 0xD:
-        {
-            int targetFrame = reinterpret_cast<CBruce *>(bruce)
-                                  ->GetScriptFrame((*scriptCursor)[1]);
-            if (bruce->CSuper.mFrame
-                        * bruce->CSuper.mAnimDir
-                    >= targetFrame
-                           * bruce->CSuper.mAnimDir
-                || bruce->CSuper.mAnimFinished != 0)
-            {
-                *scriptCursor += 2;
+                unsigned short animation = (unsigned short)**scriptCursor;
+                (*scriptCursor)++;
+                bruce->CSuper.mFrame = 0;
+                *(short *)((int)&bruce->CSuper.mAnim) = animation;
                 break;
             }
-            Done = 1;
-            break;
-        }
 
-        case 7:
-            (*scriptCursor)++;
-            bruce->mDoingATrick = 0;
-            bruce->mDoingAScript = 0;
-            bruce->mCanStartNextTrick = 1;
-            Done = 1;
-            break;
-
-        case 0xE:
-            (*scriptCursor)++;
-            {
-                unsigned short value = (unsigned short)**scriptCursor;
+            case 10:
                 (*scriptCursor)++;
-                bruce->mFrozen = value;
-            }
-            break;
+                {
+                    unsigned short points = (unsigned short)**scriptCursor;
+                    (*scriptCursor)++;
+                    bruce->mTrickPoints = points;
+                }
+                break;
 
-        case 0xF:
-            (*scriptCursor)++;
-            bruce->CSuper.CBody.mVel.x = **scriptCursor << 12;
-            (*scriptCursor)++;
-            bruce->CSuper.CBody.mVel.y = **scriptCursor << 12;
-            (*scriptCursor)++;
-            bruce->CSuper.CBody.mVel.z = **scriptCursor << 12;
-            (*scriptCursor)++;
-            break;
-
-        case 0x10:
-        {
-            int targetFrame = reinterpret_cast<CBruce *>(bruce)
-                                  ->GetScriptFrame((*scriptCursor)[1]);
-            if (bruce->CSuper.mFrame
-                        * bruce->CSuper.mAnimDir
-                    < targetFrame
-                          * bruce->CSuper.mAnimDir
-                    && bruce->CSuper.mAnimFinished == 0
-                    && reinterpret_cast<CBruce *>(bruce)
-                           ->ActionButtonHeld() != 0)
+            case 0xB:
             {
+                (*scriptCursor)++;
+                *(char **)((int)&bruce->mpTrickName) = (char *)*scriptCursor;
+                char *pSkip = (char *)*scriptCursor;
+                if (*pSkip != '\0')
+                {
+                    do
+                    {
+                        ++pSkip;
+                    } while (*pSkip != '\0');
+                }
+                pSkip = (char *)(((unsigned int)pSkip + 2U) & ~1U);
+                *scriptCursor = (short *)pSkip;
+                break;
+            }
+
+            case 2:
+                (*scriptCursor)++;
+                reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim(
+                    (unsigned short)*(short *)((int)&bruce->CSuper.mAnim), 0xA64);
+                break;
+
+            case 3:
+            {
+                (*scriptCursor)++;
+                short oldEndFrame = bruce->CSuper.mStartFrame;
+                bruce->CSuper.mAnimFinished = 0;
+                bruce->CSuper.mAnimDir = -(signed char)bruce->CSuper.mAnimDir;
+                bruce->CSuper.mStartFrame =
+                    (signed char)*(signed char *)((int)&bruce->CSuper.mTargetFrame);
+                *(signed char *)((int)&bruce->CSuper.mTargetFrame) = (signed char)oldEndFrame;
+                break;
+            }
+
+            case 9:
+            {
+                (*scriptCursor)++;
+                short frameDelta = **scriptCursor;
+                (*scriptCursor)++;
+                int Frames = *(unsigned short *)((int)&bruce->CSuper.mFrame) +
+                             bruce->CSuper.mAnimDir * frameDelta;
+                bruce->CSuper.mFrame = Frames;
+
+                if (bruce->CSuper.mAnimDir > 0)
+                {
+                    if ((short)Frames < bruce->CSuper.mStartFrame)
+                        bruce->CSuper.mFrame = bruce->CSuper.mStartFrame;
+                    if (*(signed char *)((int)&bruce->CSuper.mTargetFrame) < bruce->CSuper.mFrame)
+                    {
+                        bruce->CSuper.mFrame = *(signed char *)((int)&bruce->CSuper.mTargetFrame);
+                    }
+                }
+                else
+                {
+                    if (bruce->CSuper.mStartFrame < (short)Frames)
+                        bruce->CSuper.mFrame = bruce->CSuper.mStartFrame;
+                    if (bruce->CSuper.mFrame < *(signed char *)((int)&bruce->CSuper.mTargetFrame))
+                    {
+                        bruce->CSuper.mFrame = *(signed char *)((int)&bruce->CSuper.mTargetFrame);
+                    }
+                }
+                break;
+            }
+
+            case 0xC:
+                (*scriptCursor)++;
+                if (bruce->mPhysicsState == 4)
+                {
+                    reinterpret_cast<CBruce *>(bruce)->Trick_Trick(bruce->mpTrickName,
+                                                                   bruce->mTrickPoints, 1);
+                }
+                else
+                {
+                    reinterpret_cast<CBruce *>(bruce)->Trick_Trick(bruce->mpTrickName,
+                                                                   bruce->mTrickPoints, 0);
+                }
+                bruce->mTrickAwarded = 1;
+                break;
+
+            case 0xD:
+            {
+                int targetFrame =
+                    reinterpret_cast<CBruce *>(bruce)->GetScriptFrame((*scriptCursor)[1]);
+                if (bruce->CSuper.mFrame * bruce->CSuper.mAnimDir >=
+                        targetFrame * bruce->CSuper.mAnimDir ||
+                    bruce->CSuper.mAnimFinished != 0)
+                {
+                    *scriptCursor += 2;
+                    break;
+                }
                 Done = 1;
+                break;
             }
-            else
-            {
-                *scriptCursor += 2;
-            }
-            break;
-        }
 
-        case 0x17:
-            (*scriptCursor)++;
-            {
-                short points = **scriptCursor;
+            case 7:
                 (*scriptCursor)++;
-                reinterpret_cast<CBruce *>(bruce)->Trick_HoldTrick(points);
-            }
-            break;
-
-        case 0x11:
-            if (reinterpret_cast<CBruce *>(bruce)->ActionButtonHeld() != 0)
-            {
-                reinterpret_cast<CBruce *>(bruce)->Trick_HoldTrick(
-                    (*scriptCursor)[1]);
+                bruce->mDoingATrick = 0;
+                bruce->mDoingAScript = 0;
+                bruce->mCanStartNextTrick = 1;
                 Done = 1;
-            }
-            else
-            {
-                *scriptCursor += 2;
-            }
-            break;
+                break;
 
-        case 0x12:
-            (*scriptCursor)++;
-            {
-                short branchOffset = **scriptCursor;
+            case 0xE:
                 (*scriptCursor)++;
+                {
+                    unsigned short value = (unsigned short)**scriptCursor;
+                    (*scriptCursor)++;
+                    bruce->mFrozen = value;
+                }
+                break;
+
+            case 0xF:
+                (*scriptCursor)++;
+                bruce->CSuper.CBody.mVel.x = **scriptCursor << 12;
+                (*scriptCursor)++;
+                bruce->CSuper.CBody.mVel.y = **scriptCursor << 12;
+                (*scriptCursor)++;
+                bruce->CSuper.CBody.mVel.z = **scriptCursor << 12;
+                (*scriptCursor)++;
+                break;
+
+            case 0x10:
+            {
+                int targetFrame =
+                    reinterpret_cast<CBruce *>(bruce)->GetScriptFrame((*scriptCursor)[1]);
+                if (bruce->CSuper.mFrame * bruce->CSuper.mAnimDir <
+                        targetFrame * bruce->CSuper.mAnimDir &&
+                    bruce->CSuper.mAnimFinished == 0 &&
+                    reinterpret_cast<CBruce *>(bruce)->ActionButtonHeld() != 0)
+                {
+                    Done = 1;
+                }
+                else
+                {
+                    *scriptCursor += 2;
+                }
+                break;
+            }
+
+            case 0x17:
+                (*scriptCursor)++;
+                {
+                    short points = **scriptCursor;
+                    (*scriptCursor)++;
+                    reinterpret_cast<CBruce *>(bruce)->Trick_HoldTrick(points);
+                }
+                break;
+
+            case 0x11:
                 if (reinterpret_cast<CBruce *>(bruce)->ActionButtonHeld() != 0)
-                    *scriptCursor =
-                        (short *)(reinterpret_cast<unsigned char *>(GTricks) + branchOffset);
-            }
-            break;
+                {
+                    reinterpret_cast<CBruce *>(bruce)->Trick_HoldTrick((*scriptCursor)[1]);
+                    Done = 1;
+                }
+                else
+                {
+                    *scriptCursor += 2;
+                }
+                break;
 
-        case 0x13:
-            (*scriptCursor)++;
-            bruce->CSuper.mAnimMode = 2;
-            break;
-
-        case 0x14:
-            (*scriptCursor)++;
-            bruce->CSuper.mAnimMode = 0;
-            break;
-
-        case 0x16:
-            (*scriptCursor)++;
-            Done = 1;
-            break;
-
-        case 0x15:
-            (*scriptCursor)++;
-            {
-                int Offset = **scriptCursor;
+            case 0x12:
                 (*scriptCursor)++;
-                *scriptCursor = (short *)(reinterpret_cast<unsigned char *>(GTricks) + Offset);
-            }
-            break;
+                {
+                    short branchOffset = **scriptCursor;
+                    (*scriptCursor)++;
+                    if (reinterpret_cast<CBruce *>(bruce)->ActionButtonHeld() != 0)
+                        *scriptCursor =
+                            (short *)(reinterpret_cast<unsigned char *>(GTricks) + branchOffset);
+                }
+                break;
 
-        case 0x18:
-            (*scriptCursor)++;
-            {
-                short frame = **scriptCursor;
+            case 0x13:
                 (*scriptCursor)++;
-                bruce->CSuper.mPingPongEnd =
-                    reinterpret_cast<CBruce *>(bruce)->GetScriptFrame(frame);
-                bruce->CSuper.mPingPongStart = bruce->CSuper.mFrame;
-                bruce->CSuper.mPingPongFrame = (short)XFrames;
-                bruce->CSuper.mAnimMode = 3;
-            }
-            break;
+                bruce->CSuper.mAnimMode = 2;
+                break;
 
-        case 0x19:
-            (*scriptCursor)++;
-            {
-                int Offset = **scriptCursor;
+            case 0x14:
                 (*scriptCursor)++;
-                bruce->mpOffTrick = (short *)(reinterpret_cast<unsigned char *>(GTricks) + Offset);
-            }
-            break;
+                bruce->CSuper.mAnimMode = 0;
+                break;
 
-        case 0x2A:
-            (*scriptCursor)++;
-            {
-                int Offset = **scriptCursor;
+            case 0x16:
                 (*scriptCursor)++;
-                bruce->mpJumpTrick = (short *)(reinterpret_cast<unsigned char *>(GTricks) + Offset);
-            }
-            break;
+                Done = 1;
+                break;
 
-        case 0x1A:
-            if (bruce->mOnRail == 0)
-            {
+            case 0x15:
                 (*scriptCursor)++;
+                {
+                    int Offset = **scriptCursor;
+                    (*scriptCursor)++;
+                    *scriptCursor = (short *)(reinterpret_cast<unsigned char *>(GTricks) + Offset);
+                }
+                break;
+
+            case 0x18:
+                (*scriptCursor)++;
+                {
+                    short frame = **scriptCursor;
+                    (*scriptCursor)++;
+                    bruce->CSuper.mPingPongEnd =
+                        reinterpret_cast<CBruce *>(bruce)->GetScriptFrame(frame);
+                    bruce->CSuper.mPingPongStart = bruce->CSuper.mFrame;
+                    bruce->CSuper.mPingPongFrame = (short)XFrames;
+                    bruce->CSuper.mAnimMode = 3;
+                }
+                break;
+
+            case 0x19:
+                (*scriptCursor)++;
+                {
+                    int Offset = **scriptCursor;
+                    (*scriptCursor)++;
+                    bruce->mpOffTrick =
+                        (short *)(reinterpret_cast<unsigned char *>(GTricks) + Offset);
+                }
+                break;
+
+            case 0x2A:
+                (*scriptCursor)++;
+                {
+                    int Offset = **scriptCursor;
+                    (*scriptCursor)++;
+                    bruce->mpJumpTrick =
+                        (short *)(reinterpret_cast<unsigned char *>(GTricks) + Offset);
+                }
+                break;
+
+            case 0x1A:
+                if (bruce->mOnRail == 0)
+                {
+                    (*scriptCursor)++;
+                    break;
+                }
+                Done = 1;
+                break;
+
+            case 0x1B:
+                (*scriptCursor)++;
+                {
+                    short value = **scriptCursor;
+                    (*scriptCursor)++;
+                    bruce->mRailFlip = value;
+                }
+                break;
+
+            case 0x1C:
+                (*scriptCursor)++;
+                bruce->CSuper.mAnimMode = 4;
+                break;
+
+            case 0x1D:
+                (*scriptCursor)++;
+                {
+                    short value = **scriptCursor;
+                    (*scriptCursor)++;
+                    bruce->CSuper.mAnimSpeed = (value * 0x20000) / 0x3C;
+                }
+                break;
+
+            case 0x1E:
+                (*scriptCursor)++;
+                reinterpret_cast<CBruce *>(bruce)->Bail(0, DO_LIMIT);
+                break;
+
+            case 0x1F:
+                (*scriptCursor)++;
+                {
+                    short value = **scriptCursor;
+                    (*scriptCursor)++;
+                    bruce->mDebugScript = value;
+                }
+                break;
+
+            case 0x20:
+                (*scriptCursor)++;
+                bruce->mDoingATrick = 0;
+                break;
+
+            case 0x21:
+            {
+                SVECTOR RotAngle;
+                MATRIX RotMatrix;
+                MATRIX *pRotation = &RotMatrix;
+                (*scriptCursor)++;
+                short rotationY = *(*scriptCursor)++;
+                RotAngle.vx = RotAngle.vz = 0;
+                RotAngle.vy = rotationY & 0xFFF;
+                RotMatrixYXZ(&RotAngle, pRotation);
+                MulMatrix(&bruce->mRotationMatrix, pRotation);
+                reinterpret_cast<CBruce *>(bruce)->FRUVectorsFromRotMatrix();
                 break;
             }
-            Done = 1;
-            break;
 
-        case 0x1B:
-            (*scriptCursor)++;
+            case 0x22:
             {
-                short value = **scriptCursor;
+                unsigned int flags = bruce->CSuper.mExtraFlags;
                 (*scriptCursor)++;
-                bruce->mRailFlip = value;
+                bruce->CSuper.mExtraFlags = flags ^ 2;
+                break;
             }
-            break;
 
-        case 0x1C:
-            (*scriptCursor)++;
-            bruce->CSuper.mAnimMode = 4;
-            break;
-
-        case 0x1D:
-            (*scriptCursor)++;
-            {
-                short value = **scriptCursor;
+            case 0x32:
                 (*scriptCursor)++;
-                bruce->CSuper.mAnimSpeed =
-                    (value * 0x20000) / 0x3C;
-            }
-            break;
+                reinterpret_cast<CBruce *>(bruce)->BoardOn();
+                break;
 
-        case 0x1E:
-            (*scriptCursor)++;
-            reinterpret_cast<CBruce *>(bruce)->Bail(0, DO_LIMIT);
-            break;
-
-        case 0x1F:
-            (*scriptCursor)++;
-            {
-                short value = **scriptCursor;
+            case 0x33:
                 (*scriptCursor)++;
-                bruce->mDebugScript = value;
-            }
-            break;
+                reinterpret_cast<CBruce *>(bruce)->BoardOff();
+                break;
 
-        case 0x20:
-            (*scriptCursor)++;
-            bruce->mDoingATrick = 0;
-            break;
-
-        case 0x21:
-        {
-            SVECTOR RotAngle;
-            MATRIX RotMatrix;
-            MATRIX *pRotation = &RotMatrix;
-            (*scriptCursor)++;
-            short rotationY = *(*scriptCursor)++;
-            RotAngle.vx = RotAngle.vz = 0;
-            RotAngle.vy = rotationY & 0xFFF;
-            RotMatrixYXZ(&RotAngle, pRotation);
-            MulMatrix(&bruce->mRotationMatrix, pRotation);
-            reinterpret_cast<CBruce *>(bruce)->FRUVectorsFromRotMatrix();
-            break;
-        }
-
-        case 0x22:
-        {
-            unsigned int flags = bruce->CSuper.mExtraFlags;
-            (*scriptCursor)++;
-            bruce->CSuper.mExtraFlags = flags ^ 2;
-            break;
-        }
-
-        case 0x32:
-            (*scriptCursor)++;
-            reinterpret_cast<CBruce *>(bruce)->BoardOn();
-            break;
-
-        case 0x33:
-            (*scriptCursor)++;
-            reinterpret_cast<CBruce *>(bruce)->BoardOff();
-            break;
-
-        case 0x23:
-            (*scriptCursor)++;
-            {
-                short value = **scriptCursor;
+            case 0x23:
                 (*scriptCursor)++;
-                bruce->mGrindTweak = value;
-            }
-            break;
+                {
+                    short value = **scriptCursor;
+                    (*scriptCursor)++;
+                    bruce->mGrindTweak = value;
+                }
+                break;
 
-        case 0x2D:
-        {
-            (*scriptCursor)++;
-            unsigned short encodedValue = (unsigned short)**scriptCursor;
-            (*scriptCursor)++;
-            int value = (short)encodedValue;
-            unsigned int sign = (unsigned int)(value >> 31);
-            bruce->mRailSlack = (value ^ sign) - sign;
-            break;
-        }
-
-        case 0x24:
-        {
-            (*scriptCursor)++;
-            int Offset = **scriptCursor;
-            unsigned int condition =
-                bruce->mRail_Parallel;
-            (*scriptCursor)++;
-            if (condition != 0)
-                *scriptCursor =
-                    (short *)(reinterpret_cast<unsigned char *>(GTricks) + Offset);
-            break;
-        }
-
-        case 0x25:
-        {
-            (*scriptCursor)++;
-            int Offset = **scriptCursor;
-            unsigned int condition =
-                bruce->mRail_Backwards;
-            (*scriptCursor)++;
-            if (condition != 0)
-                *scriptCursor =
-                    (short *)(reinterpret_cast<unsigned char *>(GTricks) + Offset);
-            break;
-        }
-
-        case 0x26:
-        {
-            (*scriptCursor)++;
-            int Offset = **scriptCursor;
-            unsigned int condition =
-                bruce->mRail_RightOfRail;
-            (*scriptCursor)++;
-            if (condition != 0)
-                *scriptCursor =
-                    (short *)(reinterpret_cast<unsigned char *>(GTricks) + Offset);
-            break;
-        }
-
-        case 0x27:
-        {
-            (*scriptCursor)++;
-            int Offset = **scriptCursor;
-            unsigned int condition =
-                bruce->mRail_FrontSide;
-            (*scriptCursor)++;
-            if (condition != 0)
-                *scriptCursor =
-                    (short *)(reinterpret_cast<unsigned char *>(GTricks) + Offset);
-            break;
-        }
-
-        case 0x28:
-        {
-            (*scriptCursor)++;
-            int Offset = **scriptCursor;
-            unsigned int condition =
-                bruce->mRail_SkaterFlipped;
-            (*scriptCursor)++;
-            if (condition != 0)
-                *scriptCursor =
-                    (short *)(reinterpret_cast<unsigned char *>(GTricks) + Offset);
-            break;
-        }
-
-        case 0x3A:
-        {
-            (*scriptCursor)++;
-            int Offset = **scriptCursor;
-            (*scriptCursor)++;
-            int Flipped =
-                (bruce->CSuper.mExtraFlags >> 1) & 1;
-            if (Flipped
-                != (Stats[bruce->mSkaterType].Ability[0xB] == 0))
-                *scriptCursor =
-                    (short *)(reinterpret_cast<unsigned char *>(GTricks) + Offset);
-            break;
-        }
-
-        case 0x29:
-            (*scriptCursor)++;
-            {
-                short value = **scriptCursor;
-                (*scriptCursor)++;
-                bruce->mRailSparks = value;
-            }
-            break;
-
-        case 0x2B:
-        {
-            *scriptCursor = command + 1;
-            short slot = command[1];
-            *scriptCursor = command + 2;
-            bruce->mRotateCount[slot] = command[2];
-            *scriptCursor = command + 3;
-            bruce->mRotateSpeed[slot] = command[3];
-            *scriptCursor = command + 4;
-            bruce->mRotateTotal[slot] = 0;
-            break;
-        }
-
-        case 0x2C:
-            if (bruce->mRotateCount[0] != 0
-                || bruce->mRotateCount[1] != 0
-                || bruce->mRotateCount[2] != 0)
-            {
-                Done = 1;
-            }
-            else
+            case 0x2D:
             {
                 (*scriptCursor)++;
-            }
-            break;
-
-        case 0:
-            (*scriptCursor)++;
-            break;
-
-        case 0x2E:
-            (*scriptCursor)++;
-            {
-                short value = **scriptCursor;
+                unsigned short encodedValue = (unsigned short)**scriptCursor;
                 (*scriptCursor)++;
-                bruce->mHeavyFriction = value;
+                int value = (short)encodedValue;
+                unsigned int sign = (unsigned int)(value >> 31);
+                bruce->mRailSlack = (value ^ sign) - sign;
+                break;
             }
-            break;
 
-        case 0x2F:
-        {
-            (*scriptCursor)++;
-            int Offset = **scriptCursor;
-            unsigned int state =
-                (unsigned int)(bruce->mPhysicsState - 1);
-            (*scriptCursor)++;
-            if (state < 2)
-                *scriptCursor =
-                    (short *)(reinterpret_cast<unsigned char *>(GTricks) + Offset);
-            break;
-        }
-
-        case 0x30:
-            (*scriptCursor)++;
-            reinterpret_cast<CBruce *>(bruce)->BloodSplat(0, 0x32);
-            break;
-
-        case 0x46:
-            (*scriptCursor)++;
-            ((Dust *)&bruce->mDust[0])->Reset(bruce->mTerrain, 1);
-            break;
-
-        case 0x45:
-            (*scriptCursor)++;
-            reinterpret_cast<CBruce *>(bruce)->Vibrate(
-                PhysicsShortAbsolute((unsigned short)*(*scriptCursor)++),
-                *(*scriptCursor)++,
-                *(*scriptCursor)++);
-            break;
-
-        case 0x31:
-        {
-            (*scriptCursor)++;
-            bruce->mInBail = 0;
-            bruce->mHeavyFriction = 0;
-            bruce->mKickLockout = 4;
-            if (bruce->mManIsCrouched != 0
-                && bruce->mPad->Square.Pressed != 0)
+            case 0x24:
             {
-                reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim3(8, 0, 0x1A, 0x13, 0xCBE);
+                (*scriptCursor)++;
+                int Offset = **scriptCursor;
+                unsigned int condition = bruce->mRail_Parallel;
+                (*scriptCursor)++;
+                if (condition != 0)
+                    *scriptCursor = (short *)(reinterpret_cast<unsigned char *>(GTricks) + Offset);
+                break;
             }
-            else
+
+            case 0x25:
             {
-                bruce->mManIsCrouched = 0;
-                reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim(0, 0xCC3);
+                (*scriptCursor)++;
+                int Offset = **scriptCursor;
+                unsigned int condition = bruce->mRail_Backwards;
+                (*scriptCursor)++;
+                if (condition != 0)
+                    *scriptCursor = (short *)(reinterpret_cast<unsigned char *>(GTricks) + Offset);
+                break;
             }
-            bruce->mInBail = 0;
-            bruce->CSuper.CBody.mVel.z = 0;
-            bruce->CSuper.CBody.mVel.y = 0;
-            bruce->CSuper.CBody.mVel.x = 0;
-            reinterpret_cast<CBruce *>(bruce)->BoardOn();
-            break;
-        }
 
-        case 0x34:
-        {
-            (*scriptCursor)++;
-            int Offset = **scriptCursor;
-            (*scriptCursor)++;
-            if (bruce->mRail_BadLedge != 0)
-                *scriptCursor =
-                    (short *)(reinterpret_cast<unsigned char *>(GTricks) + Offset);
-            bruce->mRail_BadLedge = 0;
-            break;
-        }
-
-        case 0x35:
-            (*scriptCursor)++;
-            bruce->mFlipAfter = 1;
-            break;
-
-        case 0x36:
-        {
-            (*scriptCursor)++;
-            int sfx = **scriptCursor;
-            (*scriptCursor)++;
-            SFX_PlayX(sfx, 0x2000, 0);
-            break;
-        }
-
-        case 0x37:
-        {
-            (*scriptCursor)++;
-            int sfx = **scriptCursor;
-            (*scriptCursor)++;
-            int vol = **scriptCursor;
-            (*scriptCursor)++;
-            SFX_PlayX(sfx, vol, 0);
-            break;
-        }
-
-        case 0x38:
-        {
-            (*scriptCursor)++;
-            int sfx = **scriptCursor;
-            (*scriptCursor)++;
-            int vol = **scriptCursor;
-            (*scriptCursor)++;
-            int pitch = **scriptCursor;
-            (*scriptCursor)++;
-            SFX_PlayX(sfx, vol, pitch);
-            break;
-        }
-
-        case 0x39:
-        {
-            (*scriptCursor)++;
-            int narg = **scriptCursor;
-            (*scriptCursor)++;
-            Rnd(narg);
-            int index = Rnd(narg);
-            int Offset = (*scriptCursor)[index];
-            *scriptCursor =
-                (short *)(reinterpret_cast<unsigned char *>(GTricks) + Offset);
-            break;
-        }
-
-        case 0x3B:
-            (*scriptCursor)++;
-            bruce->mNoSpin = 1;
-            break;
-
-        case 0x3C:
-            (*scriptCursor)++;
-            bruce->mNoSpin = 0;
-            break;
-
-        case 0x3D:
-            (*scriptCursor)++;
+            case 0x26:
             {
+                (*scriptCursor)++;
+                int Offset = **scriptCursor;
+                unsigned int condition = bruce->mRail_RightOfRail;
+                (*scriptCursor)++;
+                if (condition != 0)
+                    *scriptCursor = (short *)(reinterpret_cast<unsigned char *>(GTricks) + Offset);
+                break;
+            }
+
+            case 0x27:
+            {
+                (*scriptCursor)++;
+                int Offset = **scriptCursor;
+                unsigned int condition = bruce->mRail_FrontSide;
+                (*scriptCursor)++;
+                if (condition != 0)
+                    *scriptCursor = (short *)(reinterpret_cast<unsigned char *>(GTricks) + Offset);
+                break;
+            }
+
+            case 0x28:
+            {
+                (*scriptCursor)++;
+                int Offset = **scriptCursor;
+                unsigned int condition = bruce->mRail_SkaterFlipped;
+                (*scriptCursor)++;
+                if (condition != 0)
+                    *scriptCursor = (short *)(reinterpret_cast<unsigned char *>(GTricks) + Offset);
+                break;
+            }
+
+            case 0x3A:
+            {
+                (*scriptCursor)++;
                 int Offset = **scriptCursor;
                 (*scriptCursor)++;
-                bruce->mpReturn = *scriptCursor;
-                *scriptCursor =
-                    (short *)(reinterpret_cast<unsigned char *>(GTricks) + Offset);
+                int Flipped = (bruce->CSuper.mExtraFlags >> 1) & 1;
+                if (Flipped != (Stats[bruce->mSkaterType].Ability[0xB] == 0))
+                    *scriptCursor = (short *)(reinterpret_cast<unsigned char *>(GTricks) + Offset);
+                break;
             }
-            break;
 
-        case 0x3E:
-        {
-            short *returnAddress = bruce->mpReturn;
-            bruce->mpReturn = 0;
-            *scriptCursor = returnAddress;
-            break;
-        }
-
-        case 0x41:
-        {
-            (*scriptCursor)++;
-            int Offset = **scriptCursor;
-            unsigned int condition =
-                bruce->mRail_LedgeType;
-            (*scriptCursor)++;
-            if (condition != 0)
-                *scriptCursor =
-                    (short *)(reinterpret_cast<unsigned char *>(GTricks) + Offset);
-            break;
-        }
-
-        case 0x3F:
-            (*scriptCursor)++;
-            {
-                unsigned short value = (unsigned short)**scriptCursor;
+            case 0x29:
                 (*scriptCursor)++;
-                bruce->mRailBailNumber = value;
-            }
-            break;
+                {
+                    short value = **scriptCursor;
+                    (*scriptCursor)++;
+                    bruce->mRailSparks = value;
+                }
+                break;
 
-        case 0x40:
-            (*scriptCursor)++;
+            case 0x2B:
             {
-                unsigned short value = (unsigned short)**scriptCursor;
+                *scriptCursor = command + 1;
+                short slot = command[1];
+                *scriptCursor = command + 2;
+                bruce->mRotateCount[slot] = command[2];
+                *scriptCursor = command + 3;
+                bruce->mRotateSpeed[slot] = command[3];
+                *scriptCursor = command + 4;
+                bruce->mRotateTotal[slot] = 0;
+                break;
+            }
+
+            case 0x2C:
+                if (bruce->mRotateCount[0] != 0 || bruce->mRotateCount[1] != 0 ||
+                    bruce->mRotateCount[2] != 0)
+                {
+                    Done = 1;
+                }
+                else
+                {
+                    (*scriptCursor)++;
+                }
+                break;
+
+            case 0: (*scriptCursor)++; break;
+
+            case 0x2E:
                 (*scriptCursor)++;
-                bruce->mBailNumber = value;
-            }
-            break;
+                {
+                    short value = **scriptCursor;
+                    (*scriptCursor)++;
+                    bruce->mHeavyFriction = value;
+                }
+                break;
 
-        case 0x42:
-        {
-            (*scriptCursor)++;
-            int side = **scriptCursor;
-            (*scriptCursor)++;
-            CVector sidevec = *(CVector *)&bruce->mRight;
-            sidevec.vy = 0;
-            M3dUtils_NormaliseVector((CVector *)&sidevec);
-            *(CVector *)&bruce->CSuper.CBody.CItem.mPos =
-                *(CVector *)&bruce->CSuper.CBody.CItem.mPos + sidevec * side;
-            break;
-        }
-
-        case 0x43:
-        {
-            (*scriptCursor)++;
-            int Offset = **scriptCursor;
-            unsigned int condition =
-                bruce->CSuper.mExtraFlags & 2;
-            (*scriptCursor)++;
-            if (condition != 0)
-                *scriptCursor =
-                    (short *)(reinterpret_cast<unsigned char *>(GTricks) + Offset);
-            break;
-        }
-
-        case 0x44:
-            (*scriptCursor)++;
+            case 0x2F:
             {
-                unsigned short value = (unsigned short)**scriptCursor;
                 (*scriptCursor)++;
-                bruce->mTrickGravity = value;
+                int Offset = **scriptCursor;
+                unsigned int state = (unsigned int)(bruce->mPhysicsState - 1);
+                (*scriptCursor)++;
+                if (state < 2)
+                    *scriptCursor = (short *)(reinterpret_cast<unsigned char *>(GTricks) + Offset);
+                break;
             }
-            break;
 
-        case 0x47:
-        {
-            (*scriptCursor)++;
-            int Value = **scriptCursor;
-            (*scriptCursor)++;
-            int Offset = **scriptCursor;
-            (*scriptCursor)++;
-            int Spd = M3dMaths_SquareRoot0(
-                            Mips_CVecDotProd(
-                                (CVector *)&bruce->CSuper.CBody.mVel,
-                                (CVector *)&bruce->CSuper.CBody.mVel))
-                        << 6;
-            if (Value < (Spd >> 12))
-                *scriptCursor =
-                    (short *)(reinterpret_cast<unsigned char *>(GTricks) + Offset);
-            break;
-        }
+            case 0x30:
+                (*scriptCursor)++;
+                reinterpret_cast<CBruce *>(bruce)->BloodSplat(0, 0x32);
+                break;
 
-        case 0x48:
-        {
-            int targetFrame = reinterpret_cast<CBruce *>(bruce)
-                                  ->GetScriptFrame((*scriptCursor)[1]);
-            short *currentCursor = *scriptCursor;
-            *scriptCursor = currentCursor + 2;
-            int Offset = **scriptCursor;
-            (*scriptCursor)++;
-            if (bruce->CSuper.mFrame
-                        * bruce->CSuper.mAnimDir
-                    >= targetFrame
-                           * bruce->CSuper.mAnimDir
-                    || bruce->CSuper.mAnimFinished != 0)
+            case 0x46:
+                (*scriptCursor)++;
+                ((Dust *)&bruce->mDust[0])->Reset(bruce->mTerrain, 1);
+                break;
+
+            case 0x45:
+                (*scriptCursor)++;
+                reinterpret_cast<CBruce *>(bruce)->Vibrate(
+                    PhysicsShortAbsolute((unsigned short)*(*scriptCursor)++), *(*scriptCursor)++,
+                    *(*scriptCursor)++);
+                break;
+
+            case 0x31:
             {
-                *scriptCursor =
-                    (short *)(reinterpret_cast<unsigned char *>(GTricks) + Offset);
+                (*scriptCursor)++;
+                bruce->mInBail = 0;
+                bruce->mHeavyFriction = 0;
+                bruce->mKickLockout = 4;
+                if (bruce->mManIsCrouched != 0 && bruce->mPad->Square.Pressed != 0)
+                {
+                    reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim3(8, 0, 0x1A, 0x13, 0xCBE);
+                }
+                else
+                {
+                    bruce->mManIsCrouched = 0;
+                    reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim(0, 0xCC3);
+                }
+                bruce->mInBail = 0;
+                bruce->CSuper.CBody.mVel.z = 0;
+                bruce->CSuper.CBody.mVel.y = 0;
+                bruce->CSuper.CBody.mVel.x = 0;
+                reinterpret_cast<CBruce *>(bruce)->BoardOn();
+                break;
             }
-            break;
-        }
 
-        default:
-        {
-            short *pCommand = *scriptCursor;
-            printf(
-                PhysicsDiagnosticPool.script,
-                pCommand[-4], pCommand[-3], pCommand[-2], pCommand[-1],
-                pCommand[0], pCommand[1], pCommand[2], pCommand[3]);
-            bruce->mDoingATrick = 0;
-            break;
-        }
+            case 0x34:
+            {
+                (*scriptCursor)++;
+                int Offset = **scriptCursor;
+                (*scriptCursor)++;
+                if (bruce->mRail_BadLedge != 0)
+                    *scriptCursor = (short *)(reinterpret_cast<unsigned char *>(GTricks) + Offset);
+                bruce->mRail_BadLedge = 0;
+                break;
+            }
+
+            case 0x35:
+                (*scriptCursor)++;
+                bruce->mFlipAfter = 1;
+                break;
+
+            case 0x36:
+            {
+                (*scriptCursor)++;
+                int sfx = **scriptCursor;
+                (*scriptCursor)++;
+                SFX_PlayX(sfx, 0x2000, 0);
+                break;
+            }
+
+            case 0x37:
+            {
+                (*scriptCursor)++;
+                int sfx = **scriptCursor;
+                (*scriptCursor)++;
+                int vol = **scriptCursor;
+                (*scriptCursor)++;
+                SFX_PlayX(sfx, vol, 0);
+                break;
+            }
+
+            case 0x38:
+            {
+                (*scriptCursor)++;
+                int sfx = **scriptCursor;
+                (*scriptCursor)++;
+                int vol = **scriptCursor;
+                (*scriptCursor)++;
+                int pitch = **scriptCursor;
+                (*scriptCursor)++;
+                SFX_PlayX(sfx, vol, pitch);
+                break;
+            }
+
+            case 0x39:
+            {
+                (*scriptCursor)++;
+                int narg = **scriptCursor;
+                (*scriptCursor)++;
+                Rnd(narg);
+                int index = Rnd(narg);
+                int Offset = (*scriptCursor)[index];
+                *scriptCursor = (short *)(reinterpret_cast<unsigned char *>(GTricks) + Offset);
+                break;
+            }
+
+            case 0x3B:
+                (*scriptCursor)++;
+                bruce->mNoSpin = 1;
+                break;
+
+            case 0x3C:
+                (*scriptCursor)++;
+                bruce->mNoSpin = 0;
+                break;
+
+            case 0x3D:
+                (*scriptCursor)++;
+                {
+                    int Offset = **scriptCursor;
+                    (*scriptCursor)++;
+                    bruce->mpReturn = *scriptCursor;
+                    *scriptCursor = (short *)(reinterpret_cast<unsigned char *>(GTricks) + Offset);
+                }
+                break;
+
+            case 0x3E:
+            {
+                short *returnAddress = bruce->mpReturn;
+                bruce->mpReturn = 0;
+                *scriptCursor = returnAddress;
+                break;
+            }
+
+            case 0x41:
+            {
+                (*scriptCursor)++;
+                int Offset = **scriptCursor;
+                unsigned int condition = bruce->mRail_LedgeType;
+                (*scriptCursor)++;
+                if (condition != 0)
+                    *scriptCursor = (short *)(reinterpret_cast<unsigned char *>(GTricks) + Offset);
+                break;
+            }
+
+            case 0x3F:
+                (*scriptCursor)++;
+                {
+                    unsigned short value = (unsigned short)**scriptCursor;
+                    (*scriptCursor)++;
+                    bruce->mRailBailNumber = value;
+                }
+                break;
+
+            case 0x40:
+                (*scriptCursor)++;
+                {
+                    unsigned short value = (unsigned short)**scriptCursor;
+                    (*scriptCursor)++;
+                    bruce->mBailNumber = value;
+                }
+                break;
+
+            case 0x42:
+            {
+                (*scriptCursor)++;
+                int side = **scriptCursor;
+                (*scriptCursor)++;
+                CVector sidevec = *(CVector *)&bruce->mRight;
+                sidevec.vy = 0;
+                M3dUtils_NormaliseVector((CVector *)&sidevec);
+                *(CVector *)&bruce->CSuper.CBody.CItem.mPos =
+                    *(CVector *)&bruce->CSuper.CBody.CItem.mPos + sidevec * side;
+                break;
+            }
+
+            case 0x43:
+            {
+                (*scriptCursor)++;
+                int Offset = **scriptCursor;
+                unsigned int condition = bruce->CSuper.mExtraFlags & 2;
+                (*scriptCursor)++;
+                if (condition != 0)
+                    *scriptCursor = (short *)(reinterpret_cast<unsigned char *>(GTricks) + Offset);
+                break;
+            }
+
+            case 0x44:
+                (*scriptCursor)++;
+                {
+                    unsigned short value = (unsigned short)**scriptCursor;
+                    (*scriptCursor)++;
+                    bruce->mTrickGravity = value;
+                }
+                break;
+
+            case 0x47:
+            {
+                (*scriptCursor)++;
+                int Value = **scriptCursor;
+                (*scriptCursor)++;
+                int Offset = **scriptCursor;
+                (*scriptCursor)++;
+                int Spd =
+                    M3dMaths_SquareRoot0(Mips_CVecDotProd((CVector *)&bruce->CSuper.CBody.mVel,
+                                                          (CVector *)&bruce->CSuper.CBody.mVel))
+                    << 6;
+                if (Value < (Spd >> 12))
+                    *scriptCursor = (short *)(reinterpret_cast<unsigned char *>(GTricks) + Offset);
+                break;
+            }
+
+            case 0x48:
+            {
+                int targetFrame =
+                    reinterpret_cast<CBruce *>(bruce)->GetScriptFrame((*scriptCursor)[1]);
+                short *currentCursor = *scriptCursor;
+                *scriptCursor = currentCursor + 2;
+                int Offset = **scriptCursor;
+                (*scriptCursor)++;
+                if (bruce->CSuper.mFrame * bruce->CSuper.mAnimDir >=
+                        targetFrame * bruce->CSuper.mAnimDir ||
+                    bruce->CSuper.mAnimFinished != 0)
+                {
+                    *scriptCursor = (short *)(reinterpret_cast<unsigned char *>(GTricks) + Offset);
+                }
+                break;
+            }
+
+            default:
+            {
+                short *pCommand = *scriptCursor;
+                printf(PhysicsDiagnosticPool.script, pCommand[-4], pCommand[-3], pCommand[-2],
+                       pCommand[-1], pCommand[0], pCommand[1], pCommand[2], pCommand[3]);
+                bruce->mDoingATrick = 0;
+                break;
+            }
         }
     }
 #undef scriptCursor
@@ -4150,112 +3945,104 @@ short *Trick_Skip(short *pTrick)
     unsigned short uopcode = *(unsigned short *)pTrick;
     switch (opcode)
     {
-    case 1:
-    case 9:
-    case 10:
-    case 0xD:
-    case 0xE:
-    case 0x10:
-    case 0x11:
-    case 0x12:
-    case 0x15:
-    case 0x17:
-    case 0x18:
-    case 0x19:
-    case 0x1B:
-    case 0x1D:
-    case 0x1F:
-    case 0x21:
-    case 0x23:
-    case 0x24:
-    case 0x25:
-    case 0x26:
-    case 0x27:
-    case 0x28:
-    case 0x29:
-    case 0x2A:
-    case 0x2D:
-    case 0x2E:
-    case 0x2F:
-    case 0x34:
-    case 0x36:
-    case 0x3A:
-    case 0x3D:
-    case 0x3F:
-    case 0x40:
-    case 0x41:
-    case 0x42:
-    case 0x43:
-    case 0x44:
-        pTrick = (short *)((int)pTrick + 4);
-        break;
-    case 0x37:
-    case 0x47:
-    case 0x48:
-        pTrick = (short *)((int)pTrick + 6);
-        break;
-    case 0xF:
-    case 0x2B:
-    case 0x38:
-    case 0x45:
-        pTrick = (short *)((int)pTrick + 8);
-        break;
-    case 0xB:
-    {
-        pTrick = (short *)((int)pTrick + 2);
-        char *pSkip = (char *)pTrick;
-        ;
-        char *v1 = pSkip + 2;
-        if (*(unsigned char *)pSkip != 0)
+        case 1:
+        case 9:
+        case 10:
+        case 0xD:
+        case 0xE:
+        case 0x10:
+        case 0x11:
+        case 0x12:
+        case 0x15:
+        case 0x17:
+        case 0x18:
+        case 0x19:
+        case 0x1B:
+        case 0x1D:
+        case 0x1F:
+        case 0x21:
+        case 0x23:
+        case 0x24:
+        case 0x25:
+        case 0x26:
+        case 0x27:
+        case 0x28:
+        case 0x29:
+        case 0x2A:
+        case 0x2D:
+        case 0x2E:
+        case 0x2F:
+        case 0x34:
+        case 0x36:
+        case 0x3A:
+        case 0x3D:
+        case 0x3F:
+        case 0x40:
+        case 0x41:
+        case 0x42:
+        case 0x43:
+        case 0x44: pTrick = (short *)((int)pTrick + 4); break;
+        case 0x37:
+        case 0x47:
+        case 0x48: pTrick = (short *)((int)pTrick + 6); break;
+        case 0xF:
+        case 0x2B:
+        case 0x38:
+        case 0x45: pTrick = (short *)((int)pTrick + 8); break;
+        case 0xB:
         {
-            
-            while (*(unsigned char *)pSkip != 0)
+            pTrick = (short *)((int)pTrick + 2);
+            char *pSkip = (char *)pTrick;
+            ;
+            char *v1 = pSkip + 2;
+            if (*(unsigned char *)pSkip != 0)
             {
+
+                while (*(unsigned char *)pSkip != 0)
+                {
+                    pSkip = pSkip + 1;
+                }
+                v1 = pSkip + 2;
                 pSkip = pSkip + 1;
             }
-            v1 = pSkip + 2; pSkip = pSkip + 1;
+            pTrick = (short *)((int)v1 & -2);
+            break;
         }
-        pTrick = (short *)((int)v1 & -2);
-        break;
-    }
-    case 0x39:
-    {
-        pTrick = (short *)((int)pTrick + 2);
-        short v0 = *pTrick;
-        pTrick = (short *)((int)pTrick + 2);
-        pTrick = (short *)((int)pTrick + (v0 << 1));
-        break;
-    }
-    case 0:
-    case 2:
-    case 3:
-    case 7:
-    case 0xC:
-    case 0x13:
-    case 0x14:
-    case 0x16:
-    case 0x1A:
-    case 0x1C:
-    case 0x1E:
-    case 0x20:
-    case 0x22:
-    case 0x2C:
-    case 0x30:
-    case 0x31:
-    case 0x32:
-    case 0x33:
-    case 0x35:
-    case 0x3B:
-    case 0x3C:
-    case 0x3E:
-    case 0x46:
-        pTrick = (short *)((int)pTrick + 2);
-        break;
-    default:
-        printf(PhysicsDiagnosticPool.scriptError,
-               (int)(short)uopcode);
-        pTrick = (short *)((int)pTrick + 2);
-        break;
+        case 0x39:
+        {
+            pTrick = (short *)((int)pTrick + 2);
+            short v0 = *pTrick;
+            pTrick = (short *)((int)pTrick + 2);
+            pTrick = (short *)((int)pTrick + (v0 << 1));
+            break;
+        }
+        case 0:
+        case 2:
+        case 3:
+        case 7:
+        case 0xC:
+        case 0x13:
+        case 0x14:
+        case 0x16:
+        case 0x1A:
+        case 0x1C:
+        case 0x1E:
+        case 0x20:
+        case 0x22:
+        case 0x2C:
+        case 0x30:
+        case 0x31:
+        case 0x32:
+        case 0x33:
+        case 0x35:
+        case 0x3B:
+        case 0x3C:
+        case 0x3E:
+        case 0x46: pTrick = (short *)((int)pTrick + 2); break;
+        default:
+            printf(PhysicsDiagnosticPool.scriptError, (int)(short)uopcode);
+            pTrick = (short *)((int)pTrick + 2);
+            break;
     }
     return pTrick;
 }
@@ -4274,8 +4061,7 @@ int EnsureGTricksLoaded(void)
     if (!GTricks)
     {
         printf(PhysicsDiagnosticPool.loadTricks);
-        short *base = reinterpret_cast<short *>(
-            FileIO_OpenLoad(GTricksFilename));
+        short *base = reinterpret_cast<short *>(FileIO_OpenLoad(GTricksFilename));
         int ret = 1;
         GTricks = base;
         register int a = base[0];
@@ -4448,8 +4234,7 @@ void ExtraAnims_AddSkatersAnims(void)
  */
 void CBruce::HandleTricksNew()
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
     CBruceScriptQueueSlice *queue = (CBruceScriptQueueSlice *)bruce;
     UpdateButtons();
     MaybeTriggerTrick();
@@ -4513,218 +4298,175 @@ int InterpolateFrame(int Current, int Dest)
  */
 void CBruce::CalcAnimLeanFrame()
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
     int MaxLeanAngle;
     int mode;
 
     MaxLeanAngle = 0x2d000;
-    if (!(*(signed char *)((int)&bruce->mAY) < 31 &&
-          bruce->mPad->Down.Pressed == 0))
+    if (!(*(signed char *)((int)&bruce->mAY) < 31 && bruce->mPad->Down.Pressed == 0))
         MaxLeanAngle = 0x5a000;
 
-    if (bruce->mAnimLeanAngle == 0)
-        goto final_block;
+    if (bruce->mAnimLeanAngle == 0) goto final_block;
 
-    if (bruce->mManIsCrouched != 0)
-        goto after_region1;
+    if (bruce->mManIsCrouched != 0) goto after_region1;
 
     mode = bruce->CSuper.mAnim;
-    if (mode == 0)
-        goto region1_body;
-    if (mode < 0)
-        goto region2_start;
-    if (mode >= 11)
-        goto region2_start;
-    if (mode < 6)
-        goto after_region1;
+    if (mode == 0) goto region1_body;
+    if (mode < 0) goto region2_start;
+    if (mode >= 11) goto region2_start;
+    if (mode < 6) goto after_region1;
 
 region1_body:
-{
-    int Frame;
+    {
+        int Frame;
 
-    if (bruce->CSuper.mExtraFlags & 2)
-    {
-        if (bruce->mAnimLeanAngle < 0)
+        if (bruce->CSuper.mExtraFlags & 2)
         {
-            Frame = -22 * bruce->mAnimLeanAngle / MaxLeanAngle;
-            if (Frame >= 23)
-                Frame = 22;
-            if (mode != 7)
-                bruce->CSuper.mFrame = 0;
-            bruce->CSuper.mFrame =
-                InterpolateFrame(bruce->CSuper.mFrame, Frame);
-            reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim2(7, bruce->CSuper.mFrame,
-                bruce->CSuper.mFrame, 0xf0c);
+            if (bruce->mAnimLeanAngle < 0)
+            {
+                Frame = -22 * bruce->mAnimLeanAngle / MaxLeanAngle;
+                if (Frame >= 23) Frame = 22;
+                if (mode != 7) bruce->CSuper.mFrame = 0;
+                bruce->CSuper.mFrame = InterpolateFrame(bruce->CSuper.mFrame, Frame);
+                reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim2(7, bruce->CSuper.mFrame,
+                                                                  bruce->CSuper.mFrame, 0xf0c);
+            }
+            else
+            {
+                Frame = 22 * bruce->mAnimLeanAngle / MaxLeanAngle;
+                if (Frame >= 23) Frame = 22;
+                if (mode != 6) bruce->CSuper.mFrame = 0;
+                if (bruce->CSuper.mFrame < Frame) bruce->CSuper.mFrame = bruce->CSuper.mFrame + 1;
+                bruce->CSuper.mFrame = InterpolateFrame(bruce->CSuper.mFrame, Frame);
+                reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim2(6, bruce->CSuper.mFrame,
+                                                                  bruce->CSuper.mFrame, 0xf16);
+            }
         }
         else
         {
-            Frame = 22 * bruce->mAnimLeanAngle / MaxLeanAngle;
-            if (Frame >= 23)
-                Frame = 22;
-            if (mode != 6)
-                bruce->CSuper.mFrame = 0;
-            if (bruce->CSuper.mFrame < Frame)
-                bruce->CSuper.mFrame = bruce->CSuper.mFrame + 1;
-            bruce->CSuper.mFrame =
-                InterpolateFrame(bruce->CSuper.mFrame, Frame);
-            reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim2(6, bruce->CSuper.mFrame,
-                bruce->CSuper.mFrame, 0xf16);
+            if (bruce->mAnimLeanAngle < 0)
+            {
+                Frame = -22 * bruce->mAnimLeanAngle / MaxLeanAngle;
+                if (Frame >= 23) Frame = 22;
+                if (mode != 6) bruce->CSuper.mFrame = 0;
+                bruce->CSuper.mFrame = InterpolateFrame(bruce->CSuper.mFrame, Frame);
+                reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim2(6, bruce->CSuper.mFrame,
+                                                                  bruce->CSuper.mFrame, 0xf23);
+            }
+            else
+            {
+                Frame = 22 * bruce->mAnimLeanAngle / MaxLeanAngle;
+                if (Frame >= 23) Frame = 22;
+                if (mode != 7) bruce->CSuper.mFrame = 0;
+                bruce->CSuper.mFrame = InterpolateFrame(bruce->CSuper.mFrame, Frame);
+                reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim2(7, bruce->CSuper.mFrame,
+                                                                  bruce->CSuper.mFrame, 0xf2c);
+            }
         }
     }
-    else
-    {
-        if (bruce->mAnimLeanAngle < 0)
-        {
-            Frame = -22 * bruce->mAnimLeanAngle / MaxLeanAngle;
-            if (Frame >= 23)
-                Frame = 22;
-            if (mode != 6)
-                bruce->CSuper.mFrame = 0;
-            bruce->CSuper.mFrame =
-                InterpolateFrame(bruce->CSuper.mFrame, Frame);
-            reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim2(6, bruce->CSuper.mFrame,
-                bruce->CSuper.mFrame, 0xf23);
-        }
-        else
-        {
-            Frame = 22 * bruce->mAnimLeanAngle / MaxLeanAngle;
-            if (Frame >= 23)
-                Frame = 22;
-            if (mode != 7)
-                bruce->CSuper.mFrame = 0;
-            bruce->CSuper.mFrame =
-                InterpolateFrame(bruce->CSuper.mFrame, Frame);
-            reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim2(7, bruce->CSuper.mFrame,
-                bruce->CSuper.mFrame, 0xf2c);
-        }
-    }
-}
 
 after_region1:
-    if (bruce->mAnimLeanAngle == 0)
-        goto final_block;
+    if (bruce->mAnimLeanAngle == 0) goto final_block;
 
 region2_start:
-    if (bruce->mManIsCrouched == 0)
-        goto after_region2;
+    if (bruce->mManIsCrouched == 0) goto after_region2;
 
     mode = bruce->CSuper.mAnim;
-    if (mode == 0)
-        goto region2_body;
-    if (mode < 0)
-        goto after_region2;
-    if (mode >= 11)
-        goto after_region2;
-    if (mode < 6)
-        goto after_region2;
+    if (mode == 0) goto region2_body;
+    if (mode < 0) goto after_region2;
+    if (mode >= 11) goto after_region2;
+    if (mode < 6) goto after_region2;
 
 region2_body:
-{
-    int Frame;
+    {
+        int Frame;
 
-    if (bruce->CSuper.mExtraFlags & 2)
-    {
-        if (bruce->mAnimLeanAngle < 0)
+        if (bruce->CSuper.mExtraFlags & 2)
         {
-            Frame = -12 * bruce->mAnimLeanAngle / MaxLeanAngle;
-            if (Frame >= 13)
-                Frame = 12;
-            if (mode == 7)
+            if (bruce->mAnimLeanAngle < 0)
             {
-                bruce->CSuper.mAnim = 10;
-                bruce->CSuper.mFrame = Frame;
+                Frame = -12 * bruce->mAnimLeanAngle / MaxLeanAngle;
+                if (Frame >= 13) Frame = 12;
+                if (mode == 7)
+                {
+                    bruce->CSuper.mAnim = 10;
+                    bruce->CSuper.mFrame = Frame;
+                }
+                if (bruce->CSuper.mAnim != 10) bruce->CSuper.mFrame = 0;
+                bruce->CSuper.mFrame = InterpolateFrame(bruce->CSuper.mFrame, Frame);
+                reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim2(10, bruce->CSuper.mFrame,
+                                                                  bruce->CSuper.mFrame, 0xf50);
+                if (bruce->CSuper.mFrame == 12)
+                    reinterpret_cast<CBruce *>(bruce)->HandleTruckSqueakSound();
             }
-            if (bruce->CSuper.mAnim != 10)
-                bruce->CSuper.mFrame = 0;
-            bruce->CSuper.mFrame =
-                InterpolateFrame(bruce->CSuper.mFrame, Frame);
-            reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim2(10, bruce->CSuper.mFrame,
-                bruce->CSuper.mFrame, 0xf50);
-            if (bruce->CSuper.mFrame == 12)
-                reinterpret_cast<CBruce *>(bruce)->HandleTruckSqueakSound();
+            else
+            {
+                Frame = 15 * bruce->mAnimLeanAngle / MaxLeanAngle;
+                if (Frame >= 16) Frame = 15;
+                if (mode == 6)
+                {
+                    bruce->CSuper.mAnim = 9;
+                    bruce->CSuper.mFrame = Frame;
+                }
+                if (bruce->CSuper.mAnim != 9) bruce->CSuper.mFrame = 0;
+                bruce->CSuper.mFrame = InterpolateFrame(bruce->CSuper.mFrame, Frame);
+                reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim2(9, bruce->CSuper.mFrame,
+                                                                  bruce->CSuper.mFrame, 0xf60);
+                if (bruce->CSuper.mFrame == 15)
+                    reinterpret_cast<CBruce *>(bruce)->HandleTruckSqueakSound();
+            }
         }
         else
         {
-            Frame = 15 * bruce->mAnimLeanAngle / MaxLeanAngle;
-            if (Frame >= 16)
-                Frame = 15;
-            if (mode == 6)
+            if (bruce->mAnimLeanAngle < 0)
             {
-                bruce->CSuper.mAnim = 9;
-                bruce->CSuper.mFrame = Frame;
+                Frame = -15 * bruce->mAnimLeanAngle / MaxLeanAngle;
+                if (Frame >= 16) Frame = 15;
+                if (mode == 6)
+                {
+                    bruce->CSuper.mAnim = 9;
+                    bruce->CSuper.mFrame = Frame;
+                }
+                if (bruce->CSuper.mAnim != 9) bruce->CSuper.mFrame = 0;
+                bruce->CSuper.mFrame = InterpolateFrame(bruce->CSuper.mFrame, Frame);
+                reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim2(9, bruce->CSuper.mFrame,
+                                                                  bruce->CSuper.mFrame, 0xf75);
+                if (bruce->CSuper.mFrame == 15)
+                    reinterpret_cast<CBruce *>(bruce)->HandleTruckSqueakSound();
             }
-            if (bruce->CSuper.mAnim != 9)
-                bruce->CSuper.mFrame = 0;
-            bruce->CSuper.mFrame =
-                InterpolateFrame(bruce->CSuper.mFrame, Frame);
-            reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim2(9, bruce->CSuper.mFrame,
-                bruce->CSuper.mFrame, 0xf60);
-            if (bruce->CSuper.mFrame == 15)
-                reinterpret_cast<CBruce *>(bruce)->HandleTruckSqueakSound();
+            else
+            {
+                Frame = 12 * bruce->mAnimLeanAngle / MaxLeanAngle;
+                if (Frame >= 13) Frame = 12;
+                if (mode == 7)
+                {
+                    bruce->CSuper.mAnim = 10;
+                    bruce->CSuper.mFrame = Frame;
+                }
+                if (bruce->CSuper.mAnim != 10) bruce->CSuper.mFrame = 0;
+                bruce->CSuper.mFrame = InterpolateFrame(bruce->CSuper.mFrame, Frame);
+                reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim2(10, bruce->CSuper.mFrame,
+                                                                  bruce->CSuper.mFrame, 0xf85);
+                if (bruce->CSuper.mFrame == 12)
+                    reinterpret_cast<CBruce *>(bruce)->HandleTruckSqueakSound();
+            }
         }
     }
-    else
-    {
-        if (bruce->mAnimLeanAngle < 0)
-        {
-            Frame = -15 * bruce->mAnimLeanAngle / MaxLeanAngle;
-            if (Frame >= 16)
-                Frame = 15;
-            if (mode == 6)
-            {
-                bruce->CSuper.mAnim = 9;
-                bruce->CSuper.mFrame = Frame;
-            }
-            if (bruce->CSuper.mAnim != 9)
-                bruce->CSuper.mFrame = 0;
-            bruce->CSuper.mFrame =
-                InterpolateFrame(bruce->CSuper.mFrame, Frame);
-            reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim2(9, bruce->CSuper.mFrame,
-                bruce->CSuper.mFrame, 0xf75);
-            if (bruce->CSuper.mFrame == 15)
-                reinterpret_cast<CBruce *>(bruce)->HandleTruckSqueakSound();
-        }
-        else
-        {
-            Frame = 12 * bruce->mAnimLeanAngle / MaxLeanAngle;
-            if (Frame >= 13)
-                Frame = 12;
-            if (mode == 7)
-            {
-                bruce->CSuper.mAnim = 10;
-                bruce->CSuper.mFrame = Frame;
-            }
-            if (bruce->CSuper.mAnim != 10)
-                bruce->CSuper.mFrame = 0;
-            bruce->CSuper.mFrame =
-                InterpolateFrame(bruce->CSuper.mFrame, Frame);
-            reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim2(10, bruce->CSuper.mFrame,
-                bruce->CSuper.mFrame, 0xf85);
-            if (bruce->CSuper.mFrame == 12)
-                reinterpret_cast<CBruce *>(bruce)->HandleTruckSqueakSound();
-        }
-    }
-}
 
 after_region2:
-    if (bruce->mAnimLeanAngle != 0)
-        return;
+    if (bruce->mAnimLeanAngle != 0) return;
 
 final_block:
     {
         int st = bruce->CSuper.mAnim;
-        if (st < 6)
-            return;
+        if (st < 6) return;
         if (st < 8)
         {
             reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim(0, 0xf94);
             return;
         }
-        if (st >= 11)
-            return;
-        if (st < 9)
-            return;
+        if (st >= 11) return;
+        if (st < 9) return;
         reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim3(8, 0x13, 0x1a, 0x13, 0xf9a);
     }
 }
@@ -4739,8 +4481,7 @@ final_block:
  */
 void CBruce::HandleSpin()
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
     int DeltaAngle;
     int MaxLeanAngle;
     MATRIX SurfaceRotMatrix;
@@ -4749,8 +4490,7 @@ void CBruce::HandleSpin()
     int RightPressed;
 
     /* Apply the three timed auto-rotation channels around the board pivot. */
-    if (bruce->mRotateCount[0] != 0 || bruce->mRotateCount[1] != 0 ||
-        bruce->mRotateCount[2] != 0)
+    if (bruce->mRotateCount[0] != 0 || bruce->mRotateCount[1] != 0 || bruce->mRotateCount[2] != 0)
     {
         int ActualRot[3];
         VECTOR zero;
@@ -4771,12 +4511,9 @@ void CBruce::HandleSpin()
             {
                 int *pTotalBase = bruce->mRotateTotal;
                 int Scale = TimeScale;
-                int Speed =
-                    (PhysicsAbsolute(*pSpeed) * Scale)
-                    >> 8;
+                int Speed = (PhysicsAbsolute(*pSpeed) * Scale) >> 8;
                 int Sign = 1;
-                if (*pSpeed < 0)
-                    Sign = -1;
+                if (*pSpeed < 0) Sign = -1;
 
                 if (*pCount >= Speed)
                 {
@@ -4814,12 +4551,9 @@ void CBruce::HandleSpin()
         MulMatrix(&bruce->mRotationMatrix, &SurfaceRotMatrix);
         ApplyMatrixLV(&bruce->mRotationMatrix, &v, &v3);
 
-        bruce->CSuper.CBody.CItem.mPos.x =
-            (bruce->CSuper.CBody.CItem.mPos.x + v2.vx) - v3.vx;
-        bruce->CSuper.CBody.CItem.mPos.y =
-            (bruce->CSuper.CBody.CItem.mPos.y + v2.vy) - v3.vy;
-        bruce->CSuper.CBody.CItem.mPos.z =
-            (bruce->CSuper.CBody.CItem.mPos.z + v2.vz) - v3.vz;
+        bruce->CSuper.CBody.CItem.mPos.x = (bruce->CSuper.CBody.CItem.mPos.x + v2.vx) - v3.vx;
+        bruce->CSuper.CBody.CItem.mPos.y = (bruce->CSuper.CBody.CItem.mPos.y + v2.vy) - v3.vy;
+        bruce->CSuper.CBody.CItem.mPos.z = (bruce->CSuper.CBody.CItem.mPos.z + v2.vz) - v3.vz;
     }
 
     /* Queued quarter-spins while grinding or lip-stalling. */
@@ -4827,29 +4561,27 @@ void CBruce::HandleSpin()
     {
         if (bruce->mTapTurn > 0)
         {
-            reinterpret_cast<CBruce *>(bruce)->RotateHeadingAndVelocity(
-                (TimeScale * 0x96) >> 8, 0, 0);
+            reinterpret_cast<CBruce *>(bruce)->RotateHeadingAndVelocity((TimeScale * 0x96) >> 8, 0,
+                                                                        0);
             bruce->mTallyAngles += (TimeScale * 0x96) >> 8;
             if (bruce->mTallyAngles >= 0x800)
             {
                 bruce->mTallyAngles -= 0x800;
                 bruce->mTapTurn--;
-                if (bruce->mNoSpinScore == 0)
-                    bruce->mNum180Spins++;
+                if (bruce->mNoSpinScore == 0) bruce->mNum180Spins++;
             }
         }
 
         if (bruce->mTapTurn < 0)
         {
-            reinterpret_cast<CBruce *>(bruce)->RotateHeadingAndVelocity(
-                -((TimeScale * 0x96) >> 8), 0, 0);
+            reinterpret_cast<CBruce *>(bruce)->RotateHeadingAndVelocity(-((TimeScale * 0x96) >> 8),
+                                                                        0, 0);
             bruce->mTallyAngles -= (TimeScale * 0x96) >> 8;
             if (bruce->mTallyAngles < -0x7FF)
             {
                 bruce->mTallyAngles += 0x800;
                 bruce->mTapTurn++;
-                if (bruce->mNoSpinScore == 0)
-                    bruce->mNum180Spins++;
+                if (bruce->mNoSpinScore == 0) bruce->mNum180Spins++;
             }
         }
     }
@@ -4883,24 +4615,19 @@ void CBruce::HandleSpin()
         DeltaAngle = RawDelta >> 8;
 
         MaxLeanAngle = 0x2D000;
-        LeftPressed =
-            ((SControl *)bruce->mPad)->Left.Pressed;
-        RightPressed =
-            ((SControl *)bruce->mPad)->Right.Pressed;
+        LeftPressed = ((SControl *)bruce->mPad)->Left.Pressed;
+        RightPressed = ((SControl *)bruce->mPad)->Right.Pressed;
         bruce->mFirstLeftRightPressed = 0;
-        if (LeftPressed == 0 && RightPressed == 0)
-            bruce->mTruckSqueak = 0;
+        if (LeftPressed == 0 && RightPressed == 0) bruce->mTruckSqueak = 0;
 
-        if ((signed char)bruce->mAY >= 0x1F ||
-            ((SControl *)bruce->mPad)->Down.Pressed != 0)
+        if ((signed char)bruce->mAY >= 0x1F || ((SControl *)bruce->mPad)->Down.Pressed != 0)
         {
             bruce->mDoingSharpTurn = 1;
             int Speed =
-                (M3dMaths_SquareRoot0(Mips_CVecDotProd(
-                     (CVector *)&bruce->CSuper.CBody.mVel,
-                     (CVector *)&bruce->CSuper.CBody.mVel))
-                 << 6)
-                >> 12;
+                (M3dMaths_SquareRoot0(Mips_CVecDotProd((CVector *)&bruce->CSuper.CBody.mVel,
+                                                       (CVector *)&bruce->CSuper.CBody.mVel))
+                 << 6) >>
+                12;
             DeltaAngle *= 2;
             MaxLeanAngle *= 2;
             bruce->CSuper.CBody.mAcc.x -= bruce->CSuper.CBody.mVel.x / Speed;
@@ -4929,8 +4656,7 @@ void CBruce::HandleSpin()
 
         if (LeftPressed != 0 || RightPressed != 0)
         {
-            if (bruce->mFirstLeftRightPressed > 0 &&
-                XFrames - bruce->mFirstLeftRightPressed < 8)
+            if (bruce->mFirstLeftRightPressed > 0 && XFrames - bruce->mFirstLeftRightPressed < 8)
             {
                 LeftPressed = 0;
                 RightPressed = 0;
@@ -4948,58 +4674,44 @@ void CBruce::HandleSpin()
             RightPressed = 0;
             LeftPressed = 0;
         }
-        if (LeftPressed == 0 && RightPressed == 0 &&
-            (signed char)bruce->mAX == 0)
+        if (LeftPressed == 0 && RightPressed == 0 && (signed char)bruce->mAX == 0)
             bruce->mLeanAngle = 0;
         bruce->mDoingSharpTurn = 0;
     }
 
-    if ((signed char)bruce->mAX != 0 &&
-        LeftPressed == 0 && RightPressed == 0)
+    if ((signed char)bruce->mAX != 0 && LeftPressed == 0 && RightPressed == 0)
     {
-        int TargetAngle =
-            ((signed char)bruce->mAX * MaxLeanAngle) / 128;
-        if (TargetAngle < -MaxLeanAngle)
-            TargetAngle = -MaxLeanAngle;
-        if (TargetAngle > MaxLeanAngle)
-            TargetAngle = MaxLeanAngle;
+        int TargetAngle = ((signed char)bruce->mAX * MaxLeanAngle) / 128;
+        if (TargetAngle < -MaxLeanAngle) TargetAngle = -MaxLeanAngle;
+        if (TargetAngle > MaxLeanAngle) TargetAngle = MaxLeanAngle;
 
         if (bruce->mLeanAngle < TargetAngle)
         {
             bruce->mTurning = 1;
-            int Diff =
-                DeltaAngle
-                + (DeltaAngle * ((TargetAngle - bruce->mLeanAngle) >> 12))
-                      / ((MaxLeanAngle >> 12) / 2);
+            int Diff = DeltaAngle + (DeltaAngle * ((TargetAngle - bruce->mLeanAngle) >> 12)) /
+                                        ((MaxLeanAngle >> 12) / 2);
             bruce->mLeanAngle += Diff;
-            if (bruce->mLeanAngle > TargetAngle)
-                bruce->mLeanAngle = TargetAngle;
+            if (bruce->mLeanAngle > TargetAngle) bruce->mLeanAngle = TargetAngle;
             bruce->mAnimLeanAngle += DeltaAngle;
-            if (bruce->mAnimLeanAngle > TargetAngle)
-                bruce->mAnimLeanAngle = TargetAngle;
+            if (bruce->mAnimLeanAngle > TargetAngle) bruce->mAnimLeanAngle = TargetAngle;
         }
 
         if (bruce->mLeanAngle > TargetAngle)
         {
             bruce->mTurning = 1;
-            int Diff =
-                DeltaAngle
-                + (DeltaAngle * ((bruce->mLeanAngle - TargetAngle) >> 12))
-                      / ((MaxLeanAngle >> 12) / 2);
+            int Diff = DeltaAngle + (DeltaAngle * ((bruce->mLeanAngle - TargetAngle) >> 12)) /
+                                        ((MaxLeanAngle >> 12) / 2);
             bruce->mLeanAngle -= Diff;
-            if (bruce->mLeanAngle < TargetAngle)
-                bruce->mLeanAngle = TargetAngle;
+            if (bruce->mLeanAngle < TargetAngle) bruce->mLeanAngle = TargetAngle;
             bruce->mAnimLeanAngle -= DeltaAngle;
-            if (bruce->mAnimLeanAngle < TargetAngle)
-                bruce->mAnimLeanAngle = TargetAngle;
+            if (bruce->mAnimLeanAngle < TargetAngle) bruce->mAnimLeanAngle = TargetAngle;
         }
     }
     else if (LeftPressed != 0)
     {
         bruce->mTurning = 1;
         bruce->mLeanAngle -= DeltaAngle;
-        if (bruce->mLeanAngle < -MaxLeanAngle)
-            bruce->mLeanAngle = -MaxLeanAngle;
+        if (bruce->mLeanAngle < -MaxLeanAngle) bruce->mLeanAngle = -MaxLeanAngle;
         if (bruce->mAnimLeanAngle - DeltaAngle >= -MaxLeanAngle)
             bruce->mAnimLeanAngle -= DeltaAngle;
     }
@@ -5007,10 +4719,8 @@ void CBruce::HandleSpin()
     {
         bruce->mTurning = 1;
         bruce->mLeanAngle += DeltaAngle;
-        if (bruce->mLeanAngle > MaxLeanAngle)
-            bruce->mLeanAngle = MaxLeanAngle;
-        if (bruce->mAnimLeanAngle + DeltaAngle <= MaxLeanAngle)
-            bruce->mAnimLeanAngle += DeltaAngle;
+        if (bruce->mLeanAngle > MaxLeanAngle) bruce->mLeanAngle = MaxLeanAngle;
+        if (bruce->mAnimLeanAngle + DeltaAngle <= MaxLeanAngle) bruce->mAnimLeanAngle += DeltaAngle;
     }
     else
     {
@@ -5019,20 +4729,16 @@ void CBruce::HandleSpin()
             bruce->mLeanAngle -= bruce->mLeanAngle >> 1;
         else
             bruce->mLeanAngle -= bruce->mLeanAngle >> 2;
-        if ((bruce->mLeanAngle + 0x800) >> 12 == 0)
-            bruce->mLeanAngle = 0;
+        if ((bruce->mLeanAngle + 0x800) >> 12 == 0) bruce->mLeanAngle = 0;
 
         LeanBack = bruce->mAnimLeanAngle >> 4;
         if (LeanBack < 0)
         {
-            if (LeanBack >= -0x3FF)
-                LeanBack = -0x400;
+            if (LeanBack >= -0x3FF) LeanBack = -0x400;
         }
-        if ((unsigned int)(LeanBack - 1) < 0x3FF)
-            LeanBack = 0x400;
+        if ((unsigned int)(LeanBack - 1) < 0x3FF) LeanBack = 0x400;
         bruce->mAnimLeanAngle -= LeanBack;
-        if ((bruce->mAnimLeanAngle + 0x800) >> 12 == 0)
-            bruce->mAnimLeanAngle = 0;
+        if ((bruce->mAnimLeanAngle + 0x800) >> 12 == 0) bruce->mAnimLeanAngle = 0;
     }
 
     bruce->mAnimLeanAngle = bruce->mLeanAngle;
@@ -5045,11 +4751,9 @@ void CBruce::HandleSpin()
         if (((SControl *)bruce->mPad)->Square.Pressed == 0 &&
             ((SControl *)bruce->mPad)->Circle.Pressed == 0)
         {
-            if (((SControl *)bruce->mPad)->Up.Pressed != 0 ||
-                (signed char)bruce->mAY < -0x28)
+            if (((SControl *)bruce->mPad)->Up.Pressed != 0 || (signed char)bruce->mAY < -0x28)
                 bruce->mPitchAngle = -((TimeScale * 0x14) >> 8);
-            if (((SControl *)bruce->mPad)->Down.Pressed != 0 ||
-                (signed char)bruce->mAY >= 0x29)
+            if (((SControl *)bruce->mPad)->Down.Pressed != 0 || (signed char)bruce->mAY >= 0x29)
                 bruce->mPitchAngle = (TimeScale * 0x14) >> 8;
         }
     }
@@ -5067,8 +4771,7 @@ void CBruce::HandleSpin()
  */
 void CBruce::AlignHeadingOnRail()
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
     CVector *up = (CVector *)&bruce->mUp;
     bruce->mUp.x = 0;
     up->vy = -0x1000;
@@ -5092,14 +4795,11 @@ void CBruce::AlignHeadingOnRail()
 #include "BIT2.h"
 void CBruce::CreateRailSparks()
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
-    if (BitCount >= 0xC8)
-        return;
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
+    if (BitCount >= 0xC8) return;
     int i = 0;
     reinterpret_cast<CBruce *>(bruce)->SetAnglesFromHeading();
-    Bit_SetSparkTrajectory(*reinterpret_cast<const CSVector *>(
-        &bruce->CSuper.CBody.CItem.mAngles));
+    Bit_SetSparkTrajectory(*reinterpret_cast<const CSVector *>(&bruce->CSuper.CBody.CItem.mAngles));
     CSVector cone;
     CSVector *conePtr = &cone;
     cone.vx = 0x1C2;
@@ -5114,14 +4814,12 @@ void CBruce::CreateRailSparks()
     SparkPos.vy = sparkY;
     do
     {
-        CGrindSpark *bit = static_cast<CGrindSpark *>(
-            CBit::operator new(BIT2_GRIND_SPARK_STORAGE_SIZE));
+        CGrindSpark *bit =
+            static_cast<CGrindSpark *>(CBit::operator new(BIT2_GRIND_SPARK_STORAGE_SIZE));
         if (bit != 0)
         {
-            Bit2_ConstructGrindSpark(
-                bit, reinterpret_cast<CBody *>(bruce),
-                SparkPos,
-                -0x28, 0x1000, 5);
+            Bit2_ConstructGrindSpark(bit, reinterpret_cast<CBody *>(bruce), SparkPos, -0x28, 0x1000,
+                                     5);
         }
         i++;
     } while (i < 9);
@@ -5138,16 +4836,12 @@ void CBruce::CreateRailSparks()
  */
 void CBruce::TweakRailScore()
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
-    CVector localVec =
-        *(CVector *)&bruce->CSuper.CBody.CItem.mPos -
-        *(CVector *)&bruce->mGrindPos;
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CVector localVec = *(CVector *)&bruce->CSuper.CBody.CItem.mPos - *(CVector *)&bruce->mGrindPos;
     int len = localVec.Length();
     if (len >= 0x1F)
     {
-        reinterpret_cast<CBruce *>(bruce)->Trick_HoldTrick(
-            bruce->mGrindTweak);
+        reinterpret_cast<CBruce *>(bruce)->Trick_HoldTrick(bruce->mGrindTweak);
         bruce->mGrindPos = bruce->CSuper.CBody.CItem.mPos;
     }
 }
@@ -5162,29 +4856,30 @@ void CBruce::TweakRailScore()
  */
 void CBruce::HandleGrindOffSound()
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
     int sfx;
     switch (bruce->mRailType)
     {
-    case 0:
-        if (bruce->mRailSparks == 0) { SFX_PlayX(6, 0x2000, 0); return; }
-        sfx = 6; break;
-    case 1:
-        if (bruce->mRailSparks == 0)
-            sfx = -1;
-        else
-            sfx = 0x10;
-        break;
-    case 2:
-        (void)*(volatile int *)&bruce->mRailSparks;
-        sfx = 0xC6;
-        break;
-    case 3:
-        sfx = 0x10;
-        break;
-    default:
-        return;
+        case 0:
+            if (bruce->mRailSparks == 0)
+            {
+                SFX_PlayX(6, 0x2000, 0);
+                return;
+            }
+            sfx = 6;
+            break;
+        case 1:
+            if (bruce->mRailSparks == 0)
+                sfx = -1;
+            else
+                sfx = 0x10;
+            break;
+        case 2:
+            (void)*(volatile int *)&bruce->mRailSparks;
+            sfx = 0xC6;
+            break;
+        case 3: sfx = 0x10; break;
+        default: return;
     }
     SFX_PlayX(sfx, 0x2000, 0);
 }
@@ -5199,8 +4894,7 @@ void CBruce::HandleGrindOffSound()
  */
 void CBruce::LeaveRail()
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
     CBruceScriptQueueSlice *script = (CBruceScriptQueueSlice *)bruce;
     Physics_StateTransition(bruce, 1, 0x1152);
     bruce->mDontStickTimer = 5;
@@ -5263,8 +4957,7 @@ void CBruce::DoOnRailPhysics()
     bruce->mManualLean = 0;
     reinterpret_cast<CBruce *>(bruce)->Vibrate(2, 0, 1);
     FirstTimeThroughLoop = 1;
-    if (bruce->mRailSparks != 0)
-        reinterpret_cast<CBruce *>(bruce)->CreateRailSparks();
+    if (bruce->mRailSparks != 0) reinterpret_cast<CBruce *>(bruce)->CreateRailSparks();
 
     ((CVectorPhysicsOwner *)((int)&bruce->CSuper.CBody.mAcc))->Set(0, 0, 0);
 
@@ -5283,16 +4976,14 @@ void CBruce::DoOnRailPhysics()
         SegDir = SegEnd - SegStart;
         M3dUtils_NormaliseVector((CVector *)&SegDir);
 
-        Speed = Mips_CVecDotProd(
-            &SegDir, (CVector *)&bruce->CSuper.CBody.mVel);
+        Speed = Mips_CVecDotProd(&SegDir, (CVector *)&bruce->CSuper.CBody.mVel);
 
         if (FirstTimeThroughLoop)
         {
             FirstTimeThroughLoop = 0;
             *(CVector *)&bruce->CSuper.CBody.mAcc += Gravity;
 
-            if (Speed == 0)
-                Speed = 1000;
+            if (Speed == 0) Speed = 1000;
 
             /* Ease the grind speed while it is still inside the sane range. */
             if (PhysicsAbsolute(Speed) < 60000)
@@ -5312,8 +5003,7 @@ void CBruce::DoOnRailPhysics()
         }
 
         /* Keep only the component of the motion that runs along the rail. */
-        AccMagnitude = Mips_CVecDotProd(
-            &SegDir, (CVector *)&bruce->CSuper.CBody.mAcc);
+        AccMagnitude = Mips_CVecDotProd(&SegDir, (CVector *)&bruce->CSuper.CBody.mAcc);
         bruce->CSuper.CBody.mAcc.x = Mips_FixMul(SegDir.vx, AccMagnitude);
         bruce->CSuper.CBody.mAcc.y = Mips_FixMul(SegDir.vy, AccMagnitude);
         bruce->CSuper.CBody.mAcc.z = Mips_FixMul(SegDir.vz, AccMagnitude);
@@ -5340,19 +5030,19 @@ void CBruce::DoOnRailPhysics()
 
         switch (MajorAxis)
         {
-        case 0:
-            Length = ((SegEnd.vx - SegStart.vx) / SegDir.vx) << 12;
-            t = ((bruce->CSuper.CBody.CItem.mPos.x - SegStart.vx) / SegDir.vx) << 12;
-            break;
-        case 1:
-            Length = ((SegEnd.vy - SegStart.vy) / SegDir.vy) << 12;
-            t = ((bruce->CSuper.CBody.CItem.mPos.y - SegStart.vy) / SegDir.vy) << 12;
-            break;
-        case 2:
-        default:
-            Length = ((SegEnd.vz - SegStart.vz) / SegDir.vz) << 12;
-            t = ((bruce->CSuper.CBody.CItem.mPos.z - SegStart.vz) / SegDir.vz) << 12;
-            break;
+            case 0:
+                Length = ((SegEnd.vx - SegStart.vx) / SegDir.vx) << 12;
+                t = ((bruce->CSuper.CBody.CItem.mPos.x - SegStart.vx) / SegDir.vx) << 12;
+                break;
+            case 1:
+                Length = ((SegEnd.vy - SegStart.vy) / SegDir.vy) << 12;
+                t = ((bruce->CSuper.CBody.CItem.mPos.y - SegStart.vy) / SegDir.vy) << 12;
+                break;
+            case 2:
+            default:
+                Length = ((SegEnd.vz - SegStart.vz) / SegDir.vz) << 12;
+                t = ((bruce->CSuper.CBody.CItem.mPos.z - SegStart.vz) / SegDir.vz) << 12;
+                break;
         }
 
         t += (LastSpeed = Speed);
@@ -5360,9 +5050,7 @@ void CBruce::DoOnRailPhysics()
         if (t >= 0 && t <= Length)
         {
             CVector Old = mPos;
-            mPos +=
-                ((mVel * TimeScale) >> 8)
-                + (((mAcc * TimeScaleSquared) >> 8) / 2);
+            mPos += ((mVel * TimeScale) >> 8) + (((mAcc * TimeScaleSquared) >> 8) / 2);
             RemainingSpeed = 0;
         }
         else if (t < 0)
@@ -5377,8 +5065,7 @@ void CBruce::DoOnRailPhysics()
                 CVector SegDir2;
 
                 Trig_GetPosition(SegStart2, PreviousSegment);
-                Trig_GetPosition(
-                    SegEnd2, bruce->mCurrentRailSegment);
+                Trig_GetPosition(SegEnd2, bruce->mCurrentRailSegment);
                 SegDir2 = SegEnd2 - SegStart2;
                 M3dUtils_NormaliseVector((CVector *)&SegDir2);
                 if (Mips_CVecDotProd(&SegDir, &SegDir2) > 0xA48)
@@ -5441,70 +5128,61 @@ void CBruce::DoOnRailPhysics()
         *(CVector *)&bruce->mRailDir = SegDir;
     }
 
-    *(CVector *)&bruce->mFront =
-        *(CVector *)&bruce->mRailDir * bruce->mRailFlip;
+    *(CVector *)&bruce->mFront = *(CVector *)&bruce->mRailDir * bruce->mRailFlip;
 
     reinterpret_cast<CBruce *>(bruce)->AlignHeadingOnRail();
 
     /* Balance meter: decay the lean, then nudge it by the current tilt. */
     bruce->mGrindLean +=
-        ((bruce->mGrindLean / (PHYSICS_RECON_EFFECTIVE_BALANCE(bruce) * 3 + 0x1C))
-         * (bruce->mGrindTime + 0x3C)) / 0x50;
-    bruce->mGrindLean +=
-        (bruce->mGrindLeanDir * (bruce->mGrindTime + 0x3C)) / 0x50;
+        ((bruce->mGrindLean / (PHYSICS_RECON_EFFECTIVE_BALANCE(bruce) * 3 + 0x1C)) *
+         (bruce->mGrindTime + 0x3C)) /
+        0x50;
+    bruce->mGrindLean += (bruce->mGrindLeanDir * (bruce->mGrindTime + 0x3C)) / 0x50;
 
     bruce->mGrindLeanDir +=
-        (Rnd(PhysicsAbsolute(bruce->mGrindLeanDir))
-         - PhysicsAbsolute(bruce->mGrindLeanDir) / 2) / 10;
+        (Rnd(PhysicsAbsolute(bruce->mGrindLeanDir)) - PhysicsAbsolute(bruce->mGrindLeanDir) / 2) /
+        10;
 
     if (Cheat_L2KillsBaddies != 0)
     {
         bruce->mGrindLean = 0;
     }
 
-    if (bruce->mPad->Left.Pressed == 0
-        && (signed char)bruce->mAX >= -0x28
-        && bruce->mPad->Right.Pressed == 0
-        && (signed char)bruce->mAX < 0x29)
+    if (bruce->mPad->Left.Pressed == 0 && (signed char)bruce->mAX >= -0x28 &&
+        bruce->mPad->Right.Pressed == 0 && (signed char)bruce->mAX < 0x29)
     {
         bruce->mGrindReleasedLR = 1;
     }
-    if ((bruce->mPad->Left.Pressed != 0
-         || (signed char)bruce->mAX < -0x28)
-        && bruce->mGrindReleasedLR != 0)
+    if ((bruce->mPad->Left.Pressed != 0 || (signed char)bruce->mAX < -0x28) &&
+        bruce->mGrindReleasedLR != 0)
     {
         bruce->mGrindLeanDir = bruce->mGrindLeanDir - 0x14;
     }
-    else if ((bruce->mPad->Right.Pressed != 0
-              || (signed char)bruce->mAX >= 0x29)
-             && bruce->mGrindReleasedLR != 0)
+    else if ((bruce->mPad->Right.Pressed != 0 || (signed char)bruce->mAX >= 0x29) &&
+             bruce->mGrindReleasedLR != 0)
     {
         bruce->mGrindLeanDir = bruce->mGrindLeanDir + 0x14;
     }
-    else if (PhysicsAbsolute(bruce->mGrindLeanDir)
-             < 0x14 - PHYSICS_RECON_EFFECTIVE_BALANCE(bruce))
+    else if (PhysicsAbsolute(bruce->mGrindLeanDir) < 0x14 - PHYSICS_RECON_EFFECTIVE_BALANCE(bruce))
     {
         /*
          * The spread is re-expanded on both sides of the call: the original
          * recomputes the balance stat after `Rnd` rather than holding it.
          */
-        bruce->mGrindLeanDir =
-            Rnd(0x50 - PHYSICS_RECON_EFFECTIVE_BALANCE(bruce) * 3)
-            - (0x50 - PHYSICS_RECON_EFFECTIVE_BALANCE(bruce) * 3) / 2;
+        bruce->mGrindLeanDir = Rnd(0x50 - PHYSICS_RECON_EFFECTIVE_BALANCE(bruce) * 3) -
+                               (0x50 - PHYSICS_RECON_EFFECTIVE_BALANCE(bruce) * 3) / 2;
     }
 
     if (PhysicsAbsolute(bruce->mGrindLean) > 4000)
     {
-        reinterpret_cast<CBruce *>(bruce)->Bail(
-            bruce->mRailBailNumber, DO_LIMIT);
+        reinterpret_cast<CBruce *>(bruce)->Bail(bruce->mRailBailNumber, DO_LIMIT);
         bruce->mRailBailNumber = 0;
         bruce->mRailBails = bruce->mRailBails + 1;
     }
 
     if (bruce->mInBail == 0 && PhysicsAbsolute(LastSpeed) < 7000)
     {
-        reinterpret_cast<CBruce *>(bruce)->Bail(
-            bruce->mRailBailNumber, DO_LIMIT);
+        reinterpret_cast<CBruce *>(bruce)->Bail(bruce->mRailBailNumber, DO_LIMIT);
         bruce->mRailBailNumber = 0;
     }
 
@@ -5524,45 +5202,34 @@ void CBruce::DoOnRailPhysics()
         {
             SLineInfo line_info;
 
-            line_info.StartCoords.Set(
-                bruce->CSuper.CBody.mOldPos.x,
-                bruce->CSuper.CBody.mOldPos.y,
-                bruce->CSuper.CBody.mOldPos.z);
-            line_info.EndCoords.Set(
-                bruce->CSuper.CBody.CItem.mPos.x, bruce->CSuper.CBody.CItem.mPos.y, bruce->CSuper.CBody.CItem.mPos.z);
+            line_info.StartCoords.Set(bruce->CSuper.CBody.mOldPos.x, bruce->CSuper.CBody.mOldPos.y,
+                                      bruce->CSuper.CBody.mOldPos.z);
+            line_info.EndCoords.Set(bruce->CSuper.CBody.CItem.mPos.x,
+                                    bruce->CSuper.CBody.CItem.mPos.y,
+                                    bruce->CSuper.CBody.CItem.mPos.z);
             line_info.StartCoords.vy -= 0x19000;
             line_info.EndCoords.vy -= 0x19000;
 
-            CVector vMovement =
-                *(CVector *)&bruce->CSuper.CBody.CItem.mPos - *(CVector *)&bruce->CSuper.CBody.mOldPos;
+            CVector vMovement = *(CVector *)&bruce->CSuper.CBody.CItem.mPos -
+                                *(CVector *)&bruce->CSuper.CBody.mOldPos;
 
             if (vMovement != ZeroVector)
             {
-                int Speed = M3dMaths_SquareRoot0(
-                                Mips_CVecDotProd(
-                                    &vMovement, &vMovement))
-                            << 6;
+                int Speed = M3dMaths_SquareRoot0(Mips_CVecDotProd(&vMovement, &vMovement)) << 6;
 
                 if (Speed < (bruce->mInBail != 0 ? 0x64000 : 0x1E000))
                 {
-                    if (Speed < 0x800)
-                        Speed = 0x800;
+                    if (Speed < 0x800) Speed = 0x800;
 
                     line_info.EndCoords.vx =
-                        bruce->CSuper.CBody.mOldPos.x
-                        + ((vMovement.vx
-                            * (bruce->mInBail != 0 ? 100 : 30))
-                           / Speed) * 0x1000;
+                        bruce->CSuper.CBody.mOldPos.x +
+                        ((vMovement.vx * (bruce->mInBail != 0 ? 100 : 30)) / Speed) * 0x1000;
                     line_info.EndCoords.vy =
-                        bruce->CSuper.CBody.mOldPos.y
-                        + ((vMovement.vy
-                            * (bruce->mInBail != 0 ? 100 : 30))
-                           / Speed) * 0x1000;
+                        bruce->CSuper.CBody.mOldPos.y +
+                        ((vMovement.vy * (bruce->mInBail != 0 ? 100 : 30)) / Speed) * 0x1000;
                     line_info.EndCoords.vz =
-                        bruce->CSuper.CBody.mOldPos.z
-                        + ((vMovement.vz
-                            * (bruce->mInBail != 0 ? 100 : 30))
-                           / Speed) * 0x1000;
+                        bruce->CSuper.CBody.mOldPos.z +
+                        ((vMovement.vz * (bruce->mInBail != 0 ? 100 : 30)) / Speed) * 0x1000;
                 }
 
                 int OldBul = BulletCollisionCheck;
@@ -5592,8 +5259,7 @@ void CBruce::DoOnRailPhysics()
  */
 void CBruce::SkateOffGround()
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
     if (bruce->mPhysicsState == 2)
     {
         Physics_StateTransition(bruce, 1, 0x12E0);
@@ -5608,8 +5274,7 @@ void CBruce::SkateOffGround()
     bruce->mManIsJumping = 1;
     bruce->mManual = 0;
     bruce->mCess = 0;
-    if (bailOnLand != 0)
-        return;
+    if (bailOnLand != 0) return;
     if (bruce->mManIsCrouched != 0)
     {
         reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim(0x1A, 0x12F9);
@@ -5634,22 +5299,15 @@ void CBruce::SkateOffGround()
  */
 int CBruce::CheckSide(int Side, int SideCol, int BounceOff)
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
     SLineInfo line_info;
 
-    line_info.StartCoords.vx =
-        bruce->CSuper.CBody.CItem.mPos.x + bruce->mUp.x * 0x1E;
-    line_info.EndCoords.vx =
-        line_info.StartCoords.vx + Side * bruce->mRight.x * SideCol;
-    line_info.StartCoords.vy =
-        bruce->CSuper.CBody.CItem.mPos.y + bruce->mUp.y * 0x1E;
-    line_info.EndCoords.vy =
-        line_info.StartCoords.vy + Side * bruce->mRight.y * SideCol;
-    line_info.StartCoords.vz =
-        bruce->CSuper.CBody.CItem.mPos.z + bruce->mUp.z * 0x1E;
-    line_info.EndCoords.vz =
-        line_info.StartCoords.vz + Side * bruce->mRight.z * SideCol;
+    line_info.StartCoords.vx = bruce->CSuper.CBody.CItem.mPos.x + bruce->mUp.x * 0x1E;
+    line_info.EndCoords.vx = line_info.StartCoords.vx + Side * bruce->mRight.x * SideCol;
+    line_info.StartCoords.vy = bruce->CSuper.CBody.CItem.mPos.y + bruce->mUp.y * 0x1E;
+    line_info.EndCoords.vy = line_info.StartCoords.vy + Side * bruce->mRight.y * SideCol;
+    line_info.StartCoords.vz = bruce->CSuper.CBody.CItem.mPos.z + bruce->mUp.z * 0x1E;
+    line_info.EndCoords.vz = line_info.StartCoords.vz + Side * bruce->mRight.z * SideCol;
 
     M3dColij_InitLineInfo(&line_info);
     M3dZone_LineToItem(&line_info, 1);
@@ -5661,7 +5319,8 @@ int CBruce::CheckSide(int Side, int SideCol, int BounceOff)
         WallFloorNormal.vx = line_info.Normal.vx;
         WallFloorNormal.vy = line_info.Normal.vy;
         WallFloorNormal.vz = line_info.Normal.vz;
-        if ((unsigned int)(Mips_CVecDotProd(&WallFloorNormal, (CVector *)&bruce->mUp) + 0x3FF) < 0x7FF)
+        if ((unsigned int)(Mips_CVecDotProd(&WallFloorNormal, (CVector *)&bruce->mUp) + 0x3FF) <
+            0x7FF)
         {
             int TurnAway = 0;
             bruce->CSuper.CBody.CItem.mPos = bruce->CSuper.CBody.mOldPos;
@@ -5669,10 +5328,8 @@ int CBruce::CheckSide(int Side, int SideCol, int BounceOff)
 
             if (BounceOff != 0)
             {
-                if (bruce->CSuper.mAnim != 0xC
-                    && OldVel.Length() > 6
-                    && bruce->mInBail == 0
-                    && bruce->mDoingWhatTrick == 0)
+                if (bruce->CSuper.mAnim != 0xC && OldVel.Length() > 6 && bruce->mInBail == 0 &&
+                    bruce->mDoingWhatTrick == 0)
                 {
                     CVector WallFloorNormal;
                     WallFloorNormal.vx = line_info.Normal.vx;
@@ -5686,24 +5343,20 @@ int CBruce::CheckSide(int Side, int SideCol, int BounceOff)
                         SFX_Grunt(reinterpret_cast<CBruce *>(bruce));
                     }
                 }
-                reinterpret_cast<CBruce *>(bruce)->ReflectHeadingVelocityInPlane(
-                    line_info.Normal, TurnAway);
+                reinterpret_cast<CBruce *>(bruce)->ReflectHeadingVelocityInPlane(line_info.Normal,
+                                                                                 TurnAway);
             }
 
             line_info.StartCoords.vx = bruce->CSuper.CBody.CItem.mPos.x;
             line_info.StartCoords.vy = bruce->CSuper.CBody.CItem.mPos.y;
             line_info.StartCoords.vz = bruce->CSuper.CBody.CItem.mPos.z;
-            line_info.EndCoords.vx =
-                line_info.StartCoords.vx + line_info.Normal.vx * SideCol;
-            line_info.EndCoords.vy =
-                line_info.StartCoords.vy + line_info.Normal.vy * SideCol;
-            line_info.EndCoords.vz =
-                line_info.StartCoords.vz + line_info.Normal.vz * SideCol;
+            line_info.EndCoords.vx = line_info.StartCoords.vx + line_info.Normal.vx * SideCol;
+            line_info.EndCoords.vy = line_info.StartCoords.vy + line_info.Normal.vy * SideCol;
+            line_info.EndCoords.vz = line_info.StartCoords.vz + line_info.Normal.vz * SideCol;
             M3dColij_InitLineInfo(&line_info);
             M3dZone_LineToItem(&line_info, 1);
             GetFaceFlags(&line_info);
-            if (line_info.pItem != 0)
-                return 0;
+            if (line_info.pItem != 0) return 0;
             bruce->CSuper.CBody.CItem.mPos.x = line_info.EndCoords.vx;
             bruce->CSuper.CBody.CItem.mPos.y = line_info.EndCoords.vy;
             bruce->CSuper.CBody.CItem.mPos.z = line_info.EndCoords.vz;
@@ -5726,47 +5379,40 @@ int CBruce::CheckSide(int Side, int SideCol, int BounceOff)
  */
 void CBruce::DoTerrainEffects()
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
     CVector *a = (CVector *)&bruce->CSuper.CBody.mVel;
-    int Speed = M3dMaths_SquareRoot0(
-                    Mips_CVecDotProd(a, a))
-                << 6;
+    int Speed = M3dMaths_SquareRoot0(Mips_CVecDotProd(a, a)) << 6;
 
-    if (((unsigned int)(bruce->mTerrain - 5) < 2 || bruce->mTerrain == 3)
-        && BitCount < 200)
+    if (((unsigned int)(bruce->mTerrain - 5) < 2 || bruce->mTerrain == 3) && BitCount < 200)
     {
         reinterpret_cast<CBruce *>(bruce)->SetAnglesFromHeading();
-        Bit_SetSparkTrajectory(*reinterpret_cast<const CSVector *>(
-            &bruce->CSuper.CBody.CItem.mAngles));
+        Bit_SetSparkTrajectory(
+            *reinterpret_cast<const CSVector *>(&bruce->CSuper.CBody.CItem.mAngles));
         CSVectorPhysicsOwner cone;
         cone.Set(0x200, 0x1000, 0);
-        Bit_SetSparkTrajectoryCone(
-            *reinterpret_cast<const CSVector *>(&cone));
+        Bit_SetSparkTrajectoryCone(*reinterpret_cast<const CSVector *>(&cone));
         Bit_SetSparkSize(1);
-        if (Speed < 0x10001)
-            return;
+        if (Speed < 0x10001) return;
 
         unsigned char r;
         unsigned char g;
         unsigned char b;
         switch (bruce->mTerrain)
         {
-        case 5:
-            r = 2;
-            g = 0xA0;
-            goto common_blue;
-        case 6:
-            r = 0xA0;
-            g = 0xA0;
-            b = 0xA0;
-            goto set_spark_rgb;
-        case 3:
-            r = 0x80;
-            g = 0x40;
-            goto common_blue;
-        default:
-            goto fade_spark;
+            case 5:
+                r = 2;
+                g = 0xA0;
+                goto common_blue;
+            case 6:
+                r = 0xA0;
+                g = 0xA0;
+                b = 0xA0;
+                goto set_spark_rgb;
+            case 3:
+                r = 0x80;
+                g = 0x40;
+                goto common_blue;
+            default: goto fade_spark;
         }
     common_blue:
         b = 0x20;
@@ -5781,13 +5427,10 @@ void CBruce::DoTerrainEffects()
         {
             if (Mem_GetFree(1) > 10000)
             {
-                CSpark *pSpark =
-                    static_cast<CSpark *>(
-                        CBit::operator new(BIT_SPARK_STORAGE_SIZE));
+                CSpark *pSpark = static_cast<CSpark *>(CBit::operator new(BIT_SPARK_STORAGE_SIZE));
                 if (pSpark != 0)
-                    pSpark = ::new (pSpark) CSpark(
-                        *(CVector *)&bruce->CSuper.CBody.CItem.mPos,
-                        0x14, Speed >> 0x10, 0x14);
+                    pSpark = ::new (pSpark) CSpark(*(CVector *)&bruce->CSuper.CBody.CItem.mPos,
+                                                   0x14, Speed >> 0x10, 0x14);
                 pSpark->mVel += *a;
             }
             i++;
@@ -5798,26 +5441,17 @@ void CBruce::DoTerrainEffects()
     if (0x10000 < Speed)
     {
         Speed >>= 0xC;
-        if (0x40 < Speed)
-            Speed = 0x40;
+        if (0x40 < Speed) Speed = 0x40;
         switch (bruce->mTerrain)
         {
-        case 0:
-        case 1:
-        case 2:
-        case 4:
-            return;
-        case 5:
-            reinterpret_cast<CBruce *>(bruce)->Vibrate(8, 1, 0x2580 / Speed);
-            break;
-        case 6:
-            reinterpret_cast<CBruce *>(bruce)->Vibrate(8, 1, 0x1180 / Speed);
-            break;
-        case 3:
-            reinterpret_cast<CBruce *>(bruce)->Vibrate(8, 1, 0x3FC0 / Speed);
-            break;
-        default:
-            return;
+            case 0:
+            case 1:
+            case 2:
+            case 4: return;
+            case 5: reinterpret_cast<CBruce *>(bruce)->Vibrate(8, 1, 0x2580 / Speed); break;
+            case 6: reinterpret_cast<CBruce *>(bruce)->Vibrate(8, 1, 0x1180 / Speed); break;
+            case 3: reinterpret_cast<CBruce *>(bruce)->Vibrate(8, 1, 0x3FC0 / Speed); break;
+            default: return;
         }
     }
 }
@@ -5832,8 +5466,7 @@ void CBruce::DoTerrainEffects()
  */
 void CBruce::DoManualPhysics()
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
 
     if (bruce->mManual == 0)
     {
@@ -5858,14 +5491,12 @@ void CBruce::DoManualPhysics()
 
     /* Balance stat plus the board's contribution, boosted while fire is lit. */
     int lean = bruce->mManualLean;
-    lean = lean +
-        ((lean /
-          (PHYSICS_RECON_EFFECTIVE_BALANCE(bruce) * 3 + 0x1C)) *
-         (manualTime + 0x1F)) / 0x50;
+    lean =
+        lean +
+        ((lean / (PHYSICS_RECON_EFFECTIVE_BALANCE(bruce) * 3 + 0x1C)) * (manualTime + 0x1F)) / 0x50;
     bruce->mManualLean = lean;
 
-    bruce->mManualLean = lean +
-        (bruce->mManualLeanDir * (bruce->mManualTime + 0x1E)) / 0x50;
+    bruce->mManualLean = lean + (bruce->mManualLeanDir * (bruce->mManualTime + 0x1E)) / 0x50;
     if (Cheat_L2KillsBaddies != 0)
     {
         bruce->mManualLean = 0;
@@ -5873,32 +5504,27 @@ void CBruce::DoManualPhysics()
 
     if (bruce->mPad->Up.Pressed == 0)
     {
-        if (*(signed char *)((int)&bruce->mAY) >= -0x28 &&
-            bruce->mPad->Down.Pressed == 0 &&
+        if (*(signed char *)((int)&bruce->mAY) >= -0x28 && bruce->mPad->Down.Pressed == 0 &&
             *(signed char *)((int)&bruce->mAY) < 0x29)
         {
             bruce->mManualReleasedLR = 1;
         }
     }
 
-    if ((bruce->mPad->Up.Pressed != 0 ||
-         *(signed char *)((int)&bruce->mAY) < -0x28) &&
+    if ((bruce->mPad->Up.Pressed != 0 || *(signed char *)((int)&bruce->mAY) < -0x28) &&
         bruce->mManualReleasedLR != 0)
     {
         bruce->mManualLeanDir -= 0x14;
     }
-    else if ((bruce->mPad->Down.Pressed != 0 ||
-              *(signed char *)((int)&bruce->mAY) >= 0x29) &&
+    else if ((bruce->mPad->Down.Pressed != 0 || *(signed char *)((int)&bruce->mAY) >= 0x29) &&
              bruce->mManualReleasedLR != 0)
     {
         bruce->mManualLeanDir += 0x14;
     }
-    else if (PhysicsAbsolute(bruce->mManualLeanDir) <
-             0x14 - PHYSICS_RECON_EFFECTIVE_BALANCE(bruce))
+    else if (PhysicsAbsolute(bruce->mManualLeanDir) < 0x14 - PHYSICS_RECON_EFFECTIVE_BALANCE(bruce))
     {
-        bruce->mManualLeanDir =
-            Rnd(0x50 - PHYSICS_RECON_EFFECTIVE_BALANCE(bruce) * 3) -
-            (0x50 - PHYSICS_RECON_EFFECTIVE_BALANCE(bruce) * 3) / 2;
+        bruce->mManualLeanDir = Rnd(0x50 - PHYSICS_RECON_EFFECTIVE_BALANCE(bruce) * 3) -
+                                (0x50 - PHYSICS_RECON_EFFECTIVE_BALANCE(bruce) * 3) / 2;
     }
     else
     {
@@ -5947,8 +5573,7 @@ void CBruce::DoManualPhysics()
 
 void CBruce::MoveOriginTo(int x, int y, int z)
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
     SLineInfo line_info;
     int old_bcc = BulletCollisionCheck;
     BulletCollisionCheck = 1;
@@ -6028,8 +5653,7 @@ done:
  */
 void CBruce::HandleTruckSqueakSound()
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
     int shouldSkip = 0;
     int val54 = bruce->CSuper.CBody.mVel.x >> 12;
     if ((u32)(val54 + 1) < 3)
@@ -6042,25 +5666,20 @@ void CBruce::HandleTruckSqueakSound()
         }
     }
     int snd = bruce->mTruckSqueak;
-    if (snd != 0)
-        return;
-    if (shouldSkip != 0)
-        return;
+    if (snd != 0) return;
+    if (shouldSkip != 0) return;
     SFX_PlayX(0xE8, 0x2000, 0);
     bruce->mTruckSqueak = 1;
 }
 
-#define PHYSICS_RECON_SKATER_STATS_SPEED                                                  \
-    ((((Cheat_StatsOverride != 0                                            \
-            ? Cheat_StatsOverride                                          \
-            : Stats[bruce->mSkaterType].Speed                              \
-                  + ((bruce->mMagicTime != 0 || Cheat_Fire != 0)            \
-                         ? 3                                                \
-                         : 0)                                               \
-                  + (unsigned char)bruce->mpBoardStats->speed)              \
-          + 0x27)                                                           \
-         << 12)                                                             \
-        * 45 / 28)
+#define PHYSICS_RECON_SKATER_STATS_SPEED \
+    ((((Cheat_StatsOverride != 0 ? Cheat_StatsOverride \
+                                 : Stats[bruce->mSkaterType].Speed + \
+                                       ((bruce->mMagicTime != 0 || Cheat_Fire != 0) ? 3 : 0) + \
+                                       (unsigned char)bruce->mpBoardStats->speed) + \
+       0x27) \
+      << 12) * \
+     45 / 28)
 
 /**
  * Advance ground movement, resolve wall and floor collisions, and apply the
@@ -6092,43 +5711,35 @@ void CBruce::DoOnGroundPhysics()
     bruce->mLastGroundPos = *(CVectorOwner *)&mPos;
 
     if (GGame != 7)
-        AutoKickEnabled = reinterpret_cast<SCareerOptionsPhysicsOwner *>(&GCareer)->AutoKickEnabled[bruce->mIndex];
+        AutoKickEnabled = reinterpret_cast<SCareerOptionsPhysicsOwner *>(&GCareer)
+                              ->AutoKickEnabled[bruce->mIndex];
     else
-        AutoKickEnabled =
-            reinterpret_cast<SCareerOptionsPhysicsOwner *>(&GCareer)->AutoKickEnabled[bruce->mIndex ^ GHorsePlayer];
+        AutoKickEnabled = reinterpret_cast<SCareerOptionsPhysicsOwner *>(&GCareer)
+                              ->AutoKickEnabled[bruce->mIndex ^ GHorsePlayer];
 
     Gravity.vx = 0;
     Gravity.vy = 0x1964;
     Gravity.vz = 0;
 
-    if (bruce->mPhysicsState == 0)
-        bruce->mFlipAngle = 0;
+    if (bruce->mPhysicsState == 0) bruce->mFlipAngle = 0;
 
     reinterpret_cast<CBruce *>(bruce)->DoTerrainEffects();
     CVector &velocity = mVel;
     Old = mPos;
 
-    mPos +=
-        ((velocity * TimeScale) >> 8)
-        + (((mAcc
-             * TimeScaleSquared) >> 8) / 2);
+    mPos += ((velocity * TimeScale) >> 8) + (((mAcc * TimeScaleSquared) >> 8) / 2);
 
     Platform_HandleBounce((CBruce *)bruce);
 
-    if (!OnInvisible
-        && bruce->mInBail == 0
-        && reinterpret_cast<CBruce *>(bruce)->FlipToVelocity() != 0
-        && bruce->mPhysicsState == 0
-        && XFrames - bruce->mLandedTime > 5
-        && bruce->mManual != 0)
+    if (!OnInvisible && bruce->mInBail == 0 &&
+        reinterpret_cast<CBruce *>(bruce)->FlipToVelocity() != 0 && bruce->mPhysicsState == 0 &&
+        XFrames - bruce->mLandedTime > 5 && bruce->mManual != 0)
     {
         reinterpret_cast<CBruce *>(bruce)->EndManual();
         reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim(5, 0x14BF);
     }
 
-    if (bruce->mFlipNum != 0
-        || bruce->mTapTurn != 0
-        || bruce->mNoSpin != 0)
+    if (bruce->mFlipNum != 0 || bruce->mTapTurn != 0 || bruce->mNoSpin != 0)
     {
         bruce->mAutoTurn = 0;
     }
@@ -6151,8 +5762,7 @@ void CBruce::DoOnGroundPhysics()
             else
             {
                 bruce->mAutoTurn -= 3;
-                if (bruce->mAutoTurn < 0)
-                    bruce->mAutoTurn = 0;
+                if (bruce->mAutoTurn < 0) bruce->mAutoTurn = 0;
             }
         }
         TurnAngle += bruce->mFallLineAdjustment;
@@ -6162,266 +5772,190 @@ void CBruce::DoOnGroundPhysics()
         bruce->mAutoTurn = 0;
     }
 
-    reinterpret_cast<CBruce *>(bruce)->RotateHeadingAndVelocity(
-        (TurnAngle * TimeScale) >> 8,
-        OnInvisible ^ 1,
-        0);
+    reinterpret_cast<CBruce *>(bruce)->RotateHeadingAndVelocity((TurnAngle * TimeScale) >> 8,
+                                                                OnInvisible ^ 1, 0);
 
-    if (bruce->mManual == 0)
-        bruce->mTallyAngles +=
-            (TurnAngle * TimeScale) >> 8;
+    if (bruce->mManual == 0) bruce->mTallyAngles += (TurnAngle * TimeScale) >> 8;
 
     if (bruce->mTallyAngles >= 0x800)
     {
         bruce->mTallyAngles -= 0x800;
-        if (bruce->mNoSpinScore == 0)
-            bruce->mNum180Spins++;
+        if (bruce->mNoSpinScore == 0) bruce->mNum180Spins++;
     }
     if (bruce->mTallyAngles < -0x7FF)
     {
         bruce->mTallyAngles += 0x800;
-        if (bruce->mNoSpinScore == 0)
-            bruce->mNum180Spins++;
+        if (bruce->mNoSpinScore == 0) bruce->mNum180Spins++;
     }
 
-    line_info.StartCoords.Set(
-        mOldPos.vx,
-        mOldPos.vy,
-        mOldPos.vz);
-    line_info.EndCoords.Set(
-        mPos.vx,
-        mPos.vy,
-        mPos.vz);
+    line_info.StartCoords.Set(mOldPos.vx, mOldPos.vy, mOldPos.vz);
+    line_info.EndCoords.Set(mPos.vx, mPos.vy, mPos.vz);
 
     vMovement = mPos - mOldPos;
 
     if (vMovement != ZeroVector)
     {
-        Speed = M3dMaths_SquareRoot0(
-                    Mips_CVecDotProd(
-                        &vMovement, &vMovement))
-                << 6;
-        if ((bruce->mInBail != 0 && Speed < 0x64000)
-            || (bruce->mInBail == 0 && Speed < 0x1E000))
+        Speed = M3dMaths_SquareRoot0(Mips_CVecDotProd(&vMovement, &vMovement)) << 6;
+        if ((bruce->mInBail != 0 && Speed < 0x64000) || (bruce->mInBail == 0 && Speed < 0x1E000))
         {
-            if (Speed < 0x800)
-                Speed = 0x800;
+            if (Speed < 0x800) Speed = 0x800;
 
             line_info.EndCoords.vx =
-                mOldPos.vx
-                + ((vMovement.vx
-                    * (bruce->mInBail != 0 ? 100 : 30))
-                   / Speed) * 0x1000;
+                mOldPos.vx + ((vMovement.vx * (bruce->mInBail != 0 ? 100 : 30)) / Speed) * 0x1000;
             line_info.EndCoords.vy =
-                mOldPos.vy
-                + ((vMovement.vy
-                    * (bruce->mInBail != 0 ? 100 : 30))
-                   / Speed) * 0x1000;
+                mOldPos.vy + ((vMovement.vy * (bruce->mInBail != 0 ? 100 : 30)) / Speed) * 0x1000;
             line_info.EndCoords.vz =
-                mOldPos.vz
-                + ((vMovement.vz
-                    * (bruce->mInBail != 0 ? 100 : 30))
-                   / Speed) * 0x1000;
+                mOldPos.vz + ((vMovement.vz * (bruce->mInBail != 0 ? 100 : 30)) / Speed) * 0x1000;
         }
 
         M3dColij_InitLineInfo(&line_info);
         M3dZone_LineToItem(&line_info, 1);
         GetFaceFlags(&line_info);
 
-        if (line_info.pItem != 0
-            && Face_Skateable == 0
-            && Face_WallRide == 0
-            && Face_Air == 0)
+        if (line_info.pItem != 0 && Face_Skateable == 0 && Face_WallRide == 0 && Face_Air == 0)
         {
-                mPos =
-                    mOldPos;
+            mPos = mOldPos;
 
-                int TurnAway = 0;
-                if (mAnim != 12
-                    && bruce->mInBail == 0
-                    && bruce->mDoingWhatTrick == 0)
-                {
-                    CVector WallFloorNormal;
-                    WallFloorNormal.vx = line_info.Normal.vx;
-                    WallFloorNormal.vy = line_info.Normal.vy;
-                    WallFloorNormal.vz = line_info.Normal.vz;
-                    if (Mips_CVecDotProd(
-                            &WallFloorNormal,
-                            (CVector *)&bruce->mFront) > 0xB50)
-                    {
-                        reinterpret_cast<CBruce *>(bruce)->EndManual();
-                        reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim(12, 0x153C);
-                        TurnAway = 200;
-                        SFX_Grunt(reinterpret_cast<CBruce *>(bruce));
-                    }
-                }
-                reinterpret_cast<CBruce *>(bruce)->ReflectHeadingVelocityInPlane(
-                    line_info.Normal, TurnAway);
-        }
-        else if (line_info.pItem != 0
-                 && (Face_Air == 0 || Face_Visible != 0))
-        {
+            int TurnAway = 0;
+            if (mAnim != 12 && bruce->mInBail == 0 && bruce->mDoingWhatTrick == 0)
+            {
                 CVector WallFloorNormal;
                 WallFloorNormal.vx = line_info.Normal.vx;
                 WallFloorNormal.vy = line_info.Normal.vy;
                 WallFloorNormal.vz = line_info.Normal.vz;
-                CVector *up = (CVector *)&bruce->mUp;
-                int UpDot = Mips_CVecDotProd(
-                    &WallFloorNormal, up);
-
-                if ((unsigned int)(UpDot + 0x7FF) < 0xFFF)
+                if (Mips_CVecDotProd(&WallFloorNormal, (CVector *)&bruce->mFront) > 0xB50)
                 {
-                    int normalY = -line_info.Normal.vy;
-                    if (normalY > PhysicsAbsolute(
-                                      (short)(unsigned short)
-                                          line_info.Normal.vx)
-                        && normalY > PhysicsAbsolute(
-                                          (short)(unsigned short)
-                                              line_info.Normal.vz))
-                    {
-                        reinterpret_cast<CBruce *>(bruce)->MoveOriginTo(
-                            line_info.Position.vx
-                                + line_info.Normal.vx * 30,
-                            line_info.Position.vy
-                                + line_info.Normal.vy * 30,
-                            line_info.Position.vz
-                                + line_info.Normal.vz * 30);
-                        int normalX = line_info.Normal.vx;
-                        int normalY = line_info.Normal.vy;
-                        int normalZ = line_info.Normal.vz;
-                        bruce->mSameNormal = 0;
-                        mNormal.vx =
-                            normalX;
-                        mNormal.vy =
-                            normalY;
-                        mNormal.vz =
-                            normalZ;
-                        reinterpret_cast<CBruce *>(bruce)->OrientToNormal();
-
-                        if (bruce->mPhysicsState == 2)
-                        {
-                            int normalX = line_info.Normal.vx;
-                            int normalY = line_info.Normal.vy;
-                            int normalZ = line_info.Normal.vz;
-                            bruce->mSameNormal = 25;
-                            mNormal.vx = normalX;
-                            mNormal.vy = normalY;
-                            mNormal.vz = normalZ;
-                            bruce->mOldNormal.vx = normalX;
-                            bruce->mOldNormal.vy = normalY;
-                            bruce->mOldNormal.vz = normalZ;
-
-                            ProjectCVectorToPlane(
-                                (CVector *)&bruce->mFront,
-                                line_info.Normal);
-                            M3dUtils_NormaliseVector(
-                                (CVector *)&bruce->mFront);
-                            bruce->mUp.vx = line_info.Normal.vx;
-                            bruce->mUp.vy = line_info.Normal.vy;
-                            bruce->mUp.vz = line_info.Normal.vz;
-
-                            CVector *front =
-                                (CVector *)&bruce->mFront;
-                            gte_ldopv1(front);
-                            gte_ldopv2(up);
-                            gte_op12();
-                            gte_stlvnl((CVector *)&bruce->mRight);
-                            reinterpret_cast<CBruce *>(bruce)->RotMatrixFromFRUVectors();
-                        }
-                        Physics_StateTransition(
-                            bruce, 0, 0x1576);
-                    }
-                    else
-                    {
-                        mPos =
-                            mOldPos;
-                        CVector OldVel =
-                            *(CVector *)&mVel;
-                        int TurnAway = 0;
-
-                        if (mAnim != 12
-                            && OldVel.Length() > 6
-                            && bruce->mInBail == 0
-                            && bruce->mDoingWhatTrick == 0)
-                        {
-                            CVector WallFloorNormal;
-                            WallFloorNormal.vx = line_info.Normal.vx;
-                            WallFloorNormal.vy = line_info.Normal.vy;
-                            WallFloorNormal.vz = line_info.Normal.vz;
-                            if (Mips_CVecDotProd(
-                                    &WallFloorNormal,
-                                    (CVector *)&bruce->mFront) > 0xB50)
-                            {
-                                reinterpret_cast<CBruce *>(bruce)->EndManual();
-                                reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim(12, 0x1589);
-                                SFX_Grunt(reinterpret_cast<CBruce *>(bruce));
-                                TurnAway = 200;
-                            }
-                        }
-
-                        reinterpret_cast<CBruce *>(bruce)->ReflectHeadingVelocityInPlane(
-                            line_info.Normal, TurnAway);
-                    }
+                    reinterpret_cast<CBruce *>(bruce)->EndManual();
+                    reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim(12, 0x153C);
+                    TurnAway = 200;
+                    SFX_Grunt(reinterpret_cast<CBruce *>(bruce));
                 }
-                else if (line_info.Distance <= (Speed >> 12))
+            }
+            reinterpret_cast<CBruce *>(bruce)->ReflectHeadingVelocityInPlane(line_info.Normal,
+                                                                             TurnAway);
+        }
+        else if (line_info.pItem != 0 && (Face_Air == 0 || Face_Visible != 0))
+        {
+            CVector WallFloorNormal;
+            WallFloorNormal.vx = line_info.Normal.vx;
+            WallFloorNormal.vy = line_info.Normal.vy;
+            WallFloorNormal.vz = line_info.Normal.vz;
+            CVector *up = (CVector *)&bruce->mUp;
+            int UpDot = Mips_CVecDotProd(&WallFloorNormal, up);
+
+            if ((unsigned int)(UpDot + 0x7FF) < 0xFFF)
+            {
+                int normalY = -line_info.Normal.vy;
+                if (normalY > PhysicsAbsolute((short)(unsigned short)line_info.Normal.vx) &&
+                    normalY > PhysicsAbsolute((short)(unsigned short)line_info.Normal.vz))
                 {
                     reinterpret_cast<CBruce *>(bruce)->MoveOriginTo(
-                        line_info.Position.vx
-                            + line_info.Normal.vx * 30,
-                        line_info.Position.vy
-                            + line_info.Normal.vy * 30,
-                        line_info.Position.vz
-                            + line_info.Normal.vz * 30);
+                        line_info.Position.vx + line_info.Normal.vx * 30,
+                        line_info.Position.vy + line_info.Normal.vy * 30,
+                        line_info.Position.vz + line_info.Normal.vz * 30);
+                    int normalX = line_info.Normal.vx;
+                    int normalY = line_info.Normal.vy;
+                    int normalZ = line_info.Normal.vz;
+                    bruce->mSameNormal = 0;
+                    mNormal.vx = normalX;
+                    mNormal.vy = normalY;
+                    mNormal.vz = normalZ;
+                    reinterpret_cast<CBruce *>(bruce)->OrientToNormal();
 
-                    if (line_info.Normal.vx
-                                == mNormal.vx
-                        && line_info.Normal.vy
-                                == mNormal.vy
-                        && line_info.Normal.vz
-                                == mNormal.vz)
-                    {
-                        bruce->mSameNormal++;
-                    }
-                    else
+                    if (bruce->mPhysicsState == 2)
                     {
                         int normalX = line_info.Normal.vx;
                         int normalY = line_info.Normal.vy;
                         int normalZ = line_info.Normal.vz;
-                        bruce->mSameNormal = 0;
-                        mNormal.vx =
-                            normalX;
-                        mNormal.vy =
-                            normalY;
-                        mNormal.vz =
-                            normalZ;
+                        bruce->mSameNormal = 25;
+                        mNormal.vx = normalX;
+                        mNormal.vy = normalY;
+                        mNormal.vz = normalZ;
+                        bruce->mOldNormal.vx = normalX;
+                        bruce->mOldNormal.vy = normalY;
+                        bruce->mOldNormal.vz = normalZ;
+
+                        ProjectCVectorToPlane((CVector *)&bruce->mFront, line_info.Normal);
+                        M3dUtils_NormaliseVector((CVector *)&bruce->mFront);
+                        bruce->mUp.vx = line_info.Normal.vx;
+                        bruce->mUp.vy = line_info.Normal.vy;
+                        bruce->mUp.vz = line_info.Normal.vz;
+
+                        CVector *front = (CVector *)&bruce->mFront;
+                        gte_ldopv1(front);
+                        gte_ldopv2(up);
+                        gte_op12();
+                        gte_stlvnl((CVector *)&bruce->mRight);
+                        reinterpret_cast<CBruce *>(bruce)->RotMatrixFromFRUVectors();
                     }
-                    reinterpret_cast<CBruce *>(bruce)->OrientToNormal();
+                    Physics_StateTransition(bruce, 0, 0x1576);
                 }
+                else
+                {
+                    mPos = mOldPos;
+                    CVector OldVel = *(CVector *)&mVel;
+                    int TurnAway = 0;
+
+                    if (mAnim != 12 && OldVel.Length() > 6 && bruce->mInBail == 0 &&
+                        bruce->mDoingWhatTrick == 0)
+                    {
+                        CVector WallFloorNormal;
+                        WallFloorNormal.vx = line_info.Normal.vx;
+                        WallFloorNormal.vy = line_info.Normal.vy;
+                        WallFloorNormal.vz = line_info.Normal.vz;
+                        if (Mips_CVecDotProd(&WallFloorNormal, (CVector *)&bruce->mFront) > 0xB50)
+                        {
+                            reinterpret_cast<CBruce *>(bruce)->EndManual();
+                            reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim(12, 0x1589);
+                            SFX_Grunt(reinterpret_cast<CBruce *>(bruce));
+                            TurnAway = 200;
+                        }
+                    }
+
+                    reinterpret_cast<CBruce *>(bruce)->ReflectHeadingVelocityInPlane(
+                        line_info.Normal, TurnAway);
+                }
+            }
+            else if (line_info.Distance <= (Speed >> 12))
+            {
+                reinterpret_cast<CBruce *>(bruce)->MoveOriginTo(
+                    line_info.Position.vx + line_info.Normal.vx * 30,
+                    line_info.Position.vy + line_info.Normal.vy * 30,
+                    line_info.Position.vz + line_info.Normal.vz * 30);
+
+                if (line_info.Normal.vx == mNormal.vx && line_info.Normal.vy == mNormal.vy &&
+                    line_info.Normal.vz == mNormal.vz)
+                {
+                    bruce->mSameNormal++;
+                }
+                else
+                {
+                    int normalX = line_info.Normal.vx;
+                    int normalY = line_info.Normal.vy;
+                    int normalZ = line_info.Normal.vz;
+                    bruce->mSameNormal = 0;
+                    mNormal.vx = normalX;
+                    mNormal.vy = normalY;
+                    mNormal.vz = normalZ;
+                }
+                reinterpret_cast<CBruce *>(bruce)->OrientToNormal();
+            }
         }
     }
 
-    NewMag = M3dMaths_SquareRoot0(
-                 Mips_CVecDotProd(
-                     &velocity, &velocity))
-             << 6;
+    NewMag = M3dMaths_SquareRoot0(Mips_CVecDotProd(&velocity, &velocity)) << 6;
     if (PHYSICS_RECON_SKATER_STATS_SPEED < NewMag)
         bruce->mTooFast = 1;
     else
         bruce->mTooFast = 0;
 
     reinterpret_cast<CBruce *>(bruce)->FRUVectorsFromRotMatrix();
-    line_info.StartCoords.vx =
-        mPos.vx + bruce->mUp.vx * 70;
-    line_info.StartCoords.vy =
-        mPos.vy + bruce->mUp.vy * 70;
-    line_info.StartCoords.vz =
-        mPos.vz + bruce->mUp.vz * 70;
-    line_info.EndCoords.vx =
-        line_info.StartCoords.vx - bruce->mUp.vx * 256;
-    line_info.EndCoords.vy =
-        line_info.StartCoords.vy - bruce->mUp.vy * 256;
-    line_info.EndCoords.vz =
-        line_info.StartCoords.vz - bruce->mUp.vz * 256;
+    line_info.StartCoords.vx = mPos.vx + bruce->mUp.vx * 70;
+    line_info.StartCoords.vy = mPos.vy + bruce->mUp.vy * 70;
+    line_info.StartCoords.vz = mPos.vz + bruce->mUp.vz * 70;
+    line_info.EndCoords.vx = line_info.StartCoords.vx - bruce->mUp.vx * 256;
+    line_info.EndCoords.vy = line_info.StartCoords.vy - bruce->mUp.vy * 256;
+    line_info.EndCoords.vz = line_info.StartCoords.vz - bruce->mUp.vz * 256;
 
     M3dColij_InitLineInfo(&line_info);
     M3dZone_LineToItem(&line_info, 1);
@@ -6434,12 +5968,9 @@ void CBruce::DoOnGroundPhysics()
     else
     {
         bruce->mTerrain = Face_Terrain;
-        if (Face_Skateable == 0
-            && Face_WallRide == 0
-            && Face_Air == 0)
+        if (Face_Skateable == 0 && Face_WallRide == 0 && Face_Air == 0)
         {
-            Physics_StateTransition(
-                bruce, 1, 0x15ED);
+            Physics_StateTransition(bruce, 1, 0x15ED);
         }
         else if (line_info.pItem == 0)
         {
@@ -6473,27 +6004,22 @@ void CBruce::DoOnGroundPhysics()
                     LastNormal.vx = mNormal.vx;
                     LastNormal.vy = mNormal.vy;
                     LastNormal.vz = mNormal.vz;
-                    dot = Mips_CVecDotProd(
-                        &LastNormal, &TmpCV);
-                    if ((unsigned int)(dot - 1) < 0xED7)
-                        CheckDist *= 2;
+                    dot = Mips_CVecDotProd(&LastNormal, &TmpCV);
+                    if ((unsigned int)(dot - 1) < 0xED7) CheckDist *= 2;
                 }
             }
 
             if (CheckDist >= d)
             {
-                bruce->mIsOnTaggedPoly =
-                    ((unsigned short *)line_info.pFace)[7] & 0x20;
+                bruce->mIsOnTaggedPoly = ((unsigned short *)line_info.pFace)[7] & 0x20;
 
-                CVector Orig =
-                    *(CVector *)&mPos;
+                CVector Orig = *(CVector *)&mPos;
                 reinterpret_cast<CBruce *>(bruce)->MoveOriginTo(
                     line_info.Position.vx + bruce->mUp.vx * 30,
                     line_info.Position.vy + bruce->mUp.vy * 30,
                     line_info.Position.vz + bruce->mUp.vz * 30);
                 CVector Move = Orig - mPos;
-                if (Mips_CVecDotProd(
-                        &Move, &Move) < 0x1000)
+                if (Mips_CVecDotProd(&Move, &Move) < 0x1000)
                 {
                     mPos = Orig;
                 }
@@ -6502,24 +6028,19 @@ void CBruce::DoOnGroundPhysics()
                 {
                     if (bruce->mPhysicsState != 2)
                     {
-                        if (bruce->mJustUp != 0
-                            && XFrames - bruce->mJustUp >= 5
-                            && Face_Visible == 0
-                            && bruce->mInBail == 0)
+                        if (bruce->mJustUp != 0 && XFrames - bruce->mJustUp >= 5 &&
+                            Face_Visible == 0 && bruce->mInBail == 0)
                         {
                             SVECTOR Push = line_info.Normal;
-                            mVel.vx -= Mips_FixMul(
-                                Push.vx, NewMag / 4);
-                            mVel.vz -= Mips_FixMul(
-                                Push.vz, NewMag / 4);
+                            mVel.vx -= Mips_FixMul(Push.vx, NewMag / 4);
+                            mVel.vz -= Mips_FixMul(Push.vz, NewMag / 4);
                             mVel.vy /= 2;
                             if (bruce->mPhysicsState == 0)
                             {
                                 bruce->mNum180Spins = 0;
                                 bruce->mTallyAngles = 0;
                             }
-                            Physics_StateTransition(
-                                bruce, 1, 0x1646);
+                            Physics_StateTransition(bruce, 1, 0x1646);
                             reinterpret_cast<CBruce *>(bruce)->Trick_TakeOff();
                             bruce->mIsOnTaggedPoly = 0;
                             reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim(14, 0x1649);
@@ -6527,8 +6048,7 @@ void CBruce::DoOnGroundPhysics()
                         }
                         else
                         {
-                            if (bruce->mManIsJumping == 0
-                                && bruce->mInBail == 0)
+                            if (bruce->mManIsJumping == 0 && bruce->mInBail == 0)
                             {
                                 reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim(14, 0x1651);
                                 bruce->mManIsJumping = 1;
@@ -6536,8 +6056,7 @@ void CBruce::DoOnGroundPhysics()
                             reinterpret_cast<CBruce *>(bruce)->Trick_TakeOff();
                             bruce->mTallyAngles = 0;
                             bruce->mNum180Spins = 0;
-                            Physics_StateTransition(
-                                bruce, 2, 0x1658);
+                            Physics_StateTransition(bruce, 2, 0x1658);
                         }
                     }
                     else
@@ -6546,25 +6065,18 @@ void CBruce::DoOnGroundPhysics()
                         NewNormal.vx = line_info.Normal.vx;
                         NewNormal.vy = line_info.Normal.vy;
                         NewNormal.vz = line_info.Normal.vz;
-                        CVector VelNormal =
-                            *(CVector *)&mVel;
-                        M3dUtils_NormaliseVector(
-                            (CVector *)&VelNormal);
-                        int Angle = Utils_ArcCos(
-                                    Mips_CVecDotProd(
-                                            &VelNormal, &NewNormal))
-                                    - 0x3FF;
+                        CVector VelNormal = *(CVector *)&mVel;
+                        M3dUtils_NormaliseVector((CVector *)&VelNormal);
+                        int Angle = Utils_ArcCos(Mips_CVecDotProd(&VelNormal, &NewNormal)) - 0x3FF;
                         int absAngle = PhysicsAbsolute(Angle);
-                        if (absAngle >= 3
-                            && (Angle < 0 ? -1 : 1)
-                                != (bruce->mTotalAirSnap < 0 ? -1 : 1))
+                        if (absAngle >= 3 &&
+                            (Angle < 0 ? -1 : 1) != (bruce->mTotalAirSnap < 0 ? -1 : 1))
                             bruce->mTotalAirSnap = Angle;
                         else
                             bruce->mTotalAirSnap += Angle;
                         if (bruce->mTotalAirSnap < -0x400)
                         {
-                            Physics_StateTransition(
-                                bruce, 1, 0x1670);
+                            Physics_StateTransition(bruce, 1, 0x1670);
                         }
                     }
                 }
@@ -6580,27 +6092,18 @@ void CBruce::DoOnGroundPhysics()
                         LastNormal.vx = mNormal.vx;
                         LastNormal.vy = mNormal.vy;
                         LastNormal.vz = mNormal.vz;
-                        int UpDot =
-                            Mips_CVecDotProd(
-                                &LastNormal, &NewNormal);
-                        dot = Mips_CVecDotProd(
-                            (CVector *)&bruce->mFront,
-                            &NewNormal);
-                        if (dot < 0
-                            && mVel.vy <= 0
-                            && UpDot > 0
-                            && UpDot < 3000)
+                        int UpDot = Mips_CVecDotProd(&LastNormal, &NewNormal);
+                        dot = Mips_CVecDotProd((CVector *)&bruce->mFront, &NewNormal);
+                        if (dot < 0 && mVel.vy <= 0 && UpDot > 0 && UpDot < 3000)
                         {
-                            reinterpret_cast<CBruce *>(bruce)->
-                                SkateOffGround();
+                            reinterpret_cast<CBruce *>(bruce)->SkateOffGround();
                         }
                     }
                     else if (bruce->mPhysicsState != 7)
                     {
-                        reinterpret_cast<CBruce *>(bruce)->
-                            HandleBailPerpendicular(line_info.Normal);
-                        Physics_StateTransition(
-                            bruce, 0, 0x16A5);
+                        reinterpret_cast<CBruce *>(bruce)->HandleBailPerpendicular(
+                            line_info.Normal);
+                        Physics_StateTransition(bruce, 0, 0x16A5);
                         bruce->mLandedTime = XFrames;
                     }
                     else
@@ -6612,11 +6115,9 @@ void CBruce::DoOnGroundPhysics()
 
                     if (!OnInvisible)
                     {
-                        CItemOwner *item =
-                            (CItemOwner *)line_info.pItem;
+                        CItemOwner *item = (CItemOwner *)line_info.pItem;
                         bruce->mLastSItem = line_info.pItem;
-                        bruce->mLastPSX =
-                            PSXRegion[item->mRegion].pPSX;
+                        bruce->mLastPSX = PSXRegion[item->mRegion].pPSX;
                     }
                 }
                 else
@@ -6626,12 +6127,8 @@ void CBruce::DoOnGroundPhysics()
 
                 if (bruce->mPhysicsState != 1)
                 {
-                    if (line_info.Normal.vx
-                                == mNormal.vx
-                        && line_info.Normal.vy
-                                == mNormal.vy
-                        && line_info.Normal.vz
-                                == mNormal.vz)
+                    if (line_info.Normal.vx == mNormal.vx && line_info.Normal.vy == mNormal.vy &&
+                        line_info.Normal.vz == mNormal.vz)
                     {
                         bruce->mSameNormal++;
                     }
@@ -6641,20 +6138,16 @@ void CBruce::DoOnGroundPhysics()
                         int normalY = line_info.Normal.vy;
                         int normalZ = line_info.Normal.vz;
                         bruce->mSameNormal = 0;
-                        mNormal.vx =
-                            normalX;
-                        mNormal.vy =
-                            normalY;
-                        mNormal.vz =
-                            normalZ;
+                        mNormal.vx = normalX;
+                        mNormal.vy = normalY;
+                        mNormal.vz = normalZ;
                     }
                     reinterpret_cast<CBruce *>(bruce)->OrientToNormal();
                 }
             }
             else
             {
-                bruce->mIsOnTaggedPoly =
-                    ((unsigned short *)line_info.pFace)[7] & 0x20;
+                bruce->mIsOnTaggedPoly = ((unsigned short *)line_info.pFace)[7] & 0x20;
                 reinterpret_cast<CBruce *>(bruce)->SkateOffGround();
             }
         }
@@ -6670,105 +6163,75 @@ ground_probe_done:
     if (bruce->mPhysicsState != 1 && line_info.pItem != 0)
     {
         if (bruce->mPhysicsState == 2)
-            InplaneGravity =
-                *(CVector *)&bruce->mAirGravity;
+            InplaneGravity = *(CVector *)&bruce->mAirGravity;
         else
             InplaneGravity.Set(0, 0x1964, 0);
 
         ProjectCVectorToPlane(&InplaneGravity, line_info.Normal);
         *(CVector *)&mAcc += InplaneGravity;
-        if (bruce->mPhysicsState != 2)
-            bruce->mLastFallLine = *(CVectorOwner *)&InplaneGravity;
+        if (bruce->mPhysicsState != 2) bruce->mLastFallLine = *(CVectorOwner *)&InplaneGravity;
         bruce->mLastPolyNormal = line_info.Normal;
-        CVectorRotateToPlane(
-            &velocity, &line_info.Normal, &velocity);
+        CVectorRotateToPlane(&velocity, &line_info.Normal, &velocity);
     }
     else
     {
         *(CVector *)&mAcc += Gravity;
     }
 
-    if (bruce->mPhysicsState == 2 || bruce->mInBail != 0)
-        return;
+    if (bruce->mPhysicsState == 2 || bruce->mInBail != 0) return;
 
     CVector SideVelocity;
-    dot = Mips_CVecDotProd(
-        &velocity, (CVector *)&bruce->mRight);
-    SideVelocity.vx =
-        Mips_FixMul(dot, bruce->mRight.vx);
-    SideVelocity.vy =
-        Mips_FixMul(dot, bruce->mRight.vy);
-    SideVelocity.vz =
-        Mips_FixMul(dot, bruce->mRight.vz);
+    dot = Mips_CVecDotProd(&velocity, (CVector *)&bruce->mRight);
+    SideVelocity.vx = Mips_FixMul(dot, bruce->mRight.vx);
+    SideVelocity.vy = Mips_FixMul(dot, bruce->mRight.vy);
+    SideVelocity.vz = Mips_FixMul(dot, bruce->mRight.vz);
     velocity -= SideVelocity;
 
     CVector ForwardsVelocity;
-    dot = Mips_CVecDotProd(
-        &velocity, (CVector *)&bruce->mFront);
-    ForwardsVelocity.vx =
-        Mips_FixMul(dot, bruce->mFront.vx);
-    ForwardsVelocity.vy =
-        Mips_FixMul(dot, bruce->mFront.vy);
-    ForwardsVelocity.vz =
-        Mips_FixMul(dot, bruce->mFront.vz);
+    dot = Mips_CVecDotProd(&velocity, (CVector *)&bruce->mFront);
+    ForwardsVelocity.vx = Mips_FixMul(dot, bruce->mFront.vx);
+    ForwardsVelocity.vy = Mips_FixMul(dot, bruce->mFront.vy);
+    ForwardsVelocity.vz = Mips_FixMul(dot, bruce->mFront.vz);
 
     if (bruce->mTooFast == 0)
     {
         if (AutoKickEnabled != 0)
         {
-            mAcc.vx -=
-                Mips_FixMul(8, ForwardsVelocity.vx);
-            mAcc.vy -=
-                Mips_FixMul(8, ForwardsVelocity.vy);
-            mAcc.vz -=
-                Mips_FixMul(8, ForwardsVelocity.vz);
+            mAcc.vx -= Mips_FixMul(8, ForwardsVelocity.vx);
+            mAcc.vy -= Mips_FixMul(8, ForwardsVelocity.vy);
+            mAcc.vz -= Mips_FixMul(8, ForwardsVelocity.vz);
         }
     }
     else
     {
-        mAcc.vx -=
-            Mips_FixMul(0x52, ForwardsVelocity.vx);
-        mAcc.vy -=
-            Mips_FixMul(0x52, ForwardsVelocity.vy);
-        mAcc.vz -=
-            Mips_FixMul(0x52, ForwardsVelocity.vz);
+        mAcc.vx -= Mips_FixMul(0x52, ForwardsVelocity.vx);
+        mAcc.vy -= Mips_FixMul(0x52, ForwardsVelocity.vy);
+        mAcc.vz -= Mips_FixMul(0x52, ForwardsVelocity.vz);
     }
 
     if (bruce->mTerrain == 5)
     {
-        mAcc.vx -=
-            Mips_FixMul(0x78, ForwardsVelocity.vx);
-        mAcc.vy -=
-            Mips_FixMul(0x78, ForwardsVelocity.vy);
-        mAcc.vz -=
-            Mips_FixMul(0x78, ForwardsVelocity.vz);
+        mAcc.vx -= Mips_FixMul(0x78, ForwardsVelocity.vx);
+        mAcc.vy -= Mips_FixMul(0x78, ForwardsVelocity.vy);
+        mAcc.vz -= Mips_FixMul(0x78, ForwardsVelocity.vz);
     }
     if (bruce->mTerrain == 6)
     {
-        mAcc.vx -=
-            Mips_FixMul(0x78, ForwardsVelocity.vx);
-        mAcc.vy -=
-            Mips_FixMul(0x78, ForwardsVelocity.vy);
-        mAcc.vz -=
-            Mips_FixMul(0x78, ForwardsVelocity.vz);
+        mAcc.vx -= Mips_FixMul(0x78, ForwardsVelocity.vx);
+        mAcc.vy -= Mips_FixMul(0x78, ForwardsVelocity.vy);
+        mAcc.vz -= Mips_FixMul(0x78, ForwardsVelocity.vz);
     }
     if (bruce->mTerrain == 3)
     {
-        mAcc.vx -=
-            Mips_FixMul(0xB4, ForwardsVelocity.vx);
-        mAcc.vy -=
-            Mips_FixMul(0xB4, ForwardsVelocity.vy);
-        mAcc.vz -=
-            Mips_FixMul(0xB4, ForwardsVelocity.vz);
+        mAcc.vx -= Mips_FixMul(0xB4, ForwardsVelocity.vx);
+        mAcc.vy -= Mips_FixMul(0xB4, ForwardsVelocity.vy);
+        mAcc.vz -= Mips_FixMul(0xB4, ForwardsVelocity.vz);
     }
     if (bruce->mManual != 0)
     {
-        mAcc.vx -=
-            Mips_FixMul(0x14, ForwardsVelocity.vx);
-        mAcc.vy -=
-            Mips_FixMul(0x14, ForwardsVelocity.vy);
-        mAcc.vz -=
-            Mips_FixMul(0x14, ForwardsVelocity.vz);
+        mAcc.vx -= Mips_FixMul(0x14, ForwardsVelocity.vx);
+        mAcc.vy -= Mips_FixMul(0x14, ForwardsVelocity.vy);
+        mAcc.vz -= Mips_FixMul(0x14, ForwardsVelocity.vz);
     }
 #undef bruce
 }
@@ -6801,8 +6264,7 @@ int arccos(int a)
  */
 void CBruce::HandleLeaningBail(SVECTOR v)
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
     if (bruce->mInBail == 0 && bruce->mPhysicsState != 2)
     {
         CVector TmpCV;
@@ -6811,8 +6273,7 @@ void CBruce::HandleLeaningBail(SVECTOR v)
         TmpCV.vz = v.vz;
 
         CVector *up = (CVector *)&bruce->mUp;
-        if (Mips_CVecDotProd(up, &TmpCV) < 2000
-            && bruce->mUp.vy > -2000)
+        if (Mips_CVecDotProd(up, &TmpCV) < 2000 && bruce->mUp.vy > -2000)
         {
             reinterpret_cast<CBruce *>(bruce)->Bail(3, DO_LIMIT);
 
@@ -6845,15 +6306,12 @@ void CBruce::HandleLeaningBail(SVECTOR v)
  */
 void CBruce::HitAirPoly(SLineInfo &line_info)
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
     int NewMag;
 
     if (bruce->mStickToInvisible != 0)
     {
-        if (bruce->mJustUp == 0
-            || (XFrames - bruce->mJustUp) < 5
-            || Face_Visible != 0)
+        if (bruce->mJustUp == 0 || (XFrames - bruce->mJustUp) < 5 || Face_Visible != 0)
         {
             Physics_StateTransition(bruce, 2, 0x17E0);
             return;
@@ -6862,12 +6320,11 @@ void CBruce::HitAirPoly(SLineInfo &line_info)
 
     Physics_StateTransition(bruce, 1, 0x17E7);
 
-    if (bruce->mPad->Up.Pressed != 0
-        || *(signed char *)((int)&bruce->mAY) < -0x28)
+    if (bruce->mPad->Up.Pressed != 0 || *(signed char *)((int)&bruce->mAY) < -0x28)
     {
-        NewMag = M3dMaths_SquareRoot0(
-                     Mips_CVecDotProd((CVector *)&bruce->CSuper.CBody.mVel,
-                                                    (CVector *)&bruce->CSuper.CBody.mVel)) << 6;
+        NewMag = M3dMaths_SquareRoot0(Mips_CVecDotProd((CVector *)&bruce->CSuper.CBody.mVel,
+                                                       (CVector *)&bruce->CSuper.CBody.mVel))
+                 << 6;
         SVECTOR Push = line_info.Normal;
         bruce->CSuper.CBody.mVel.x -= Mips_FixMul(Push.vx, NewMag / 4);
         bruce->CSuper.CBody.mVel.z -= Mips_FixMul(Push.vz, NewMag / 4);
@@ -6895,14 +6352,10 @@ void CBruce::HitAirPoly(SLineInfo &line_info)
 void CBruce::MaybeManual(int Time, int FromGround)
 {
 #define bruce ((CBrucePhysicsSlice *)this)
-    if (bruce->mInBail != 0)
-        return;
-    if (bruce->CSuper.mAnim == 0x82)
-        return;
-    if (bruce->mManual != 0)
-        return;
-    if (bruce->mPhysicsState == 2)
-        return;
+    if (bruce->mInBail != 0) return;
+    if (bruce->CSuper.mAnim == 0x82) return;
+    if (bruce->mManual != 0) return;
+    if (bruce->mPhysicsState == 2) return;
 
     int Direction;
     int OtherDirection;
@@ -6910,13 +6363,11 @@ void CBruce::MaybeManual(int Time, int FromGround)
 
     /* Walk back through the input ring for a matching up/down pair. */
     int LastEvent = bruce->mEventQueuePos - 1;
-    if (LastEvent < 0)
-        LastEvent = 0x1F;
+    if (LastEvent < 0) LastEvent = 0x1F;
 
     int FirstEvent = -1;
-    int Event = reinterpret_cast<CBruce *>(bruce)
-                    ->GetPreviousPressedEvent(
-                        LastEvent, 0, Time, LastEvent);
+    int Event =
+        reinterpret_cast<CBruce *>(bruce)->GetPreviousPressedEvent(LastEvent, 0, Time, LastEvent);
 
     while (Event >= 0)
     {
@@ -6927,12 +6378,10 @@ void CBruce::MaybeManual(int Time, int FromGround)
              * first-time block fall through, so the zero case is the `if`
              * arm here, not an early `break` after the paired case.
              */
-            if ((unsigned char)(bruce->mEventQueue[Event].Button - 1) > 1)
-                break;
+            if ((unsigned char)(bruce->mEventQueue[Event].Button - 1) > 1) break;
             Direction = bruce->mEventQueue[Event].Button;
             OtherDirection = 1;
-            if (Direction == 1)
-                OtherDirection = 2;
+            if (Direction == 1) OtherDirection = 2;
             FoundFirst = 1;
             FirstEvent = Event;
         }
@@ -6946,56 +6395,45 @@ void CBruce::MaybeManual(int Time, int FromGround)
                     bruce->mNum180Spins = 0;
                     bruce->mTallyAngles = 0;
                 }
-                if (bruce->mNum180Spins == 0)
-                    bruce->mPerfectLanding = 0;
+                if (bruce->mNum180Spins == 0) bruce->mPerfectLanding = 0;
                 bruce->mEventQueue[FirstEvent].Button = 0;
                 bruce->mEventQueue[Event].Button = 0;
             }
             break;
         }
 
-        Event = reinterpret_cast<CBruce *>(bruce)
-                    ->GetPreviousPressedEvent(
-                        Event, 1, Time, LastEvent);
+        Event =
+            reinterpret_cast<CBruce *>(bruce)->GetPreviousPressedEvent(Event, 1, Time, LastEvent);
     }
 
-    if (bruce->mManual == 0)
-        return;
+    if (bruce->mManual == 0) return;
 
     bruce->mManualPos = bruce->CSuper.CBody.CItem.mPos;
     bruce->mManualReleasedLR = 0;
 
     if (bruce->mManual == 1)
     {
-        if (bruce->mManualLeanDir
-            < PHYSICS_RECON_EFFECTIVE_BALANCE((int)bruce) * 0x1E)
+        if (bruce->mManualLeanDir < PHYSICS_RECON_EFFECTIVE_BALANCE((int)bruce) * 0x1E)
         {
-            bruce->mManualLeanDir =
-                (PHYSICS_RECON_EFFECTIVE_BALANCE((int)bruce) * 0xF) << 1;
+            bruce->mManualLeanDir = (PHYSICS_RECON_EFFECTIVE_BALANCE((int)bruce) * 0xF) << 1;
         }
     }
     else
     {
-        if (bruce->mManualLeanDir
-            > PHYSICS_RECON_EFFECTIVE_BALANCE((int)bruce) * -0x1E)
+        if (bruce->mManualLeanDir > PHYSICS_RECON_EFFECTIVE_BALANCE((int)bruce) * -0x1E)
         {
-            bruce->mManualLeanDir =
-                (PHYSICS_RECON_EFFECTIVE_BALANCE((int)bruce) * 0xF) * -2;
+            bruce->mManualLeanDir = (PHYSICS_RECON_EFFECTIVE_BALANCE((int)bruce) * 0xF) * -2;
         }
     }
 
     /* Damp the lean by the remaining balance headroom. */
     bruce->mManualLeanDir =
-        (bruce->mManualLeanDir
-         * (100 - PHYSICS_RECON_EFFECTIVE_BALANCE((int)bruce) * 0xF) / 100
-         * (bruce->mManualTime + 0x3C)) / 0x50;
+        (bruce->mManualLeanDir * (100 - PHYSICS_RECON_EFFECTIVE_BALANCE((int)bruce) * 0xF) / 100 *
+         (bruce->mManualTime + 0x3C)) /
+        0x50;
 
-    bruce->mManualLean +=
-        bruce->mManualCheese
-        * (bruce->mManualLean < 0 ? -1 : 1);
-    bruce->mManualLean =
-        PhysicsAbsolute(bruce->mManualLean)
-        * (bruce->mManualLeanDir < 0 ? -1 : 1);
+    bruce->mManualLean += bruce->mManualCheese * (bruce->mManualLean < 0 ? -1 : 1);
+    bruce->mManualLean = PhysicsAbsolute(bruce->mManualLean) * (bruce->mManualLeanDir < 0 ? -1 : 1);
     bruce->mManualCheese = 4000;
 
     if (bruce->mPhysicsState == 0)
@@ -7065,10 +6503,8 @@ void CBruce::DoInAirPhysics()
 
     Old = position;
 
-    position +=
-        ((*(CVector *)&bruce->CSuper.CBody.mVel * TimeScale) >> 8)
-        + (((*(CVector *)&bruce->CSuper.CBody.mAcc
-              * TimeScaleSquared) >> 8) / 2);
+    position += ((*(CVector *)&bruce->CSuper.CBody.mVel * TimeScale) >> 8) +
+                (((*(CVector *)&bruce->CSuper.CBody.mAcc * TimeScaleSquared) >> 8) / 2);
 
     Platform_HandleBounce((CBruce *)bruce);
 
@@ -7103,12 +6539,9 @@ void CBruce::DoInAirPhysics()
     }
 
     vMovement = position - *(CVector *)&bruce->CSuper.CBody.mOldPos;
-    Speed = M3dMaths_SquareRoot0(
-                Mips_CVecDotProd(&vMovement, &vMovement))
-            << 6;
+    Speed = M3dMaths_SquareRoot0(Mips_CVecDotProd(&vMovement, &vMovement)) << 6;
 
-    if (Speed > PhysicsMaxSpeed(bruce))
-        Speed = PhysicsMaxSpeed(bruce);
+    if (Speed > PhysicsMaxSpeed(bruce)) Speed = PhysicsMaxSpeed(bruce);
 
     TurnAngle = bruce->mLeanAngle >> 12;
     Mips_FixMul(TurnAngle, 0xC00);
@@ -7125,38 +6558,28 @@ void CBruce::DoInAirPhysics()
         if (bruce->mTallyAngles >= 0x800)
         {
             bruce->mTallyAngles -= 0x800;
-            if (bruce->mNoSpinScore == 0)
-                bruce->mNum180Spins++;
+            if (bruce->mNoSpinScore == 0) bruce->mNum180Spins++;
         }
         if (bruce->mTallyAngles < -0x7FF)
         {
             bruce->mTallyAngles += 0x800;
-            if (bruce->mNoSpinScore == 0)
-                bruce->mNum180Spins++;
+            if (bruce->mNoSpinScore == 0) bruce->mNum180Spins++;
         }
     }
 
-    if (bruce->mPhysicsState != 2)
-        reinterpret_cast<CBruce *>(bruce)->UprightSideways();
+    if (bruce->mPhysicsState != 2) reinterpret_cast<CBruce *>(bruce)->UprightSideways();
 
-    line_info.StartCoords.Set(
-        bruce->CSuper.CBody.mOldPos.x,
-        bruce->CSuper.CBody.mOldPos.y,
-        bruce->CSuper.CBody.mOldPos.z);
-    line_info.EndCoords.Set(
-        *(int *)((int)bruce + 4),
-        *(int *)((int)bruce + 8),
-        bruce->CSuper.CBody.CItem.mPos.z);
+    line_info.StartCoords.Set(bruce->CSuper.CBody.mOldPos.x, bruce->CSuper.CBody.mOldPos.y,
+                              bruce->CSuper.CBody.mOldPos.z);
+    line_info.EndCoords.Set(*(int *)((int)bruce + 4), *(int *)((int)bruce + 8),
+                            bruce->CSuper.CBody.CItem.mPos.z);
     vMovement = position - *(CVector *)&bruce->CSuper.CBody.mOldPos;
 
     M3dColij_InitLineInfo(&line_info);
     M3dZone_LineToItem(&line_info, 1);
     GetFaceFlags(&line_info);
 
-    if (line_info.pItem != 0
-        && Face_Air != 0
-        && Face_Visible == 0
-        && bruce->mPhysicsState != 3)
+    if (line_info.pItem != 0 && Face_Air != 0 && Face_Visible == 0 && bruce->mPhysicsState != 3)
     {
         BulletCollisionCheck = 1;
         M3dColij_InitLineInfo(&line_info);
@@ -7167,11 +6590,10 @@ void CBruce::DoInAirPhysics()
 
     if (line_info.pItem != 0)
     {
-        if ((Face_Skateable == 0 || (Face_Air != 0 && Face_Visible != 0))
-            && Face_WallRide != 0
-            && bruce->mInBail == 0
-            && (((SControl *)bruce->mPad)->Triangle.Pressed != 0
-                || ((SControl *)bruce->mPad)->Triangle.ReleasedTime < 0x14))
+        if ((Face_Skateable == 0 || (Face_Air != 0 && Face_Visible != 0)) && Face_WallRide != 0 &&
+            bruce->mInBail == 0 &&
+            (((SControl *)bruce->mPad)->Triangle.Pressed != 0 ||
+             ((SControl *)bruce->mPad)->Triangle.ReleasedTime < 0x14))
         {
             CVector UnitVel;
             CVector FaceNormal;
@@ -7187,16 +6609,13 @@ void CBruce::DoInAirPhysics()
             FaceNormal.vz = line_info.Normal.vz;
             M3dUtils_NormaliseVector((CVector *)&FaceNormal);
 
-            int VelNormal =
-                Mips_CVecDotProd(&FaceNormal, &UnitVel);
+            int VelNormal = Mips_CVecDotProd(&FaceNormal, &UnitVel);
 
-            if (!TooFlat
-                && PhysicsAbsolute(VelNormal) < 0xDDB
-                && XFrames - bruce->mWallrideTime > 0x28)
+            if (!TooFlat && PhysicsAbsolute(VelNormal) < 0xDDB &&
+                XFrames - bruce->mWallrideTime > 0x28)
             {
-                if (bruce->mDoingATrick != 0
-                    && bruce->mCanStartNextTrick == 0
-                    && bruce->CSuper.mFrame < 10000)
+                if (bruce->mDoingATrick != 0 && bruce->mCanStartNextTrick == 0 &&
+                    bruce->CSuper.mFrame < 10000)
                 {
                     reinterpret_cast<CBruce *>(bruce)->Bail(0, DO_LIMIT);
                     bruce->mTrickBails++;
@@ -7218,8 +6637,7 @@ void CBruce::DoInAirPhysics()
                         line_info.Position.vy + line_info.Normal.vy * 30,
                         line_info.Position.vz + line_info.Normal.vz * 30);
 
-                    ProjectCVectorToPlane((CVector *)&bruce->mFront,
-                                          line_info.Normal);
+                    ProjectCVectorToPlane((CVector *)&bruce->mFront, line_info.Normal);
                     M3dUtils_NormaliseVector((CVector *)&bruce->mFront);
                     bruce->mUp.vx = line_info.Normal.vx;
                     bruce->mUp.vy = line_info.Normal.vy;
@@ -7241,9 +6659,7 @@ void CBruce::DoInAirPhysics()
                     bruce->mOldNormal.vx = nx;
                     bruce->mOldNormal.vy = ny;
                     bruce->mOldNormal.vz = nz;
-                    ProjectCVectorToPlane(
-                        (CVector *)&bruce->CSuper.CBody.mVel,
-                        line_info.Normal);
+                    ProjectCVectorToPlane((CVector *)&bruce->CSuper.CBody.mVel, line_info.Normal);
 
                     gte_ldopv1(&WorldUp);
                     gte_ldopv2((CVector *)&bruce->mUp);
@@ -7254,18 +6670,14 @@ void CBruce::DoInAirPhysics()
 
                     if ((bruce->CSuper.mExtraFlags & 2) != 0)
                     {
-                        if (Mips_CVecDotProd(
-                                &WallRight,
-                                (CVector *)&bruce->CSuper.CBody.mVel) >= 0)
+                        if (Mips_CVecDotProd(&WallRight, (CVector *)&bruce->CSuper.CBody.mVel) >= 0)
                             reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim(0x23, 0x19DF);
                         else
                             reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim(0x24, 0x19E3);
                     }
                     else
                     {
-                        if (Mips_CVecDotProd(
-                                &WallRight,
-                                (CVector *)&bruce->CSuper.CBody.mVel) >= 0)
+                        if (Mips_CVecDotProd(&WallRight, (CVector *)&bruce->CSuper.CBody.mVel) >= 0)
                             reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim(0x24, 0x19EA);
                         else
                             reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim(0x23, 0x19EE);
@@ -7283,27 +6695,24 @@ void CBruce::DoInAirPhysics()
                 reinterpret_cast<CBruce *>(bruce)->Bail(0, DO_LIMIT);
             }
         }
-        else if (Face_Skateable == 0
-                 && (Face_Air == 0 || bruce->mPhysicsState != 3))
+        else if (Face_Skateable == 0 && (Face_Air == 0 || bruce->mPhysicsState != 3))
         {
             switch (Face_Terrain)
             {
-            case 7:
-                SFX_PlayX(0x35, 0x2000, 0);
-                break;
-            case 9:
-                if (GLevel == 8)
-                    SFX_PlayX(0x89, 0x2000, 0);
-                else
-                    SFX_PlayX(0x28, 0x2000, 0);
-                break;
+                case 7: SFX_PlayX(0x35, 0x2000, 0); break;
+                case 9:
+                    if (GLevel == 8)
+                        SFX_PlayX(0x89, 0x2000, 0);
+                    else
+                        SFX_PlayX(0x28, 0x2000, 0);
+                    break;
             }
 
             if (bruce->mDontStickTimer != 0)
             {
                 bruce->mDontStickTimer = 10;
-                reinterpret_cast<CBruce *>(bruce)->RotateHeadingAndVelocity(
-                    Rnd(2) * 0x200 - 0x100, 1, 0);
+                reinterpret_cast<CBruce *>(bruce)->RotateHeadingAndVelocity(Rnd(2) * 0x200 - 0x100,
+                                                                            1, 0);
             }
 
             bruce->CSuper.CBody.mNormal.vx = 0;
@@ -7322,8 +6731,7 @@ void CBruce::DoInAirPhysics()
             Physics_StateTransition(bruce, 1, 0x1A5B);
 
             bruce->mManIsJumping = 1;
-            reinterpret_cast<CBruce *>(bruce)->ReflectHeadingVelocityInPlane(
-                line_info.Normal, 0);
+            reinterpret_cast<CBruce *>(bruce)->ReflectHeadingVelocityInPlane(line_info.Normal, 0);
 
             bruce->CSuper.CBody.mVel.vx += line_info.Normal.vx / 4;
             bruce->CSuper.CBody.mVel.vy += line_info.Normal.vy / 4;
@@ -7352,20 +6760,17 @@ void CBruce::DoInAirPhysics()
                 bruce->mLeanAngle = 0;
                 bruce->mpRailTrickQueued = 0;
 
-                if (bruce->mPhysicsState != 3
-                    || XFrames - bruce->mJumpFrame > 0x1E)
+                if (bruce->mPhysicsState != 3 || XFrames - bruce->mJumpFrame > 0x1E)
                 {
                     bruce->mTerrain = Face_Terrain;
                     Physics_StateTransition(bruce, 0, 0x1AA3);
 
                     if (bruce->mInBail == 0)
                     {
-                        reinterpret_cast<CBruce *>(bruce)->
-                            HandleBailPerpendicular(line_info.Normal);
-                        reinterpret_cast<CBruce *>(bruce)->HandleLeaningBail(
+                        reinterpret_cast<CBruce *>(bruce)->HandleBailPerpendicular(
                             line_info.Normal);
-                        reinterpret_cast<CBruce *>(bruce)->HandleBailOnLanding(
-                            0x1AA9);
+                        reinterpret_cast<CBruce *>(bruce)->HandleLeaningBail(line_info.Normal);
+                        reinterpret_cast<CBruce *>(bruce)->HandleBailOnLanding(0x1AA9);
                         reinterpret_cast<CBruce *>(bruce)->MaybeManual(0x28, 0);
                     }
 
@@ -7373,14 +6778,11 @@ void CBruce::DoInAirPhysics()
                 }
             }
 
-            bruce->mIsOnTaggedPoly =
-                *(unsigned short *)((char *)line_info.pFace + 0xE) & 0x20;
+            bruce->mIsOnTaggedPoly = *(unsigned short *)((char *)line_info.pFace + 0xE) & 0x20;
 
             if (bruce->mPhysicsState != 1)
             {
-                ProjectCVectorToPlane(
-                    (CVector *)&bruce->CSuper.CBody.mVel,
-                    line_info.Normal);
+                ProjectCVectorToPlane((CVector *)&bruce->CSuper.CBody.mVel, line_info.Normal);
                 int nx = line_info.Normal.vx;
                 int ny = line_info.Normal.vy;
                 int nz = line_info.Normal.vz;
@@ -7397,23 +6799,18 @@ void CBruce::DoInAirPhysics()
     }
     else
     {
-        *(CVector *)&bruce->CSuper.CBody.mAcc +=
-            *(CVector *)&bruce->mAirGravity;
+        *(CVector *)&bruce->CSuper.CBody.mAcc += *(CVector *)&bruce->mAirGravity;
     }
 
-    if (bruce->CSuper.CBody.mVel.vy < 0
-        && bruce->mPhysicsState == 3
-        && XFrames - bruce->mJumpFrame < 0x1E
-        && bruce->mInBail == 0)
+    if (bruce->CSuper.CBody.mVel.vy < 0 && bruce->mPhysicsState == 3 &&
+        XFrames - bruce->mJumpFrame < 0x1E && bruce->mInBail == 0)
     {
-        line_info.StartCoords.Set(
-            bruce->CSuper.CBody.CItem.mPos.x,
-            bruce->CSuper.CBody.CItem.mPos.y,
-            bruce->CSuper.CBody.CItem.mPos.z);
-        line_info.EndCoords.Set(
-            bruce->CSuper.CBody.CItem.mPos.x - (bruce->mUp.vx << 7),
-            bruce->CSuper.CBody.CItem.mPos.y - (bruce->mUp.vy << 7),
-            bruce->CSuper.CBody.CItem.mPos.z - (bruce->mUp.vz << 7));
+        line_info.StartCoords.Set(bruce->CSuper.CBody.CItem.mPos.x,
+                                  bruce->CSuper.CBody.CItem.mPos.y,
+                                  bruce->CSuper.CBody.CItem.mPos.z);
+        line_info.EndCoords.Set(bruce->CSuper.CBody.CItem.mPos.x - (bruce->mUp.vx << 7),
+                                bruce->CSuper.CBody.CItem.mPos.y - (bruce->mUp.vy << 7),
+                                bruce->CSuper.CBody.CItem.mPos.z - (bruce->mUp.vz << 7));
 
         M3dColij_InitLineInfo(&line_info);
         M3dZone_LineToItem(&line_info, 1);
@@ -7427,23 +6824,21 @@ void CBruce::DoInAirPhysics()
 
 #undef PHYSICS_RECON_SKATER_STATS_SPEED
 
-#define PHYSICS_RECON_SKATER_STATS_OLLIE                                             \
-    (Cheat_StatsOverride                                              \
-         ? Cheat_StatsOverride                                        \
-         : (Stats[bruce->mSkaterType].Toughness                       \
-            + ((bruce->mMagicTime || Cheat_Fire) ? 3 : 0))            \
-               + (unsigned char)bruce->mpBoardStats->ollie)
+#define PHYSICS_RECON_SKATER_STATS_OLLIE \
+    (Cheat_StatsOverride \
+         ? Cheat_StatsOverride \
+         : (Stats[bruce->mSkaterType].Toughness + ((bruce->mMagicTime || Cheat_Fire) ? 3 : 0)) + \
+               (unsigned char)bruce->mpBoardStats->ollie)
 
-#define PHYSICS_RECON_SKATER_STATS_AIR                                               \
-    (Cheat_StatsOverride                                              \
-         ? Cheat_StatsOverride                                        \
-         : (Stats[bruce->mSkaterType].Air                             \
-            + ((bruce->mMagicTime || Cheat_Fire) ? 3 : 0))            \
-               + (unsigned char)bruce->mpBoardStats->air)
+#define PHYSICS_RECON_SKATER_STATS_AIR \
+    (Cheat_StatsOverride \
+         ? Cheat_StatsOverride \
+         : (Stats[bruce->mSkaterType].Air + ((bruce->mMagicTime || Cheat_Fire) ? 3 : 0)) + \
+               (unsigned char)bruce->mpBoardStats->air)
 
 #define PHYSICS_RECON_JUMP_MIN (18 - (10 - PHYSICS_RECON_SKATER_STATS_OLLIE) / 3)
 #define PHYSICS_RECON_JUMP_MAX (32 - (10 - PHYSICS_RECON_SKATER_STATS_OLLIE) / 2)
-#define PHYSICS_RECON_FRAMES_TO_MAX_JUMP_STRENGTH                                    \
+#define PHYSICS_RECON_FRAMES_TO_MAX_JUMP_STRENGTH \
     (15 - (PHYSICS_RECON_SKATER_STATS_OLLIE + PHYSICS_RECON_SKATER_STATS_AIR) / 2)
 
 /**
@@ -7456,33 +6851,30 @@ void CBruce::DoInAirPhysics()
  */
 void CBruce::DoFootPlantPhysics()
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
     CVector launchVelocity;
     CVector reverseHeading;
     int speed[2];
 
     // "FOOTPLANT" follows "tricks.bin" in PHYSICS's original string table.
-    reinterpret_cast<CBruce *>(bruce)->Trick_Trick(
-        GTricksFilename + 12, 100, 0);
+    reinterpret_cast<CBruce *>(bruce)->Trick_Trick(GTricksFilename + 12, 100, 0);
 
     bruce->mJumpStrength = PHYSICS_RECON_FRAMES_TO_MAX_JUMP_STRENGTH;
     Physics_StateTransition(bruce, 1, 0x1B24);
     bruce->mManIsJumping = 1;
 
     __mi__C7CVector(&reverseHeading, (CVector *)&bruce->mFront);
-    speed[0] = reinterpret_cast<const CVector &>(
-        bruce->CSuper.CBody.mVel).Length();
+    speed[0] = reinterpret_cast<const CVector &>(bruce->CSuper.CBody.mVel).Length();
     Physics_VectorMultiply(&launchVelocity, &reverseHeading, speed);
     *(CVector *)&bruce->CSuper.CBody.mVel = launchVelocity;
     bruce->CSuper.CBody.mVel.vx += bruce->mFront.vx * 5;
     bruce->CSuper.CBody.mVel.vz += bruce->mFront.vz * 5;
 
     bruce->CSuper.CBody.mVel.vy -=
-        ((bruce->mJumpStrength * ((PHYSICS_RECON_JUMP_MAX - PHYSICS_RECON_JUMP_MIN) << 10))
-              / PHYSICS_RECON_FRAMES_TO_MAX_JUMP_STRENGTH
-          + PHYSICS_RECON_JUMP_MAX * 0x400)
-        * 3;
+        ((bruce->mJumpStrength * ((PHYSICS_RECON_JUMP_MAX - PHYSICS_RECON_JUMP_MIN) << 10)) /
+             PHYSICS_RECON_FRAMES_TO_MAX_JUMP_STRENGTH +
+         PHYSICS_RECON_JUMP_MAX * 0x400) *
+        3;
 }
 
 #undef PHYSICS_RECON_FRAMES_TO_MAX_JUMP_STRENGTH
@@ -7510,10 +6902,8 @@ void CBruce::DoHandPlantPhysics()
         return;
     }
 
-    if (bruce->CSuper.mAnim < 0x3E
-        && bruce->CSuper.mFrame > 0x13
-        && bruce->CSuper.mFrame < 0x19
-        && bruce->mHandPlantTweaked >= 0)
+    if (bruce->CSuper.mAnim < 0x3E && bruce->CSuper.mFrame > 0x13 && bruce->CSuper.mFrame < 0x19 &&
+        bruce->mHandPlantTweaked >= 0)
     {
         if (*(char *)bruce->mPad != 0)
         {
@@ -7532,12 +6922,11 @@ void CBruce::DoHandPlantPhysics()
         }
     }
 
-    if (bruce->CSuper.mAnimFinished != 0
-        || (bruce->CSuper.mAnim < 0x3E && bruce->CSuper.mFrame > 0x1E))
+    if (bruce->CSuper.mAnimFinished != 0 ||
+        (bruce->CSuper.mAnim < 0x3E && bruce->CSuper.mFrame > 0x1E))
     {
         bruce->mManIsJumping = 0;
-        bruce->CSuper.CBody.mVel.y =
-            (0x28 - bruce->mHandPlantTweaked * 3) * 0x1000;
+        bruce->CSuper.CBody.mVel.y = (0x28 - bruce->mHandPlantTweaked * 3) * 0x1000;
         Physics_StateTransition((CBrucePhysicsSlice *)this, 0, 0x1B65);
         bruce->mTrickAwarded = 1;
         reinterpret_cast<CBruce *>(bruce)->Trick_Land();
@@ -7601,17 +6990,13 @@ void CBruce::DoWallRidePhysics()
     }
 
     *(CVector *)&bruce->CSuper.CBody.CItem.mPos +=
-        ((*(CVector *)&bruce->CSuper.CBody.mVel * TimeScale) >> 8)
-            + (((*(CVector *)&bruce->CSuper.CBody.mAcc
-                  * TimeScaleSquared) >> 8) / 2);
+        ((*(CVector *)&bruce->CSuper.CBody.mVel * TimeScale) >> 8) +
+        (((*(CVector *)&bruce->CSuper.CBody.mAcc * TimeScaleSquared) >> 8) / 2);
 
-    vMovement = *(CVector *)&bruce->CSuper.CBody.CItem.mPos
-              - *(CVector *)&bruce->CSuper.CBody.mOldPos;
-    Speed = M3dMaths_SquareRoot0(
-                Mips_CVecDotProd(&vMovement, &vMovement))
-            << 6;
-    if (Speed > PhysicsMaxSpeed(bruce))
-        Speed = PhysicsMaxSpeed(bruce);
+    vMovement =
+        *(CVector *)&bruce->CSuper.CBody.CItem.mPos - *(CVector *)&bruce->CSuper.CBody.mOldPos;
+    Speed = M3dMaths_SquareRoot0(Mips_CVecDotProd(&vMovement, &vMovement)) << 6;
+    if (Speed > PhysicsMaxSpeed(bruce)) Speed = PhysicsMaxSpeed(bruce);
     TurnAngle = 0;
     if (bruce->mFlipNum == 0 && bruce->mTapTurn == 0)
     {
@@ -7619,39 +7004,31 @@ void CBruce::DoWallRidePhysics()
         TurnAngle = bruce->mFallLineAdjustment;
     }
     Mips_FixMul(TurnAngle, 0xC00);
-    reinterpret_cast<CBruce *>(bruce)->RotateHeadingAndVelocity(
-        (TurnAngle * TimeScale) >> 8, OnInvisible ^ 1, 0);
+    reinterpret_cast<CBruce *>(bruce)->RotateHeadingAndVelocity((TurnAngle * TimeScale) >> 8,
+                                                                OnInvisible ^ 1, 0);
 
-    line_info.StartCoords.Set(bruce->CSuper.CBody.mOldPos.x,
-                              bruce->CSuper.CBody.mOldPos.y,
+    line_info.StartCoords.Set(bruce->CSuper.CBody.mOldPos.x, bruce->CSuper.CBody.mOldPos.y,
                               bruce->CSuper.CBody.mOldPos.z);
-    line_info.EndCoords.Set(bruce->CSuper.CBody.CItem.mPos.x,
-                            bruce->CSuper.CBody.CItem.mPos.y,
+    line_info.EndCoords.Set(bruce->CSuper.CBody.CItem.mPos.x, bruce->CSuper.CBody.CItem.mPos.y,
                             bruce->CSuper.CBody.CItem.mPos.z);
-    vMovement = *(CVector *)&bruce->CSuper.CBody.CItem.mPos
-              - *(CVector *)&bruce->CSuper.CBody.mOldPos;
+    vMovement =
+        *(CVector *)&bruce->CSuper.CBody.CItem.mPos - *(CVector *)&bruce->CSuper.CBody.mOldPos;
 
     if (vMovement != ZeroVector)
     {
-        Speed = M3dMaths_SquareRoot0(
-                    Mips_CVecDotProd(&vMovement, &vMovement))
-                << 6;
+        Speed = M3dMaths_SquareRoot0(Mips_CVecDotProd(&vMovement, &vMovement)) << 6;
         if (Speed < (bruce->mInBail != 0 ? 0x64000 : 0x1E000))
         {
-            if (Speed < 0x800)
-                Speed = 0x800;
+            if (Speed < 0x800) Speed = 0x800;
             line_info.EndCoords.vx =
-                bruce->CSuper.CBody.mOldPos.x
-                + ((vMovement.vx * (bruce->mInBail != 0 ? 100 : 30)) / Speed)
-                      * 0x1000;
+                bruce->CSuper.CBody.mOldPos.x +
+                ((vMovement.vx * (bruce->mInBail != 0 ? 100 : 30)) / Speed) * 0x1000;
             line_info.EndCoords.vy =
-                bruce->CSuper.CBody.mOldPos.y
-                + ((vMovement.vy * (bruce->mInBail != 0 ? 100 : 30)) / Speed)
-                      * 0x1000;
+                bruce->CSuper.CBody.mOldPos.y +
+                ((vMovement.vy * (bruce->mInBail != 0 ? 100 : 30)) / Speed) * 0x1000;
             line_info.EndCoords.vz =
-                bruce->CSuper.CBody.mOldPos.z
-                + ((vMovement.vz * (bruce->mInBail != 0 ? 100 : 30)) / Speed)
-                      * 0x1000;
+                bruce->CSuper.CBody.mOldPos.z +
+                ((vMovement.vz * (bruce->mInBail != 0 ? 100 : 30)) / Speed) * 0x1000;
         }
 
         M3dColij_InitLineInfo(&line_info);
@@ -7672,9 +7049,9 @@ void CBruce::DoWallRidePhysics()
                 bruce->mLastPSX = PSXRegion[item->mRegion].pPSX;
             }
 
-            if (line_info.Normal.vx == bruce->CSuper.CBody.mNormal.vx
-                && line_info.Normal.vy == bruce->CSuper.CBody.mNormal.vy
-                && line_info.Normal.vz == bruce->CSuper.CBody.mNormal.vz)
+            if (line_info.Normal.vx == bruce->CSuper.CBody.mNormal.vx &&
+                line_info.Normal.vy == bruce->CSuper.CBody.mNormal.vy &&
+                line_info.Normal.vz == bruce->CSuper.CBody.mNormal.vz)
             {
                 bruce->mSameNormal++;
             }
@@ -7695,8 +7072,7 @@ void CBruce::DoWallRidePhysics()
             if (Face_Skateable != 0)
             {
                 Physics_StateTransition(bruce, 0, 0x1C19);
-                ProjectCVectorToPlane(
-                    (CVector *)&bruce->mFront, line_info.Normal);
+                ProjectCVectorToPlane((CVector *)&bruce->mFront, line_info.Normal);
                 M3dUtils_NormaliseVector((CVector *)&bruce->mFront);
                 {
                     int _x = line_info.Normal.vx;
@@ -7724,19 +7100,15 @@ void CBruce::DoWallRidePhysics()
                 bruce->mOldNormal.vx = line_info.Normal.vx;
                 bruce->mOldNormal.vy = line_info.Normal.vy;
                 bruce->mOldNormal.vz = line_info.Normal.vz;
-                ProjectCVectorToPlane(
-                    (CVector *)&bruce->CSuper.CBody.mVel, line_info.Normal);
+                ProjectCVectorToPlane((CVector *)&bruce->CSuper.CBody.mVel, line_info.Normal);
             }
         }
     }
 
     reinterpret_cast<CBruce *>(bruce)->FRUVectorsFromRotMatrix();
-    line_info.StartCoords.vx =
-        bruce->CSuper.CBody.CItem.mPos.x + bruce->mUp.vx * 70;
-    line_info.StartCoords.vy =
-        bruce->CSuper.CBody.CItem.mPos.y + bruce->mUp.vy * 70;
-    line_info.StartCoords.vz =
-        bruce->CSuper.CBody.CItem.mPos.z + bruce->mUp.vz * 70;
+    line_info.StartCoords.vx = bruce->CSuper.CBody.CItem.mPos.x + bruce->mUp.vx * 70;
+    line_info.StartCoords.vy = bruce->CSuper.CBody.CItem.mPos.y + bruce->mUp.vy * 70;
+    line_info.StartCoords.vz = bruce->CSuper.CBody.CItem.mPos.z + bruce->mUp.vz * 70;
     line_info.EndCoords.vx = line_info.StartCoords.vx - bruce->mUp.vx * 128;
     line_info.EndCoords.vy = line_info.StartCoords.vy - bruce->mUp.vy * 128;
     line_info.EndCoords.vz = line_info.StartCoords.vz - bruce->mUp.vz * 128;
@@ -7751,8 +7123,7 @@ void CBruce::DoWallRidePhysics()
         int d = line_info.Distance;
         if (CheckDist >= d)
         {
-            bruce->mIsOnTaggedPoly =
-                ((unsigned short *)line_info.pFace)[7] & 0x20;
+            bruce->mIsOnTaggedPoly = ((unsigned short *)line_info.pFace)[7] & 0x20;
             reinterpret_cast<CBruce *>(bruce)->MoveOriginTo(
                 line_info.Position.vx + bruce->mUp.vx * 30,
                 line_info.Position.vy + bruce->mUp.vy * 30,
@@ -7765,9 +7136,9 @@ void CBruce::DoWallRidePhysics()
                 bruce->mLastPSX = PSXRegion[item->mRegion].pPSX;
             }
 
-            if (line_info.Normal.vx == bruce->CSuper.CBody.mNormal.vx
-                && line_info.Normal.vy == bruce->CSuper.CBody.mNormal.vy
-                && line_info.Normal.vz == bruce->CSuper.CBody.mNormal.vz)
+            if (line_info.Normal.vx == bruce->CSuper.CBody.mNormal.vx &&
+                line_info.Normal.vy == bruce->CSuper.CBody.mNormal.vy &&
+                line_info.Normal.vz == bruce->CSuper.CBody.mNormal.vz)
             {
                 bruce->mSameNormal++;
             }
@@ -7788,8 +7159,7 @@ void CBruce::DoWallRidePhysics()
             if (Face_Skateable != 0)
             {
                 Physics_StateTransition(bruce, 0, 0x1C76);
-                ProjectCVectorToPlane(
-                    (CVector *)&bruce->mFront, line_info.Normal);
+                ProjectCVectorToPlane((CVector *)&bruce->mFront, line_info.Normal);
                 M3dUtils_NormaliseVector((CVector *)&bruce->mFront);
                 {
                     int _x = line_info.Normal.vx;
@@ -7817,8 +7187,7 @@ void CBruce::DoWallRidePhysics()
                 bruce->mOldNormal.vx = line_info.Normal.vx;
                 bruce->mOldNormal.vy = line_info.Normal.vy;
                 bruce->mOldNormal.vz = line_info.Normal.vz;
-                ProjectCVectorToPlane(
-                    (CVector *)&bruce->CSuper.CBody.mVel, line_info.Normal);
+                ProjectCVectorToPlane((CVector *)&bruce->CSuper.CBody.mVel, line_info.Normal);
             }
             else if (PhysicsWallNormalIsSteep(line_info.Normal.vy))
             {
@@ -7826,8 +7195,8 @@ void CBruce::DoWallRidePhysics()
                 Physics_StateTransition(bruce, 1, 0x1C9C);
                 bruce->mManIsJumping = 1;
                 *(CVector *)&bruce->CSuper.CBody.mAcc += Gravity;
-                reinterpret_cast<CBruce *>(bruce)->ReflectHeadingVelocityInPlane(
-                    line_info.Normal, 200);
+                reinterpret_cast<CBruce *>(bruce)->ReflectHeadingVelocityInPlane(line_info.Normal,
+                                                                                 200);
                 SFX_Grunt(reinterpret_cast<CBruce *>(bruce));
             }
         }
@@ -7837,10 +7206,8 @@ void CBruce::DoWallRidePhysics()
         *(CVector *)&bruce->CSuper.CBody.mAcc += InplaneGravity;
         bruce->mLastFallLine = *(CVectorOwner *)&InplaneGravity;
         bruce->mLastPolyNormal = line_info.Normal;
-        CVectorRotateToPlane(
-            (CVector *)&bruce->CSuper.CBody.mVel,
-            &line_info.Normal,
-            (CVector *)&bruce->CSuper.CBody.mVel);
+        CVectorRotateToPlane((CVector *)&bruce->CSuper.CBody.mVel, &line_info.Normal,
+                             (CVector *)&bruce->CSuper.CBody.mVel);
     }
     else
     {
@@ -7863,21 +7230,19 @@ void CBruce::DoWallRidePhysics()
 #undef bruce
 }
 
-#define PHYSICS_RECON_HANDLE_JUMP_OLLIE                                                \
-    (Cheat_StatsOverride                                                \
-         ? Cheat_StatsOverride                                          \
-         : (Stats[bruce->mSkaterType].Toughness                         \
-            + ((bruce->mMagicTime || Cheat_Fire) ? 3 : 0))              \
-               + (unsigned char)bruce->mpBoardStats->ollie)
+#define PHYSICS_RECON_HANDLE_JUMP_OLLIE \
+    (Cheat_StatsOverride \
+         ? Cheat_StatsOverride \
+         : (Stats[bruce->mSkaterType].Toughness + ((bruce->mMagicTime || Cheat_Fire) ? 3 : 0)) + \
+               (unsigned char)bruce->mpBoardStats->ollie)
 
-#define PHYSICS_RECON_HANDLE_JUMP_AIR                                                  \
-    (Cheat_StatsOverride                                                \
-         ? Cheat_StatsOverride                                          \
-         : (Stats[bruce->mSkaterType].Air                               \
-            + ((bruce->mMagicTime || Cheat_Fire) ? 3 : 0))              \
-               + (unsigned char)bruce->mpBoardStats->air)
+#define PHYSICS_RECON_HANDLE_JUMP_AIR \
+    (Cheat_StatsOverride \
+         ? Cheat_StatsOverride \
+         : (Stats[bruce->mSkaterType].Air + ((bruce->mMagicTime || Cheat_Fire) ? 3 : 0)) + \
+               (unsigned char)bruce->mpBoardStats->air)
 
-#define PHYSICS_RECON_HANDLE_JUMP_FRAMES                                               \
+#define PHYSICS_RECON_HANDLE_JUMP_FRAMES \
     (15 - (PHYSICS_RECON_HANDLE_JUMP_OLLIE + PHYSICS_RECON_HANDLE_JUMP_AIR) / 2)
 #define PHYSICS_RECON_HANDLE_JUMP_OLLIE_MIN (18 - (10 - PHYSICS_RECON_HANDLE_JUMP_OLLIE) / 3)
 #define PHYSICS_RECON_HANDLE_JUMP_OLLIE_MAX (32 - (10 - PHYSICS_RECON_HANDLE_JUMP_OLLIE) / 2)
@@ -7927,86 +7292,81 @@ void CBruce::HandleJump()
     {
         switch (bruce->CSuper.mAnim)
         {
-        case 0x28:
-        case 0x29:
-            reinterpret_cast<CBruce *>(bruce)->Trick_TakeOff();
-            if (bruce->mManual == 1)
-                reinterpret_cast<CBruce *>(bruce)->Trick_Trick(
-                    GTricksFilename + 0x18, 100, 1);
-            else
-                reinterpret_cast<CBruce *>(bruce)->Trick_Trick(
-                    GTricksFilename + 0x20, 100, 1);
-            bruce->CSuper.mAnimMode = 3;
-            bruce->CSuper.mPingPongStart = 5;
-            bruce->CSuper.mAnimDir = -1;
-            bruce->CSuper.mAnimFinished = 0;
-            bruce->CSuper.mPingPongEnd = bruce->CSuper.mFrame;
-            bruce->CSuper.mPingPongFrame = bruce->CSuper.mFrame;
-            break;
+            case 0x28:
+            case 0x29:
+                reinterpret_cast<CBruce *>(bruce)->Trick_TakeOff();
+                if (bruce->mManual == 1)
+                    reinterpret_cast<CBruce *>(bruce)->Trick_Trick(GTricksFilename + 0x18, 100, 1);
+                else
+                    reinterpret_cast<CBruce *>(bruce)->Trick_Trick(GTricksFilename + 0x20, 100, 1);
+                bruce->CSuper.mAnimMode = 3;
+                bruce->CSuper.mPingPongStart = 5;
+                bruce->CSuper.mAnimDir = -1;
+                bruce->CSuper.mAnimFinished = 0;
+                bruce->CSuper.mPingPongEnd = bruce->CSuper.mFrame;
+                bruce->CSuper.mPingPongFrame = bruce->CSuper.mFrame;
+                break;
 
-        case 8:
-            if (bruce->CSuper.mFrame == 0)
-                reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim(0, 0x1D3D);
-            break;
+            case 8:
+                if (bruce->CSuper.mFrame == 0)
+                    reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim(0, 0x1D3D);
+                break;
 
-        case 5:
-        case 0x19:
-            if (bruce->mManIsCrouched != 0)
-            {
-                reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim3(8, 0x13, 0x1A, 0x13, 0x1D4A);
-            }
-            else
-            {
-                reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim(0, 0x1D4E);
-            }
-            break;
+            case 5:
+            case 0x19:
+                if (bruce->mManIsCrouched != 0)
+                {
+                    reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim3(8, 0x13, 0x1A, 0x13, 0x1D4A);
+                }
+                else
+                {
+                    reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim(0, 0x1D4E);
+                }
+                break;
 
-        case 0x82:
-            bruce->mCess = 0;
-            if (bruce->mManIsCrouched != 0)
-            {
-                reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim3(8, 0, 0x1A, 0x13, 0x1D56);
-            }
-            else
-            {
-                reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim(0, 0x1D5A);
-            }
-            break;
+            case 0x82:
+                bruce->mCess = 0;
+                if (bruce->mManIsCrouched != 0)
+                {
+                    reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim3(8, 0, 0x1A, 0x13, 0x1D56);
+                }
+                else
+                {
+                    reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim(0, 0x1D5A);
+                }
+                break;
 
-        case 4:
-        case 0xD:
-            if (bruce->mManIsCrouched == 0)
-                reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim(0xE, 0x1D65);
-            break;
+            case 4:
+            case 0xD:
+                if (bruce->mManIsCrouched == 0)
+                    reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim(0xE, 0x1D65);
+                break;
 
-        case 0xE:
-            reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim(0xE, 0x1D6A);
-            break;
+            case 0xE: reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim(0xE, 0x1D6A); break;
 
-        case 0x22:
-            if (bruce->mManIsCrouched != 0)
-            {
-                reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim3(8, 0x13, 0x1A, 0x13, 0x1D72);
-            }
-            else
-            {
-                reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim2(8, 0x13, 0, 0x1D75);
-            }
-            break;
+            case 0x22:
+                if (bruce->mManIsCrouched != 0)
+                {
+                    reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim3(8, 0x13, 0x1A, 0x13, 0x1D72);
+                }
+                else
+                {
+                    reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim2(8, 0x13, 0, 0x1D75);
+                }
+                break;
 
-        case 0:
-            if (bruce->mManIsCrouched != 0)
-            {
-                reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim3(8, 0x13, 0x1A, 0x13, 0x1D81);
-            }
-            else
-            {
-                reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim(0, 0x1D84);
-            }
-            break;
+            case 0:
+                if (bruce->mManIsCrouched != 0)
+                {
+                    reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim3(8, 0x13, 0x1A, 0x13, 0x1D81);
+                }
+                else
+                {
+                    reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim(0, 0x1D84);
+                }
+                break;
 
-        default:
-            break;
+            default: break;
         }
     }
     if (((bruce->mManIsJumping != 0) && (bruce->mOldPhysicsState != 0)) &&
@@ -8019,31 +7379,22 @@ void CBruce::HandleJump()
         {
             switch (bruce->mTerrain)
             {
-            case 2:
-                SFX_PlayX(200, 0x2000, 0);
-                break;
-            case 10:
-            case 0xC:
-                SFX_PlayX(0xCB, 0x2000, 0);
-                break;
-            case 3:
-            case 5:
-                SFX_PlayX(0xCA, 0x2000, 0);
-                break;
-            case 6:
-                break;
-            case 1:
-            case 4:
-            case 7:
-            case 8:
-            case 9:
-            case 0xB:
-            case 0xD:
-            case 0xE:
-            case 0xF:
-            default:
-                SFX_PlayX(5, 0x2000, 0);
-                break;
+                case 2: SFX_PlayX(200, 0x2000, 0); break;
+                case 10:
+                case 0xC: SFX_PlayX(0xCB, 0x2000, 0); break;
+                case 3:
+                case 5: SFX_PlayX(0xCA, 0x2000, 0); break;
+                case 6: break;
+                case 1:
+                case 4:
+                case 7:
+                case 8:
+                case 9:
+                case 0xB:
+                case 0xD:
+                case 0xE:
+                case 0xF:
+                default: SFX_PlayX(5, 0x2000, 0); break;
             }
             reinterpret_cast<CBruce *>(bruce)->Vibrate(2, 1, 0xFF);
             if (bruce->mManual != 0)
@@ -8071,40 +7422,33 @@ void CBruce::HandleJump()
             reinterpret_cast<CBruce *>(bruce)->HandleBailOnLanding(0x1DD4);
             if (bruce->mInBail == 0)
             {
-                int Boost =
-                    bruce->mPanelData.TotalScore() / 100;
-                if (Boost > 0x14)
-                    Boost = 0x14;
+                int Boost = bruce->mPanelData.TotalScore() / 100;
+                if (Boost > 0x14) Boost = 0x14;
                 bruce->mSpeedBoost += Boost;
                 if (bruce->mManual == 0)
                 {
                     reinterpret_cast<CBruce *>(bruce)->Trick_Land();
-                    ((Dust *)&bruce->mDust[0])->Reset(
-                        bruce->mTerrain, 0);
+                    ((Dust *)&bruce->mDust[0])->Reset(bruce->mTerrain, 0);
                 }
             }
         }
         bruce->mDoingATrick = 0;
     }
-    if ((bruce->mPad->X.Pressed != 0) &&
-        (bruce->mInBail == 0))
+    if ((bruce->mPad->X.Pressed != 0) && (bruce->mInBail == 0))
     {
         bruce->mJumpStrength++;
         if (PHYSICS_RECON_HANDLE_JUMP_FRAMES < bruce->mJumpStrength)
             bruce->mJumpStrength = PHYSICS_RECON_HANDLE_JUMP_FRAMES;
 
         int physicsState = bruce->mPhysicsState;
-        if ((physicsState == 0 || physicsState == 7) &&
-            bruce->mJumpInhibit == 0)
+        if ((physicsState == 0 || physicsState == 7) && bruce->mJumpInhibit == 0)
         {
             bruce->mJumpPending = 1;
             if (bruce->mManIsCrouched == 0)
             {
                 int lean = bruce->mLeanAngle;
                 int sign = lean >> 31;
-                if (((lean ^ sign) - sign) < 0xA000 &&
-                    (bruce->mLeanAngle = 0,
-                     bruce->mManual == 0))
+                if (((lean ^ sign) - sign) < 0xA000 && (bruce->mLeanAngle = 0, bruce->mManual == 0))
                 {
                     reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim3(8, 0, 0x1A, 0x13, 0x1E04);
                 }
@@ -8114,8 +7458,7 @@ void CBruce::HandleJump()
         {
             if (physicsState != 4 || bruce->mJumpInhibit != 0)
             {
-                if (physicsState != 5)
-                    goto jump_crouch_tail;
+                if (physicsState != 5) goto jump_crouch_tail;
                 if (bruce->mJumpInhibit != 0)
                 {
                     return;
@@ -8139,185 +7482,174 @@ void CBruce::HandleJump()
     }
     if (bruce->mJumpPending != 0)
     {
-    if ((((GState == 1) && (bruce->mPhysicsState != 4)) && (bruce->mPhysicsState != 5)) &&
-        (bruce->mManual == 0))
-    {
-        bruce->mJumpPending = 0;
-        reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim(0, 0x1E24);
-    }
-    else
-    {
-    int LastPhysics;
-    int playedGrindOffSound;
-    int JumpBoost;
-
-    bruce->mJumpPending = 0;
-    bruce->mManIsJumping = 1;
-    bruce->mLastJumpStrength = bruce->mJumpStrength;
-    Speed = Mips_CVecDotProd(
-        (CVector *)&bruce->CSuper.CBody.mVel,
-        (CVector *)&bruce->CSuper.CBody.mVel);
-    bruce->mJumpSpeed = M3dMaths_SquareRoot0(Speed) << 6;
-    if (bruce->mOnRail != 0)
-    {
-        bruce->mDoingAScript = 0;
-        bruce->mDontStickTimer = 5;
-        bruce->mSameRailTimer = 5;
-        bruce->mOnRail = 0;
-        bruce->mStickToRail = 0;
-        bruce->mDoingATrick = 0;
-        bruce->mFront = bruce->mRailDir;
-        reinterpret_cast<CBruce *>(bruce)->AlignHeadingOnRail();
-        Speed = Mips_CVecDotProd(
-            (CVector *)&bruce->mRailDir,
-            (CVector *)&bruce->CSuper.CBody.mVel);
-        bruce->CSuper.CBody.mVel.x = Mips_FixMul(bruce->mRailDir.vx, Speed);
-        bruce->CSuper.CBody.mVel.y = Mips_FixMul(bruce->mRailDir.vy, Speed);
-        bruce->CSuper.CBody.mVel.z = Mips_FixMul(bruce->mRailDir.vz, Speed);
-        int Rotate = 0;
-        if (bruce->mPad->Left.Pressed != 0)
-            Rotate = -200;
-        if (bruce->mPad->Right.Pressed != 0)
-            Rotate = 200;
-        reinterpret_cast<CBruce *>(bruce)->RotateHeadingAndVelocity(
-            Rotate, 1, 0);
-    }
-    bruce->mStickToInvisible = bruce->mIsOnTaggedPoly;
-    bruce->mJumpsOffWallRide = (bruce->mPhysicsState == 5);
-    LastPhysics = bruce->mPhysicsState;
-    if (LastPhysics == 5)
-    {
-        CVector SurfaceNormal;
-
-        bruce->mJumpStrength = PHYSICS_RECON_HANDLE_JUMP_FRAMES;
-        SurfaceNormal.vx = (int)bruce->mLastPolyNormal.vx;
-        SurfaceNormal.vy = (int)bruce->mLastPolyNormal.vy;
-        SurfaceNormal.vz = (int)bruce->mLastPolyNormal.vz;
-        *(CVector *)&bruce->CSuper.CBody.mAcc += SurfaceNormal * 2;
-        bruce->CSuper.CBody.mVel.vy += -0xF000;
-    }
-    playedGrindOffSound = 0;
-    if ((bruce->mPhysicsState == 4) && (*(short **)((int)&bruce->mpJumpTrick) != (short *)0x0))
-    {
-        reinterpret_cast<CBruce *>(bruce)->TriggerTrick(
-            *(short **)((int)&bruce->mpJumpTrick));
-        bruce->mpJumpTrick = 0;
-        reinterpret_cast<CBruce *>(bruce)->HandleGrindOffSound();
-        playedGrindOffSound = 1;
-    }
-    if (PhysicsAbsolute(bruce->mUp.vy) < 0x9C4)
-    {
-        JumpBoost =
-            -(((bruce->mJumpStrength
-                   * ((PHYSICS_RECON_HANDLE_JUMP_AIR_MAX - PHYSICS_RECON_HANDLE_JUMP_AIR_MIN) << 10))
-                  / PHYSICS_RECON_HANDLE_JUMP_FRAMES
-              + PHYSICS_RECON_HANDLE_JUMP_AIR_MAX * 0x400)
-             * 3);
-    }
-    else
-    {
-        JumpBoost =
-            -(((bruce->mJumpStrength
-                   * ((PHYSICS_RECON_HANDLE_JUMP_OLLIE_MAX - PHYSICS_RECON_HANDLE_JUMP_OLLIE_MIN) << 10))
-                  / PHYSICS_RECON_HANDLE_JUMP_FRAMES
-              + PHYSICS_RECON_HANDLE_JUMP_OLLIE_MAX * 0x400)
-             * 3);
-    }
-    bruce->CSuper.CBody.mVel.vy += JumpBoost;
-    bruce->mJumps++;
-    if (bruce->mJumpStrength < PHYSICS_RECON_HANDLE_JUMP_FRAMES)
-        bruce->mWeakJumps++;
-    bruce->mTallyAngles = 0;
-    bruce->mNum180Spins = 0;
-    if (bruce->mPhysicsState != 2)
-    {
-        if ((bruce->mStickToInvisible != 0) &&
-            (bruce->mPhysicsState == 0))
+        if ((((GState == 1) && (bruce->mPhysicsState != 4)) && (bruce->mPhysicsState != 5)) &&
+            (bruce->mManual == 0))
         {
-            Physics_StateTransition(bruce, 3, 0x1E9E);
-            bruce->mInAirStickToStart = XFrames;
+            bruce->mJumpPending = 0;
+            reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim(0, 0x1E24);
         }
         else
         {
-            Physics_StateTransition(bruce, 1, 0x1EA3);
-        }
-    }
-    if (bruce->mDoingAScript == 0)
-    {
-        CBruceScriptQueueSlice *script =
-            (CBruceScriptQueueSlice *)bruce;
-        int Time = 0x14;
-        int LastEvent = script->mEventQueuePos - 1;
-        if (LastEvent < 0)
-            LastEvent = 0x1F;
+            int LastPhysics;
+            int playedGrindOffSound;
+            int JumpBoost;
 
-        int FirstEvent = -1;
-        int SecondEvent = -1;
-        int Event = reinterpret_cast<CBruce *>(bruce)
-                        ->GetPreviousPressedEvent(
-                            LastEvent, 0, 0x14, LastEvent);
-        while (Event >= 0)
-        {
-            if (FirstEvent != -1)
+            bruce->mJumpPending = 0;
+            bruce->mManIsJumping = 1;
+            bruce->mLastJumpStrength = bruce->mJumpStrength;
+            Speed = Mips_CVecDotProd((CVector *)&bruce->CSuper.CBody.mVel,
+                                     (CVector *)&bruce->CSuper.CBody.mVel);
+            bruce->mJumpSpeed = M3dMaths_SquareRoot0(Speed) << 6;
+            if (bruce->mOnRail != 0)
             {
-                if (script->mEventQueue[Event].Button == 1)
-                {
-                    SecondEvent = Event;
-                    break;
-                }
+                bruce->mDoingAScript = 0;
+                bruce->mDontStickTimer = 5;
+                bruce->mSameRailTimer = 5;
+                bruce->mOnRail = 0;
+                bruce->mStickToRail = 0;
+                bruce->mDoingATrick = 0;
+                bruce->mFront = bruce->mRailDir;
+                reinterpret_cast<CBruce *>(bruce)->AlignHeadingOnRail();
+                Speed = Mips_CVecDotProd((CVector *)&bruce->mRailDir,
+                                         (CVector *)&bruce->CSuper.CBody.mVel);
+                bruce->CSuper.CBody.mVel.x = Mips_FixMul(bruce->mRailDir.vx, Speed);
+                bruce->CSuper.CBody.mVel.y = Mips_FixMul(bruce->mRailDir.vy, Speed);
+                bruce->CSuper.CBody.mVel.z = Mips_FixMul(bruce->mRailDir.vz, Speed);
+                int Rotate = 0;
+                if (bruce->mPad->Left.Pressed != 0) Rotate = -200;
+                if (bruce->mPad->Right.Pressed != 0) Rotate = 200;
+                reinterpret_cast<CBruce *>(bruce)->RotateHeadingAndVelocity(Rotate, 1, 0);
             }
-            else if (script->mEventQueue[Event].Button == 1)
+            bruce->mStickToInvisible = bruce->mIsOnTaggedPoly;
+            bruce->mJumpsOffWallRide = (bruce->mPhysicsState == 5);
+            LastPhysics = bruce->mPhysicsState;
+            if (LastPhysics == 5)
             {
-                FirstEvent = Event;
-                Time = 0x23;
+                CVector SurfaceNormal;
+
+                bruce->mJumpStrength = PHYSICS_RECON_HANDLE_JUMP_FRAMES;
+                SurfaceNormal.vx = (int)bruce->mLastPolyNormal.vx;
+                SurfaceNormal.vy = (int)bruce->mLastPolyNormal.vy;
+                SurfaceNormal.vz = (int)bruce->mLastPolyNormal.vz;
+                *(CVector *)&bruce->CSuper.CBody.mAcc += SurfaceNormal * 2;
+                bruce->CSuper.CBody.mVel.vy += -0xF000;
             }
-
-            Event = reinterpret_cast<CBruce *>(bruce)
-                        ->GetPreviousPressedEvent(
-                            Event, 1, Time, LastEvent);
-        }
-
-        if ((((bruce->mPad->LeftTwo.Pressed == 0) && (bruce->mManual == 0)) &&
-             (FirstEvent != -1)) &&
-            (LastPhysics != 5))
-        {
-            bruce->mTallyAngles = 0;
-            bruce->mNum180Spins = 0;
-            if (SecondEvent != -1)
+            playedGrindOffSound = 0;
+            if ((bruce->mPhysicsState == 4) &&
+                (*(short **)((int)&bruce->mpJumpTrick) != (short *)0x0))
             {
-                reinterpret_cast<CBruce *>(bruce)->Trick_TakeOff();
-                bruce->CSuper.CBody.mVel.y = bruce->CSuper.CBody.mVel.y + -0x5000;
-                reinterpret_cast<CBruce *>(bruce)->Trick_Trick(
-                    GTricksFilename + 0x38, 0xFA, 0);
-                reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim1(0x91, 5, 0x1EE1);
-                SFX_PlayX(0xB4, 0x2000, 0);
-                reinterpret_cast<CBruce *>(bruce)->ButtonRemoveLast(1, 1);
+                reinterpret_cast<CBruce *>(bruce)->TriggerTrick(
+                    *(short **)((int)&bruce->mpJumpTrick));
+                bruce->mpJumpTrick = 0;
+                reinterpret_cast<CBruce *>(bruce)->HandleGrindOffSound();
+                playedGrindOffSound = 1;
+            }
+            if (PhysicsAbsolute(bruce->mUp.vy) < 0x9C4)
+            {
+                JumpBoost =
+                    -(((bruce->mJumpStrength *
+                        ((PHYSICS_RECON_HANDLE_JUMP_AIR_MAX - PHYSICS_RECON_HANDLE_JUMP_AIR_MIN)
+                         << 10)) /
+                           PHYSICS_RECON_HANDLE_JUMP_FRAMES +
+                       PHYSICS_RECON_HANDLE_JUMP_AIR_MAX * 0x400) *
+                      3);
             }
             else
             {
-                reinterpret_cast<CBruce *>(bruce)->Trick_TakeOff();
-                reinterpret_cast<CBruce *>(bruce)->Trick_Trick(
-                    GTricksFilename + 0x44, 200, 0);
-                reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim(0xD, 0x1EED);
+                JumpBoost =
+                    -(((bruce->mJumpStrength *
+                        ((PHYSICS_RECON_HANDLE_JUMP_OLLIE_MAX - PHYSICS_RECON_HANDLE_JUMP_OLLIE_MIN)
+                         << 10)) /
+                           PHYSICS_RECON_HANDLE_JUMP_FRAMES +
+                       PHYSICS_RECON_HANDLE_JUMP_OLLIE_MAX * 0x400) *
+                      3);
             }
-            reinterpret_cast<CBruce *>(bruce)->ButtonRemoveLast(1, 1);
-            bruce->mTrickAwarded = 1;
+            bruce->CSuper.CBody.mVel.vy += JumpBoost;
+            bruce->mJumps++;
+            if (bruce->mJumpStrength < PHYSICS_RECON_HANDLE_JUMP_FRAMES) bruce->mWeakJumps++;
+            bruce->mTallyAngles = 0;
+            bruce->mNum180Spins = 0;
+            if (bruce->mPhysicsState != 2)
+            {
+                if ((bruce->mStickToInvisible != 0) && (bruce->mPhysicsState == 0))
+                {
+                    Physics_StateTransition(bruce, 3, 0x1E9E);
+                    bruce->mInAirStickToStart = XFrames;
+                }
+                else
+                {
+                    Physics_StateTransition(bruce, 1, 0x1EA3);
+                }
+            }
+            if (bruce->mDoingAScript == 0)
+            {
+                CBruceScriptQueueSlice *script = (CBruceScriptQueueSlice *)bruce;
+                int Time = 0x14;
+                int LastEvent = script->mEventQueuePos - 1;
+                if (LastEvent < 0) LastEvent = 0x1F;
+
+                int FirstEvent = -1;
+                int SecondEvent = -1;
+                int Event = reinterpret_cast<CBruce *>(bruce)->GetPreviousPressedEvent(
+                    LastEvent, 0, 0x14, LastEvent);
+                while (Event >= 0)
+                {
+                    if (FirstEvent != -1)
+                    {
+                        if (script->mEventQueue[Event].Button == 1)
+                        {
+                            SecondEvent = Event;
+                            break;
+                        }
+                    }
+                    else if (script->mEventQueue[Event].Button == 1)
+                    {
+                        FirstEvent = Event;
+                        Time = 0x23;
+                    }
+
+                    Event = reinterpret_cast<CBruce *>(bruce)->GetPreviousPressedEvent(
+                        Event, 1, Time, LastEvent);
+                }
+
+                if ((((bruce->mPad->LeftTwo.Pressed == 0) && (bruce->mManual == 0)) &&
+                     (FirstEvent != -1)) &&
+                    (LastPhysics != 5))
+                {
+                    bruce->mTallyAngles = 0;
+                    bruce->mNum180Spins = 0;
+                    if (SecondEvent != -1)
+                    {
+                        reinterpret_cast<CBruce *>(bruce)->Trick_TakeOff();
+                        bruce->CSuper.CBody.mVel.y = bruce->CSuper.CBody.mVel.y + -0x5000;
+                        reinterpret_cast<CBruce *>(bruce)->Trick_Trick(GTricksFilename + 0x38, 0xFA,
+                                                                       0);
+                        reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim1(0x91, 5, 0x1EE1);
+                        SFX_PlayX(0xB4, 0x2000, 0);
+                        reinterpret_cast<CBruce *>(bruce)->ButtonRemoveLast(1, 1);
+                    }
+                    else
+                    {
+                        reinterpret_cast<CBruce *>(bruce)->Trick_TakeOff();
+                        reinterpret_cast<CBruce *>(bruce)->Trick_Trick(GTricksFilename + 0x44, 200,
+                                                                       0);
+                        reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim(0xD, 0x1EED);
+                    }
+                    reinterpret_cast<CBruce *>(bruce)->ButtonRemoveLast(1, 1);
+                    bruce->mTrickAwarded = 1;
+                }
+                else
+                {
+                    reinterpret_cast<CBruce *>(bruce)->Trick_TakeOff();
+                    reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim(4, 0x1EF6);
+                }
+            }
+            if (!playedGrindOffSound)
+            {
+                SFX_PlayX((bruce->mTerrain == 0xC) ? 199 : 6, 0x2000, 0);
+            }
+            bruce->mJumpFrame = XFrames;
         }
-        else
-        {
-            reinterpret_cast<CBruce *>(bruce)->Trick_TakeOff();
-            reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim(4, 0x1EF6);
-        }
-    }
-    if (!playedGrindOffSound)
-    {
-        SFX_PlayX(
-            (bruce->mTerrain == 0xC) ? 199 : 6,
-            0x2000,
-            0);
-    }
-    bruce->mJumpFrame = XFrames;
-    }
     }
     bruce->mJumpStrength = 0;
 #undef bruce
@@ -8332,18 +7664,19 @@ void CBruce::HandleJump()
 #undef PHYSICS_RECON_HANDLE_JUMP_AIR
 #undef PHYSICS_RECON_HANDLE_JUMP_OLLIE
 
-#define PHYSICS_RECON_KICK_SPEED_VALUE(base)                                      \
-    ((((Cheat_StatsOverride != 0                                            \
-             ? Cheat_StatsOverride                                         \
-             : Stats[((CBrucePhysicsSlice *)(PHYSICS_KICK_ABI_RECEIVER))->mSkaterType].Speed \
-                   + ((((CBrucePhysicsSlice *)(PHYSICS_KICK_ABI_RECEIVER))->mMagicTime != 0 \
-                           || Cheat_Fire != 0)                              \
-                          ? 3                                               \
-                          : 0)                                              \
-                   + (unsigned char)((CBrucePhysicsSlice *)(PHYSICS_KICK_ABI_RECEIVER))->mpBoardStats->speed) \
-           + (base))                                                       \
-          << 12)                                                           \
-         * 45 / 28)
+#define PHYSICS_RECON_KICK_SPEED_VALUE(base) \
+    ((((Cheat_StatsOverride != 0 \
+            ? Cheat_StatsOverride \
+            : Stats[((CBrucePhysicsSlice *)(PHYSICS_KICK_ABI_RECEIVER))->mSkaterType].Speed + \
+                  ((((CBrucePhysicsSlice *)(PHYSICS_KICK_ABI_RECEIVER))->mMagicTime != 0 || \
+                    Cheat_Fire != 0) \
+                       ? 3 \
+                       : 0) + \
+                  (unsigned char)((CBrucePhysicsSlice *)(PHYSICS_KICK_ABI_RECEIVER)) \
+                      ->mpBoardStats->speed) + \
+       (base)) \
+      << 12) * \
+     45 / 28)
 
 /**
  * Apply the current kick input and kick-animation impulse.
@@ -8359,37 +7692,31 @@ void CBruce::HandleKick()
     int AutoKickEnabled;
 
     if (GGame != 7)
-        AutoKickEnabled = reinterpret_cast<SCareerOptionsPhysicsOwner *>(&GCareer)->AutoKickEnabled[bruce->mIndex];
+        AutoKickEnabled = reinterpret_cast<SCareerOptionsPhysicsOwner *>(&GCareer)
+                              ->AutoKickEnabled[bruce->mIndex];
     else
-        AutoKickEnabled =
-            reinterpret_cast<SCareerOptionsPhysicsOwner *>(&GCareer)->AutoKickEnabled[bruce->mIndex ^ GHorsePlayer];
+        AutoKickEnabled = reinterpret_cast<SCareerOptionsPhysicsOwner *>(&GCareer)
+                              ->AutoKickEnabled[bruce->mIndex ^ GHorsePlayer];
 
-    if (bruce->mManual != 0)
-        return;
+    if (bruce->mManual != 0) return;
 
     if (bruce->CSuper.mAnimFinished != 0)
     {
         switch (bruce->CSuper.mAnim)
         {
-        case 1:
-            reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim(3, 0x1F21);
-            bruce->CSuper.mAnimSpeed = 0x14000;
-            break;
-        case 3:
-            reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim(0, 0x1F26);
-            break;
+            case 1:
+                reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim(3, 0x1F21);
+                bruce->CSuper.mAnimSpeed = 0x14000;
+                break;
+            case 3: reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim(0, 0x1F26); break;
         }
     }
 
-    if (bruce->mPhysicsState != 0)
-        return;
+    if (bruce->mPhysicsState != 0) return;
 
-    if (bruce->mKickLockout > 0)
-        bruce->mKickLockout = bruce->mKickLockout - 1;
+    if (bruce->mKickLockout > 0) bruce->mKickLockout = bruce->mKickLockout - 1;
 
-    int Speed =
-        M3dMaths_SquareRoot0(
-            Mips_CVecDotProd(&mVel, &mVel)) << 6;
+    int Speed = M3dMaths_SquareRoot0(Mips_CVecDotProd(&mVel, &mVel)) << 6;
 
     CVector mVel2 = mVel;
     ProjectCVectorToPlane(&mVel2, bruce->mLastPolyNormal);
@@ -8401,30 +7728,24 @@ void CBruce::HandleKick()
         {
             if (bruce->mKickLockout == 0)
             {
-                if ((x >= -0x4CC && Speed > bruce->mMaxKickSpeed / 2) ||
-                    bruce->mManIsCrouched != 0)
+                if ((x >= -0x4CC && Speed > bruce->mMaxKickSpeed / 2) || bruce->mManIsCrouched != 0)
                 {
                     bruce->mKickLockout = 0x14;
                 }
                 else
                 {
-                    if (bruce->mPhysicsState != 0)
-                        goto recompute_speed;
+                    if (bruce->mPhysicsState != 0) goto recompute_speed;
 
                     {
                         int anim = mAnim;
                         if (anim != 0)
                         {
-                            if (anim < 0)
-                                goto recompute_speed;
-                            if (anim >= 8)
-                                goto recompute_speed;
-                            if (anim < 5)
-                                goto recompute_speed;
+                            if (anim < 0) goto recompute_speed;
+                            if (anim >= 8) goto recompute_speed;
+                            if (anim < 5) goto recompute_speed;
                         }
                     }
-                    bruce->mMaxKickSpeed =
-                        PHYSICS_RECON_KICK_SPEED_VALUE(0x11);
+                    bruce->mMaxKickSpeed = PHYSICS_RECON_KICK_SPEED_VALUE(0x11);
                     bruce->mKickLockout = 0x14;
                     bruce->mFootSound = 1;
                     reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim1(1, 0, 0x1F59);
@@ -8433,9 +7754,7 @@ void CBruce::HandleKick()
             }
 
         recompute_speed:
-            Speed =
-                M3dMaths_SquareRoot0(
-                    Mips_CVecDotProd(&mVel, &mVel)) << 6;
+            Speed = M3dMaths_SquareRoot0(Mips_CVecDotProd(&mVel, &mVel)) << 6;
             if ((unsigned short)(bruce->CSuper.mAnim - 2) < 2)
             {
                 int KickVal = 4;
@@ -8448,10 +7767,8 @@ void CBruce::HandleKick()
                 }
                 if ((unsigned short)(*(unsigned short *)((int)&bruce->CSuper.mFrame) - 0xB) < 5)
                 {
-                    if ((char)bruce->mPad->Square.Pressed != 0)
-                        KickVal = 8;
-                    if (Speed < bruce->mMaxKickSpeed &&
-                        bruce->mPhysicsState != 2)
+                    if ((char)bruce->mPad->Square.Pressed != 0) KickVal = 8;
+                    if (Speed < bruce->mMaxKickSpeed && bruce->mPhysicsState != 2)
                     {
                         bruce->CSuper.CBody.mAcc.x = -bruce->mFront.x * KickVal;
                         bruce->CSuper.CBody.mAcc.y = -bruce->mFront.y * KickVal;
@@ -8460,20 +7777,18 @@ void CBruce::HandleKick()
                 }
             }
             else if ((unsigned int)(bruce->mKickLockout - 0xB) < 5 &&
-                     Speed < bruce->mMaxKickSpeed &&
-                     bruce->mPhysicsState != 2)
+                     Speed < bruce->mMaxKickSpeed && bruce->mPhysicsState != 2)
             {
                 bruce->CSuper.CBody.mAcc.x = -bruce->mFront.x * 4;
                 bruce->CSuper.CBody.mAcc.y = -bruce->mFront.y * 4;
                 bruce->CSuper.CBody.mAcc.z = -bruce->mFront.z * 4;
             }
         }
-        if (AutoKickEnabled != 0)
-            return;
+        if (AutoKickEnabled != 0) return;
     }
 
-    if ((char)bruce->mPad->Square.Pressed == 0 || x < -0x4CC ||
-        bruce->mManIsCrouched != 0 || bruce->mPhysicsState != 0)
+    if ((char)bruce->mPad->Square.Pressed == 0 || x < -0x4CC || bruce->mManIsCrouched != 0 ||
+        bruce->mPhysicsState != 0)
     {
         goto tail;
     }
@@ -8481,12 +7796,9 @@ void CBruce::HandleKick()
         int anim = mAnim;
         if (anim != 0)
         {
-            if (anim < 0)
-                goto tail;
-            if (anim >= 8)
-                goto tail;
-            if (anim < 5)
-                goto tail;
+            if (anim < 0) goto tail;
+            if (anim >= 8) goto tail;
+            if (anim < 5) goto tail;
         }
     }
     bruce->mMaxKickSpeed = PHYSICS_RECON_KICK_SPEED_VALUE(0x16);
@@ -8497,18 +7809,14 @@ void CBruce::HandleKick()
 
 tail:
     {
-        Speed =
-            M3dMaths_SquareRoot0(
-                Mips_CVecDotProd(&mVel, &mVel)) << 6;
+        Speed = M3dMaths_SquareRoot0(Mips_CVecDotProd(&mVel, &mVel)) << 6;
         if ((unsigned short)(bruce->CSuper.mAnim - 2) < 2)
         {
             int KickVal = 4;
             if ((unsigned short)(*(unsigned short *)((int)&bruce->CSuper.mFrame) - 0xB) < 5)
             {
-                if ((char)bruce->mPad->Square.Pressed != 0)
-                    KickVal = 8;
-                if (Speed < bruce->mMaxKickSpeed &&
-                    bruce->mPhysicsState != 2)
+                if ((char)bruce->mPad->Square.Pressed != 0) KickVal = 8;
+                if (Speed < bruce->mMaxKickSpeed && bruce->mPhysicsState != 2)
                 {
                     bruce->CSuper.CBody.mAcc.x = -bruce->mFront.x * KickVal;
                     bruce->CSuper.CBody.mAcc.y = -bruce->mFront.y * KickVal;
@@ -8533,11 +7841,9 @@ tail:
  * @param RotateVelocity Whether the velocity should follow the new heading.
  * @param SlipAngle Heading offset retained by the velocity vector.
  */
-void CBruce::RotateHeadingAndVelocity(
-    int TurnAngle, int RotateVelocity, int SlipAngle)
+void CBruce::RotateHeadingAndVelocity(int TurnAngle, int RotateVelocity, int SlipAngle)
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
     int OldMag;
     int NewMag;
     MATRIX SurfaceRotMatrix;
@@ -8555,8 +7861,7 @@ void CBruce::RotateHeadingAndVelocity(
         if (RotateVelocity != 0)
         {
             CVector *velocity = (CVector *)&bruce->CSuper.CBody.mVel;
-            OldMag = M3dMaths_SquareRoot0(
-                Mips_CVecDotProd(velocity, velocity)) << 6;
+            OldMag = M3dMaths_SquareRoot0(Mips_CVecDotProd(velocity, velocity)) << 6;
 
             MATRIX m;
             MATRIX m2;
@@ -8590,8 +7895,7 @@ void CBruce::RotateHeadingAndVelocity(
 
             *velocity = NewVel1;
 
-            NewMag = M3dMaths_SquareRoot0(
-                Mips_CVecDotProd(velocity, velocity)) << 6;
+            NewMag = M3dMaths_SquareRoot0(Mips_CVecDotProd(velocity, velocity)) << 6;
             OldMag >>= 8;
             NewMag >>= 8;
             *velocity = (*velocity * OldMag) / NewMag;
@@ -8613,20 +7917,17 @@ void CBruce::RotateHeadingAndVelocity(
  */
 void CBruce::ReflectHeadingVelocityInPlane(SVECTOR Normal, int Angle)
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
     CVectorPhysicsOwner TmpCV;
     int dot;
     MATRIX SurfaceRotMatrix;
 
-    if (Angle == 0)
-        Angle = 25;
+    if (Angle == 0) Angle = 25;
 
     TmpCV.vx = Normal.vx;
     TmpCV.vy = Normal.vy;
     TmpCV.vz = Normal.vz;
-    dot = Mips_CVecDotProd(
-        (CVector *)&bruce->CSuper.CBody.mVel, (CVector *)&TmpCV);
+    dot = Mips_CVecDotProd((CVector *)&bruce->CSuper.CBody.mVel, (CVector *)&TmpCV);
     if (dot < 0)
     {
         bruce->CSuper.CBody.mVel.x -= Mips_FixMul(Normal.vx, dot);
@@ -8640,18 +7941,15 @@ void CBruce::ReflectHeadingVelocityInPlane(SVECTOR Normal, int Angle)
     TmpCV.vx = -Normal.vx;
     TmpCV.vy = -Normal.vy;
     TmpCV.vz = -Normal.vz;
-    dot = Mips_CVecDotProd(
-        (CVector *)&bruce->mFront, (CVector *)&TmpCV);
+    dot = Mips_CVecDotProd((CVector *)&bruce->mFront, (CVector *)&TmpCV);
     if (dot < 0)
     {
         int sin = M3dMaths_SquareRoot0(0x1000000 - dot * dot);
         int cos = dot;
         short *pShort = (short *)&SurfaceRotMatrix;
-        dot = Mips_CVecDotProd(
-            (CVector *)&bruce->mRight, (CVector *)&TmpCV);
+        dot = Mips_CVecDotProd((CVector *)&bruce->mRight, (CVector *)&TmpCV);
 
-        if (dot > 0)
-            sin = -sin;
+        if (dot > 0) sin = -sin;
 
         pShort[0] = cos;
         pShort[1] = 0;
@@ -8691,30 +7989,23 @@ void CBruce::ReflectHeadingVelocityInPlane(SVECTOR Normal, int Angle)
 }
 
 /** Expand the skater's effective fixed-point top speed at each use site. */
-#define PHYSICS_RECON_ALIGN_MAX_SPEED(bruce)                                      \
-    ((((Cheat_StatsOverride != 0                                            \
-            ? Cheat_StatsOverride                                          \
-            : Stats[(bruce)->mSkaterType].Speed                            \
-                  + (((bruce)->mMagicTime != 0 || Cheat_Fire != 0)          \
-                         ? 3                                                \
-                         : 0)                                               \
-                  + (unsigned char)(bruce)->mpBoardStats->speed)            \
-          + 0x27)                                                           \
-         << 12)                                                             \
-        * 45 / 28)
+#define PHYSICS_RECON_ALIGN_MAX_SPEED(bruce) \
+    ((((Cheat_StatsOverride != 0 ? Cheat_StatsOverride \
+                                 : Stats[(bruce)->mSkaterType].Speed + \
+                                       (((bruce)->mMagicTime != 0 || Cheat_Fire != 0) ? 3 : 0) + \
+                                       (unsigned char)(bruce)->mpBoardStats->speed) + \
+       0x27) \
+      << 12) * \
+     45 / 28)
 
-#define PHYSICS_RECON_LIMIT_MAX_SPEED(self)                                       \
-    ((((Cheat_StatsOverride != 0                                            \
-            ? Cheat_StatsOverride                                          \
-            : Stats[(self)->mSkaterType].Speed                             \
-                  + (((self)->mMagicTime != 0                              \
-                      || Cheat_Fire != 0)                                   \
-                         ? 3                                                \
-                         : 0)                                               \
-                  + (unsigned char)(self)->mpBoardStats->speed)             \
-          + 0x32)                                                           \
-         << 12)                                                             \
-        * 45 / 28)
+#define PHYSICS_RECON_LIMIT_MAX_SPEED(self) \
+    ((((Cheat_StatsOverride != 0 ? Cheat_StatsOverride \
+                                 : Stats[(self)->mSkaterType].Speed + \
+                                       (((self)->mMagicTime != 0 || Cheat_Fire != 0) ? 3 : 0) + \
+                                       (unsigned char)(self)->mpBoardStats->speed) + \
+       0x32) \
+      << 12) * \
+     45 / 28)
 
 /**
  * AlignToFallLine__6CBrucei
@@ -8732,32 +8023,25 @@ void CBruce::AlignToFallLine(int Amount)
 {
 #define bruce ((CBrucePhysicsSlice *)this)
     bruce->mFallLineAdjustment = 0;
-    if (bruce->mInBail != 0)
-        return;
+    if (bruce->mInBail != 0) return;
 
-    int Speed = M3dMaths_SquareRoot0(
-        Mips_CVecDotProd(
-            (CVector *)&bruce->CSuper.CBody.mVel,
-            (CVector *)&bruce->CSuper.CBody.mVel)) << 6;
+    int Speed = M3dMaths_SquareRoot0(Mips_CVecDotProd((CVector *)&bruce->CSuper.CBody.mVel,
+                                                      (CVector *)&bruce->CSuper.CBody.mVel))
+                << 6;
     int dot;
-    int FallLineLength = M3dMaths_SquareRoot0(
-        Mips_CVecDotProd(
-            (CVector *)&bruce->mLastFallLine,
-            (CVector *)&bruce->mLastFallLine)) << 6;
+    int FallLineLength = M3dMaths_SquareRoot0(Mips_CVecDotProd((CVector *)&bruce->mLastFallLine,
+                                                               (CVector *)&bruce->mLastFallLine))
+                         << 6;
     int PolyTilt = FallLineLength / 260;
     PolyTilt = (PolyTilt * FallLineLength) / 13000;
 
-    if (PHYSICS_RECON_ALIGN_MAX_SPEED(bruce) < Speed)
-        Speed = PHYSICS_RECON_ALIGN_MAX_SPEED(bruce);
-    int angle = (PolyTilt *
-        ((Amount << 12) + PHYSICS_RECON_ALIGN_MAX_SPEED(bruce) - Speed)) /
-        PHYSICS_RECON_ALIGN_MAX_SPEED(bruce);
+    if (PHYSICS_RECON_ALIGN_MAX_SPEED(bruce) < Speed) Speed = PHYSICS_RECON_ALIGN_MAX_SPEED(bruce);
+    int angle = (PolyTilt * ((Amount << 12) + PHYSICS_RECON_ALIGN_MAX_SPEED(bruce) - Speed)) /
+                PHYSICS_RECON_ALIGN_MAX_SPEED(bruce);
     CVector FallLinePerp;
-    if (angle == 0)
-        return;
+    if (angle == 0) return;
 
-    if (bruce->mLastXFrames + 10 < XFrames)
-        bruce->mLastTurnDirection = 0;
+    if (bruce->mLastXFrames + 10 < XFrames) bruce->mLastTurnDirection = 0;
     bruce->mLastXFrames = XFrames;
 
     CVector FallLineUnit = *(CVector *)&bruce->mLastFallLine;
@@ -8774,11 +8058,9 @@ void CBruce::AlignToFallLine(int Amount)
 
     CVector *Front = (CVector *)&bruce->mFront;
     CVector FrontInPlane = *Front;
-    ProjectCVectorToPlane(
-        &FrontInPlane, bruce->mLastPolyNormal);
+    ProjectCVectorToPlane(&FrontInPlane, bruce->mLastPolyNormal);
 
-    dot = Mips_CVecDotProd(
-        &FrontInPlane, (CVector *)&FallLineUnit);
+    dot = Mips_CVecDotProd(&FrontInPlane, (CVector *)&FallLineUnit);
     dot = Mips_CVecDotProd(Front, &FallLinePerp);
     if (dot >= 0x2A)
     {
@@ -8818,8 +8100,7 @@ void CBruce::AlignToFallLine(int Amount)
  */
 void CBruce::UprightSideways()
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
 
     CVector *mFront = (CVector *)&bruce->mFront;
     CVector TmpCV;
@@ -8910,8 +8191,7 @@ void CBruce::FRUVectorsFromRotMatrix()
  */
 void CBruce::RotMatrixFromFRUVectors()
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
 
     // Load all 9 values (column 0, column 1, column 2)
     u16 r00 = (u16)bruce->mRight.x;
@@ -8945,8 +8225,7 @@ void CBruce::RotMatrixFromFRUVectors()
  */
 void CBruce::SetAnglesFromHeading()
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
 
     SVECTOR temp;
     u16 vx = bruce->mRotationMatrix.m[0][1];
@@ -8971,8 +8250,8 @@ void CBruce::SetAnglesFromHeading()
 }
 
 /** Compute the airborne loop pitch from a pre-scaled velocity numerator. */
-static inline unsigned short PhysicsContinuousAirPitch(
-    CBrucePhysicsSlice *bruce, int PitchNumerator)
+static inline unsigned short PhysicsContinuousAirPitch(CBrucePhysicsSlice *bruce,
+                                                       int PitchNumerator)
 {
     unsigned short NewPitch;
     if (Cheat_StatsOverride == 0)
@@ -8980,49 +8259,43 @@ static inline unsigned short PhysicsContinuousAirPitch(
         int stat = Stats[bruce->mSkaterType].Speed;
         unsigned char board = bruce->mpBoardStats->speed;
         if (bruce->mMagicTime != 0 || Cheat_Fire != 0)
-            NewPitch = (unsigned short)(
-                PitchNumerator
-                / ((((board + stat + 0x35) << 12) * 45) / 28));
+            NewPitch =
+                (unsigned short)(PitchNumerator / ((((board + stat + 0x35) << 12) * 45) / 28));
         else
-            NewPitch = (unsigned short)(
-                PitchNumerator
-                / ((((stat + board + 0x32) << 12) * 45) / 28));
+            NewPitch =
+                (unsigned short)(PitchNumerator / ((((stat + board + 0x32) << 12) * 45) / 28));
     }
     else
     {
-        NewPitch = (unsigned short)(
-            PitchNumerator
-            / ((((Cheat_StatsOverride + 0x32) << 12) * 45) / 28));
+        NewPitch =
+            (unsigned short)(PitchNumerator / ((((Cheat_StatsOverride + 0x32) << 12) * 45) / 28));
     }
 
     return NewPitch;
 }
 
 /** Fill the ground-loop pitch from a pre-scaled velocity numerator. */
-static inline void PhysicsContinuousGroundPitch(
-    CBrucePhysicsSlice *bruce, int PitchNumerator, int &NewPitch)
+static inline void PhysicsContinuousGroundPitch(CBrucePhysicsSlice *bruce, int PitchNumerator,
+                                                int &NewPitch)
 {
     if (Cheat_StatsOverride == 0)
     {
         int stat = Stats[bruce->mSkaterType].Speed;
         unsigned char board = bruce->mpBoardStats->speed;
         if (bruce->mMagicTime != 0 || Cheat_Fire != 0)
-            NewPitch = PitchNumerator
-                / ((((board + stat + 0x35) << 12) * 45) / 28);
+            NewPitch = PitchNumerator / ((((board + stat + 0x35) << 12) * 45) / 28);
         else
-            NewPitch = PitchNumerator
-                / ((((stat + board + 0x32) << 12) * 45) / 28);
+            NewPitch = PitchNumerator / ((((stat + board + 0x32) << 12) * 45) / 28);
     }
     else
     {
-        NewPitch = PitchNumerator
-            / ((((Cheat_StatsOverride + 0x32) << 12) * 45) / 28);
+        NewPitch = PitchNumerator / ((((Cheat_StatsOverride + 0x32) << 12) * 45) / 28);
     }
 }
 
 /** Apply a newly created ground-loop sound at the neutral scaling level. */
-static inline void PhysicsContinuousApplyGroundSound(
-    CBrucePhysicsSlice *bruce, unsigned int sound, int level)
+static inline void PhysicsContinuousApplyGroundSound(CBrucePhysicsSlice *bruce, unsigned int sound,
+                                                     int level)
 {
     bruce->mSFXGround = sound;
     bruce->mGroundVol = level;
@@ -9043,15 +8316,13 @@ static inline void PhysicsContinuousApplyGroundSound(
  */
 void CBruce::HandleContinuousSounds()
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
 
     if (bruce->mPhysicsState == 5)
     {
         if (bruce->mSFXWallride == 0)
         {
-            bruce->mSFXWallride =
-                SFX_PlayX(0x0F, 0x2000, 0);
+            bruce->mSFXWallride = SFX_PlayX(0x0F, 0x2000, 0);
         }
     }
     else if (bruce->mSFXWallride != 0)
@@ -9066,38 +8337,30 @@ void CBruce::HandleContinuousSounds()
         {
             switch (bruce->mRailType)
             {
-            case 0:
-                if (bruce->mRailSparks != 0)
-                    bruce->mSFXGrind =
-                        SFX_PlayX(0xCE, 0x2000, 0);
-                else
-                    bruce->mSFXGrind =
-                        SFX_PlayX(0x0B, 0x2000, 0);
-                break;
-            case 1:
-                if (bruce->mRailSparks != 0)
-                    bruce->mSFXGrind =
-                        SFX_PlayX(0x0C, 0x2000, 0);
-                else
-                    bruce->mSFXGrind =
-                        SFX_PlayX(0xD1, 0x2000, 0);
-                break;
-            case 2:
-                if (bruce->mRailSparks != 0)
-                    bruce->mSFXGrind =
-                        SFX_PlayX(0xCF, 0x2000, 0);
-                else
-                    bruce->mSFXGrind =
-                        SFX_PlayX(0xD3, 0x2000, 0);
-                break;
-            case 3:
-                if (bruce->mRailSparks != 0)
-                    bruce->mSFXGrind =
-                        SFX_PlayX(0xD0, 0x2000, 0);
-                else
-                    bruce->mSFXGrind =
-                        SFX_PlayX(0xD4, 0x2000, 0);
-                break;
+                case 0:
+                    if (bruce->mRailSparks != 0)
+                        bruce->mSFXGrind = SFX_PlayX(0xCE, 0x2000, 0);
+                    else
+                        bruce->mSFXGrind = SFX_PlayX(0x0B, 0x2000, 0);
+                    break;
+                case 1:
+                    if (bruce->mRailSparks != 0)
+                        bruce->mSFXGrind = SFX_PlayX(0x0C, 0x2000, 0);
+                    else
+                        bruce->mSFXGrind = SFX_PlayX(0xD1, 0x2000, 0);
+                    break;
+                case 2:
+                    if (bruce->mRailSparks != 0)
+                        bruce->mSFXGrind = SFX_PlayX(0xCF, 0x2000, 0);
+                    else
+                        bruce->mSFXGrind = SFX_PlayX(0xD3, 0x2000, 0);
+                    break;
+                case 3:
+                    if (bruce->mRailSparks != 0)
+                        bruce->mSFXGrind = SFX_PlayX(0xD0, 0x2000, 0);
+                    else
+                        bruce->mSFXGrind = SFX_PlayX(0xD4, 0x2000, 0);
+                    break;
             }
         }
     }
@@ -9107,13 +8370,11 @@ void CBruce::HandleContinuousSounds()
         bruce->mSFXGrind = 0;
     }
 
-    if (bruce->mPhysicsState == 0
-        || bruce->mPhysicsState == 7)
+    if (bruce->mPhysicsState == 0 || bruce->mPhysicsState == 7)
     {
         if (bruce->mSFXGround != 0)
         {
-            if (bruce->mTerrainSFX != bruce->mTerrain
-                || bruce->mInBail != 0)
+            if (bruce->mTerrainSFX != bruce->mTerrain || bruce->mInBail != 0)
             {
                 SFX_Stop(bruce->mSFXGround);
                 bruce->mSFXGround = 0;
@@ -9129,85 +8390,56 @@ void CBruce::HandleContinuousSounds()
 
             switch (bruce->mTerrain)
             {
-            case 2:
-                PhysicsContinuousApplyGroundSound(
-                    bruce, SFX_PlayX(0x01, 0x2000, 0), 100);
-                goto ground_sound_ready;
-            case 5:
-                bruce->mSFXGround =
-                    SFX_PlayX(0x3D, 0x2000, 0);
-                goto ground_sound_ready;
-            case 3:
-                bruce->mSFXGround =
-                    SFX_PlayX(0x21, 0x2000, 0);
-                goto ground_sound_ready;
-            case 13:
-                PhysicsContinuousApplyGroundSound(
-                    bruce, SFX_PlayX(0x38, 0x2000, 0), 100);
-                goto ground_sound_ready;
-            case 4:
-                PhysicsContinuousApplyGroundSound(
-                    bruce,
-                    SFX_PlayX(
-                        GLevel != 7 ? 0x38 : 0xA9, 0x2000, 0),
-                    100);
-                goto ground_sound_ready;
-            case 6:
-                bruce->mSFXGround =
-                    SFX_PlayX(0x48, 0x2000, 0);
-                goto ground_sound_ready;
-            case 8:
-                PhysicsContinuousApplyGroundSound(
-                    bruce, SFX_PlayX(0x39, 0x2000, 0), 100);
-                goto ground_sound_ready;
-            case 11:
-                PhysicsContinuousApplyGroundSound(
-                    bruce, SFX_PlayX(0, 0x2000, 0), 100);
-                goto ground_sound_ready;
-            case 1:
-                if (GLevel == 8)
-                {
+                case 2:
+                    PhysicsContinuousApplyGroundSound(bruce, SFX_PlayX(0x01, 0x2000, 0), 100);
+                    goto ground_sound_ready;
+                case 5: bruce->mSFXGround = SFX_PlayX(0x3D, 0x2000, 0); goto ground_sound_ready;
+                case 3: bruce->mSFXGround = SFX_PlayX(0x21, 0x2000, 0); goto ground_sound_ready;
+                case 13:
+                    PhysicsContinuousApplyGroundSound(bruce, SFX_PlayX(0x38, 0x2000, 0), 100);
+                    goto ground_sound_ready;
+                case 4:
                     PhysicsContinuousApplyGroundSound(
-                        bruce, SFX_PlayX(0xAB, 0x2000, 0), 100);
+                        bruce, SFX_PlayX(GLevel != 7 ? 0x38 : 0xA9, 0x2000, 0), 100);
                     goto ground_sound_ready;
-                }
-                else
-                {
-                    bruce->mSFXGround =
-                        SFX_PlayX(0x49, 0x2000, 0);
+                case 6: bruce->mSFXGround = SFX_PlayX(0x48, 0x2000, 0); goto ground_sound_ready;
+                case 8:
+                    PhysicsContinuousApplyGroundSound(bruce, SFX_PlayX(0x39, 0x2000, 0), 100);
                     goto ground_sound_ready;
-                }
-            case 12:
-                PhysicsContinuousApplyGroundSound(
-                    bruce,
-                    SFX_PlayX(
-                        GLevel != 8 ? 0x37 : 0x8F, 0x2000, 0),
-                    100);
-                goto ground_sound_ready;
-            case 10:
-                PhysicsContinuousApplyGroundSound(
-                    bruce, SFX_PlayX(0x47, 0x2000, 0), 100);
-                goto ground_sound_ready;
-            case 14:
-                bruce->mSFXGround =
-                    SFX_PlayX(0x69, 0x2000, 0);
-                goto ground_sound_ready;
-            case 15:
-                PhysicsContinuousApplyGroundSound(
-                    bruce, SFX_PlayX(0x77, 0x2000, 0), 100);
-                goto ground_sound_ready;
-            default:
-                goto default_ground_sound;
+                case 11:
+                    PhysicsContinuousApplyGroundSound(bruce, SFX_PlayX(0, 0x2000, 0), 100);
+                    goto ground_sound_ready;
+                case 1:
+                    if (GLevel == 8)
+                    {
+                        PhysicsContinuousApplyGroundSound(bruce, SFX_PlayX(0xAB, 0x2000, 0), 100);
+                        goto ground_sound_ready;
+                    }
+                    else
+                    {
+                        bruce->mSFXGround = SFX_PlayX(0x49, 0x2000, 0);
+                        goto ground_sound_ready;
+                    }
+                case 12:
+                    PhysicsContinuousApplyGroundSound(
+                        bruce, SFX_PlayX(GLevel != 8 ? 0x37 : 0x8F, 0x2000, 0), 100);
+                    goto ground_sound_ready;
+                case 10:
+                    PhysicsContinuousApplyGroundSound(bruce, SFX_PlayX(0x47, 0x2000, 0), 100);
+                    goto ground_sound_ready;
+                case 14: bruce->mSFXGround = SFX_PlayX(0x69, 0x2000, 0); goto ground_sound_ready;
+                case 15:
+                    PhysicsContinuousApplyGroundSound(bruce, SFX_PlayX(0x77, 0x2000, 0), 100);
+                    goto ground_sound_ready;
+                default: goto default_ground_sound;
             }
 
         default_ground_sound:
             NewVol = 0x2000;
-            bruce->mSFXGround =
-                SFX_PlayX(0, NewVol, 0);
+            bruce->mSFXGround = SFX_PlayX(0, NewVol, 0);
             bruce->mGroundVol = 100;
 
-        ground_sound_ready:
-            ;
+        ground_sound_ready:;
         }
     }
     else if (bruce->mSFXGround != 0)
@@ -9216,23 +8448,16 @@ void CBruce::HandleContinuousSounds()
         bruce->mSFXGround = 0;
     }
 
-    if (bruce->mPhysicsState == 1
-        || bruce->mPhysicsState == 2
-        || bruce->mPhysicsState == 8)
+    if (bruce->mPhysicsState == 1 || bruce->mPhysicsState == 2 || bruce->mPhysicsState == 8)
     {
         if (bruce->mSFXAir == 0)
         {
-            CVector *velocity =
-                (CVector *)&bruce->CSuper.CBody.mVel;
-            int Spd = M3dMaths_SquareRoot0(
-                          Mips_CVecDotProd(
-                              velocity, velocity))
-                      << 6;
+            CVector *velocity = (CVector *)&bruce->CSuper.CBody.mVel;
+            int Spd = M3dMaths_SquareRoot0(Mips_CVecDotProd(velocity, velocity)) << 6;
             unsigned short NewPitch;
             unsigned short NewVol;
 
-            if (bruce->mPhysicsState == 8)
-                Spd = 0x493E0;
+            if (bruce->mPhysicsState == 8) Spd = 0x493E0;
 
             int numerator = Spd * 200;
             if (Cheat_StatsOverride == 0)
@@ -9240,48 +8465,32 @@ void CBruce::HandleContinuousSounds()
                 int stat = Stats[bruce->mSkaterType].Speed;
                 unsigned char board = bruce->mpBoardStats->speed;
                 if (bruce->mMagicTime != 0 || Cheat_Fire != 0)
-                    NewVol = (unsigned short)(
-                        numerator
-                        / ((((board + stat + 0x35)
-                             << 12)
-                           * 45)
-                           / 448));
+                    NewVol =
+                        (unsigned short)(numerator / ((((board + stat + 0x35) << 12) * 45) / 448));
                 else
-                    NewVol = (unsigned short)(
-                        numerator
-                        / ((((stat + board + 0x32)
-                             << 12)
-                            * 45)
-                           / 448));
+                    NewVol =
+                        (unsigned short)(numerator / ((((stat + board + 0x32) << 12) * 45) / 448));
             }
             else
             {
-                NewVol = (unsigned short)(
-                    numerator
-                    / ((((Cheat_StatsOverride + 0x32) << 12) * 45)
-                       / 448));
+                NewVol = (unsigned short)(numerator /
+                                          ((((Cheat_StatsOverride + 0x32) << 12) * 45) / 448));
             }
-            bruce->mSFXAir = SFX_PlayX(
-                7, (short)((NewVol * 2) / 3), 0);
+            bruce->mSFXAir = SFX_PlayX(7, (short)((NewVol * 2) / 3), 0);
 
             NewPitch = PhysicsContinuousAirPitch(bruce, Spd << 11);
-            if (NewPitch < 0x191)
-                NewPitch = 0x190;
-            if (NewPitch >= 0x400)
-                NewPitch = 0x3FF;
+            if (NewPitch < 0x191) NewPitch = 0x190;
+            if (NewPitch >= 0x400) NewPitch = 0x3FF;
 
             bruce->mSFXPitch = NewPitch;
             bruce->mSFXVol = NewVol;
-            SFX_SetVoicePitch(
-                bruce->mSFXAir, NewPitch);
+            SFX_SetVoicePitch(bruce->mSFXAir, NewPitch);
         }
         else if (bruce->mSFXVol != 0)
         {
-            int volume =
-                bruce->mSFXVol - (bruce->mSFXVol >> 5);
+            int volume = bruce->mSFXVol - (bruce->mSFXVol >> 5);
             bruce->mSFXVol = volume;
-            SFX_ModifyVol(
-                bruce->mSFXAir, volume, volume);
+            SFX_ModifyVol(bruce->mSFXAir, volume, volume);
         }
     }
     else if (bruce->mSFXAir != 0)
@@ -9292,10 +8501,8 @@ void CBruce::HandleContinuousSounds()
 
     if (bruce->mSFXGround != 0)
     {
-        int Spd = M3dMaths_SquareRoot0(
-                      Mips_CVecDotProd(
-                          (CVector *)&bruce->CSuper.CBody.mVel,
-                          (CVector *)&bruce->CSuper.CBody.mVel))
+        int Spd = M3dMaths_SquareRoot0(Mips_CVecDotProd((CVector *)&bruce->CSuper.CBody.mVel,
+                                                        (CVector *)&bruce->CSuper.CBody.mVel))
                   << 6;
         int NewPitch;
         int NewVol;
@@ -9306,31 +8513,21 @@ void CBruce::HandleContinuousSounds()
         {
             int stat = Stats[bruce->mSkaterType].Speed;
             unsigned char board = bruce->mpBoardStats->speed;
-            NewVol =
-                bruce->mMagicTime != 0 || Cheat_Fire != 0
-                    ? VolumeNumerator
-                          / ((((board + stat + 0x35) << 12) * 45) / 448)
-                    : VolumeNumerator
-                          / ((((stat + board + 0x32) << 12) * 45) / 448);
+            NewVol = bruce->mMagicTime != 0 || Cheat_Fire != 0
+                         ? VolumeNumerator / ((((board + stat + 0x35) << 12) * 45) / 448)
+                         : VolumeNumerator / ((((stat + board + 0x32) << 12) * 45) / 448);
         }
         else
         {
-            NewVol = VolumeNumerator
-                / ((((Cheat_StatsOverride + 0x32) << 12) * 45)
-                   / 448);
+            NewVol = VolumeNumerator / ((((Cheat_StatsOverride + 0x32) << 12) * 45) / 448);
         }
-        SFX_ModifyVol(
-            bruce->mSFXGround, NewVol, NewVol);
+        SFX_ModifyVol(bruce->mSFXGround, NewVol, NewVol);
 
-        if (NewPitch < 0x2BD)
-            NewPitch = 0x2BC;
-        if (NewPitch >= 0x400)
-            NewPitch = 0x3FF;
+        if (NewPitch < 0x2BD) NewPitch = 0x2BC;
+        if (NewPitch >= 0x400) NewPitch = 0x3FF;
 
-        NewPitch =
-            (NewPitch * bruce->mGroundPitch) / 100;
-        SFX_SetVoicePitch(
-            bruce->mSFXGround, (unsigned short)NewPitch);
+        NewPitch = (NewPitch * bruce->mGroundPitch) / 100;
+        SFX_SetVoicePitch(bruce->mSFXGround, (unsigned short)NewPitch);
         bruce->mSFXPitch = NewPitch;
         bruce->mSFXVol = NewVol;
     }
@@ -9349,8 +8546,7 @@ void CBruce::HandleContinuousSounds()
  */
 void CBruce::OrientToNormal()
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
     VECTOR z1;
     CVector normal;
     CVector x1;
@@ -9365,24 +8561,17 @@ void CBruce::OrientToNormal()
         }
         else
         {
-            normal.vx = bruce->mOldNormal.vx
-                        + ((bruce->CSuper.CBody.mNormal.x
-                            - bruce->mOldNormal.vx)
-                           >> 2);
-            normal.vy = bruce->mOldNormal.vy
-                        + ((bruce->CSuper.CBody.mNormal.y
-                            - bruce->mOldNormal.vy)
-                           >> 2);
-            normal.vz = bruce->mOldNormal.vz
-                        + ((bruce->CSuper.CBody.mNormal.z
-                            - bruce->mOldNormal.vz)
-                           >> 2);
+            normal.vx = bruce->mOldNormal.vx +
+                        ((bruce->CSuper.CBody.mNormal.x - bruce->mOldNormal.vx) >> 2);
+            normal.vy = bruce->mOldNormal.vy +
+                        ((bruce->CSuper.CBody.mNormal.y - bruce->mOldNormal.vy) >> 2);
+            normal.vz = bruce->mOldNormal.vz +
+                        ((bruce->CSuper.CBody.mNormal.z - bruce->mOldNormal.vz) >> 2);
         }
 
         M3dUtils_NormaliseVector((CVector *)&normal);
 
-        bruce->mFront.Set(bruce->mRotationMatrix.m[0][2],
-                          bruce->mRotationMatrix.m[1][2],
+        bruce->mFront.Set(bruce->mRotationMatrix.m[0][2], bruce->mRotationMatrix.m[1][2],
                           bruce->mRotationMatrix.m[2][2]);
 
         gte_ldopv1(&bruce->mFront);
@@ -9437,28 +8626,19 @@ void CBruce::OrientToNormal()
  */
 void CBruce::HandlePlayerCollisions()
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
-    if (bruce->mInBail != 0)
-        return;
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
+    if (bruce->mInBail != 0) return;
     CBruce *other = bruce->mpOtherPlayer;
-    if (other->mInBail != 0)
-        return;
+    if (other->mInBail != 0) return;
 
-    CVector BetweenPlayers =
-        other->mPos - *(CVector *)&bruce->CSuper.CBody.CItem.mPos;
-    if (BetweenPlayers.Length() >= 0x3C)
-        return;
+    CVector BetweenPlayers = other->mPos - *(CVector *)&bruce->CSuper.CBody.CItem.mPos;
+    if (BetweenPlayers.Length() >= 0x3C) return;
 
-    BetweenPlayers =
-        bruce->mpOtherPlayer->mPos -
-        *(CVector *)&bruce->CSuper.CBody.mOldPos;
+    BetweenPlayers = bruce->mpOtherPlayer->mPos - *(CVector *)&bruce->CSuper.CBody.mOldPos;
     BetweenPlayers.Normalize();
 
-    int Direction1 = Mips_CVecDotProd(
-        (CVector *)&bruce->CSuper.CBody.mVel, &BetweenPlayers);
-    int Direction2 = Mips_CVecDotProd(
-        &bruce->mpOtherPlayer->mVel, &BetweenPlayers);
+    int Direction1 = Mips_CVecDotProd((CVector *)&bruce->CSuper.CBody.mVel, &BetweenPlayers);
+    int Direction2 = Mips_CVecDotProd(&bruce->mpOtherPlayer->mVel, &BetweenPlayers);
 
     if (Direction1 > 0)
     {
@@ -9468,16 +8648,14 @@ void CBruce::HandlePlayerCollisions()
             return;
         }
         int otherLen = bruce->mpOtherPlayer->mVel.Length();
-        int myLen = reinterpret_cast<CVector &>(
-            bruce->CSuper.CBody.mVel).Length();
+        int myLen = reinterpret_cast<CVector &>(bruce->CSuper.CBody.mVel).Length();
         if (myLen < otherLen)
             reinterpret_cast<CBruce *>(bruce)->Bail(0, DO_LIMIT);
         else
             bruce->mpOtherPlayer->Bail(0, DO_LIMIT);
         return;
     }
-    if (Direction2 > 0)
-        return;
+    if (Direction2 > 0) return;
     reinterpret_cast<CBruce *>(bruce)->Bail(0, DO_LIMIT);
 }
 
@@ -9491,43 +8669,36 @@ void CBruce::HandlePlayerCollisions()
  */
 void CBruce::LimitFinalSpeed()
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
     int Spd;
     int AutoKickEnabled;
-    Spd = M3dMaths_SquareRoot0(
-              Mips_CVecDotProd(
-                  (CVector *)&bruce->CSuper.CBody.mVel,
-                  (CVector *)&bruce->CSuper.CBody.mVel))
+    Spd = M3dMaths_SquareRoot0(Mips_CVecDotProd((CVector *)&bruce->CSuper.CBody.mVel,
+                                                (CVector *)&bruce->CSuper.CBody.mVel))
           << 6;
 
     if (Spd > PHYSICS_RECON_LIMIT_MAX_SPEED(bruce))
     {
         /* Scale each velocity component back to the cap. */
         bruce->CSuper.CBody.mVel.x =
-            (bruce->CSuper.CBody.mVel.x *
-             (PHYSICS_RECON_LIMIT_MAX_SPEED(bruce) >> 12)) /
+            (bruce->CSuper.CBody.mVel.x * (PHYSICS_RECON_LIMIT_MAX_SPEED(bruce) >> 12)) /
             (Spd >> 12);
         bruce->CSuper.CBody.mVel.y =
-            (bruce->CSuper.CBody.mVel.y *
-             (PHYSICS_RECON_LIMIT_MAX_SPEED(bruce) >> 12)) /
+            (bruce->CSuper.CBody.mVel.y * (PHYSICS_RECON_LIMIT_MAX_SPEED(bruce) >> 12)) /
             (Spd >> 12);
         bruce->CSuper.CBody.mVel.z =
-            (bruce->CSuper.CBody.mVel.z *
-             (PHYSICS_RECON_LIMIT_MAX_SPEED(bruce) >> 12)) /
+            (bruce->CSuper.CBody.mVel.z * (PHYSICS_RECON_LIMIT_MAX_SPEED(bruce) >> 12)) /
             (Spd >> 12);
-        Spd = M3dMaths_SquareRoot0(
-                  Mips_CVecDotProd(
-                      (CVector *)&bruce->CSuper.CBody.mVel,
-                      (CVector *)&bruce->CSuper.CBody.mVel))
+        Spd = M3dMaths_SquareRoot0(Mips_CVecDotProd((CVector *)&bruce->CSuper.CBody.mVel,
+                                                    (CVector *)&bruce->CSuper.CBody.mVel))
               << 6;
     }
 
     if (GGame != 7)
-        AutoKickEnabled = reinterpret_cast<SCareerOptionsPhysicsOwner *>(&GCareer)->AutoKickEnabled[bruce->mIndex];
+        AutoKickEnabled = reinterpret_cast<SCareerOptionsPhysicsOwner *>(&GCareer)
+                              ->AutoKickEnabled[bruce->mIndex];
     else
-        AutoKickEnabled =
-            reinterpret_cast<SCareerOptionsPhysicsOwner *>(&GCareer)->AutoKickEnabled[bruce->mIndex ^ GHorsePlayer];
+        AutoKickEnabled = reinterpret_cast<SCareerOptionsPhysicsOwner *>(&GCareer)
+                              ->AutoKickEnabled[bruce->mIndex ^ GHorsePlayer];
 
     if (AutoKickEnabled == 0)
     {
@@ -9542,16 +8713,13 @@ void CBruce::LimitFinalSpeed()
         if (PhysicsAbsolute(Spd) < 0x2000)
         {
             bruce->CSuper.CBody.mVel.x -= bruce->CSuper.CBody.mVel.x / 4;
-            if (PhysicsAbsolute(bruce->CSuper.CBody.mVel.x) < 0x10)
-                bruce->CSuper.CBody.mVel.x = 0;
+            if (PhysicsAbsolute(bruce->CSuper.CBody.mVel.x) < 0x10) bruce->CSuper.CBody.mVel.x = 0;
 
             bruce->CSuper.CBody.mVel.y -= bruce->CSuper.CBody.mVel.y / 4;
-            if (PhysicsAbsolute(bruce->CSuper.CBody.mVel.y) < 0x10)
-                bruce->CSuper.CBody.mVel.y = 0;
+            if (PhysicsAbsolute(bruce->CSuper.CBody.mVel.y) < 0x10) bruce->CSuper.CBody.mVel.y = 0;
 
             bruce->CSuper.CBody.mVel.z -= bruce->CSuper.CBody.mVel.z / 4;
-            if (PhysicsAbsolute(bruce->CSuper.CBody.mVel.z) < 0x10)
-                bruce->CSuper.CBody.mVel.z = 0;
+            if (PhysicsAbsolute(bruce->CSuper.CBody.mVel.z) < 0x10) bruce->CSuper.CBody.mVel.z = 0;
         }
     }
 }
@@ -9569,14 +8737,14 @@ void CBruce::LimitFinalSpeed()
  */
 void CBruce::CheckForTriggers()
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
     if (PhysicsTriggerInitialized == 0)
     {
         PhysicsTriggerInitialized = 1;
     }
 
-    CVector check = *(CVector *)&bruce->CSuper.CBody.CItem.mPos - *(CVector *)&bruce->CSuper.CBody.mOldPos;
+    CVector check =
+        *(CVector *)&bruce->CSuper.CBody.CItem.mPos - *(CVector *)&bruce->CSuper.CBody.mOldPos;
     SLineInfo LInfo;
     CVector unit;
 
@@ -9589,8 +8757,8 @@ void CBruce::CheckForTriggers()
         CVector old = *(CVector *)&bruce->CSuper.CBody.mOldPos - unit * 0x10;
 
         LInfo.StartCoords.Set(old.vx, old.vy, old.vz);
-        LInfo.EndCoords.Set(
-            bruce->CSuper.CBody.CItem.mPos.x, bruce->CSuper.CBody.CItem.mPos.y, bruce->CSuper.CBody.CItem.mPos.z);
+        LInfo.EndCoords.Set(bruce->CSuper.CBody.CItem.mPos.x, bruce->CSuper.CBody.CItem.mPos.y,
+                            bruce->CSuper.CBody.CItem.mPos.z);
         M3dColij_InitLineInfo(&LInfo);
 
         LInfo.RecordTriggerZoneHits = 1;
@@ -9629,8 +8797,7 @@ void CBruce::HandleBailStates()
 
         if (bruce->mLimitBailVel == 0 || bruce->mPhysicsState == 2)
         {
-            if (bruce->CSuper.CBody.mVel.y < 0)
-                bruce->CSuper.CBody.mVel.y = 0;
+            if (bruce->CSuper.CBody.mVel.y < 0) bruce->CSuper.CBody.mVel.y = 0;
         }
 
         int friction = bruce->mHeavyFriction;
@@ -9666,21 +8833,18 @@ void Physics_CheckSideCollisions(CBrucePhysicsSlice *bruce)
     CVector Debounce = *(CVector *)&bruce->CSuper.CBody.CItem.mPos;
 
     int SideDistance = 0xa;
-    if (in_bail != 0)
-        SideDistance = 0x46;
+    if (in_bail != 0) SideDistance = 0x46;
 
-    int SideCol = reinterpret_cast<CBruce *>(bruce)->CheckSide(
-        -1, SideDistance, 1);
-    if (SideCol != 0) {
-        SideCol = reinterpret_cast<CBruce *>(bruce)->CheckSide(
-            1, SideDistance, 1);
-    } else {
-        SideCol = reinterpret_cast<CBruce *>(bruce)->CheckSide(
-            1, SideDistance, 1);
-        if (SideCol == 0)
-            return;
-        SideCol = reinterpret_cast<CBruce *>(bruce)->CheckSide(
-            -1, SideDistance, 1);
+    int SideCol = reinterpret_cast<CBruce *>(bruce)->CheckSide(-1, SideDistance, 1);
+    if (SideCol != 0)
+    {
+        SideCol = reinterpret_cast<CBruce *>(bruce)->CheckSide(1, SideDistance, 1);
+    }
+    else
+    {
+        SideCol = reinterpret_cast<CBruce *>(bruce)->CheckSide(1, SideDistance, 1);
+        if (SideCol == 0) return;
+        SideCol = reinterpret_cast<CBruce *>(bruce)->CheckSide(-1, SideDistance, 1);
     }
     if (SideCol != 0)
     {
@@ -9698,89 +8862,77 @@ void Physics_CheckSideCollisions(CBrucePhysicsSlice *bruce)
  */
 void CBruce::HandlePhysicsStates()
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
     switch (bruce->mPhysicsState)
     {
-    case 0:
-        bruce->mGrindLean = 0;
-        bruce->mGrindLeanDir = 0;
-        bruce->mGrindLeanAcc = 0;
-        bruce->mGrindTime = 0;
-        bruce->mNumGrinds = 0;
-        bruce->mDontStickRail = 0;
-        bruce->mGaps = 0;
-        bruce->mpGrindGapTrick = 0;
-        if (bruce->mBrakeMode == 0 && bruce->mInBail == 0
-            && bruce->mManual == 0 && bruce->CSuper.mAnim != 0x82
-            && (char)bruce->mPad->RightTwo.Triggered != 0)
-        {
-            bruce->mPad->RightTwo.Triggered = 0;
-            unsigned int sound = (Rnd(0x80) >= 0x40) ? 0xAE : 0xAF;
-            SFX_PlayX(sound, 0x2000, 0);
-            reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim(0x82, 0x2542);
-            bruce->mCess = 1;
-        }
-        ((CBruce *)bruce)->DoOnGroundPhysics();
-        reinterpret_cast<CBruce *>(bruce)->DoManualPhysics();
-        goto side_collisions;
-    case 7:
-        ((CBruce *)bruce)->DoOnGroundPhysics();
-        reinterpret_cast<CBruce *>(bruce)->DoManualPhysics();
-        bruce->CSuper.CBody.CItem.mPos = bruce->CSuper.CBody.mOldPos;
-    side_collisions:
-        Physics_CheckSideCollisions(bruce);
-        break;
-    case 4:
-    {
-        SGapTrick *p = bruce->mpGrindGapTrick;
-        if (p != 0)
-        {
-            reinterpret_cast<CBruce *>(bruce)->Trick_Trick(
-                p->Name, -(int)p->Score, 2);
-            SFX_PlayX(0xA1, 0x2000, 0);
+        case 0:
+            bruce->mGrindLean = 0;
+            bruce->mGrindLeanDir = 0;
+            bruce->mGrindLeanAcc = 0;
+            bruce->mGrindTime = 0;
+            bruce->mNumGrinds = 0;
+            bruce->mDontStickRail = 0;
+            bruce->mGaps = 0;
             bruce->mpGrindGapTrick = 0;
-        }
-        int i = 0;
-        int minimumScore = 0x3039;
-        int *pScore = (int *)&bruce->mGapChecksum[0];
-        int *pCheck = (int *)&bruce->mGapType[0];
-        do
+            if (bruce->mBrakeMode == 0 && bruce->mInBail == 0 && bruce->mManual == 0 &&
+                bruce->CSuper.mAnim != 0x82 && (char)bruce->mPad->RightTwo.Triggered != 0)
+            {
+                bruce->mPad->RightTwo.Triggered = 0;
+                unsigned int sound = (Rnd(0x80) >= 0x40) ? 0xAE : 0xAF;
+                SFX_PlayX(sound, 0x2000, 0);
+                reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim(0x82, 0x2542);
+                bruce->mCess = 1;
+            }
+            ((CBruce *)bruce)->DoOnGroundPhysics();
+            reinterpret_cast<CBruce *>(bruce)->DoManualPhysics();
+            goto side_collisions;
+        case 7:
+            ((CBruce *)bruce)->DoOnGroundPhysics();
+            reinterpret_cast<CBruce *>(bruce)->DoManualPhysics();
+            bruce->CSuper.CBody.CItem.mPos = bruce->CSuper.CBody.mOldPos;
+        side_collisions:
+            Physics_CheckSideCollisions(bruce);
+            break;
+        case 4:
         {
-            if (*pCheck < 10000)
-                *pScore = minimumScore;
-            pScore++;
-            i++;
-            pCheck++;
-        } while (i < 10);
-        ((CBruce *)bruce)->DoOnRailPhysics();
-        break;
-    }
-    case 8:
-        ((CBruce *)bruce)->DoHandPlantPhysics();
-        break;
-    case 6:
-        reinterpret_cast<CBruce *>(bruce)->DoFootPlantPhysics();
-    case 1:
-        reinterpret_cast<CBruce *>(bruce)->DoInAirPhysics();
-        break;
-    case 5:
-        bruce->mDontStickRail = 0;
-        reinterpret_cast<CBruce *>(bruce)->DoWallRidePhysics();
-        break;
-    case 3:
-        reinterpret_cast<CBruce *>(bruce)->DoInAirPhysics();
-        if (bruce->mPhysicsState == 3)
-        {
-            int xframes = XFrames;
-            int landedTime = bruce->mInAirStickToStart;
-            if (xframes - landedTime > 0x19)
-                Physics_StateTransition(bruce, 1, 0x2589);
+            SGapTrick *p = bruce->mpGrindGapTrick;
+            if (p != 0)
+            {
+                reinterpret_cast<CBruce *>(bruce)->Trick_Trick(p->Name, -(int)p->Score, 2);
+                SFX_PlayX(0xA1, 0x2000, 0);
+                bruce->mpGrindGapTrick = 0;
+            }
+            int i = 0;
+            int minimumScore = 0x3039;
+            int *pScore = (int *)&bruce->mGapChecksum[0];
+            int *pCheck = (int *)&bruce->mGapType[0];
+            do
+            {
+                if (*pCheck < 10000) *pScore = minimumScore;
+                pScore++;
+                i++;
+                pCheck++;
+            } while (i < 10);
+            ((CBruce *)bruce)->DoOnRailPhysics();
+            break;
         }
-        break;
-    case 2:
-        ((CBruce *)bruce)->DoOnGroundPhysics();
-        break;
+        case 8: ((CBruce *)bruce)->DoHandPlantPhysics(); break;
+        case 6: reinterpret_cast<CBruce *>(bruce)->DoFootPlantPhysics();
+        case 1: reinterpret_cast<CBruce *>(bruce)->DoInAirPhysics(); break;
+        case 5:
+            bruce->mDontStickRail = 0;
+            reinterpret_cast<CBruce *>(bruce)->DoWallRidePhysics();
+            break;
+        case 3:
+            reinterpret_cast<CBruce *>(bruce)->DoInAirPhysics();
+            if (bruce->mPhysicsState == 3)
+            {
+                int xframes = XFrames;
+                int landedTime = bruce->mInAirStickToStart;
+                if (xframes - landedTime > 0x19) Physics_StateTransition(bruce, 1, 0x2589);
+            }
+            break;
+        case 2: ((CBruce *)bruce)->DoOnGroundPhysics(); break;
     }
 }
 
@@ -9799,8 +8951,7 @@ void CBruce::HandlePhysicsStates()
  */
 void CBruce::HandleBraking()
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
     int DownOnly;
     int BrakeVal;
     int Speed;
@@ -9808,8 +8959,7 @@ void CBruce::HandleBraking()
 
     /* The state word is only read once the three early-outs pass, so the
      * condition dereferences it directly rather than hoisting it. */
-    if (bruce->mCess != 0 || bruce->mManual != 0 ||
-        bruce->mInBail != 0 ||
+    if (bruce->mCess != 0 || bruce->mManual != 0 || bruce->mInBail != 0 ||
         (bruce->mPhysicsState != 7 && bruce->mPhysicsState != 0))
     {
         if (bruce->mPhysicsState == 7)
@@ -9825,8 +8975,7 @@ void CBruce::HandleBraking()
         DownOnly = 0;
         if (((char)pad->Down.Pressed != 0 && (char)pad->Left.Pressed == 0 &&
              (char)pad->Right.Pressed == 0) ||
-            (*(signed char *)&bruce->mAY > 0 &&
-             *(signed char *)&bruce->mAX == 0))
+            (*(signed char *)&bruce->mAY > 0 && *(signed char *)&bruce->mAX == 0))
         {
             DownOnly = 1;
         }
@@ -9852,9 +9001,7 @@ void CBruce::HandleBraking()
         /* The target keeps this velocity address across the dot product and
          * the later three-component clear. */
         CVector *pVel = (CVector *)&bruce->CSuper.CBody.mVel;
-        Speed = M3dMaths_SquareRoot0(
-                    Mips_CVecDotProd(pVel, pVel))
-                << 6;
+        Speed = M3dMaths_SquareRoot0(Mips_CVecDotProd(pVel, pVel)) << 6;
 
         if (bruce->mPhysicsState == 0 && DownOnly)
         {
@@ -9864,26 +9011,20 @@ void CBruce::HandleBraking()
                 if ((int)((unsigned int)bruce->mAY << 24) > 0)
                 {
                     bruce->CSuper.CBody.mVel.x -=
-                        (((bruce->CSuper.CBody.mVel.x * Angle) / 0x80)
-                         * TimeScale) >> 8;
+                        (((bruce->CSuper.CBody.mVel.x * Angle) / 0x80) * TimeScale) >> 8;
                     bruce->CSuper.CBody.mVel.y -=
-                        (((bruce->CSuper.CBody.mVel.y * Angle) / 0x80)
-                         * TimeScale) >> 8;
+                        (((bruce->CSuper.CBody.mVel.y * Angle) / 0x80) * TimeScale) >> 8;
                     bruce->CSuper.CBody.mVel.z -=
-                        (((bruce->CSuper.CBody.mVel.z * Angle) / 0x80)
-                         * TimeScale) >> 8;
+                        (((bruce->CSuper.CBody.mVel.z * Angle) / 0x80) * TimeScale) >> 8;
                 }
                 else
                 {
                     bruce->CSuper.CBody.mVel.x -=
-                        ((bruce->CSuper.CBody.mVel.x >> 4)
-                         * TimeScale) >> 8;
+                        ((bruce->CSuper.CBody.mVel.x >> 4) * TimeScale) >> 8;
                     bruce->CSuper.CBody.mVel.y -=
-                        ((bruce->CSuper.CBody.mVel.y >> 4)
-                         * TimeScale) >> 8;
+                        ((bruce->CSuper.CBody.mVel.y >> 4) * TimeScale) >> 8;
                     bruce->CSuper.CBody.mVel.z -=
-                        ((bruce->CSuper.CBody.mVel.z >> 4)
-                         * TimeScale) >> 8;
+                        ((bruce->CSuper.CBody.mVel.z >> 4) * TimeScale) >> 8;
                 }
             }
             else if (BrakeVal < 0xA001)
@@ -9898,105 +9039,100 @@ void CBruce::HandleBraking()
         int next;
         switch (bruce->mBrakeMode)
         {
-        case 0:
-            if (!DownOnly)
-            {
+            case 0:
+                if (!DownOnly)
+                {
+                    return;
+                }
+                if (BrakeVal < Speed)
+                {
+                    if (bruce->mManIsCrouched == 0 && Speed < 0x30000)
+                    {
+                        reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim(0x31, 0x2604);
+                        next = 5;
+                    }
+                    else
+                    {
+                        reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim(0x83, 0x2609);
+                        next = 1;
+                    }
+                    goto store;
+                }
+                bruce->mBrakeMode = 0;
+                goto lockout;
+
+            case 1:
+                if (!DownOnly || Speed < BrakeVal + bruce->CSuper.mFrame * 0x1000)
+                {
+                    bruce->CSuper.mAnimFinished = 0;
+                    bruce->CSuper.mAnimDir = -1;
+                    int temp = bruce->CSuper.mStartFrame;
+                    bruce->CSuper.mStartFrame = (short)(signed char)bruce->CSuper.mTargetFrame;
+                    bruce->CSuper.mTargetFrame = (unsigned char)temp;
+                    bruce->mBrakeMode = 3;
+                    if (DownOnly)
+                    {
+                        unsigned int sound = (Rnd(0x80) >= 0x40) ? 0xB0 : 0xB1;
+                        SFX_PlayX(sound, 0x2000, 0);
+                        ((Dust *)&bruce->mDust[0])->Reset(bruce->mTerrain, 2);
+                    }
+                }
+                goto lockout;
+
+            case 5:
+                if (!DownOnly || Speed < BrakeVal + bruce->CSuper.mFrame * 0x1000)
+                {
+                    bruce->CSuper.mAnimFinished = 0;
+                    bruce->CSuper.mAnimDir = -1;
+                    int temp = bruce->CSuper.mStartFrame;
+                    bruce->CSuper.mStartFrame = (short)(signed char)bruce->CSuper.mTargetFrame;
+                    bruce->CSuper.mTargetFrame = (unsigned char)temp;
+                    bruce->mBrakeMode = 6;
+                    if (DownOnly && bruce->CSuper.mFrame > 4)
+                    {
+                        SFX_PlayX(2, 0x2000, 0);
+                    }
+                }
+                goto lockout;
+
+            case 3:
+                if (bruce->CSuper.mAnimFinished != 0)
+                {
+                    if (bruce->mManIsCrouched == 0)
+                    {
+                        reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim2(8, 0x13, 0, 0x2651);
+                    }
+                    else
+                    {
+                        reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim3(8, 0x13, 0x1A, 0x13,
+                                                                          0x2653);
+                    }
+                    next = 4;
+                    goto store;
+                }
+                goto lockout;
+
+            case 6:
+                if (bruce->CSuper.mAnimFinished != 0)
+                {
+                    reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim(0, 0x265D);
+                    next = 4;
+                store:
+                    bruce->mBrakeMode = next;
+                }
+
+            lockout:
+                bruce->mKickLockout = 2;
                 return;
-            }
-            if (BrakeVal < Speed)
-            {
-                if (bruce->mManIsCrouched == 0 && Speed < 0x30000)
+
+            case 4:
+                if (!DownOnly)
                 {
-                    reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim(0x31, 0x2604);
-                    next = 5;
+                    goto clear;
                 }
-                else
-                {
-                    reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim(0x83, 0x2609);
-                    next = 1;
-                }
-                goto store;
-            }
-            bruce->mBrakeMode = 0;
-            goto lockout;
+                return;
 
-        case 1:
-            if (!DownOnly ||
-                Speed < BrakeVal + bruce->CSuper.mFrame * 0x1000)
-            {
-                bruce->CSuper.mAnimFinished = 0;
-                bruce->CSuper.mAnimDir = -1;
-                int temp = bruce->CSuper.mStartFrame;
-                bruce->CSuper.mStartFrame =
-                    (short)(signed char)bruce->CSuper.mTargetFrame;
-                bruce->CSuper.mTargetFrame = (unsigned char)temp;
-                bruce->mBrakeMode = 3;
-                if (DownOnly)
-                {
-                    unsigned int sound = (Rnd(0x80) >= 0x40) ? 0xB0 : 0xB1;
-                    SFX_PlayX(sound, 0x2000, 0);
-                    ((Dust *)&bruce->mDust[0])->Reset(
-                        bruce->mTerrain, 2);
-                }
-            }
-            goto lockout;
-
-        case 5:
-            if (!DownOnly ||
-                Speed < BrakeVal + bruce->CSuper.mFrame * 0x1000)
-            {
-                bruce->CSuper.mAnimFinished = 0;
-                bruce->CSuper.mAnimDir = -1;
-                int temp = bruce->CSuper.mStartFrame;
-                bruce->CSuper.mStartFrame =
-                    (short)(signed char)bruce->CSuper.mTargetFrame;
-                bruce->CSuper.mTargetFrame = (unsigned char)temp;
-                bruce->mBrakeMode = 6;
-                if (DownOnly && bruce->CSuper.mFrame > 4)
-                {
-                    SFX_PlayX(2, 0x2000, 0);
-                }
-            }
-            goto lockout;
-
-        case 3:
-            if (bruce->CSuper.mAnimFinished != 0)
-            {
-                if (bruce->mManIsCrouched == 0)
-                {
-                    reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim2(8, 0x13, 0, 0x2651);
-                }
-                else
-                {
-                    reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim3(8, 0x13, 0x1A, 0x13, 0x2653);
-                }
-                next = 4;
-                goto store;
-            }
-            goto lockout;
-
-        case 6:
-            if (bruce->CSuper.mAnimFinished != 0)
-            {
-                reinterpret_cast<CBruce *>(bruce)->Debug_RunAnim(0, 0x265D);
-                next = 4;
-            store:
-                bruce->mBrakeMode = next;
-            }
-
-        lockout:
-            bruce->mKickLockout = 2;
-            return;
-
-        case 4:
-            if (!DownOnly)
-            {
-                goto clear;
-            }
-            return;
-
-        default:
-            return;
+            default: return;
         }
     }
 
@@ -10014,8 +9150,7 @@ clear:
  */
 void CBruce::HandleFlips()
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
     register int flipCount = bruce->mFlipNum;
     if (flipCount != 0)
     {
@@ -10049,11 +9184,9 @@ void CBruce::HandleFlips()
  */
 void CBruce::HandleTimer()
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
     int game = GGame;
-    if (game == 2)
-        return;
+    if (game == 2) return;
 
     int autotest = GAutoTest;
     int timer;
@@ -10067,11 +9200,9 @@ void CBruce::HandleTimer()
         timer = limit - XFrames;
     }
 
-    if (timer >= 0)
-        return;
+    if (timer >= 0) return;
 
-    if (GState != 0)
-        return;
+    if (GState != 0) return;
 
     if (autotest != 0)
     {
@@ -10100,8 +9231,7 @@ void CBruce::HandleTimer()
  */
 void CBruce::DoPhysics()
 {
-    CBrucePhysicsSlice *bruce =
-        reinterpret_cast<CBrucePhysicsSlice *>(this);
+    CBrucePhysicsSlice *bruce = reinterpret_cast<CBrucePhysicsSlice *>(this);
 
     ((Dust *)&bruce->mDust[0])->Update((CBruce *)bruce);
     ((Blood *)&bruce->mBlood[0])->Update((CBruce *)bruce);
@@ -10109,41 +9239,35 @@ void CBruce::DoPhysics()
     WorldUp.vx = 0;
     WorldUp.vy = -0x1000;
     WorldUp.vz = 0;
-    ((CVectorPhysicsOwner *)((int)&bruce->mAirGravity))->Set(
-        0, bruce->mTrickGravity * 0x82, 0);
+    ((CVectorPhysicsOwner *)((int)&bruce->mAirGravity))->Set(0, bruce->mTrickGravity * 0x82, 0);
 
     /* Three per-frame countdowns; the first clamps below zero, the others below one. */
     if (bruce->mWasAir != 0)
     {
         int t = bruce->mWasAir - 5;
         bruce->mWasAir = t;
-        if (t < 0)
-            bruce->mWasAir = 0;
+        if (t < 0) bruce->mWasAir = 0;
     }
     if (bruce->mMagicPoints != 0)
     {
         int t = bruce->mMagicPoints - 2;
         bruce->mMagicPoints = t;
-        if (t < 1)
-            bruce->mMagicPoints = 0;
+        if (t < 1) bruce->mMagicPoints = 0;
     }
     if (bruce->mMagicTime != 0)
     {
         int t = bruce->mMagicTime - 2;
         bruce->mMagicTime = t;
-        if (t < 1)
-            bruce->mMagicTime = 0;
+        if (t < 1) bruce->mMagicTime = 0;
     }
 
     /* Crouch latch: stamped with the frame counter while the pad is held down. */
     SControl *pad = bruce->mPad;
-    if (((char)pad->Up.Pressed != 0 ||
-         *(signed char *)&bruce->mAY < -0x28) &&
+    if (((char)pad->Up.Pressed != 0 || *(signed char *)&bruce->mAY < -0x28) &&
         (char)pad->Left.Pressed == 0 && (char)pad->Right.Pressed == 0 &&
         *(signed char *)&bruce->mAX == 0)
     {
-        if (bruce->mJustUp == 0)
-            bruce->mJustUp = XFrames;
+        if (bruce->mJustUp == 0) bruce->mJustUp = XFrames;
     }
     else
         bruce->mJustUp = 0;
@@ -10158,8 +9282,7 @@ void CBruce::DoPhysics()
     reinterpret_cast<CBruce *>(bruce)->FRUVectorsFromRotMatrix();
     reinterpret_cast<CBruce *>(bruce)->HandleSpin();
 
-    if (bruce->mPhysicsState != 1)
-        bruce->mIgnoreCar = 0;
+    if (bruce->mPhysicsState != 1) bruce->mIgnoreCar = 0;
 
     bruce->CSuper.CBody.mAcc.z = 0;
     bruce->CSuper.CBody.mAcc.y = 0;
@@ -10168,8 +9291,7 @@ void CBruce::DoPhysics()
     ((CBruce *)bruce)->HandleKick();
     ((CBruce *)bruce)->HandleJump();
 
-    if (bruce->mPhysicsState != 5 &&
-        bruce->CSuper.mAnimFinished != 0)
+    if (bruce->mPhysicsState != 5 && bruce->CSuper.mAnimFinished != 0)
     {
         int animation = bruce->CSuper.mAnim;
         if (animation < 0x25)
@@ -10220,21 +9342,18 @@ void CBruce::DoPhysics()
             if (bruce->mMagicTime != 0 || Cheat_Fire != 0)
             {
                 int value = board + stat + 0x19;
-                bruce->mMaxKickSpeed =
-                    ((value << 12) * 45) / 0x1C;
+                bruce->mMaxKickSpeed = ((value << 12) * 45) / 0x1C;
             }
             else
             {
                 int value = stat + board + 0x16;
-                bruce->mMaxKickSpeed =
-                    ((value << 12) * 45) / 0x1C;
+                bruce->mMaxKickSpeed = ((value << 12) * 45) / 0x1C;
             }
         }
         else
         {
             int value = statsOverride + 0x16;
-            bruce->mMaxKickSpeed =
-                ((value << 12) * 45) / 0x1C;
+            bruce->mMaxKickSpeed = ((value << 12) * 45) / 0x1C;
         }
     }
     else
@@ -10247,58 +9366,50 @@ void CBruce::DoPhysics()
             if (bruce->mMagicTime != 0 || Cheat_Fire != 0)
             {
                 int value = board + stat + 0x14;
-                if (((value << 12) * 45) / 0x1C <
-                    oldMaxKickSpeed)
-                    goto lower_max_kick_speed;
+                if (((value << 12) * 45) / 0x1C < oldMaxKickSpeed) goto lower_max_kick_speed;
                 goto keep_max_kick_speed;
             }
             else
             {
                 int value = stat + board + 0x11;
-                if (((value << 12) * 45) / 0x1C <
-                    oldMaxKickSpeed)
-                    goto lower_max_kick_speed;
+                if (((value << 12) * 45) / 0x1C < oldMaxKickSpeed) goto lower_max_kick_speed;
                 goto keep_max_kick_speed;
             }
         }
         else
         {
             int value = Cheat_StatsOverride + 0x11;
-            if (((value << 12) * 45) / 0x1C >=
-                oldMaxKickSpeed)
-                goto keep_max_kick_speed;
+            if (((value << 12) * 45) / 0x1C >= oldMaxKickSpeed) goto keep_max_kick_speed;
         }
-lower_max_kick_speed:
+    lower_max_kick_speed:
         bruce->mMaxKickSpeed = oldMaxKickSpeed - 1;
-keep_max_kick_speed:;
+    keep_max_kick_speed:;
     }
 
     if (bruce->mSpeedBoost != 0)
     {
-        int Speed = M3dMaths_SquareRoot0(Mips_CVecDotProd(
-                        (CVector *)&bruce->CSuper.CBody.mVel, (CVector *)&bruce->CSuper.CBody.mVel));
+        int Speed = M3dMaths_SquareRoot0(Mips_CVecDotProd((CVector *)&bruce->CSuper.CBody.mVel,
+                                                          (CVector *)&bruce->CSuper.CBody.mVel));
         Speed = (Speed << 6) >> 12;
         bruce->mSpeedBoost = bruce->mSpeedBoost - 1;
-        bruce->CSuper.CBody.mAcc.x = bruce->CSuper.CBody.mAcc.x + bruce->CSuper.CBody.mVel.x / Speed;
-        bruce->CSuper.CBody.mAcc.y = bruce->CSuper.CBody.mAcc.y + bruce->CSuper.CBody.mVel.y / Speed;
-        bruce->CSuper.CBody.mAcc.z = bruce->CSuper.CBody.mAcc.z + bruce->CSuper.CBody.mVel.z / Speed;
+        bruce->CSuper.CBody.mAcc.x =
+            bruce->CSuper.CBody.mAcc.x + bruce->CSuper.CBody.mVel.x / Speed;
+        bruce->CSuper.CBody.mAcc.y =
+            bruce->CSuper.CBody.mAcc.y + bruce->CSuper.CBody.mVel.y / Speed;
+        bruce->CSuper.CBody.mAcc.z =
+            bruce->CSuper.CBody.mAcc.z + bruce->CSuper.CBody.mVel.z / Speed;
     }
 
     /* The by-value CVector argument is the skater's current position. */
-    UberFrig(
-        (CBruce *)bruce,
-        *(CVector *)&bruce->CSuper.CBody.CItem.mPos,
-        (char *)PhysicsDiagnosticPool.loopRestart);
+    UberFrig((CBruce *)bruce, *(CVector *)&bruce->CSuper.CBody.CItem.mPos,
+             (char *)PhysicsDiagnosticPool.loopRestart);
 
     bruce->mSafePos = bruce->CSuper.CBody.CItem.mPos;
 
-    if (bruce->mInBail == 0)
-        reinterpret_cast<CBruce *>(bruce)->BoardOn();
-    if (bruce->mPhysicsState != 8)
-        reinterpret_cast<CBruce *>(bruce)->HandleStickToRail();
+    if (bruce->mInBail == 0) reinterpret_cast<CBruce *>(bruce)->BoardOn();
+    if (bruce->mPhysicsState != 8) reinterpret_cast<CBruce *>(bruce)->HandleStickToRail();
 
-    if (bruce->mInBail != 0 &&
-        bruce->CSuper.mAnim == 0x2E &&
+    if (bruce->mInBail != 0 && bruce->CSuper.mAnim == 0x2E &&
         bruce->CSuper.mFrame == HeadBloodAtFrame[bruce->mSkaterType])
     {
         reinterpret_cast<CBruce *>(bruce)->BloodSplat(0, 0x32);
@@ -10342,12 +9453,9 @@ keep_max_kick_speed:;
             line_info.StartCoords.vx = bruce->CSuper.CBody.CItem.mPos.x;
             line_info.StartCoords.vy = bruce->CSuper.CBody.CItem.mPos.y;
             line_info.StartCoords.vz = bruce->CSuper.CBody.CItem.mPos.z;
-            line_info.EndCoords.vx = line_info.StartCoords.vx
-                                   + wallX * 0x3C;
-            line_info.EndCoords.vy = line_info.StartCoords.vy
-                                   + bruce->mUp.y * 0x3C;
-            line_info.EndCoords.vz = line_info.StartCoords.vz
-                                   + bruce->mUp.z * 0x3C;
+            line_info.EndCoords.vx = line_info.StartCoords.vx + wallX * 0x3C;
+            line_info.EndCoords.vy = line_info.StartCoords.vy + bruce->mUp.y * 0x3C;
+            line_info.EndCoords.vz = line_info.StartCoords.vz + bruce->mUp.z * 0x3C;
             M3dColij_InitLineInfo(&line_info);
             M3dZone_LineToItem(&line_info, 1);
 
@@ -10371,8 +9479,8 @@ keep_max_kick_speed:;
                 gte_op12();
                 gte_stlvnl(Front);
                 reinterpret_cast<CBruce *>(bruce)->RotMatrixFromFRUVectors();
-                reinterpret_cast<CBruce *>(bruce)->ReflectHeadingVelocityInPlane(
-                    line_info.Normal, 0x200);
+                reinterpret_cast<CBruce *>(bruce)->ReflectHeadingVelocityInPlane(line_info.Normal,
+                                                                                 0x200);
                 bruce->mSameNormal = 0;
             }
         }
@@ -10391,28 +9499,23 @@ keep_max_kick_speed:;
                         if (animation > 8)
                         {
                             MaxFrame = 0xC;
-                            if (lean < 0)
-                                MaxFrame = -0xC;
+                            if (lean < 0) MaxFrame = -0xC;
                         }
                     }
                 }
                 else
                 {
                     MaxFrame = 0x16;
-                    if (lean < 0)
-                        MaxFrame = -0x16;
+                    if (lean < 0) MaxFrame = -0x16;
                 }
             }
             if (MaxFrame != 0)
             {
                 int reach = -((bruce->CSuper.mFrame * 0x5A) / MaxFrame);
                 SLineInfo line_info;
-                line_info.StartCoords.vx =
-                    bruce->CSuper.CBody.CItem.mPos.x + bruce->mUp.x * 100;
-                line_info.StartCoords.vy =
-                    bruce->CSuper.CBody.CItem.mPos.y + bruce->mUp.y * 100;
-                line_info.StartCoords.vz =
-                    bruce->CSuper.CBody.CItem.mPos.z + bruce->mUp.z * 100;
+                line_info.StartCoords.vx = bruce->CSuper.CBody.CItem.mPos.x + bruce->mUp.x * 100;
+                line_info.StartCoords.vy = bruce->CSuper.CBody.CItem.mPos.y + bruce->mUp.y * 100;
+                line_info.StartCoords.vz = bruce->CSuper.CBody.CItem.mPos.z + bruce->mUp.z * 100;
                 line_info.EndCoords = line_info.StartCoords;
                 line_info.EndCoords.vx += bruce->mRight.x * reach;
                 line_info.EndCoords.vy += bruce->mRight.y * reach;
@@ -10454,8 +9557,7 @@ keep_max_kick_speed:;
     {
         if (PhysicsState > 0)
         {
-            if (bruce->mAirTime == 0)
-                bruce->mAirTime = XFrames;
+            if (bruce->mAirTime == 0) bruce->mAirTime = XFrames;
         }
         else
         {

@@ -8,8 +8,7 @@ struct CTrickOb;
  * code addresses that pointer absolutely, so each inclusion selects its
  * target-proven declaration view without exposing the object layout.
  */
-#if defined(TRICKOBLIST_OWNER_DECLARATION) && \
-    defined(TRICKOBLIST_ABSOLUTE_DECLARATION)
+#if defined(TRICKOBLIST_OWNER_DECLARATION) && defined(TRICKOBLIST_ABSOLUTE_DECLARATION)
 #error "Select only one TrickObList declaration view"
 #elif defined(TRICKOBLIST_OWNER_DECLARATION)
 #define TRICKOBLIST_DECL_ATTR

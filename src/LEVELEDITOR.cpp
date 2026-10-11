@@ -44,8 +44,7 @@ struct CCamera
     CCamera(CBody *tripod, unsigned short mikeIndex);
 };
 
-typedef char level_editor_runtime_camera_size_must_be_0x684[
-    (sizeof(CCamera) == 0x684) ? 1 : -1];
+typedef char level_editor_runtime_camera_size_must_be_0x684[(sizeof(CCamera) == 0x684) ? 1 : -1];
 
 // === Forward type declarations ===
 
@@ -79,8 +78,7 @@ struct EditorInModel
     unsigned char flagsPadding[3];
 };
 
-typedef char editor_source_model_size_must_be_68[
-    (sizeof(EditorInModel) == 68) ? 1 : -1];
+typedef char editor_source_model_size_must_be_68[(sizeof(EditorInModel) == 68) ? 1 : -1];
 
 /** Owner-local EditorOutModel slice used by cursor sorting and visibility. */
 struct EditorOutModel
@@ -103,8 +101,7 @@ struct EditorOutModel
     EditorOutModel *Next;
 };
 
-typedef char editor_out_model_size_must_be_128[
-    (sizeof(EditorOutModel) == 128) ? 1 : -1];
+typedef char editor_out_model_size_must_be_128[(sizeof(EditorOutModel) == 128) ? 1 : -1];
 
 #define LEVELGEN_GRID_MAP_LAYOUT
 #define LEVELGEN_GRID_MAP_LAYOUT_ONLY
@@ -143,8 +140,7 @@ struct LevelGenerator
     /** Adds one source model to the editor occupancy map. */
     void AddModel(int x, int z, int slot, int rot, int index);
     /** Removes the uppermost model occupying one editor map cell. */
-    int RemoveModelFromMap(
-        int x, int z, int *noLowerThan, EditorInModel **removedModel);
+    int RemoveModelFromMap(int x, int z, int *noLowerThan, EditorInModel **removedModel);
 };
 
 /** LevelGenerator slice through the placed-model occupancy map. */
@@ -163,8 +159,8 @@ struct EditorLevelGeneratorListsView
     EditorOutModel *FloorModelList;
 };
 
-typedef char editor_level_generator_lists_size_must_be_0x792c[
-    (sizeof(EditorLevelGeneratorListsView) == 0x792c) ? 1 : -1];
+typedef char editor_level_generator_lists_size_must_be_0x792c
+    [(sizeof(EditorLevelGeneratorListsView) == 0x792c) ? 1 : -1];
 
 struct ModelFace;
 struct RailInfo;
@@ -182,18 +178,13 @@ struct SlicedImage2 : Image
 struct Sprite2 : SlicedImage2
 {
     /** Allocate sprite storage through the shared CClass arena. */
-    static void *operator new(unsigned int size) throw()
-    {
-        return ::CClass::operator new(size);
-    }
+    static void *operator new(unsigned int size) throw() { return ::CClass::operator new(size); }
     /** Build a sprite from a bitmap file. */
     Sprite2(char *name, int pack, int sliceWidth, int sliceHeight);
 };
 
-typedef char editor_sliced_image2_size_must_be_60[
-    (sizeof(SlicedImage2) == 60) ? 1 : -1];
-typedef char editor_sprite2_size_must_be_60[
-    (sizeof(Sprite2) == 60) ? 1 : -1];
+typedef char editor_sliced_image2_size_must_be_60[(sizeof(SlicedImage2) == 60) ? 1 : -1];
+typedef char editor_sprite2_size_must_be_60[(sizeof(Sprite2) == 60) ? 1 : -1];
 /** Pointer-only menu service used by the editor wrapper. */
 struct BasicMenu
 {
@@ -223,8 +214,7 @@ struct EditorSourceModelView
     unsigned char flags;
 };
 
-typedef char editor_source_model_stride_must_be_68[
-    (sizeof(EditorSourceModelView) == 68) ? 1 : -1];
+typedef char editor_source_model_stride_must_be_68[(sizeof(EditorSourceModelView) == 68) ? 1 : -1];
 
 /** LevelGenerator prefix through the editor's source-model table. */
 struct EditorLevelGeneratorModelsView
@@ -246,13 +236,11 @@ struct EditorSourceModelAddressView
     EditorSourceModelView SourceModel;
 };
 
-typedef char editor_source_model_address_size_must_be_0x60[
-    (sizeof(EditorSourceModelAddressView) == 0x60) ? 1 : -1];
+typedef char editor_source_model_address_size_must_be_0x60
+    [(sizeof(EditorSourceModelAddressView) == 0x60) ? 1 : -1];
 
-typedef char editor_source_model_table_offset_must_be_28[
-    ((sizeof(void *) + sizeof(unsigned int) + 16 + sizeof(int)) == 28)
-        ? 1
-        : -1];
+typedef char editor_source_model_table_offset_must_be_28
+    [((sizeof(void *) + sizeof(unsigned int) + 16 + sizeof(int)) == 28) ? 1 : -1];
 
 /** Polymorphic screen element prefix used by editor menu draw calls. */
 struct EditorDrawableView
@@ -268,8 +256,8 @@ struct EditorScreenElementView
     int mHomeY;
 };
 
-typedef char editor_screen_element_prefix_must_be_12[
-    (sizeof(EditorScreenElementView) == 12) ? 1 : -1];
+typedef char
+    editor_screen_element_prefix_must_be_12[(sizeof(EditorScreenElementView) == 12) ? 1 : -1];
 
 /** Double-buffer slice exposing the panel ordering table at offset 0x84. */
 struct EditorDoubleBufferView
@@ -279,8 +267,9 @@ struct EditorDoubleBufferView
     unsigned int *OrderingTable;
 };
 
-typedef char editor_double_buffer_prefix_size_must_be_0x8c[
-    (sizeof(EditorDoubleBufferView) == 0x8c) ? 1 : -1];
+typedef char editor_double_buffer_prefix_size_must_be_0x8c[(sizeof(EditorDoubleBufferView) == 0x8c)
+                                                               ? 1
+                                                               : -1];
 
 #include "SCAMERA.h"
 
@@ -320,8 +309,8 @@ struct EditorFontAssignmentView : public EditorClassAssignmentView
     unsigned char OldB;
 };
 
-typedef char editor_font_assignment_size_must_be_80[
-    (sizeof(EditorFontAssignmentView) == 80) ? 1 : -1];
+typedef char
+    editor_font_assignment_size_must_be_80[(sizeof(EditorFontAssignmentView) == 80) ? 1 : -1];
 
 /** CBody prefix used by the level-editor camera's focus calculations. */
 struct EditorCameraBodyView
@@ -338,8 +327,8 @@ struct EditorItemVtableView
     void **vtable;
 };
 
-typedef char editor_item_vtable_offset_must_be_0x48[
-    (sizeof(EditorItemVtableView) == 0x4c) ? 1 : -1];
+typedef char
+    editor_item_vtable_offset_must_be_0x48[(sizeof(EditorItemVtableView) == 0x4c) ? 1 : -1];
 
 /** Packed fixed-point sine/cosine entry used by the original table macros. */
 struct EditorSinCos
@@ -364,8 +353,8 @@ struct EditorSpriteJustificationView
     unsigned char JustY;
 };
 
-typedef char editor_sprite_justification_size_must_be_0x15[
-    (sizeof(EditorSpriteJustificationView) == 0x15) ? 1 : -1];
+typedef char editor_sprite_justification_size_must_be_0x15
+    [(sizeof(EditorSpriteJustificationView) == 0x15) ? 1 : -1];
 
 /** TextMenuWrapper layout used by the level editor's state machine. */
 struct TextMenuWrapper
@@ -380,8 +369,7 @@ struct TextMenuWrapper
 
 typedef TextMenuWrapper EditorTextMenuView;
 
-typedef char editor_text_menu_size_must_be_272[
-    (sizeof(EditorTextMenuView) == 272) ? 1 : -1];
+typedef char editor_text_menu_size_must_be_272[(sizeof(EditorTextMenuView) == 272) ? 1 : -1];
 
 /**
  * Runtime-camera slice used by EditorCamera.  The named fields retain their
@@ -426,21 +414,19 @@ struct EditorRuntimeCameraView
     }
 
     /** Dispatch the camera's virtual update method. */
-    void Update()
-    {
-        vtable[4](this);
-    }
+    void Update() { vtable[4](this); }
 };
 
-typedef char editor_runtime_camera_mode_offset_must_be_0x558[
-    (sizeof(EditorRuntimeCameraView) == 0x55c) ? 1 : -1];
+typedef char editor_runtime_camera_mode_offset_must_be_0x558
+    [(sizeof(EditorRuntimeCameraView) == 0x55c) ? 1 : -1];
 
 // Cursor — level-editor cursor (originally a real C++ class, retired from
 // `extern "C"` mangled-name shims in Phase F1.6).  Layout matches
 // the direct `MAIN.SYM` layout cache's `struct Cursor`.
-struct Cursor : CClass {
+struct Cursor : CClass
+{
     struct CursorModel Models[4];
-    struct EditorOutModel (*SortList[1200]);
+    struct EditorOutModel(*SortList[1200]);
     int LatestModel;
     signed char CameraDirX;
     signed char CameraDirZ;
@@ -535,10 +521,8 @@ extern const char s_NotAvailableInDemo[];
 #define RCOSSIN_DECL_TYPE int
 #define RCOSSIN_SCALAR_VIEW
 #include "RCOSSIN.h"
-#define EditorSine(angle) \
-    ((*(EditorSinCos *)(&rcossin_tbl + ((angle) & 0xfff))).Sin)
-#define EditorCosine(angle) \
-    ((*(EditorSinCos *)(&rcossin_tbl + ((angle) & 0xfff))).Cos)
+#define EditorSine(angle) ((*(EditorSinCos *)(&rcossin_tbl + ((angle) & 0xfff))).Sin)
+#define EditorCosine(angle) ((*(EditorSinCos *)(&rcossin_tbl + ((angle) & 0xfff))).Cos)
 // === Function implementations (address order) ===
 
 /**
@@ -553,8 +537,7 @@ extern const char s_NotAvailableInDemo[];
 #include "FRONTEND2.h"
 void LevelEditor_Main(void)
 {
-    LevelEditor *Ed = static_cast<LevelEditor *>(
-        ::CClass::operator new(sizeof(LevelEditor)));
+    LevelEditor *Ed = static_cast<LevelEditor *>(::CClass::operator new(sizeof(LevelEditor)));
     if (Ed != 0)
     {
         Ed = ::new (Ed) LevelEditor;
@@ -592,7 +575,8 @@ LevelEditor::LevelEditor()
     this->CreateMenu();
     Db_Init();
     FontManager::LoadFont("ingame1.fnt");
-    if (!GenerateLevel) {
+    if (!GenerateLevel)
+    {
         LevelGenerator::Init();
         EditorPieces_SetTheme(GenerateThemeNumber);
         PiecesRemaining = 0x30;
@@ -601,8 +585,7 @@ LevelEditor::LevelEditor()
 
     void *obj;
     obj = ::CClass::operator new(sizeof(SelectManager));
-    if (obj != 0)
-        obj = ::new (obj) SelectManager;
+    if (obj != 0) obj = ::new (obj) SelectManager;
     {
         int theme = GenerateThemeNumber;
         this->PieceManager = static_cast<SelectManager *>(obj);
@@ -610,34 +593,29 @@ LevelEditor::LevelEditor()
     }
 
     obj = ::CClass::operator new(0xa634);
-    if (obj != 0)
-        obj = ::new (obj) LevelGenerator(false);
+    if (obj != 0) obj = ::new (obj) LevelGenerator(false);
     int theme = GenerateThemeNumber;
     this->Gen = static_cast<LevelGenerator *>(obj);
     sprintf(theme_name, "SkEd%d", theme + 1);
     this->Gen->LoadModels(theme_name);
     this->Gen->CreatePSX(&this->mRegion, true);
     int region = this->mRegion;
-    this->pItemList =
-        reinterpret_cast<Item *>(PSXRegion[region].pPSX + 3);
+    this->pItemList = reinterpret_cast<Item *>(PSXRegion[region].pPSX + 3);
     printf("mRegion is %d\n", region);
 
     obj = ::CClass::operator new(sizeof(EditorCamera));
-    if (obj != 0)
-        obj = ::new (obj) EditorCamera;
+    if (obj != 0) obj = ::new (obj) EditorCamera;
     this->mCamera = static_cast<EditorCamera *>(obj);
 
     obj = ::CClass::operator new(sizeof(Cursor));
-    if (obj != 0)
-        obj = ::new (obj) Cursor(*this->Gen);
+    if (obj != 0) obj = ::new (obj) Cursor(*this->Gen);
     this->mCursor = static_cast<Cursor *>(obj);
 
     {
         int pidx = this->PieceManager->GetPieceIndex();
         this->mCursor->SetPiece(pidx);
     }
-    this->mCursor->SetCameraTargetVector(
-        this->mCamera->GetCameraTargetVector());
+    this->mCursor->SetCameraTargetVector(this->mCamera->GetCameraTargetVector());
 
     this->mViewPort.xR = 0x200;
     this->mViewPort.yB = 0xf0;
@@ -719,14 +697,12 @@ void LevelEditor::Draw()
     EditorTextMenuView *wrapper = this->Wrapper;
     if (wrapper != 0)
     {
-        EditorDrawableView *menu =
-            reinterpret_cast<EditorDrawableView *>(wrapper->Menu);
-        reinterpret_cast<void (*)(EditorDrawableView *)>(menu->vtable[5])(
-            menu);
+        EditorDrawableView *menu = reinterpret_cast<EditorDrawableView *>(wrapper->Menu);
+        reinterpret_cast<void (*)(EditorDrawableView *)>(menu->vtable[5])(menu);
     }
 
-    M3d_RenderSetup(
-        C, &this->mViewPort, reinterpret_cast<EditorDoubleBufferView *>(pDoubleBuffer)->OrderingTable);
+    M3d_RenderSetup(C, &this->mViewPort,
+                    reinterpret_cast<EditorDoubleBufferView *>(pDoubleBuffer)->OrderingTable);
 
     ForceWireFrameColor = 0x8000;
     CurrentOrderingTable += 200;
@@ -772,9 +748,7 @@ int LevelEditor::Update()
         this->DidLoad = 0;
         this->Gen->CreatePSX(&this->mRegion, true);
         this->pItemList = (struct Item *)(PSXRegion[this->mRegion].pPSX + 3);
-        this->mCursor->Move(this->mCursor->X,
-                              this->mCursor->Y,
-                              this->mCursor->Z);
+        this->mCursor->Move(this->mCursor->X, this->mCursor->Y, this->mCursor->Z);
         this->mCursor->ResortGrid = (void *)1;
     }
 
@@ -805,9 +779,7 @@ int LevelEditor::Update()
     }
 
     this->mCursor->Update();
-    this->mCamera->SetTarget(this->mCursor->CameraX,
-                               0,
-                               this->mCursor->CameraZ);
+    this->mCamera->SetTarget(this->mCursor->CameraX, 0, this->mCursor->CameraZ);
     this->mCamera->Update();
     this->PieceManager->Update();
 
@@ -847,8 +819,7 @@ void LevelEditor::HandleInput()
     {
         Pad[0].Square.Triggered = 0;
         this->mCamera->Rotate();
-        this->mCursor->SetCameraTargetVector(
-            this->mCamera->GetCameraTargetVector());
+        this->mCursor->SetCameraTargetVector(this->mCamera->GetCameraTargetVector());
         this->mCursor->ResortGrid = (void *)1;
     }
 
@@ -877,8 +848,7 @@ void LevelEditor::HandleInput()
             SFX_PlayX(0x92, 0x2000, 0);
         }
         this->mCursor->ResortGrid = (void *)1;
-        this->pItemList =
-            (Item *)(PSXRegion[this->mRegion].pPSX + 3);
+        this->pItemList = (Item *)(PSXRegion[this->mRegion].pPSX + 3);
     }
 
     if (Pad[0].Triangle.Triggered != 0)
@@ -894,45 +864,39 @@ void LevelEditor::HandleInput()
             SFX_PlayX(0x92, 0x2000, 0);
         }
         this->mCursor->ResortGrid = (void *)1;
-        this->pItemList =
-            (Item *)(PSXRegion[this->mRegion].pPSX + 3);
+        this->pItemList = (Item *)(PSXRegion[this->mRegion].pPSX + 3);
     }
 
     if (Pad[0].LeftTwo.Triggered != 0)
     {
         Pad[0].LeftTwo.Triggered = 0;
         this->PieceManager->ChangeCategory(-1);
-        this->mCursor->SetPiece(
-            this->PieceManager->GetPieceIndex());
+        this->mCursor->SetPiece(this->PieceManager->GetPieceIndex());
     }
 
     if (Pad[0].LeftOne.Triggered != 0)
     {
         Pad[0].LeftOne.Triggered = 0;
         this->PieceManager->ChangeCategory(1);
-        this->mCursor->SetPiece(
-            this->PieceManager->GetPieceIndex());
+        this->mCursor->SetPiece(this->PieceManager->GetPieceIndex());
     }
 
     if (Pad[0].RightTwo.Triggered != 0)
     {
         Pad[0].RightTwo.Triggered = 0;
         this->PieceManager->ChangePiece(-1);
-        this->mCursor->SetPiece(
-            this->PieceManager->GetPieceIndex());
+        this->mCursor->SetPiece(this->PieceManager->GetPieceIndex());
     }
 
     if (Pad[0].RightOne.Triggered != 0)
     {
         Pad[0].RightOne.Triggered = 0;
         this->PieceManager->ChangePiece(1);
-        this->mCursor->SetPiece(
-            this->PieceManager->GetPieceIndex());
+        this->mCursor->SetPiece(this->PieceManager->GetPieceIndex());
     }
 
     int press = -1;
-    if ((Pad[0].Left.Pressed != 0 && this->mPadWait == 0) ||
-        Pad[0].Left.Triggered != 0)
+    if ((Pad[0].Left.Pressed != 0 && this->mPadWait == 0) || Pad[0].Left.Triggered != 0)
     {
         this->mPadWait = 4;
         press = 2;
@@ -942,8 +906,7 @@ void LevelEditor::HandleInput()
         }
     }
 
-    if ((Pad[0].Right.Pressed != 0 && this->mPadWait == 0) ||
-        Pad[0].Right.Triggered != 0)
+    if ((Pad[0].Right.Pressed != 0 && this->mPadWait == 0) || Pad[0].Right.Triggered != 0)
     {
         this->mPadWait = 4;
         press = 0;
@@ -953,8 +916,7 @@ void LevelEditor::HandleInput()
         }
     }
 
-    if ((Pad[0].Up.Pressed != 0 && this->mPadWait == 0) ||
-        Pad[0].Up.Triggered != 0)
+    if ((Pad[0].Up.Pressed != 0 && this->mPadWait == 0) || Pad[0].Up.Triggered != 0)
     {
         this->mPadWait = 4;
         press = 1;
@@ -964,8 +926,7 @@ void LevelEditor::HandleInput()
         }
     }
 
-    if ((Pad[0].Down.Pressed != 0 && this->mPadWait == 0) ||
-        Pad[0].Down.Triggered != 0)
+    if ((Pad[0].Down.Pressed != 0 && this->mPadWait == 0) || Pad[0].Down.Triggered != 0)
     {
         this->mPadWait = 4;
         press = 3;
@@ -1016,120 +977,158 @@ void LevelEditor::UpdateMenu()
 
     switch (editor->MenuState)
     {
-    case 0:
-        if (Pad[0].Start.Triggered != 0)
-        {
-            Pad[0].Start.Triggered = 0;
-            editor->LastMenuState = 0;
-            editor->MenuState = 1;
-        }
-        goto update_menu;
-
-    case 1:
-    {
-        if (editor->Wrapper == 0)
-        {
-            const char *names[6] = {
-                "CONTINUE", "PLAY", "SET THEME", "SAVE", "LOAD", "QUIT"
-            };
-            int ids[6] = {2, 4, 5, 1, 3, 0};
-
-            EditorTextMenuView *wrapper =
-                static_cast<EditorTextMenuView *>(
-                    ::CClass::operator new(sizeof(EditorTextMenuView)));
-            if (wrapper != 0)
-            {
-                wrapper = __15TextMenuWrapperPCPcPiiPcb(
-                    wrapper, names, ids, 6,
-                    "ingame1.fnt", false);
-            }
-            editor->Wrapper = wrapper;
-            editor->Wrapper->ItemList[3]->JustX = 0;
-            editor->Wrapper->ItemList[4]->JustX = 0;
-            goto update_menu;
-        }
-
-        if (reinterpret_cast<MenuFunction>(editor->Wrapper->vtable[4])(
-                editor->Wrapper) == 0)
-        {
-            goto update_menu;
-        }
-
-        editor->LastMenuState = 1;
-        EnumMenuState next_state;
-        switch (reinterpret_cast<MenuFunction>(editor->Wrapper->vtable[5])(
-            editor->Wrapper))
-        {
         case 0:
-            next_state = VERIFY_CHOICE;
-            break;
+            if (Pad[0].Start.Triggered != 0)
+            {
+                Pad[0].Start.Triggered = 0;
+                editor->LastMenuState = 0;
+                editor->MenuState = 1;
+            }
+            goto update_menu;
+
         case 1:
-            next_state = SAVE;
-            break;
-        case 3:
-            next_state = LOAD;
-            break;
-        case 4:
-            editor->MenuState = DONE;
-            GenerateLevel = (void *)1;
-            goto destroy_main_menu;
-        case 5:
-            next_state = SET_THEME;
-            break;
-        default:
-            editor->MenuState = NOTHING;
-            goto destroy_main_menu;
-        }
-        editor->MenuState = next_state;
-destroy_main_menu:
-        if (editor->Wrapper != 0)
         {
-            EditorTextMenuView *wrapper = editor->Wrapper;
-            ((MenuDestroyFunction)wrapper->vtable[2])(wrapper, 3);
-        }
-        editor->Wrapper = 0;
-        break;
-    }
-
-    case 2:
-        if (editor->Wrapper == 0)
-        {
-            char names[10][2];
-            const char *name_ptrs[10];
-            int ids[10];
-
-            for (int i = 0; i < 10; i++)
+            if (editor->Wrapper == 0)
             {
-                sprintf(names[i], "%d", i);
-                name_ptrs[i] = names[i];
-                ids[i] = i;
-            }
+                const char *names[6] = { "CONTINUE", "PLAY", "SET THEME", "SAVE", "LOAD", "QUIT" };
+                int ids[6] = { 2, 4, 5, 1, 3, 0 };
 
-            EditorTextMenuView *wrapper =
-                static_cast<EditorTextMenuView *>(
+                EditorTextMenuView *wrapper = static_cast<EditorTextMenuView *>(
                     ::CClass::operator new(sizeof(EditorTextMenuView)));
-            if (wrapper != 0)
-            {
-                wrapper = __15TextMenuWrapperPCPcPiiPcb(
-                    wrapper, name_ptrs, ids, 10,
-                    "ingame1.fnt", true);
+                if (wrapper != 0)
+                {
+                    wrapper =
+                        __15TextMenuWrapperPCPcPiiPcb(wrapper, names, ids, 6, "ingame1.fnt", false);
+                }
+                editor->Wrapper = wrapper;
+                editor->Wrapper->ItemList[3]->JustX = 0;
+                editor->Wrapper->ItemList[4]->JustX = 0;
+                goto update_menu;
             }
-            editor->Wrapper = wrapper;
+
+            if (reinterpret_cast<MenuFunction>(editor->Wrapper->vtable[4])(editor->Wrapper) == 0)
+            {
+                goto update_menu;
+            }
+
+            editor->LastMenuState = 1;
+            EnumMenuState next_state;
+            switch (reinterpret_cast<MenuFunction>(editor->Wrapper->vtable[5])(editor->Wrapper))
+            {
+                case 0: next_state = VERIFY_CHOICE; break;
+                case 1: next_state = SAVE; break;
+                case 3: next_state = LOAD; break;
+                case 4:
+                    editor->MenuState = DONE;
+                    GenerateLevel = (void *)1;
+                    goto destroy_main_menu;
+                case 5: next_state = SET_THEME; break;
+                default: editor->MenuState = NOTHING; goto destroy_main_menu;
+            }
+            editor->MenuState = next_state;
+        destroy_main_menu:
+            if (editor->Wrapper != 0)
+            {
+                EditorTextMenuView *wrapper = editor->Wrapper;
+                ((MenuDestroyFunction)wrapper->vtable[2])(wrapper, 3);
+            }
+            editor->Wrapper = 0;
+            break;
         }
-        else if (reinterpret_cast<MenuFunction>(editor->Wrapper->vtable[4])(
-                     editor->Wrapper) != 0)
-        {
-            editor->LastMenuState = 2;
-            int id = reinterpret_cast<MenuFunction>(
-                editor->Wrapper->vtable[5])(editor->Wrapper);
-            if (id >= 0 && id < 10)
+
+        case 2:
+            if (editor->Wrapper == 0)
             {
-                sprintf(editor->SaveName, "park%d.prk", id);
-                editor->MenuState = VERIFY_CHOICE;
+                char names[10][2];
+                const char *name_ptrs[10];
+                int ids[10];
+
+                for (int i = 0; i < 10; i++)
+                {
+                    sprintf(names[i], "%d", i);
+                    name_ptrs[i] = names[i];
+                    ids[i] = i;
+                }
+
+                EditorTextMenuView *wrapper = static_cast<EditorTextMenuView *>(
+                    ::CClass::operator new(sizeof(EditorTextMenuView)));
+                if (wrapper != 0)
+                {
+                    wrapper = __15TextMenuWrapperPCPcPiiPcb(wrapper, name_ptrs, ids, 10,
+                                                            "ingame1.fnt", true);
+                }
+                editor->Wrapper = wrapper;
             }
-            else
+            else if (reinterpret_cast<MenuFunction>(editor->Wrapper->vtable[4])(editor->Wrapper) !=
+                     0)
             {
-                editor->MenuState = MAIN;
+                editor->LastMenuState = 2;
+                int id =
+                    reinterpret_cast<MenuFunction>(editor->Wrapper->vtable[5])(editor->Wrapper);
+                if (id >= 0 && id < 10)
+                {
+                    sprintf(editor->SaveName, "park%d.prk", id);
+                    editor->MenuState = VERIFY_CHOICE;
+                }
+                else
+                {
+                    editor->MenuState = MAIN;
+                }
+                if (editor->Wrapper != 0)
+                {
+                    EditorTextMenuView *wrapper = editor->Wrapper;
+                    ((MenuDestroyFunction)wrapper->vtable[2])(wrapper, 3);
+                }
+                editor->Wrapper = 0;
+            }
+            break;
+
+        case 3:
+            if (editor->Wrapper == 0)
+            {
+                char names[10][2];
+                const char *name_ptrs[10];
+                int ids[10];
+
+                for (int i = 0; i < 10; i++)
+                {
+                    sprintf(names[i], "%d", i);
+                    name_ptrs[i] = names[i];
+                    ids[i] = i;
+                }
+
+                EditorTextMenuView *wrapper = static_cast<EditorTextMenuView *>(
+                    ::CClass::operator new(sizeof(EditorTextMenuView)));
+                if (wrapper != 0)
+                {
+                    wrapper = __15TextMenuWrapperPCPcPiiPcb(wrapper, name_ptrs, ids, 10,
+                                                            "ingame1.fnt", true);
+                }
+                editor->Wrapper = wrapper;
+                goto update_menu;
+            }
+
+            if (reinterpret_cast<MenuFunction>(editor->Wrapper->vtable[4])(editor->Wrapper) == 0)
+            {
+                goto update_menu;
+            }
+
+            editor->LastMenuState = 3;
+            {
+                int id =
+                    reinterpret_cast<MenuFunction>(editor->Wrapper->vtable[5])(editor->Wrapper);
+                if (id >= 0 && id < 10)
+                {
+                    char load_name[14];
+                    sprintf(load_name, "park%d.prk", id);
+                    LevelGenerator::LoadMap(load_name);
+                    editor->MenuState = 0;
+                    editor->DidLoad = (void *)1;
+                }
+                else
+                {
+                    editor->MenuState = 1;
+                }
             }
             if (editor->Wrapper != 0)
             {
@@ -1137,182 +1136,113 @@ destroy_main_menu:
                 ((MenuDestroyFunction)wrapper->vtable[2])(wrapper, 3);
             }
             editor->Wrapper = 0;
-        }
-        break;
+            break;
 
-    case 3:
-        if (editor->Wrapper == 0)
-        {
-            char names[10][2];
-            const char *name_ptrs[10];
-            int ids[10];
+        case 4: goto update_menu;
 
-            for (int i = 0; i < 10; i++)
+        case 5:
+            if (editor->Wrapper == 0)
             {
-                sprintf(names[i], "%d", i);
-                name_ptrs[i] = names[i];
-                ids[i] = i;
-            }
+                const char *names[4] = { "THEME ONE", "THEME TWO", "THEME THREE", "THEME FOUR" };
+                int ids[4] = { 0, 1, 2, 3 };
 
-            EditorTextMenuView *wrapper =
-                static_cast<EditorTextMenuView *>(
+                EditorTextMenuView *wrapper = static_cast<EditorTextMenuView *>(
                     ::CClass::operator new(sizeof(EditorTextMenuView)));
-            if (wrapper != 0)
-            {
-                wrapper = __15TextMenuWrapperPCPcPiiPcb(
-                    wrapper, name_ptrs, ids, 10,
-                    "ingame1.fnt", true);
-            }
-            editor->Wrapper = wrapper;
-            goto update_menu;
-        }
-
-        if (reinterpret_cast<MenuFunction>(editor->Wrapper->vtable[4])(
-                editor->Wrapper) == 0)
-        {
-            goto update_menu;
-        }
-
-        editor->LastMenuState = 3;
-        {
-            int id = reinterpret_cast<MenuFunction>(
-                editor->Wrapper->vtable[5])(editor->Wrapper);
-            if (id >= 0 && id < 10)
-            {
-                char load_name[14];
-                sprintf(load_name, "park%d.prk", id);
-                LevelGenerator::LoadMap(load_name);
-                editor->MenuState = 0;
-                editor->DidLoad = (void *)1;
-            }
-            else
-            {
-                editor->MenuState = 1;
-            }
-        }
-        if (editor->Wrapper != 0)
-        {
-            EditorTextMenuView *wrapper = editor->Wrapper;
-            ((MenuDestroyFunction)wrapper->vtable[2])(wrapper, 3);
-        }
-        editor->Wrapper = 0;
-        break;
-
-    case 4:
-        goto update_menu;
-
-    case 5:
-        if (editor->Wrapper == 0)
-        {
-            const char *names[4] = {
-                "THEME ONE", "THEME TWO", "THEME THREE", "THEME FOUR"
-            };
-            int ids[4] = {0, 1, 2, 3};
-
-            EditorTextMenuView *wrapper =
-                static_cast<EditorTextMenuView *>(
-                    ::CClass::operator new(sizeof(EditorTextMenuView)));
-            if (wrapper != 0)
-            {
-                wrapper = __15TextMenuWrapperPCPcPiiPcb(
-                    wrapper, names, ids, 4,
-                    "ingame1.fnt", false);
-            }
-            editor->Wrapper = wrapper;
-            editor->Wrapper->ItemList[2]->JustX = 0;
-            editor->Wrapper->ItemList[3]->JustX = 0;
-            goto update_menu;
-        }
-
-        if (reinterpret_cast<MenuFunction>(editor->Wrapper->vtable[4])(
-                editor->Wrapper) == 0)
-        {
-            goto update_menu;
-        }
-
-        editor->LastMenuState = 5;
-        editor->NewTheme = reinterpret_cast<MenuFunction>(
-            editor->Wrapper->vtable[5])(editor->Wrapper);
-        editor->MenuState = NOTHING;
-        if (editor->Wrapper != 0)
-        {
-            EditorTextMenuView *wrapper = editor->Wrapper;
-            ((MenuDestroyFunction)wrapper->vtable[2])(wrapper, 3);
-        }
-        editor->Wrapper = 0;
-        break;
-
-    case 6:
-        if (editor->Wrapper == 0)
-        {
-            const char *names[3] = {"", "YES", "NO"};
-            int ids[3] = {-1, 0, 1};
-            char title[30];
-
-            if (editor->LastMenuState == 2)
-            {
-                sprintf(title, "save over this file?");
-            }
-            else
-            {
-                sprintf(title, "are you sure?");
-            }
-            names[0] = title;
-
-            EditorTextMenuView *wrapper =
-                static_cast<EditorTextMenuView *>(
-                    ::CClass::operator new(sizeof(EditorTextMenuView)));
-            if (wrapper != 0)
-            {
-                wrapper = __15TextMenuWrapperPCPcPiiPcb(
-                    wrapper, names, ids, 3,
-                    "ingame1.fnt", false);
-            }
-            editor->Wrapper = wrapper;
-            editor->Wrapper->Menu->setHighlighted(1);
-
-            EditorDrawableView *menu =
-                reinterpret_cast<EditorDrawableView *>(editor->Wrapper->Menu);
-            reinterpret_cast<void (*)(EditorDrawableView *)>(menu->vtable[4])(
-                menu);
-            goto update_menu;
-        }
-
-        if (reinterpret_cast<MenuFunction>(editor->Wrapper->vtable[4])(
-                editor->Wrapper) == 0)
-        {
-            goto update_menu;
-        }
-
-        {
-            int id = reinterpret_cast<MenuFunction>(
-                editor->Wrapper->vtable[5])(editor->Wrapper);
-            if (id == 1 || id == -1)
-            {
-                editor->MenuState = NOTHING;
-            }
-            else
-            {
-                if (editor->LastMenuState != MAIN)
+                if (wrapper != 0)
                 {
-                    if (editor->LastMenuState == SAVE)
-                    {
-                        editor->MenuState = NOTHING;
-                    }
+                    wrapper =
+                        __15TextMenuWrapperPCPcPiiPcb(wrapper, names, ids, 4, "ingame1.fnt", false);
+                }
+                editor->Wrapper = wrapper;
+                editor->Wrapper->ItemList[2]->JustX = 0;
+                editor->Wrapper->ItemList[3]->JustX = 0;
+                goto update_menu;
+            }
+
+            if (reinterpret_cast<MenuFunction>(editor->Wrapper->vtable[4])(editor->Wrapper) == 0)
+            {
+                goto update_menu;
+            }
+
+            editor->LastMenuState = 5;
+            editor->NewTheme =
+                reinterpret_cast<MenuFunction>(editor->Wrapper->vtable[5])(editor->Wrapper);
+            editor->MenuState = NOTHING;
+            if (editor->Wrapper != 0)
+            {
+                EditorTextMenuView *wrapper = editor->Wrapper;
+                ((MenuDestroyFunction)wrapper->vtable[2])(wrapper, 3);
+            }
+            editor->Wrapper = 0;
+            break;
+
+        case 6:
+            if (editor->Wrapper == 0)
+            {
+                const char *names[3] = { "", "YES", "NO" };
+                int ids[3] = { -1, 0, 1 };
+                char title[30];
+
+                if (editor->LastMenuState == 2)
+                {
+                    sprintf(title, "save over this file?");
                 }
                 else
                 {
-                    editor->MenuState = DONE;
+                    sprintf(title, "are you sure?");
+                }
+                names[0] = title;
+
+                EditorTextMenuView *wrapper = static_cast<EditorTextMenuView *>(
+                    ::CClass::operator new(sizeof(EditorTextMenuView)));
+                if (wrapper != 0)
+                {
+                    wrapper =
+                        __15TextMenuWrapperPCPcPiiPcb(wrapper, names, ids, 3, "ingame1.fnt", false);
+                }
+                editor->Wrapper = wrapper;
+                editor->Wrapper->Menu->setHighlighted(1);
+
+                EditorDrawableView *menu =
+                    reinterpret_cast<EditorDrawableView *>(editor->Wrapper->Menu);
+                reinterpret_cast<void (*)(EditorDrawableView *)>(menu->vtable[4])(menu);
+                goto update_menu;
+            }
+
+            if (reinterpret_cast<MenuFunction>(editor->Wrapper->vtable[4])(editor->Wrapper) == 0)
+            {
+                goto update_menu;
+            }
+
+            {
+                int id =
+                    reinterpret_cast<MenuFunction>(editor->Wrapper->vtable[5])(editor->Wrapper);
+                if (id == 1 || id == -1)
+                {
+                    editor->MenuState = NOTHING;
+                }
+                else
+                {
+                    if (editor->LastMenuState != MAIN)
+                    {
+                        if (editor->LastMenuState == SAVE)
+                        {
+                            editor->MenuState = NOTHING;
+                        }
+                    }
+                    else
+                    {
+                        editor->MenuState = DONE;
+                    }
                 }
             }
-        }
-        if (editor->Wrapper != 0)
-        {
-            EditorTextMenuView *wrapper = editor->Wrapper;
-            ((MenuDestroyFunction)wrapper->vtable[2])(wrapper, 3);
-        }
-        editor->Wrapper = 0;
-        break;
+            if (editor->Wrapper != 0)
+            {
+                EditorTextMenuView *wrapper = editor->Wrapper;
+                ((MenuDestroyFunction)wrapper->vtable[2])(wrapper, 3);
+            }
+            editor->Wrapper = 0;
+            break;
     }
 
 update_menu:
@@ -1322,10 +1252,8 @@ update_menu:
         ((MenuUpdateFunction)wrapper->vtable[3])(wrapper);
     }
 
-    static const char demoPiecesLeft[] =
-        "demo pieces left: %d";
-    static const char notAvailableInDemo[] =
-        "not available in demo";
+    static const char demoPiecesLeft[] = "demo pieces left: %d";
+    static const char notAvailableInDemo[] = "not available in demo";
 
     /*
      * The original owner retains these diagnostics in its read-only data even
@@ -1333,20 +1261,15 @@ update_menu:
      */
     static const char verifyPsx[] = "\nVERIFYING PSX\n\n";
     static const char itemCount[] = "number of items: %d\n";
-    static const char itemAddress[] =
-        "Item %d at: %x, next at %x, diff is %d\n";
+    static const char itemAddress[] = "Item %d at: %x, next at %x, diff is %d\n";
     static const char modelCount[] = "\nnumber of models: %d\n";
-    static const char modelAddress[] =
-        "model %d: supposedly at %x, actually at %x\n";
-    static const char modelDimensions[] =
-        "   NumVertices %d, NumNormals %d, NumFaces %d\n";
-    static const char modelBox[] =
-        "   Box: [%d,%d],[%d,%d],[%d,%d]\n";
+    static const char modelAddress[] = "model %d: supposedly at %x, actually at %x\n";
+    static const char modelDimensions[] = "   NumVertices %d, NumNormals %d, NumFaces %d\n";
+    static const char modelBox[] = "   Box: [%d,%d],[%d,%d],[%d,%d]\n";
     static const char zonesOkay[] = "Zones packet seems OK\n";
     static const char zonesIncorrect[] = "Zones packet incorrect\n";
     static const char terminatorOkay[] = "Terminator packet seems OK\n";
-    static const char terminatorIncorrect[] =
-        "Terminator packet incorrect\n";
+    static const char terminatorIncorrect[] = "Terminator packet incorrect\n";
 }
 
 /**
@@ -1381,14 +1304,12 @@ SelectManager::SelectManager()
     this->NumCategories = i;
 
     Font *loaded_font = FontManager::LoadFont("s2park1.fnt");
-    *(EditorFontAssignmentView *)&this->TheFont =
-        *(EditorFontAssignmentView *)loaded_font;
+    *(EditorFontAssignmentView *)&this->TheFont = *(EditorFontAssignmentView *)loaded_font;
     this->TheFont.JustX = 0;
     this->TheFont.ShadowDx = 2;
     this->TheFont.ShadowDy = 2;
     this->TheFont.SpaceX = 1;
-    *(EditorFontAssignmentView *)&this->PromptFont =
-        *(EditorFontAssignmentView *)&this->TheFont;
+    *(EditorFontAssignmentView *)&this->PromptFont = *(EditorFontAssignmentView *)&this->TheFont;
     this->PromptFont.JustY = 2;
 
     this->WindowHeight = 43;
@@ -1398,17 +1319,13 @@ SelectManager::SelectManager()
     this->LeftButton = sprite;
     ((EditorSpriteJustificationView *)this->LeftButton)->JustX = 2;
     ((EditorSpriteJustificationView *)this->LeftButton)->JustY = 1;
-    this->LeftX =
-        reinterpret_cast<SlicedImage2 *>(this->LeftButton)->screenWidth() +
-        12;
+    this->LeftX = reinterpret_cast<SlicedImage2 *>(this->LeftButton)->screenWidth() + 12;
 
     sprite = new Sprite2("s2r1r2.bmp", 1, 0, 0);
     this->RightButton = sprite;
     ((EditorSpriteJustificationView *)this->RightButton)->JustX = 0;
     ((EditorSpriteJustificationView *)this->RightButton)->JustY = 1;
-    this->RightX =
-        0x1f2 - reinterpret_cast<SlicedImage2 *>(this->RightButton)
-                    ->screenWidth();
+    this->RightX = 0x1f2 - reinterpret_cast<SlicedImage2 *>(this->RightButton)->screenWidth();
 
     this->Theme = 0;
     this->Category = -1;
@@ -1417,23 +1334,19 @@ SelectManager::SelectManager()
     this->SetCategory(0);
 
     PromptScreenElement *prompt = new PromptScreenElement(
-        "s2EDsqua.bmp", "view ", FontFromStorage(&this->PromptFont),
-        60, 221, -1, 260);
+        "s2EDsqua.bmp", "view ", FontFromStorage(&this->PromptFont), 60, 221, -1, 260);
     this->PromptItem[0] = reinterpret_cast<ScreenElement *>(prompt);
 
-    prompt = new PromptScreenElement(
-        "s2EDcirc.bmp", "piece ", FontFromStorage(&this->PromptFont),
-        144, 221, -1, 260);
+    prompt = new PromptScreenElement("s2EDcirc.bmp", "piece ", FontFromStorage(&this->PromptFont),
+                                     144, 221, -1, 260);
     this->PromptItem[1] = reinterpret_cast<ScreenElement *>(prompt);
 
-    prompt = new PromptScreenElement(
-        "s2EDcros.bmp", "place ", FontFromStorage(&this->PromptFont),
-        264, 221, -1, 260);
+    prompt = new PromptScreenElement("s2EDcros.bmp", "place ", FontFromStorage(&this->PromptFont),
+                                     264, 221, -1, 260);
     this->PromptItem[2] = reinterpret_cast<ScreenElement *>(prompt);
 
-    prompt = new PromptScreenElement(
-        "s2EDtria.bmp", "erase ", FontFromStorage(&this->PromptFont),
-        358, 221, -1, 260);
+    prompt = new PromptScreenElement("s2EDtria.bmp", "erase ", FontFromStorage(&this->PromptFont),
+                                     358, 221, -1, 260);
     this->PromptItem[3] = reinterpret_cast<ScreenElement *>(prompt);
 
     this->SetMenuState(true);
@@ -1503,40 +1416,27 @@ void SelectManager::Draw()
     typedef void (*DrawAtFunction)(void *, int, int, int);
     typedef void (*DrawPromptFunction)(void *, int, int);
 
-    EditorDrawableView *left =
-        (EditorDrawableView *)this->LeftButton;
-    ((DrawAtFunction)left->vtable[5])(
-        left, this->LeftX,
-        this->WindowTop + this->WindowMidpoint, 0);
+    EditorDrawableView *left = (EditorDrawableView *)this->LeftButton;
+    ((DrawAtFunction)left->vtable[5])(left, this->LeftX, this->WindowTop + this->WindowMidpoint, 0);
 
     Font *font = FontFromStorage(&this->TheFont);
-    font->draw(this->CatStringX[0],
-               this->WindowTop + this->CatStringY[0],
-               this->CatString[0], 0);
-    font->draw(this->CatStringX[1],
-               this->WindowTop + this->CatStringY[1],
-               this->CatString[1], 0);
+    font->draw(this->CatStringX[0], this->WindowTop + this->CatStringY[0], this->CatString[0], 0);
+    font->draw(this->CatStringX[1], this->WindowTop + this->CatStringY[1], this->CatString[1], 0);
 
-    EditorDrawableView *right =
-        (EditorDrawableView *)this->RightButton;
-    ((DrawAtFunction)right->vtable[5])(
-        right, this->RightX,
-        this->WindowTop + this->WindowMidpoint, 0);
+    EditorDrawableView *right = (EditorDrawableView *)this->RightButton;
+    ((DrawAtFunction)right->vtable[5])(right, this->RightX, this->WindowTop + this->WindowMidpoint,
+                                       0);
 
-    font->draw(this->PieceStringX[0],
-               this->WindowTop + this->PieceStringY[0],
-               this->PieceString[0], 0);
-    font->draw(this->PieceStringX[1],
-               this->WindowTop + this->PieceStringY[1],
-               this->PieceString[1], 0);
-    font->draw(this->PieceStringX[2],
-               this->WindowTop + this->PieceStringY[2],
-               this->PieceString[2], 0);
+    font->draw(this->PieceStringX[0], this->WindowTop + this->PieceStringY[0], this->PieceString[0],
+               0);
+    font->draw(this->PieceStringX[1], this->WindowTop + this->PieceStringY[1], this->PieceString[1],
+               0);
+    font->draw(this->PieceStringX[2], this->WindowTop + this->PieceStringY[2], this->PieceString[2],
+               0);
 
     if (this->Blink > 12 && this->NotInDemo != 0)
     {
-        font->draw(this->PieceStringX[3],
-                   this->WindowTop + this->PieceStringY[3],
+        font->draw(this->PieceStringX[3], this->WindowTop + this->PieceStringY[3],
                    this->PieceString[3], 0);
     }
 
@@ -1550,11 +1450,8 @@ void SelectManager::Draw()
     pPoly = (unsigned int *)(Poly + 1);
     setPolyF4(Poly);
     setRGB0(Poly, 60, 60, 60);
-    setXY4(Poly,
-           0, this->WindowTop,
-           0x200, this->WindowTop,
-           0, this->WindowTop + this->WindowHeight,
-           0x200, this->WindowTop + this->WindowHeight);
+    setXY4(Poly, 0, this->WindowTop, 0x200, this->WindowTop, 0,
+           this->WindowTop + this->WindowHeight, 0x200, this->WindowTop + this->WindowHeight);
     setSemiTrans(Poly, 1);
 
     int tpage = GetTPage(2, 2, 0, 0);
@@ -1565,8 +1462,7 @@ void SelectManager::Draw()
 
     for (int i = 0; i < 4; i++)
     {
-        EditorDrawableView *prompt =
-            (EditorDrawableView *)this->PromptItem[i];
+        EditorDrawableView *prompt = (EditorDrawableView *)this->PromptItem[i];
         ((DrawPromptFunction)prompt->vtable[4])(prompt, 0, 0);
     }
 }
@@ -1607,8 +1503,7 @@ void SelectManager::Update()
     ScreenElement **prompt = this->PromptItem;
     do
     {
-        EditorDrawableView *item =
-            reinterpret_cast<EditorDrawableView *>(*prompt);
+        EditorDrawableView *item = reinterpret_cast<EditorDrawableView *>(*prompt);
         void **vt = item->vtable;
         prompt++;
         reinterpret_cast<void (*)(EditorDrawableView *)>(vt[3])(item);
@@ -1629,8 +1524,7 @@ void SelectManager::Update()
         int width = FontFromStorage(&this->TheFont)->width(pieceString);
         int x = this->RightX - width - 6;
         this->PieceStringX[2] = x;
-        int height = FontFromStorage(&this->TheFont)->height(
-            this->PieceString[1]);
+        int height = FontFromStorage(&this->TheFont)->height(this->PieceString[1]);
         this->PieceStringY[2] = this->WindowMidpoint + height + 3;
     }
 }
@@ -1661,17 +1555,14 @@ void SelectManager::SetPiece(int piece)
     }
 
     this->Piece = pieceReg;
-    CategoryMap[this->Category].lastUsedPiece =
-        PieceMap[pieceReg].map[this->Theme];
+    CategoryMap[this->Category].lastUsedPiece = PieceMap[pieceReg].map[this->Theme];
 
     char *pieceCountString = this->PieceString[0];
-    sprintf(pieceCountString, "Piece %d of %d:",
-            this->Piece - this->FirstPieceInCategory + 1,
+    sprintf(pieceCountString, "Piece %d of %d:", this->Piece - this->FirstPieceInCategory + 1,
             this->NumPiecesInCategory);
 
     char *pieceNameString = this->PieceString[1];
-    sprintf(pieceNameString, "%s",
-            PieceMap[this->Piece].name);
+    sprintf(pieceNameString, "%s", PieceMap[this->Piece].name);
 
     Font *font = FontFromStorage(&this->TheFont);
     int width = font->width(pieceCountString);
@@ -1719,8 +1610,7 @@ void SelectManager::ChangePiece(int dir)
     int diff = piece - this->FirstPieceInCategory;
     if (diff < 0)
     {
-        piece = this->FirstPieceInCategory +
-                this->NumPiecesInCategory - 1;
+        piece = this->FirstPieceInCategory + this->NumPiecesInCategory - 1;
     }
     if (diff >= this->NumPiecesInCategory)
     {
@@ -1752,20 +1642,17 @@ void SelectManager::SetCategory(int category)
     int i = 0;
     while (i < NumPieces + 1)
     {
-        if (PieceMap[i].map[Theme] ==
-            CategoryMap[category].lastUsedPiece)
+        if (PieceMap[i].map[Theme] == CategoryMap[category].lastUsedPiece)
         {
             last_used_piece = i;
         }
 
-        if (PieceMap[i].map[0] ==
-            CategoryMap[category].firstPiece)
+        if (PieceMap[i].map[0] == CategoryMap[category].firstPiece)
         {
             FirstPieceInCategory = i;
         }
 
-        if (PieceMap[i].map[0] ==
-            CategoryMap[category + 1].firstPiece)
+        if (PieceMap[i].map[0] == CategoryMap[category + 1].firstPiece)
         {
             NumPiecesInCategory = i - FirstPieceInCategory;
             break;
@@ -1778,8 +1665,7 @@ void SelectManager::SetCategory(int category)
     SetPiece(last_used_piece);
 
     sprintf(CatString[0], "Set %d of %d:", Category + 1, NumCategories);
-    sprintf(CatString[1], "%s",
-            CategoryMap[Category].name);
+    sprintf(CatString[1], "%s", CategoryMap[Category].name);
 
     int y = LeftX + 6;
     CatStringX[0] = y;
@@ -1841,8 +1727,7 @@ void SelectManager::SetMenuState(bool turn_on)
         ScreenElement **items = this->PromptItem;
         do
         {
-            EditorScreenElementView *item =
-                (EditorScreenElementView *)*items++;
+            EditorScreenElementView *item = (EditorScreenElementView *)*items++;
             i++;
             item->mHomeY = val;
         } while (i < 4);
@@ -1856,8 +1741,7 @@ void SelectManager::SetMenuState(bool turn_on)
         this->WindowTarget = -neg;
         do
         {
-            EditorScreenElementView *item =
-                (EditorScreenElementView *)*items++;
+            EditorScreenElementView *item = (EditorScreenElementView *)*items++;
             i++;
             item->mHomeY = val;
         } while (i < 4);
@@ -1865,8 +1749,7 @@ void SelectManager::SetMenuState(bool turn_on)
 
     if (turn_on)
     {
-        int h = FontFromStorage(&this->TheFont)->height(
-            this->PieceString[3]);
+        int h = FontFromStorage(&this->TheFont)->height(this->PieceString[3]);
         int v = 0x78 - (h >> 1);
         this->PieceStringY[3] = v;
     }
@@ -1931,11 +1814,9 @@ EditorCamera::EditorCamera()
     }
     this->CamTri = body1;
     ((EditorCameraBodyView *)this->CamTri)->mPos.vx = 0;
-    EditorCameraBodyView *b1 =
-        (EditorCameraBodyView *)this->CamTri;
+    EditorCameraBodyView *b1 = (EditorCameraBodyView *)this->CamTri;
     b1->mPos.vy = 0;
-    EditorCameraBodyView *b1b =
-        (EditorCameraBodyView *)this->CamTri;
+    EditorCameraBodyView *b1b = (EditorCameraBodyView *)this->CamTri;
     b1b->mPos.vz = 0;
 
     CCamera *cam = static_cast<CCamera *>(::CItem::operator new(0x684));
@@ -1957,14 +1838,13 @@ EditorCamera::EditorCamera()
     }
     this->Target = body2;
     ((EditorCameraBodyView *)this->Target)->mPos.vx = 0;
-    EditorCameraBodyView *b2 =
-        (EditorCameraBodyView *)this->Target;
+    EditorCameraBodyView *b2 = (EditorCameraBodyView *)this->Target;
     b2->mPos.vy = 0;
-    EditorCameraBodyView *b2b =
-        (EditorCameraBodyView *)this->Target;
+    EditorCameraBodyView *b2b = (EditorCameraBodyView *)this->Target;
     b2b->mPos.vz = 0;
 
-    reinterpret_cast<EditorRuntimeCameraView *>(this->Camera)->SetFocus((EditorCameraBodyView *)this->Target);
+    reinterpret_cast<EditorRuntimeCameraView *>(this->Camera)
+        ->SetFocus((EditorCameraBodyView *)this->Target);
     this->Type = 1;
     this->Rot = 0xc00;
     this->TargetRot = 0xc00;
@@ -1985,8 +1865,7 @@ EditorCamera::~EditorCamera()
     CBody *child1 = CamTri;
     if (child1 != 0)
     {
-        void **childVtable =
-            reinterpret_cast<EditorItemVtableView *>(child1)->vtable;
+        void **childVtable = reinterpret_cast<EditorItemVtableView *>(child1)->vtable;
         typedef void (*VtFunc)(void *, int);
         VtFunc func = reinterpret_cast<VtFunc>(childVtable[2]);
         func(child1, 3);
@@ -1994,8 +1873,7 @@ EditorCamera::~EditorCamera()
     CCamera *child2 = Camera;
     if (child2 != 0)
     {
-        void **childVtable =
-            reinterpret_cast<EditorItemVtableView *>(child2)->vtable;
+        void **childVtable = reinterpret_cast<EditorItemVtableView *>(child2)->vtable;
         typedef void (*VtFunc)(void *, int);
         VtFunc func = reinterpret_cast<VtFunc>(childVtable[2]);
         func(child2, 3);
@@ -2003,8 +1881,7 @@ EditorCamera::~EditorCamera()
     CBody *child3 = Target;
     if (child3 != 0)
     {
-        void **childVtable =
-            reinterpret_cast<EditorItemVtableView *>(child3)->vtable;
+        void **childVtable = reinterpret_cast<EditorItemVtableView *>(child3)->vtable;
         typedef void (*VtFunc)(void *, int);
         VtFunc func = reinterpret_cast<VtFunc>(childVtable[2]);
         func(child3, 3);
@@ -2049,8 +1926,7 @@ void EditorCamera::SetTarget(int x, int y, int z)
 void EditorCamera::SwitchType()
 {
     int type = this->Type + 1;
-    if (type >= 4)
-        type = 0;
+    if (type >= 4) type = 0;
     this->Type = type;
 }
 
@@ -2109,47 +1985,35 @@ void EditorCamera::Update()
 
     switch (this->Type)
     {
-    case 0:
-        this->Tripod.vx =
-            ((EditorCameraBodyView *)this->Target)->mPos.vx;
-        this->Tripod.vy =
-            ((EditorCameraBodyView *)this->Target)->mPos.vy - 0x7d0000;
-        this->Tripod.vz =
-            ((EditorCameraBodyView *)this->Target)->mPos.vz;
-        this->Rot = 0xc00;
-        break;
+        case 0:
+            this->Tripod.vx = ((EditorCameraBodyView *)this->Target)->mPos.vx;
+            this->Tripod.vy = ((EditorCameraBodyView *)this->Target)->mPos.vy - 0x7d0000;
+            this->Tripod.vz = ((EditorCameraBodyView *)this->Target)->mPos.vz;
+            this->Rot = 0xc00;
+            break;
 
-    case 1:
-        this->Tripod.vx =
-            ((EditorCameraBodyView *)this->Target)->mPos.vx +
-            EditorCosine(this->Rot + 0x154) * 2000;
-        this->Tripod.vy =
-            ((EditorCameraBodyView *)this->Target)->mPos.vy - 0x6c4000;
-        this->Tripod.vz =
-            ((EditorCameraBodyView *)this->Target)->mPos.vz +
-            EditorSine(this->Rot + 0x154) * 2000;
-        break;
+        case 1:
+            this->Tripod.vx = ((EditorCameraBodyView *)this->Target)->mPos.vx +
+                              EditorCosine(this->Rot + 0x154) * 2000;
+            this->Tripod.vy = ((EditorCameraBodyView *)this->Target)->mPos.vy - 0x6c4000;
+            this->Tripod.vz = ((EditorCameraBodyView *)this->Target)->mPos.vz +
+                              EditorSine(this->Rot + 0x154) * 2000;
+            break;
 
-    case 2:
-        this->Tripod.vx =
-            ((EditorCameraBodyView *)this->Target)->mPos.vx +
-            EditorCosine(this->Rot) * 2000;
-        this->Tripod.vy =
-            ((EditorCameraBodyView *)this->Target)->mPos.vy - 0x6c4000;
-        this->Tripod.vz =
-            ((EditorCameraBodyView *)this->Target)->mPos.vz +
-            EditorSine(this->Rot) * 2000;
-        break;
+        case 2:
+            this->Tripod.vx =
+                ((EditorCameraBodyView *)this->Target)->mPos.vx + EditorCosine(this->Rot) * 2000;
+            this->Tripod.vy = ((EditorCameraBodyView *)this->Target)->mPos.vy - 0x6c4000;
+            this->Tripod.vz =
+                ((EditorCameraBodyView *)this->Target)->mPos.vz + EditorSine(this->Rot) * 2000;
+            break;
 
-    case 3:
-        this->Tripod.vx =
-            ((EditorCameraBodyView *)this->Target)->mPos.vx;
-        this->Tripod.vy =
-            ((EditorCameraBodyView *)this->Target)->mPos.vy - 0xfa0000;
-        this->Tripod.vz =
-            ((EditorCameraBodyView *)this->Target)->mPos.vz;
-        this->Rot = 0xc00;
-        break;
+        case 3:
+            this->Tripod.vx = ((EditorCameraBodyView *)this->Target)->mPos.vx;
+            this->Tripod.vy = ((EditorCameraBodyView *)this->Target)->mPos.vy - 0xfa0000;
+            this->Tripod.vz = ((EditorCameraBodyView *)this->Target)->mPos.vz;
+            this->Rot = 0xc00;
+            break;
     }
 
     wall = (GridSize * LevelGenerator::GridCellWidth) >> 1;
@@ -2176,8 +2040,7 @@ void EditorCamera::Update()
     }
 
     ((EditorRuntimeCameraView *)this->Camera)->SetTripodPosition(this->Tripod);
-    ((EditorRuntimeCameraView *)this->Camera)->SetFocus(
-        (EditorCameraBodyView *)this->Target);
+    ((EditorRuntimeCameraView *)this->Camera)->SetFocus((EditorCameraBodyView *)this->Target);
     ((EditorRuntimeCameraView *)this->Camera)->Update();
 }
 
@@ -2229,21 +2092,25 @@ SVector EditorCamera::GetCameraTargetVector()
 
     switch (this->Type)
     {
-    case 1:
-        temp.vx = ((EditorCameraBodyView *)this->Target)->mPos.vx + EditorCosine(this->TargetRot + 0x154) * 2000;
-        temp.vy = ((EditorCameraBodyView *)this->Target)->mPos.vy + (int)0xFF93C000;
-        temp.vz = ((EditorCameraBodyView *)this->Target)->mPos.vz + EditorSine(this->TargetRot + 0x154) * 2000;
-        break;
-    case 2:
-        temp.vx = ((EditorCameraBodyView *)this->Target)->mPos.vx + EditorCosine(this->TargetRot) * 2000;
-        temp.vy = ((EditorCameraBodyView *)this->Target)->mPos.vy + (int)0xFF93C000;
-        temp.vz = ((EditorCameraBodyView *)this->Target)->mPos.vz + EditorSine(this->TargetRot) * 2000;
-        break;
-    default:
-        temp.vx = ((EditorCameraBodyView *)this->Target)->mPos.vx;
-        temp.vy = ((EditorCameraBodyView *)this->Target)->mPos.vy + (int)0xFF060000;
-        temp.vz = ((EditorCameraBodyView *)this->Target)->mPos.vz;
-        break;
+        case 1:
+            temp.vx = ((EditorCameraBodyView *)this->Target)->mPos.vx +
+                      EditorCosine(this->TargetRot + 0x154) * 2000;
+            temp.vy = ((EditorCameraBodyView *)this->Target)->mPos.vy + (int)0xFF93C000;
+            temp.vz = ((EditorCameraBodyView *)this->Target)->mPos.vz +
+                      EditorSine(this->TargetRot + 0x154) * 2000;
+            break;
+        case 2:
+            temp.vx = ((EditorCameraBodyView *)this->Target)->mPos.vx +
+                      EditorCosine(this->TargetRot) * 2000;
+            temp.vy = ((EditorCameraBodyView *)this->Target)->mPos.vy + (int)0xFF93C000;
+            temp.vz = ((EditorCameraBodyView *)this->Target)->mPos.vz +
+                      EditorSine(this->TargetRot) * 2000;
+            break;
+        default:
+            temp.vx = ((EditorCameraBodyView *)this->Target)->mPos.vx;
+            temp.vy = ((EditorCameraBodyView *)this->Target)->mPos.vy + (int)0xFF060000;
+            temp.vz = ((EditorCameraBodyView *)this->Target)->mPos.vz;
+            break;
     }
     vect.vx = (short)((((EditorCameraBodyView *)this->Target)->mPos.vx - temp.vx) >> 12);
     vect.vy = (short)((((EditorCameraBodyView *)this->Target)->mPos.vy - temp.vy) >> 12);
@@ -2311,10 +2178,7 @@ int Cursor::SetPiece(int piece)
     int min_z;
     int max_z;
 
-    if ((((EditorLevelGeneratorModelsView *)Ed)
-             ->SourceModelTab[piece]
-             .flags &
-         0x80) != 0)
+    if ((((EditorLevelGeneratorModelsView *)Ed)->SourceModelTab[piece].flags & 0x80) != 0)
     {
         piece = NotInDemoPiece;
     }
@@ -2336,28 +2200,18 @@ int Cursor::SetPiece(int piece)
         Models[i].item.Frame = 0;
         Models[i].item.TintIndex = 0;
         Models[i].item.Anim = 0;
-        Models[i].item.Region =
-            ((EditorLevelGeneratorModelsView *)Ed)->SourceRegion;
+        Models[i].item.Region = ((EditorLevelGeneratorModelsView *)Ed)->SourceRegion;
         Models[i].item.RGB = 0xff00;
         Models[i].item.NextItem = 0;
     }
 
     Piece = piece;
     Models[0].index = piece;
-    Models[0].W = ((EditorLevelGeneratorModelsView *)Ed)
-                      ->SourceModelTab[piece]
-                      .w;
-    Models[0].H = ((EditorLevelGeneratorModelsView *)Ed)
-                      ->SourceModelTab[piece]
-                      .h;
-    Models[0].L = ((EditorLevelGeneratorModelsView *)Ed)
-                      ->SourceModelTab[piece]
-                      .l;
+    Models[0].W = ((EditorLevelGeneratorModelsView *)Ed)->SourceModelTab[piece].w;
+    Models[0].H = ((EditorLevelGeneratorModelsView *)Ed)->SourceModelTab[piece].h;
+    Models[0].L = ((EditorLevelGeneratorModelsView *)Ed)->SourceModelTab[piece].l;
 
-    if ((((EditorLevelGeneratorModelsView *)Ed)
-             ->SourceModelTab[piece]
-             .flags &
-         0x10) != 0)
+    if ((((EditorLevelGeneratorModelsView *)Ed)->SourceModelTab[piece].flags & 0x10) != 0)
     {
         if (Models[0].W == 1 && Models[0].L == 1)
         {
@@ -2375,15 +2229,9 @@ int Cursor::SetPiece(int piece)
             }
         }
 
-        Models[1].W = ((EditorLevelGeneratorModelsView *)Ed)
-                          ->SourceModelTab[Models[1].index]
-                          .w;
-        Models[1].H = ((EditorLevelGeneratorModelsView *)Ed)
-                          ->SourceModelTab[Models[1].index]
-                          .h;
-        Models[1].L = ((EditorLevelGeneratorModelsView *)Ed)
-                          ->SourceModelTab[Models[1].index]
-                          .l;
+        Models[1].W = ((EditorLevelGeneratorModelsView *)Ed)->SourceModelTab[Models[1].index].w;
+        Models[1].H = ((EditorLevelGeneratorModelsView *)Ed)->SourceModelTab[Models[1].index].h;
+        Models[1].L = ((EditorLevelGeneratorModelsView *)Ed)->SourceModelTab[Models[1].index].l;
         Models[1].Y = Models[0].H;
     }
 
@@ -2394,10 +2242,7 @@ int Cursor::SetPiece(int piece)
     min_z = 0;
     max_z = -1;
     pSourceItem =
-        (Item *)(PSXRegion[
-                     ((EditorLevelGeneratorModelsView *)Ed)->SourceRegion]
-                     .pPSX +
-                 3);
+        (Item *)(PSXRegion[((EditorLevelGeneratorModelsView *)Ed)->SourceRegion].pPSX + 3);
 
     for (int i = 0; i < 4; i++)
     {
@@ -2406,9 +2251,7 @@ int Cursor::SetPiece(int piece)
             Models[i].item.Frame = pSourceItem[Models[i].index].Frame;
             Models[i].item.Anim = pSourceItem[Models[i].index].Anim;
 
-            if ((((EditorLevelGeneratorModelsView *)Ed)
-                     ->SourceModelTab[Models[i].index]
-                     .flags &
+            if ((((EditorLevelGeneratorModelsView *)Ed)->SourceModelTab[Models[i].index].flags &
                  8) != 0)
             {
                 Models[i].item.Frame = 0x81;
@@ -2448,24 +2291,23 @@ int Cursor::SetPiece(int piece)
 
     switch (Rot)
     {
-    case 0:
-    case 2:
-        WRot = W;
-        LRot = L;
-        break;
+        case 0:
+        case 2:
+            WRot = W;
+            LRot = L;
+            break;
 
-    case 1:
-    case 3:
-        WRot = L;
-        LRot = W;
-        break;
+        case 1:
+        case 3:
+            WRot = L;
+            LRot = W;
+            break;
     }
 
     Gradient = 4;
     SetPosition();
     NewLocation = (void *)1;
     return 1;
-
 }
 
 /**
@@ -2498,16 +2340,16 @@ void Cursor::Rotate(int dir)
 
     switch (rot)
     {
-    case 0:
-    case 2:
-        WRot = W;
-        LRot = L;
-        break;
-    case 1:
-    case 3:
-        WRot = L;
-        LRot = W;
-        break;
+        case 0:
+        case 2:
+            WRot = W;
+            LRot = L;
+            break;
+        case 1:
+        case 3:
+            WRot = L;
+            LRot = W;
+            break;
     }
 
     Gradient = 0;
@@ -2565,18 +2407,10 @@ void Cursor::Move(int dir)
 
     switch (dir)
     {
-    case 0:
-        X += inc;
-        break;
-    case 1:
-        Z -= inc;
-        break;
-    case 2:
-        X -= inc;
-        break;
-    case 3:
-        Z += inc;
-        break;
+        case 0: X += inc; break;
+        case 1: Z -= inc; break;
+        case 2: X -= inc; break;
+        case 3: Z += inc; break;
     }
 
     Move(X, Y, Z);
@@ -2610,25 +2444,25 @@ void Cursor::SetPosition()
 
     switch (rot_adjust)
     {
-    case 0:
-        XRot = X - (WRot >> 1);
-        ZRot = Z - (LRot >> 1);
-        break;
+        case 0:
+            XRot = X - (WRot >> 1);
+            ZRot = Z - (LRot >> 1);
+            break;
 
-    case 1:
-        XRot = X - (WRot >> 1);
-        ZRot = Z - ((LRot + 1) >> 1);
-        break;
+        case 1:
+            XRot = X - (WRot >> 1);
+            ZRot = Z - ((LRot + 1) >> 1);
+            break;
 
-    case 2:
-        XRot = X - ((WRot + 1) >> 1);
-        ZRot = Z - ((LRot + 1) >> 1);
-        break;
+        case 2:
+            XRot = X - ((WRot + 1) >> 1);
+            ZRot = Z - ((LRot + 1) >> 1);
+            break;
 
-    case 3:
-        XRot = X - ((WRot + 1) >> 1);
-        ZRot = Z - (LRot >> 1);
-        break;
+        case 3:
+            XRot = X - ((WRot + 1) >> 1);
+            ZRot = Z - (LRot >> 1);
+            break;
     }
 
     HRot = H;
@@ -2655,10 +2489,7 @@ void Cursor::SetPosition()
         Z--;
     }
 
-    if ((((EditorLevelGeneratorModelsView *)Ed)
-             ->SourceModelTab[Models[0].index]
-             .flags &
-         8) != 0)
+    if ((((EditorLevelGeneratorModelsView *)Ed)->SourceModelTab[Models[0].index].flags & 8) != 0)
     {
         if ((XRot & 1) != 0)
         {
@@ -2702,8 +2533,7 @@ void Cursor::SetPosition()
     {
         for (int i = 0; i < WRot; i++)
         {
-            int temp =
-                LevelGenerator::GridTab[ZRot + j][XRot + i].numUsedSlots - 1;
+            int temp = LevelGenerator::GridTab[ZRot + j][XRot + i].numUsedSlots - 1;
             if (lowest_slot < temp)
             {
                 lowest_slot = temp;
@@ -2720,44 +2550,39 @@ void Cursor::SetPosition()
 
             switch (Rot)
             {
-            case 0:
-                Models[i].XRot = XRot + Models[i].X;
-                Models[i].ZRot = ZRot + Models[i].Z;
-                Models[i].WRot = Models[i].W;
-                Models[i].LRot = Models[i].L;
-                break;
+                case 0:
+                    Models[i].XRot = XRot + Models[i].X;
+                    Models[i].ZRot = ZRot + Models[i].Z;
+                    Models[i].WRot = Models[i].W;
+                    Models[i].LRot = Models[i].L;
+                    break;
 
-            case 1:
-                Models[i].XRot = XRot + Models[i].Z;
-                Models[i].ZRot =
-                    ZRot + LRot - Models[i].X - Models[i].W;
-                Models[i].WRot = Models[i].L;
-                Models[i].LRot = Models[i].W;
-                break;
+                case 1:
+                    Models[i].XRot = XRot + Models[i].Z;
+                    Models[i].ZRot = ZRot + LRot - Models[i].X - Models[i].W;
+                    Models[i].WRot = Models[i].L;
+                    Models[i].LRot = Models[i].W;
+                    break;
 
-            case 2:
-                Models[i].XRot =
-                    XRot + WRot - Models[i].X - Models[i].W;
-                Models[i].ZRot =
-                    ZRot + LRot - Models[i].Z - Models[i].L;
-                Models[i].WRot = Models[i].W;
-                Models[i].LRot = Models[i].L;
-                break;
+                case 2:
+                    Models[i].XRot = XRot + WRot - Models[i].X - Models[i].W;
+                    Models[i].ZRot = ZRot + LRot - Models[i].Z - Models[i].L;
+                    Models[i].WRot = Models[i].W;
+                    Models[i].LRot = Models[i].L;
+                    break;
 
-            case 3:
-                Models[i].XRot =
-                    XRot + WRot - Models[i].Z - Models[i].L;
-                Models[i].ZRot = ZRot + Models[i].X;
-                Models[i].WRot = Models[i].L;
-                Models[i].LRot = Models[i].W;
-                break;
+                case 3:
+                    Models[i].XRot = XRot + WRot - Models[i].Z - Models[i].L;
+                    Models[i].ZRot = ZRot + Models[i].X;
+                    Models[i].WRot = Models[i].L;
+                    Models[i].LRot = Models[i].W;
+                    break;
             }
 
             Models[i].YRot = Models[i].Y;
             Models[i].HRot = Models[i].H;
             Models[i].ScreenY =
-                (-lowest_slot - Models[i].YRot) *
-                LevelGenerator::GridCellHeight * 0x1000;
+                (-lowest_slot - Models[i].YRot) * LevelGenerator::GridCellHeight * 0x1000;
             Models[i].item.Model = Models[i].index;
 
             if (last_model >= 0)
@@ -2769,7 +2594,6 @@ void Cursor::SetPosition()
     }
 
     NewLocation = 0;
-
 }
 
 /**
@@ -2784,16 +2608,11 @@ void Cursor::SetPosition()
  */
 void Cursor::Update()
 {
-    Angle = (StartAngle + (((TargetAngle - StartAngle) * Gradient) >> 2)) &
-            0xfff;
-    ScreenX = StartScreenX +
-              (((TargetScreenX - StartScreenX) * Gradient) >> 2);
-    ScreenZ = StartScreenZ +
-              (((TargetScreenZ - StartScreenZ) * Gradient) >> 2);
-    CameraX = StartCameraX +
-              (((TargetCameraX - StartCameraX) * Gradient) >> 2);
-    CameraZ = StartCameraZ +
-              (((TargetCameraZ - StartCameraZ) * Gradient) >> 2);
+    Angle = (StartAngle + (((TargetAngle - StartAngle) * Gradient) >> 2)) & 0xfff;
+    ScreenX = StartScreenX + (((TargetScreenX - StartScreenX) * Gradient) >> 2);
+    ScreenZ = StartScreenZ + (((TargetScreenZ - StartScreenZ) * Gradient) >> 2);
+    CameraX = StartCameraX + (((TargetCameraX - StartCameraX) * Gradient) >> 2);
+    CameraZ = StartCameraZ + (((TargetCameraZ - StartCameraZ) * Gradient) >> 2);
 
     if (NewLocation != 0)
     {
@@ -2816,15 +2635,11 @@ void Cursor::Update()
         if (Models[i].index != -1)
         {
             Models[i].ScreenX =
-                ScreenX +
-                (Models[i].X * EditorCosine(Angle) -
-                 Models[i].Z * EditorSine(Angle)) *
-                    LevelGenerator::GridCellWidth;
+                ScreenX + (Models[i].X * EditorCosine(Angle) - Models[i].Z * EditorSine(Angle)) *
+                              LevelGenerator::GridCellWidth;
             Models[i].ScreenZ =
-                ScreenZ +
-                (Models[i].X * EditorSine(Angle) +
-                 Models[i].Z * EditorCosine(Angle)) *
-                    LevelGenerator::GridCellWidth;
+                ScreenZ + (Models[i].X * EditorSine(Angle) + Models[i].Z * EditorCosine(Angle)) *
+                              LevelGenerator::GridCellWidth;
 
             Models[i].item.Position.vx = Models[i].ScreenX;
             Models[i].item.Position.vy = Models[i].ScreenY;
@@ -2847,17 +2662,14 @@ void Cursor::Draw()
     unsigned char *models = reinterpret_cast<unsigned char *>(Ed);
     int offset = ((idx << 4) + idx) << 2;
     unsigned int flags =
-        reinterpret_cast<EditorSourceModelAddressView *>(
-            models + offset)->SourceModel.flags;
+        reinterpret_cast<EditorSourceModelAddressView *>(models + offset)->SourceModel.flags;
     unsigned int shifted = flags >> 3;
     int v = shifted & 1;
     int is_pool_piece = v;
     if (v == 0) goto skip1;
     {
-        int a0arg = offset +
-            sizeof(((EditorSourceModelAddressView *)0)->generatorHeader);
-        reinterpret_cast<EditorInModel *>(models + a0arg)
-            ->SetTransparency(true);
+        int a0arg = offset + sizeof(((EditorSourceModelAddressView *)0)->generatorHeader);
+        reinterpret_cast<EditorInModel *>(models + a0arg)->SetTransparency(true);
     }
 skip1:
     M3d_Render(&Models[0]);
@@ -2866,13 +2678,10 @@ skip1:
         int idx2 = Models[0].index;
         unsigned char *models2 = reinterpret_cast<unsigned char *>(Ed);
         int a0arg = ((idx2 << 4) + idx2) << 2;
-        a0arg +=
-            sizeof(((EditorSourceModelAddressView *)0)->generatorHeader);
-        reinterpret_cast<EditorInModel *>(models2 + a0arg)
-            ->SetTransparency(false);
+        a0arg += sizeof(((EditorSourceModelAddressView *)0)->generatorHeader);
+        reinterpret_cast<EditorInModel *>(models2 + a0arg)->SetTransparency(false);
     }
-end:
-    ;
+end:;
 }
 
 /**
@@ -2894,10 +2703,8 @@ int Cursor::Stamp()
     int link1;
     EditorOutModel *mod;
 
-    num_faces = ((EditorLevelGeneratorModelsView *)Ed)
-                    ->SourceModelTab[Models[0].index]
-                    .mModel
-                    ->NumFaces;
+    num_faces =
+        ((EditorLevelGeneratorModelsView *)Ed)->SourceModelTab[Models[0].index].mModel->NumFaces;
     cost = 1;
     if (num_faces > 36)
     {
@@ -2915,10 +2722,7 @@ int Cursor::Stamp()
     }
 
     slot = LevelGenerator::GridTab[ZRot][XRot].numUsedSlots - 1;
-    if ((((EditorLevelGeneratorModelsView *)Ed)
-             ->SourceModelTab[Models[0].index]
-             .flags &
-         0x10) != 0)
+    if ((((EditorLevelGeneratorModelsView *)Ed)->SourceModelTab[Models[0].index].flags & 0x10) != 0)
     {
         top_slot = slot + Models[0].H;
     }
@@ -2940,9 +2744,7 @@ int Cursor::Stamp()
             {
                 return 0;
             }
-            if (((EditorLevelGeneratorView *)Ed)
-                    ->OutModelMap[z][x]
-                    .modelInSlot[slot] != 0)
+            if (((EditorLevelGeneratorView *)Ed)->OutModelMap[z][x].modelInSlot[slot] != 0)
             {
                 return 0;
             }
@@ -2950,10 +2752,7 @@ int Cursor::Stamp()
     }
 
     this_slot = Models[0].YRot + slot;
-    if ((((EditorLevelGeneratorModelsView *)Ed)
-             ->SourceModelTab[Models[0].index]
-             .flags &
-         8) != 0 &&
+    if ((((EditorLevelGeneratorModelsView *)Ed)->SourceModelTab[Models[0].index].flags & 8) != 0 &&
         this_slot > 0)
     {
         return 0;
@@ -2961,16 +2760,11 @@ int Cursor::Stamp()
 
     if (XRot > 0)
     {
-        mod = ((EditorLevelGeneratorView *)Ed)
-                  ->OutModelMap[ZRot][XRot - 1]
-                  .modelInSlot[this_slot];
+        mod = ((EditorLevelGeneratorView *)Ed)->OutModelMap[ZRot][XRot - 1].modelInSlot[this_slot];
         if (mod != 0)
         {
             link1 = GetPoolLink(Models[0].index, 2, Rot);
-            if (ComparePoolLinks(
-                    link1,
-                    GetPoolLink(
-                        mod->SourceModel->mIndex, 0, mod->Rot)) == 0)
+            if (ComparePoolLinks(link1, GetPoolLink(mod->SourceModel->mIndex, 0, mod->Rot)) == 0)
             {
                 return 0;
             }
@@ -2979,16 +2773,12 @@ int Cursor::Stamp()
 
     if (XRot + WRot < GridSize)
     {
-        mod = ((EditorLevelGeneratorView *)Ed)
-                  ->OutModelMap[ZRot][XRot + WRot]
-                  .modelInSlot[this_slot];
+        mod =
+            ((EditorLevelGeneratorView *)Ed)->OutModelMap[ZRot][XRot + WRot].modelInSlot[this_slot];
         if (mod != 0)
         {
             link1 = GetPoolLink(Models[0].index, 0, Rot);
-            if (ComparePoolLinks(
-                    link1,
-                    GetPoolLink(
-                        mod->SourceModel->mIndex, 2, mod->Rot)) == 0)
+            if (ComparePoolLinks(link1, GetPoolLink(mod->SourceModel->mIndex, 2, mod->Rot)) == 0)
             {
                 return 0;
             }
@@ -2997,16 +2787,11 @@ int Cursor::Stamp()
 
     if (ZRot > 0)
     {
-        mod = ((EditorLevelGeneratorView *)Ed)
-                  ->OutModelMap[ZRot - 1][XRot]
-                  .modelInSlot[this_slot];
+        mod = ((EditorLevelGeneratorView *)Ed)->OutModelMap[ZRot - 1][XRot].modelInSlot[this_slot];
         if (mod != 0)
         {
             link1 = GetPoolLink(Models[0].index, 1, Rot);
-            if (ComparePoolLinks(
-                    link1,
-                    GetPoolLink(
-                        mod->SourceModel->mIndex, 3, mod->Rot)) == 0)
+            if (ComparePoolLinks(link1, GetPoolLink(mod->SourceModel->mIndex, 3, mod->Rot)) == 0)
             {
                 return 0;
             }
@@ -3015,16 +2800,12 @@ int Cursor::Stamp()
 
     if (ZRot + LRot < GridSize)
     {
-        mod = ((EditorLevelGeneratorView *)Ed)
-                  ->OutModelMap[ZRot + LRot][XRot]
-                  .modelInSlot[this_slot];
+        mod =
+            ((EditorLevelGeneratorView *)Ed)->OutModelMap[ZRot + LRot][XRot].modelInSlot[this_slot];
         if (mod != 0)
         {
             link1 = GetPoolLink(Models[0].index, 3, Rot);
-            if (ComparePoolLinks(
-                    link1,
-                    GetPoolLink(
-                        mod->SourceModel->mIndex, 1, mod->Rot)) == 0)
+            if (ComparePoolLinks(link1, GetPoolLink(mod->SourceModel->mIndex, 1, mod->Rot)) == 0)
             {
                 return 0;
             }
@@ -3035,21 +2816,16 @@ int Cursor::Stamp()
 
     if (LevelGenerator::GridTab[ZRot][XRot].numUsedSlots <= this_slot)
     {
-        LevelGenerator::GridTab[ZRot][XRot].numUsedSlots =
-            Models[0].H + this_slot;
+        LevelGenerator::GridTab[ZRot][XRot].numUsedSlots = Models[0].H + this_slot;
     }
 
-    if ((((EditorLevelGeneratorModelsView *)Ed)
-             ->SourceModelTab[Models[0].index]
-             .flags &
-         0x10) != 0)
+    if ((((EditorLevelGeneratorModelsView *)Ed)->SourceModelTab[Models[0].index].flags & 0x10) != 0)
     {
         for (int z = ZRot; z < ZRot + LRot; z++)
         {
             for (int x = XRot; x < XRot + WRot; x++)
             {
-                LevelGenerator::GridTab[z][x].numUsedSlots =
-                    Models[0].H + this_slot + 1;
+                LevelGenerator::GridTab[z][x].numUsedSlots = Models[0].H + this_slot + 1;
                 for (int s = 1; s < Models[0].H + 1; s++)
                 {
                     LevelGenerator::GridTab[z][x].modelIndex[this_slot + s] = -1;
@@ -3060,7 +2836,6 @@ int Cursor::Stamp()
 
     PiecesRemaining -= cost;
     return 1;
-
 }
 
 /**
@@ -3089,9 +2864,8 @@ int Cursor::Remove()
             {
                 do
                 {
-                    int result = Ed->RemoveModelFromMap(
-                        cursor_x, cursor_z, &lowest_removal_slot,
-                        &in_model);
+                    int result =
+                        Ed->RemoveModelFromMap(cursor_x, cursor_z, &lowest_removal_slot, &in_model);
                     if (result != 0)
                     {
                         successful_remove = 1;
@@ -3101,8 +2875,7 @@ int Cursor::Remove()
                     int source_index = in_model->mIndex;
                     EditorLevelGeneratorModelsView *generator =
                         reinterpret_cast<EditorLevelGeneratorModelsView *>(Ed);
-                    int num_faces = generator->SourceModelTab[source_index]
-                                        .mModel->NumFaces;
+                    int num_faces = generator->SourceModelTab[source_index].mModel->NumFaces;
                     if (num_faces >= 0x25)
                     {
                         cost = 2;
@@ -3142,9 +2915,7 @@ void Cursor::WireframeCollidingPieces(bool wireframe_on)
         ztop = 0;
     }
 
-    int zbottom = (ZRot + LRot > GridSize)
-                      ? GridSize
-                      : ZRot + LRot;
+    int zbottom = (ZRot + LRot > GridSize) ? GridSize : ZRot + LRot;
 
     int xleft = XRot;
     if (xleft < 0)
@@ -3152,9 +2923,7 @@ void Cursor::WireframeCollidingPieces(bool wireframe_on)
         xleft = 0;
     }
 
-    int xright = (XRot + WRot > GridSize)
-                     ? GridSize
-                     : XRot + WRot;
+    int xright = (XRot + WRot > GridSize) ? GridSize : XRot + WRot;
 
     int highest_slot = 0;
     for (int z = ztop; z < zbottom; z++)
@@ -3176,12 +2945,9 @@ void Cursor::WireframeCollidingPieces(bool wireframe_on)
             for (int x = xleft; x < xright; x++)
             {
                 EditorOutModel *das_model =
-                    ((EditorLevelGeneratorView *)Ed)
-                        ->OutModelMap[z][x]
-                        .modelInSlot[slot];
+                    ((EditorLevelGeneratorView *)Ed)->OutModelMap[z][x].modelInSlot[slot];
 
-                if (das_model != 0 &&
-                    (das_model->SourceModel->flags & 0x10) == 0)
+                if (das_model != 0 && (das_model->SourceModel->flags & 0x10) == 0)
                 {
                     Ed->UnhideFaces(das_model, wireframe_on);
 
@@ -3191,8 +2957,7 @@ void Cursor::WireframeCollidingPieces(bool wireframe_on)
                     }
                     else
                     {
-                        das_model->TargetModel->Flags &=
-                            (unsigned short)~0x420;
+                        das_model->TargetModel->Flags &= (unsigned short)~0x420;
                     }
 
                     Ed->UnhideFloor(das_model, wireframe_on);
@@ -3229,23 +2994,19 @@ void Cursor::PushbackPieces(bool draw_back)
             {
                 EditorOutModel *model = SortList[i];
                 void *behind = (void *)1;
-                if (CameraDirX < 0 &&
-                    XRot + WRot <= model->XCell)
+                if (CameraDirX < 0 && XRot + WRot <= model->XCell)
                 {
                     behind = 0;
                 }
-                else if (CameraDirX > 0 &&
-                         model->XCell + model->WCell <= XRot)
+                else if (CameraDirX > 0 && model->XCell + model->WCell <= XRot)
                 {
                     behind = 0;
                 }
-                if (CameraDirZ < 0 &&
-                    ZRot + LRot <= model->ZCell)
+                if (CameraDirZ < 0 && ZRot + LRot <= model->ZCell)
                 {
                     behind = 0;
                 }
-                else if (CameraDirZ > 0 &&
-                         model->ZCell + model->LCell <= ZRot)
+                else if (CameraDirZ > 0 && model->ZCell + model->LCell <= ZRot)
                 {
                     behind = 0;
                 }
@@ -3268,9 +3029,7 @@ void Cursor::PushbackPieces(bool draw_back)
                 do
                 {
                     EditorOutModel *model = *modelSlot;
-                    void *draw_it = (void *)(i <= last_blocked
-                                                 ? draw_back
-                                                 : reversePushback);
+                    void *draw_it = (void *)(i <= last_blocked ? draw_back : reversePushback);
 
                     if (draw_it)
                     {
@@ -3312,30 +3071,25 @@ void Cursor::AddSortModel(struct EditorOutModel *new_model)
     {
         void *behind = (void *)1;
 
-        if (CameraDirX < 0 &&
-            SortList[i]->XCell + SortList[i]->WCell <= new_model->XCell)
+        if (CameraDirX < 0 && SortList[i]->XCell + SortList[i]->WCell <= new_model->XCell)
         {
             behind = 0;
         }
-        else if (CameraDirX > 0 &&
-                 new_model->XCell + new_model->WCell <= SortList[i]->XCell)
-        {
-            behind = 0;
-        }
-
-        if (CameraDirZ < 0 &&
-            SortList[i]->ZCell + SortList[i]->LCell <= new_model->ZCell)
-        {
-            behind = 0;
-        }
-        else if (CameraDirZ > 0 &&
-                 new_model->ZCell + new_model->LCell <= SortList[i]->ZCell)
+        else if (CameraDirX > 0 && new_model->XCell + new_model->WCell <= SortList[i]->XCell)
         {
             behind = 0;
         }
 
-        if (behind)
-            break;
+        if (CameraDirZ < 0 && SortList[i]->ZCell + SortList[i]->LCell <= new_model->ZCell)
+        {
+            behind = 0;
+        }
+        else if (CameraDirZ > 0 && new_model->ZCell + new_model->LCell <= SortList[i]->ZCell)
+        {
+            behind = 0;
+        }
+
+        if (behind) break;
     }
 
     while (i < LatestModel)
@@ -3424,7 +3178,8 @@ void Cursor::SetCameraTargetVector(SVector camera)
 // GCC 2.x emits a private copy of CClass::~CClass at the end of every owner
 // containing a CClass-derived hierarchy. MAIN.SYM records this copy at the
 // byte immediately after Cursor::SetCameraTargetVector.
-extern "C" {
+extern "C"
+{
 static void __DOT__6CClass_800875D0(CClass *base, int flags);
 }
 

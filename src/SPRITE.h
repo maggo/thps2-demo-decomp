@@ -6,9 +6,11 @@ struct SlicedImage;
 
 /** Screen rectangle stored as a sliced image. */
 #ifdef CCLASS_POLY_H
-struct Sprite : CClass {
+struct Sprite : CClass
+{
 #else
-struct Sprite {
+struct Sprite
+{
     struct CClass CClass;
 #endif
     int m_w;
@@ -19,18 +21,14 @@ struct Sprite {
 
 #ifndef CCLASS_POLY_H
     /** Allocate through the original CClass arena. */
-    static void *operator new(unsigned int size) throw()
-    {
-        return ::CClass::operator new(size);
-    }
+    static void *operator new(unsigned int size) throw() { return ::CClass::operator new(size); }
 #endif
 
     /** Load an image-backed sprite. */
     Sprite(char *file, int pack, int slicew, int sliceh);
 
     /** Capture a rectangular screen area into a sprite. */
-    Sprite(int x, int y, int w, int h, int pack = 0,
-           int slicew = 0, int sliceh = 0);
+    Sprite(int x, int y, int w, int h, int pack = 0, int slicew = 0, int sliceh = 0);
 
     /** Destroy the image owned by this sprite. */
 #ifdef CCLASS_POLY_H
@@ -40,10 +38,7 @@ struct Sprite {
 #endif
 #ifndef CCLASS_POLY_H
     /** Release sprite storage through the original CClass allocator. */
-    static void operator delete(void *storage)
-    {
-        ::CClass::operator delete(storage);
-    }
+    static void operator delete(void *storage) { ::CClass::operator delete(storage); }
 #endif
 
     /** Draw this sprite with optional RGB modulation. */

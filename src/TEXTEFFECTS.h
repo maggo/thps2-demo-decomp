@@ -10,7 +10,8 @@ struct Sprite2;
 #include "TEXTEFFECT.h"
 
 /** Per-character timing and blood-sprite motion recovered from MAIN.SYM. */
-struct myTextEffectInfo {
+struct myTextEffectInfo
+{
     short waitTime;
     short bloodOffsetX;
     short bloodOffsetY;
@@ -19,8 +20,10 @@ struct myTextEffectInfo {
 
 #ifdef TEXTEFFECT_POLYMORPHIC_LAYOUT
 /** Falling-character text animation and its shared blood sprite. */
-struct FallingTextEffect : TextEffect {
-    enum {
+struct FallingTextEffect : TextEffect
+{
+    enum
+    {
         CharacterCount = 32,
         CharacterMask = CharacterCount - 1,
         FixedPointShift = 12
@@ -46,8 +49,7 @@ struct FallingTextEffect : TextEffect {
     void SetBloodiness(int bloody);
     virtual void bind(Font *pFont);
     void drawBloodyFrame(int x, int y, int width);
-    virtual void getColor(unsigned char *pR, unsigned char *pG,
-                          unsigned char *pB);
+    virtual void getColor(unsigned char *pR, unsigned char *pG, unsigned char *pB);
     virtual void getScreenPos(int *pX, int *pY);
     virtual int handleComplete();
     virtual void init();
@@ -56,8 +58,10 @@ struct FallingTextEffect : TextEffect {
 };
 
 /** Scale and color animation used for trick and bail text. */
-struct TrickTextEffect : TextEffect {
-    enum State {
+struct TrickTextEffect : TextEffect
+{
+    enum State
+    {
         Idle = 0,
         Growing,
         Settling,
@@ -77,15 +81,17 @@ struct TrickTextEffect : TextEffect {
     virtual ~TrickTextEffect();
     void Bail();
     virtual void bind(Font *);
-    virtual void getColor(unsigned char * pR, unsigned char * pG, unsigned char * pB);
+    virtual void getColor(unsigned char *pR, unsigned char *pG, unsigned char *pB);
     virtual int handleComplete();
     virtual void init();
     virtual void update();
 };
 #else
 /** Falling-character text animation and its shared blood sprite. */
-struct FallingTextEffect {
-    enum {
+struct FallingTextEffect
+{
+    enum
+    {
         CharacterCount = 32,
         CharacterMask = CharacterCount - 1,
         FixedPointShift = 12
@@ -112,8 +118,7 @@ struct FallingTextEffect {
     void SetBloodiness(int bloody);
     void bind(Font *pFont);
     void drawBloodyFrame(int x, int y, int width);
-    void getColor(unsigned char *pR, unsigned char *pG,
-                  unsigned char *pB);
+    void getColor(unsigned char *pR, unsigned char *pG, unsigned char *pB);
     void getScreenPos(int *pX, int *pY);
     int handleComplete();
     void init();
@@ -122,8 +127,10 @@ struct FallingTextEffect {
 };
 
 /** Scale and color animation used for trick and bail text. */
-struct TrickTextEffect {
-    enum State {
+struct TrickTextEffect
+{
+    enum State
+    {
         Idle = 0,
         Growing,
         Settling,
@@ -144,7 +151,7 @@ struct TrickTextEffect {
     ~TrickTextEffect();
     void Bail();
     void bind(Font *);
-    void getColor(unsigned char * pR, unsigned char * pG, unsigned char * pB);
+    void getColor(unsigned char *pR, unsigned char *pG, unsigned char *pB);
     int handleComplete();
     void init();
     void update();
@@ -152,11 +159,8 @@ struct TrickTextEffect {
 
 #endif // TEXTEFFECT_POLYMORPHIC_LAYOUT
 
-typedef char TextEffect_size_must_be_8[
-    (sizeof(TextEffect) == 8) ? 1 : -1];
-typedef char myTextEffectInfo_size_must_be_8[
-    (sizeof(myTextEffectInfo) == 8) ? 1 : -1];
-typedef char FallingTextEffect_size_must_be_288[
-    (sizeof(FallingTextEffect) == 288) ? 1 : -1];
+typedef char TextEffect_size_must_be_8[(sizeof(TextEffect) == 8) ? 1 : -1];
+typedef char myTextEffectInfo_size_must_be_8[(sizeof(myTextEffectInfo) == 8) ? 1 : -1];
+typedef char FallingTextEffect_size_must_be_288[(sizeof(FallingTextEffect) == 288) ? 1 : -1];
 
 #endif // TEXTEFFECTS_INC_H

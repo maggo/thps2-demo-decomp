@@ -14,7 +14,8 @@
 
 // === External globals ===
 /** Packed fixed-point sine/cosine table entry. */
-struct SSinCos {
+struct SSinCos
+{
     short Sin;
     short Cos;
 };
@@ -23,18 +24,18 @@ struct SSinCos {
 #define RCOSSIN_DECL_TYPE int
 #define RCOSSIN_SCALAR_VIEW
 #include "RCOSSIN.h"
-#define Sine(angle) \
-    (reinterpret_cast<SSinCos *>( \
-        &rcossin_tbl + ((angle) & 0xFFF))->Sin)
+#define Sine(angle) (reinterpret_cast<SSinCos *>(&rcossin_tbl + ((angle) & 0xFFF))->Sin)
 #define QUAT_DECLARE_VTABLE_ABI
 #include "QUAT.h"
 
 /** Prepare uninitialized quaternion storage for a named return value. */
-inline CQuat::CQuat() {
+inline CQuat::CQuat()
+{
 }
 
 /** Copy a quaternion while restoring the CQuat virtual table. */
-inline CQuat::CQuat(const CQuat &_ctor_arg) {
+inline CQuat::CQuat(const CQuat &_ctor_arg)
+{
     CClass.vtable = &__vt_5CQuat;
     x = _ctor_arg.x;
     y = _ctor_arg.y;
@@ -42,16 +43,19 @@ inline CQuat::CQuat(const CQuat &_ctor_arg) {
     w = _ctor_arg.w;
 }
 /** Restore the destructor-phase CQuat virtual table. */
-inline CQuat::~CQuat() {
+inline CQuat::~CQuat()
+{
     CClass.vtable = &__vt_5CQuat + 4;
 }
 static int next[3] = { 1, 2, 0 };
 #include "M3DMATHS.h"
 
 /** Normalize a fixed-point quaternion in place. */
-inline void CQuat::Unit() {
+inline void CQuat::Unit()
+{
     int mag = SquareRoot0(x * x + y * y + z * z + w * w);
-    if (mag == 0) {
+    if (mag == 0)
+    {
         mag = 1;
     }
     x = (x << 12) / mag;
@@ -61,7 +65,8 @@ inline void CQuat::Unit() {
 }
 
 // === Free function declarations ===
-extern "C" {
+extern "C"
+{
 static void __DOT__5CQuat_80079050(CQuat *, int);
 static void __DOT__6CClass_80079080(CClass *, int);
 }
@@ -81,7 +86,8 @@ static void __DOT__6CClass_80079080(CClass *, int);
  * @param b Right-hand quaternion.
  * @return The composed quaternion.
  */
-CQuat operator*(const CQuat & a, const CQuat & b) {
+CQuat operator*(const CQuat &a, const CQuat &b)
+{
     CQuat q = b;
     CQuat &result = q;
     int tempw;
@@ -109,12 +115,13 @@ CQuat operator*(const CQuat & a, const CQuat & b) {
  * @param v Axis-and-angle vector.
  * @return Quaternion representing the requested axis rotation.
  */
-CQuat QFromV(const CVector &v) return result {
+CQuat QFromV(const CVector &v) return result
+{
     CVector tempv;
-    unsigned int mag = M3dMaths_SquareRoot0(
-        v.vx * v.vx + v.vy * v.vy + v.vz * v.vz);
+    unsigned int mag = M3dMaths_SquareRoot0(v.vx * v.vx + v.vy * v.vy + v.vz * v.vz);
 
-    if (mag == 0) {
+    if (mag == 0)
+    {
         result.CClass.vtable = &__vt_5CQuat;
         result.x = 0;
         result.y = 0;
@@ -130,8 +137,8 @@ CQuat QFromV(const CVector &v) return result {
     {
         int d = mag << 1;
         SSinCos *base = reinterpret_cast<SSinCos *>(&rcossin_tbl);
-        SSinCos *entry = reinterpret_cast<SSinCos *>(
-            reinterpret_cast<char *>(base) + (d & 0x3FFCu));
+        SSinCos *entry =
+            reinterpret_cast<SSinCos *>(reinterpret_cast<char *>(base) + (d & 0x3FFCu));
         int sin2 = entry->Sin;
         int cos2 = entry->Cos;
         result.CClass.vtable = &__vt_5CQuat;
@@ -140,8 +147,7 @@ CQuat QFromV(const CVector &v) return result {
         result.y = sin2 * tempv.vy >> 12;
         result.z = sin2 * tempv.vz >> 12;
     }
-done:
-    ;
+done:;
 }
 
 
@@ -151,11 +157,11 @@ done:
  * @param angle Fixed-point rotation angle.
  * @return Quaternion representing the X-axis rotation.
  */
-CQuat QFromXRot(short angle) return result {
+CQuat QFromXRot(short angle) return result
+{
     int d = angle << 1;
     SSinCos *base = reinterpret_cast<SSinCos *>(&rcossin_tbl);
-    SSinCos *entry = reinterpret_cast<SSinCos *>(
-        reinterpret_cast<char *>(base) + (d & 0x3FFCu));
+    SSinCos *entry = reinterpret_cast<SSinCos *>(reinterpret_cast<char *>(base) + (d & 0x3FFCu));
     int cos2 = entry->Cos;
     int sin2 = entry->Sin;
     int a = sin2;
@@ -173,11 +179,11 @@ CQuat QFromXRot(short angle) return result {
  * @param angle Fixed-point rotation angle.
  * @return Quaternion representing the Y-axis rotation.
  */
-CQuat QFromYRot(short angle) return result {
+CQuat QFromYRot(short angle) return result
+{
     int d = angle << 1;
     SSinCos *base = reinterpret_cast<SSinCos *>(&rcossin_tbl);
-    SSinCos *entry = reinterpret_cast<SSinCos *>(
-        reinterpret_cast<char *>(base) + (d & 0x3FFCu));
+    SSinCos *entry = reinterpret_cast<SSinCos *>(reinterpret_cast<char *>(base) + (d & 0x3FFCu));
     int cos2 = entry->Cos;
     int sin2 = entry->Sin;
     int b = sin2;
@@ -195,11 +201,11 @@ CQuat QFromYRot(short angle) return result {
  * @param angle Fixed-point rotation angle.
  * @return Quaternion representing the Z-axis rotation.
  */
-CQuat QFromZRot(short angle) return result {
+CQuat QFromZRot(short angle) return result
+{
     int d = angle << 1;
     SSinCos *base = reinterpret_cast<SSinCos *>(&rcossin_tbl);
-    SSinCos *entry = reinterpret_cast<SSinCos *>(
-        reinterpret_cast<char *>(base) + (d & 0x3FFCu));
+    SSinCos *entry = reinterpret_cast<SSinCos *>(reinterpret_cast<char *>(base) + (d & 0x3FFCu));
     int cos2 = entry->Cos;
     int sin2 = entry->Sin;
     int c = sin2;
@@ -217,7 +223,8 @@ CQuat QFromZRot(short angle) return result {
  * @param q  Source fixed-point unit quaternion.
  * @param m  Destination rotation matrix.
  */
-void QToM(const CQuat & q, MATRIX & m) {
+void QToM(const CQuat &q, MATRIX &m)
+{
     int wx, wy, wz, xx, xy, xz, yy, yz, zz;
     wx = (q.w * q.x) >> 11;
     wy = (q.w * q.y) >> 11;
@@ -250,24 +257,30 @@ void QToM(const CQuat & q, MATRIX & m) {
  * @param m  Source rotation matrix.
  * @param q  Quaternion to write.
  */
-void MToQ(const MATRIX & m, CQuat & q) {
+void MToQ(const MATRIX &m, CQuat &q)
+{
     int tr = m.m[0][0] + m.m[1][1] + m.m[2][2];
     int s;
 
-    if (tr > 0) {
+    if (tr > 0)
+    {
         s = SquareRoot0((tr + 0x1000) << 12);
         q.w = s >> 1;
 
-        if (s != 0) {
+        if (s != 0)
+        {
             s = 0x800000 / s;
         }
 
         q.x = ((m.m[1][2] - m.m[2][1]) * s) >> 12;
         q.y = ((m.m[2][0] - m.m[0][2]) * s) >> 12;
         q.z = ((m.m[0][1] - m.m[1][0]) * s) >> 12;
-    } else {
+    }
+    else
+    {
         int i = (m.m[0][0] < m.m[1][1]);
-        if (m.m[i][i] < m.m[2][2]) {
+        if (m.m[i][i] < m.m[2][2])
+        {
             i = 2;
         }
 
@@ -275,46 +288,32 @@ void MToQ(const MATRIX & m, CQuat & q) {
         int k = next[j];
         s = SquareRoot0((m.m[i][i] - (m.m[j][j] + m.m[k][k]) + 0x1000) << 12);
 
-        switch (i) {
-            case 0:
-                q.x = s >> 1;
-                break;
-            case 1:
-                q.y = s >> 1;
-                break;
-            case 2:
-                q.z = s >> 1;
-                break;
+        switch (i)
+        {
+            case 0: q.x = s >> 1; break;
+            case 1: q.y = s >> 1; break;
+            case 2: q.z = s >> 1; break;
         }
 
-        if (s != 0) {
+        if (s != 0)
+        {
             s = 0x800000 / s;
         }
 
         q.w = ((m.m[j][k] - m.m[k][j]) * s) >> 12;
 
-        switch (j) {
-            case 0:
-                q.x = ((m.m[i][j] + m.m[j][i]) * s) >> 12;
-                break;
-            case 1:
-                q.y = ((m.m[i][j] + m.m[j][i]) * s) >> 12;
-                break;
-            case 2:
-                q.z = ((m.m[i][j] + m.m[j][i]) * s) >> 12;
-                break;
+        switch (j)
+        {
+            case 0: q.x = ((m.m[i][j] + m.m[j][i]) * s) >> 12; break;
+            case 1: q.y = ((m.m[i][j] + m.m[j][i]) * s) >> 12; break;
+            case 2: q.z = ((m.m[i][j] + m.m[j][i]) * s) >> 12; break;
         }
 
-        switch (k) {
-            case 0:
-                q.x = ((m.m[i][k] + m.m[k][i]) * s) >> 12;
-                break;
-            case 1:
-                q.y = ((m.m[i][k] + m.m[k][i]) * s) >> 12;
-                break;
-            case 2:
-                q.z = ((m.m[i][k] + m.m[k][i]) * s) >> 12;
-                break;
+        switch (k)
+        {
+            case 0: q.x = ((m.m[i][k] + m.m[k][i]) * s) >> 12; break;
+            case 1: q.y = ((m.m[i][k] + m.m[k][i]) * s) >> 12; break;
+            case 2: q.z = ((m.m[i][k] + m.m[k][i]) * s) >> 12; break;
         }
     }
 }
@@ -328,14 +327,16 @@ void MToQ(const MATRIX & m, CQuat & q) {
  * @param t  Fixed-point interpolation amount.
  * @param qt Interpolated quaternion.
  */
-void Quat_Slerp(CQuat p, CQuat q, int t, CQuat & qt) {
+void Quat_Slerp(CQuat p, CQuat q, int t, CQuat &qt)
+{
     int omega, cosom, sinom, sclp, sclq;
 
     p.Unit();
     q.Unit();
 
     cosom = (p.x * q.x + p.y * q.y + p.z * q.z + p.w * q.w) >> 12;
-    if (cosom < 0) {
+    if (cosom < 0)
+    {
         cosom = -cosom;
         p.x = -p.x;
         p.y = -p.y;
@@ -343,17 +344,22 @@ void Quat_Slerp(CQuat p, CQuat q, int t, CQuat & qt) {
         p.w = -p.w;
     }
 
-    if (cosom > 0x1000) {
+    if (cosom > 0x1000)
+    {
         cosom = 0x1000;
     }
 
-    if (cosom + 0x1000 >= 0x81) {
-        if (0x1000 - cosom >= 0x81) {
+    if (cosom + 0x1000 >= 0x81)
+    {
+        if (0x1000 - cosom >= 0x81)
+        {
             omega = Utils_ArcCos(cosom);
             sinom = Sine(omega);
             sclp = (Sine(((0x1000 - t) * omega) >> 12) << 12) / sinom;
             sclq = (Sine((t * omega) >> 12) << 12) / sinom;
-        } else {
+        }
+        else
+        {
             sclp = 0x1000 - t;
             sclq = t;
         }
@@ -362,7 +368,9 @@ void Quat_Slerp(CQuat p, CQuat q, int t, CQuat & qt) {
         qt.y = (sclp * p.y + sclq * q.y) >> 12;
         qt.z = (sclp * p.z + sclq * q.z) >> 12;
         qt.w = (sclp * p.w + sclq * q.w) >> 12;
-    } else {
+    }
+    else
+    {
         qt.x = -p.y;
         qt.y = -p.x;
         qt.z = -p.w;
@@ -385,9 +393,11 @@ void Quat_Slerp(CQuat p, CQuat q, int t, CQuat & qt) {
  * @param _this Quaternion being destroyed.
  * @param __in_chrg GCC 2.x in-charge flag; bit 0 releases the object.
  */
-static void __DOT__5CQuat_80079050(CQuat *_this, int __in_chrg) {
+static void __DOT__5CQuat_80079050(CQuat *_this, int __in_chrg)
+{
     _this->CClass.vtable = &__vt_5CQuat + 4;
-    if (__in_chrg & 1) {
+    if (__in_chrg & 1)
+    {
         CClass::operator delete(_this);
     }
 }
@@ -399,9 +409,11 @@ static void __DOT__5CQuat_80079050(CQuat *_this, int __in_chrg) {
  * @param _this Base object being destroyed.
  * @param __in_chrg GCC 2.x in-charge flag; bit 0 releases the object.
  */
-static void __DOT__6CClass_80079080(CClass *_this, int __in_chrg) {
+static void __DOT__6CClass_80079080(CClass *_this, int __in_chrg)
+{
     _this->vtable = &__vt_5CQuat + 4;
-    if (__in_chrg & 1) {
+    if (__in_chrg & 1)
+    {
         CClass::operator delete(_this);
     }
 }

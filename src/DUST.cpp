@@ -27,7 +27,9 @@ inline void *operator new(unsigned int, void *storage)
 }
 
 /** Owner-local named skater view used by Dust::Update. */
-struct CBruce : DustBruceLayout {};
+struct CBruce : DustBruceLayout
+{
+};
 
 /** Absolute-address view used by the particle animation call site. */
 extern char s_SmokeAnim[];
@@ -38,9 +40,7 @@ extern "C"
 {
 
 /** Particle animation selected for dust puffs. */
-char s_SmokeAnim[8]
-    __attribute__((section(".sdata"))) = "smoke";
-
+char s_SmokeAnim[8] __attribute__((section(".sdata"))) = "smoke";
 }
 }
 
@@ -54,9 +54,11 @@ char s_SmokeAnim[8]
  * Demangled: Dust::(void)
  *
  */
-Dust::Dust() {
+Dust::Dust()
+{
     int i = 0;
-    do {
+    do
+    {
         mDustStack[i] = 0;
         i++;
     } while (i < 12);
@@ -74,13 +76,16 @@ Dust::Dust() {
  *            Destroy any active dust particles, reset the Dust object, and optionally free it.
  *
  */
-Dust::~Dust() {
+Dust::~Dust()
+{
     int i = 0;
-    if (mDustCount > 0) {
-        do {
-            if (mDustStack[i] != 0) {
-                mDustStack[i]->CFT4Bit.CBit._vf->destroy(
-                    &mDustStack[i]->CFT4Bit.CBit, 3);
+    if (mDustCount > 0)
+    {
+        do
+        {
+            if (mDustStack[i] != 0)
+            {
+                mDustStack[i]->CFT4Bit.CBit._vf->destroy(&mDustStack[i]->CFT4Bit.CBit, 3);
             }
             mDustStack[i] = 0;
             i++;
@@ -100,7 +105,8 @@ Dust::~Dust() {
  * @param terrainType  Terrain type code.
  * @param dustType  Land, bail, or brake dust mode.
  */
-void Dust::Reset(int terrainType, int dustType) {
+void Dust::Reset(int terrainType, int dustType)
+{
     unsigned char tint = 64;
     short transDecay = 1;
     short scaleDecay = 8;
@@ -108,9 +114,8 @@ void Dust::Reset(int terrainType, int dustType) {
     mDustType = dustType;
     mCloudsLeftToGenerate = 0;
     short scale = 0;
-    get_terrain_parameters(
-        terrainType, &scale, &tint, &transDecay, &scaleDecay,
-        &mCloudsLeftToGenerate, &randomOffset);
+    get_terrain_parameters(terrainType, &scale, &tint, &transDecay, &scaleDecay,
+                           &mCloudsLeftToGenerate, &randomOffset);
 }
 
 
@@ -123,30 +128,29 @@ void Dust::Reset(int terrainType, int dustType) {
  *
  * @param pBruce  Active skater (CBruce) being processed.
  */
-void Dust::Update(CBruce *pBruce) {
+void Dust::Update(CBruce *pBruce)
+{
     int i = 0;
-    if (mDustCount > 0) {
-        do {
+    if (mDustCount > 0)
+    {
+        do
+        {
             CFlatBit *pDust = mDustStack[i];
             short scale = pDust->CFT4Bit.mScale;
-            unsigned short unsignedScale =
-                *(unsigned short *)&pDust->CFT4Bit.mScale;
-            if (scale < 512) {
+            unsigned short unsignedScale = *(unsigned short *)&pDust->CFT4Bit.mScale;
+            if (scale < 512)
+            {
                 *(unsigned short *)&pDust->CFT4Bit.mScale =
-                    unsignedScale + *(unsigned short *)&
-                        pDust->CFT4Bit.mScaleDecay;
+                    unsignedScale + *(unsigned short *)&pDust->CFT4Bit.mScaleDecay;
             }
             mDustStack[i]->CFT4Bit.Fade(0);
             int shift = (mDustType != 1);
             mDustStack[i]->CFT4Bit.CBit.mPos.vx =
-                mDustStack[i]->CFT4Bit.CBit.mPos.vx +
-                (pBruce->mVelocity.vx >> shift);
+                mDustStack[i]->CFT4Bit.CBit.mPos.vx + (pBruce->mVelocity.vx >> shift);
             mDustStack[i]->CFT4Bit.CBit.mPos.vz =
-                mDustStack[i]->CFT4Bit.CBit.mPos.vz +
-                (pBruce->mVelocity.vz >> shift);
+                mDustStack[i]->CFT4Bit.CBit.mPos.vz + (pBruce->mVelocity.vz >> shift);
             int r = Rnd(3);
-            mDustStack[i]->CFT4Bit.CBit.mPos.vy =
-                mDustStack[i]->CFT4Bit.CBit.mPos.vy - (r << 12);
+            mDustStack[i]->CFT4Bit.CBit.mPos.vy = mDustStack[i]->CFT4Bit.CBit.mPos.vy - (r << 12);
             i++;
         } while (i < mDustCount);
     }
@@ -157,48 +161,56 @@ void Dust::Update(CBruce *pBruce) {
     short scaleDecay = 8;
     int randomOffset = 16;
     int dummy;
-    if (mCloudsLeftToGenerate <= 0) {
+    if (mCloudsLeftToGenerate <= 0)
+    {
         // Timer expired: check if all particles are faded
         int done = 1;
         int i = 0;
-        if (mDustCount > 0) {
-            do {
-                if (mDustStack[i]->CFT4Bit.mColour.mCodeBGR != 0) {
+        if (mDustCount > 0)
+        {
+            do
+            {
+                if (mDustStack[i]->CFT4Bit.mColour.mCodeBGR != 0)
+                {
                     done = 0;
                 }
             } while (++i < mDustCount);
         }
         if (done == 0) return;
         // Destroy all particles
-        if (mDustCount > 0) {
+        if (mDustCount > 0)
+        {
             int i = 0;
             CFlatBit **slot = mDustStack;
-            do {
+            do
+            {
                 CFlatBit *object = *slot;
-                if (object != 0) {
-                    object->CFT4Bit.CBit._vf->destroy(
-                        &object->CFT4Bit.CBit, 3);
+                if (object != 0)
+                {
+                    object->CFT4Bit.CBit._vf->destroy(&object->CFT4Bit.CBit, 3);
                 }
                 *slot = 0;
                 slot++;
             } while (++i < mDustCount);
         }
         mDustCount = 0;
-    } else {
+    }
+    else
+    {
         // Spawn new particle
         mCloudsLeftToGenerate--;
-        get_terrain_parameters(
-            pBruce->mTerrain, &scale, &tint, &transDecay,
-            &scaleDecay, &dummy, &randomOffset);
-        CFlatBit *pDust = static_cast<CFlatBit *>(
-            CBit::operator new(sizeof(CFlatBit)));
-        if (pDust != 0) {
+        get_terrain_parameters(pBruce->mTerrain, &scale, &tint, &transDecay, &scaleDecay, &dummy,
+                               &randomOffset);
+        CFlatBit *pDust = static_cast<CFlatBit *>(CBit::operator new(sizeof(CFlatBit)));
+        if (pDust != 0)
+        {
             pDust = ::new (pDust) CFlatBit();
         }
         // Copy bruce position to new bit position (batched CVector assignment)
         pDust->CFT4Bit.CBit.mPos = pBruce->mPosition;
         CVector *pResult = &pDust->CFT4Bit.CBit.mPos;
-        if (mDustType == 1) {
+        if (mDustType == 1)
+        {
             // Bail mode
             CVector tempVector;
             tempVector.vx = 0;
@@ -212,16 +224,16 @@ void Dust::Update(CBruce *pBruce) {
             hook.Offset.vz = (short)tempVector.vz;
             int r = Rnd(numParts);
             hook.Part = (unsigned short)r;
-            M3dUtils_GetDynamicHookPosition(
-                reinterpret_cast<VECTOR *>(pResult),
-                reinterpret_cast<CSuper *>(pBruce),
-                &hook);
+            M3dUtils_GetDynamicHookPosition(reinterpret_cast<VECTOR *>(pResult),
+                                            reinterpret_cast<CSuper *>(pBruce), &hook);
             // Double the particle size for bail
             int doubledScale = scale;
             int doubledScaleDecay = scaleDecay;
             scale = doubledScale + doubledScale;
             scaleDecay = doubledScaleDecay + doubledScaleDecay;
-        } else {
+        }
+        else
+        {
             // Normal mode
             apply_random_offset(*pResult, randomOffset, 12);
         }
@@ -251,8 +263,10 @@ void Dust::Update(CBruce *pBruce) {
  *
  * @param pDust  Dust to operate on.
  */
-void Dust::insert_dust(CFlatBit *pDust) {
-    if (mDustCount < 12) {
+void Dust::insert_dust(CFlatBit *pDust)
+{
+    if (mDustCount < 12)
+    {
         mDustStack[mDustCount] = pDust;
         ++mDustCount;
         return;
@@ -260,19 +274,22 @@ void Dust::insert_dust(CFlatBit *pDust) {
     int unusedSlot = -1;
     int dimmestColor = 65535;
     CFlatBit **base = mDustStack;
-    for (int i = 0; i < mDustCount; i++) {
+    for (int i = 0; i < mDustCount; i++)
+    {
         CFlatBit *oldDust = base[i];
-        int newColor = (int)oldDust->CFT4Bit.mColour.Components.mRed
-                     + (int)oldDust->CFT4Bit.mColour.Components.mGreen
-                     + (int)oldDust->CFT4Bit.mColour.Components.mBlue;
-        if (newColor < dimmestColor) {
+        int newColor = (int)oldDust->CFT4Bit.mColour.Components.mRed +
+                       (int)oldDust->CFT4Bit.mColour.Components.mGreen +
+                       (int)oldDust->CFT4Bit.mColour.Components.mBlue;
+        if (newColor < dimmestColor)
+        {
             dimmestColor = newColor;
             unusedSlot = i;
         }
     }
     CFlatBit **target = &base[unusedSlot];
     CFlatBit *oldDust = *target;
-    if (oldDust != 0) {
+    if (oldDust != 0)
+    {
         oldDust->CFT4Bit.CBit._vf->destroy(&oldDust->CFT4Bit.CBit, 3);
     }
     *target = pDust;
@@ -295,26 +312,24 @@ void Dust::insert_dust(CFlatBit *pDust) {
  * @param pNumClouds  NumClouds to operate on.
  * @param pRandomOffset  RandomOffset to operate on.
  */
-void Dust::get_terrain_parameters(
-    int terrainType, short *pScale, unsigned char *pTint,
-    short *pTransDecay, short *pScaleDecay, DustCloudCount *pNumClouds,
-    int *pRandomOffset) {
-    switch (mDustType) {
-    case 0:
-        get_land_terrain_parameters(
-            terrainType, pScale, pTint, pTransDecay, pScaleDecay,
-            pNumClouds, pRandomOffset);
-        break;
-    case 1:
-        get_bail_terrain_parameters(
-            terrainType, pScale, pTint, pTransDecay, pScaleDecay,
-            pNumClouds, pRandomOffset);
-        break;
-    case 2:
-        get_brake_terrain_parameters(
-            terrainType, pScale, pTint, pTransDecay, pScaleDecay,
-            pNumClouds, pRandomOffset);
-        break;
+void Dust::get_terrain_parameters(int terrainType, short *pScale, unsigned char *pTint,
+                                  short *pTransDecay, short *pScaleDecay,
+                                  DustCloudCount *pNumClouds, int *pRandomOffset)
+{
+    switch (mDustType)
+    {
+        case 0:
+            get_land_terrain_parameters(terrainType, pScale, pTint, pTransDecay, pScaleDecay,
+                                        pNumClouds, pRandomOffset);
+            break;
+        case 1:
+            get_bail_terrain_parameters(terrainType, pScale, pTint, pTransDecay, pScaleDecay,
+                                        pNumClouds, pRandomOffset);
+            break;
+        case 2:
+            get_brake_terrain_parameters(terrainType, pScale, pTint, pTransDecay, pScaleDecay,
+                                         pNumClouds, pRandomOffset);
+            break;
     }
 }
 
@@ -335,10 +350,9 @@ void Dust::get_terrain_parameters(
  * @param pNumClouds  NumClouds to operate on.
  * @param pRandomOffset  RandomOffset to operate on.
  */
-void Dust::get_land_terrain_parameters(
-    int terrainType, short *pScale, unsigned char *pTint,
-    short *pTransDecay, short *pScaleDecay, DustCloudCount *pNumClouds,
-    int *pRandomOffset)
+void Dust::get_land_terrain_parameters(int terrainType, short *pScale, unsigned char *pTint,
+                                       short *pTransDecay, short *pScaleDecay,
+                                       DustCloudCount *pNumClouds, int *pRandomOffset)
 {
     if (terrainType == 3) goto land_case3;
     if (terrainType != 6) goto land_default;
@@ -384,38 +398,39 @@ land_default:
  * @param pNumClouds  NumClouds to operate on.
  * @param pRandomOffset  RandomOffset to operate on.
  */
-void Dust::get_bail_terrain_parameters(
-    int terrainType, short *pScale, unsigned char *pTint,
-    short *pTransDecay, short *pScaleDecay, DustCloudCount *pNumClouds,
-    int *pRandomOffset) {
-    switch (terrainType) {
-    case 3:
-        *pScale = 128;
-        *pTint = 64;
-        *pTransDecay = 2;
-        *pScaleDecay = 8;
-        *pNumClouds = 10;
-        *pRandomOffset = 4;
-        break;
-    case 2:
-    case 5:
-    case 8:
-    case 13:
-        *pScale = 64;
-        *pTint = 64;
-        *pTransDecay = 2;
-        *pScaleDecay = 8;
-        *pNumClouds = 10;
-        *pRandomOffset = 0;
-        break;
-    default:
-        *pScale = 0;
-        *pTint = 0;
-        *pTransDecay = 0;
-        *pScaleDecay = 0;
-        *pNumClouds = 0;
-        *pRandomOffset = 0;
-        break;
+void Dust::get_bail_terrain_parameters(int terrainType, short *pScale, unsigned char *pTint,
+                                       short *pTransDecay, short *pScaleDecay,
+                                       DustCloudCount *pNumClouds, int *pRandomOffset)
+{
+    switch (terrainType)
+    {
+        case 3:
+            *pScale = 128;
+            *pTint = 64;
+            *pTransDecay = 2;
+            *pScaleDecay = 8;
+            *pNumClouds = 10;
+            *pRandomOffset = 4;
+            break;
+        case 2:
+        case 5:
+        case 8:
+        case 13:
+            *pScale = 64;
+            *pTint = 64;
+            *pTransDecay = 2;
+            *pScaleDecay = 8;
+            *pNumClouds = 10;
+            *pRandomOffset = 0;
+            break;
+        default:
+            *pScale = 0;
+            *pTint = 0;
+            *pTransDecay = 0;
+            *pScaleDecay = 0;
+            *pNumClouds = 0;
+            *pRandomOffset = 0;
+            break;
     }
 }
 
@@ -436,14 +451,15 @@ void Dust::get_bail_terrain_parameters(
  * @param pNumClouds  NumClouds to operate on.
  * @param pRandomOffset  RandomOffset to operate on.
  */
-void Dust::get_brake_terrain_parameters(
-    int terrainType, short *pScale, unsigned char *pTint,
-    short *pTransDecay, short *pScaleDecay, DustCloudCount *pNumClouds,
-    int *pRandomOffset) {
+void Dust::get_brake_terrain_parameters(int terrainType, short *pScale, unsigned char *pTint,
+                                        short *pTransDecay, short *pScaleDecay,
+                                        DustCloudCount *pNumClouds, int *pRandomOffset)
+{
     if (terrainType != 3) goto not3;
     goto case3;
 not3:
-    if (terrainType < 4) {
+    if (terrainType < 4)
+    {
         if (terrainType == 2) goto shared;
         goto def;
     }
@@ -488,8 +504,8 @@ def:
  * @param shiftAmount  Fixed-point shift applied to each offset.
  */
 // Shared Dust member function
-void Dust::apply_random_offset(
-    CVector &pos, int randomRange, int shiftAmount) {
+void Dust::apply_random_offset(CVector &pos, int randomRange, int shiftAmount)
+{
     int range4 = randomRange << 2;
     int r = Rnd(range4);
     int sh = shiftAmount;

@@ -6,7 +6,8 @@ struct CBruce;
 struct CPlatform;
 struct CVector;
 
-enum {
+enum
+{
     PLATFORM_OBJECT_SIZE = 592
 };
 

@@ -199,14 +199,15 @@ void Pack_Init640x480(void)
  * @param checksum  Asset hash for content lookup.
  * @return The allocated pack record, or null when no suitable region exists.
  */
-TSPack *Pack_Pack(int Type, int WW, int H, int *X, int *Y, int BPP, int Aligned, unsigned int checksum)
+TSPack *Pack_Pack(int Type, int WW, int H, int *X, int *Y, int BPP, int Aligned,
+                  unsigned int checksum)
 {
     TSPack *pBest; // $s2
-    TSPack *pPack;  // $s1
+    TSPack *pPack; // $s1
     TSPack *pNew; // $s7
     int OX, OY, OW, OH;
     int Over;
-    int W;        // $s3
+    int W; // $s3
 
     W = WW;
 
@@ -237,15 +238,12 @@ TSPack *Pack_Pack(int Type, int WW, int H, int *X, int *Y, int BPP, int Aligned,
 
             if ((WW == 0x100) || (H == 0x100))
             {
-                pPack = Pack_Pack(
-                    Type, 0x100, 0x100, &NewX, &NewY, BPP, 0, checksum);
-                if (!pPack)
-                    return 0;
+                pPack = Pack_Pack(Type, 0x100, 0x100, &NewX, &NewY, BPP, 0, checksum);
+                if (!pPack) return 0;
 
                 OldW = 0x80;
                 OldH = 0x100;
-                if (BPP != 0x10)
-                    W = (W + 1) / 2;
+                if (BPP != 0x10) W = (W + 1) / 2;
                 if (BPP == 4)
                 {
                     W = (W + 1) / 2;
@@ -257,15 +255,11 @@ TSPack *Pack_Pack(int Type, int WW, int H, int *X, int *Y, int BPP, int Aligned,
             }
             else
             {
-                pPack = Pack_Pack(
-                    Type, WW << 1, H << 1, &NewX, &NewY, BPP, 0, checksum);
-                if (!pPack)
-                    return 0;
+                pPack = Pack_Pack(Type, WW << 1, H << 1, &NewX, &NewY, BPP, 0, checksum);
+                if (!pPack) return 0;
 
-                if (BPP != 0x10)
-                    W = (W + 1) / 2;
-                if (BPP == 4)
-                    W = (W + 1) / 2;
+                if (BPP != 0x10) W = (W + 1) / 2;
+                if (BPP == 4) W = (W + 1) / 2;
 
                 OldW = W << 1;
                 OldH = H * 2;
@@ -338,15 +332,13 @@ TSPack *Pack_Pack(int Type, int WW, int H, int *X, int *Y, int BPP, int Aligned,
             RightEdge = (pPack->X & -0x40) + 0x40;
 
         Over = pPack->X + W > RightEdge;
-        if (!Over && Aligned == -1 &&
-            ((pPack->X & (W - 1)) || (pPack->Y & (H - 1))))
+        if (!Over && Aligned == -1 && ((pPack->X & (W - 1)) || (pPack->Y & (H - 1))))
         {
             Over = 1;
         }
 
         if ((!Pack_NoBottom || ((pPack->Y + H) & 0xFF)) &&
-            (!Pack_NoRight || pPack->X + W != RightEdge) &&
-            (Type < 0 || !Over))
+            (!Pack_NoRight || pPack->X + W != RightEdge) && (Type < 0 || !Over))
         {
             if (pPack->W == W && pPack->H == H)
             {
@@ -354,12 +346,10 @@ TSPack *Pack_Pack(int Type, int WW, int H, int *X, int *Y, int BPP, int Aligned,
                 break;
             }
 
-            if ((pBest == 0 ||
-                 (pBest->W != W && pBest->H != H) ||
-                 pPack->W == W || pPack->H == H) &&
+            if ((pBest == 0 || (pBest->W != W && pBest->H != H) || pPack->W == W ||
+                 pPack->H == H) &&
                 W <= pPack->W && H <= pPack->H &&
-                (pBest == 0 ||
-                 pPack->W * pPack->H < pBest->W * pBest->H))
+                (pBest == 0 || pPack->W * pPack->H < pBest->W * pBest->H))
             {
                 pBest = pPack;
             }
@@ -367,8 +357,7 @@ TSPack *Pack_Pack(int Type, int WW, int H, int *X, int *Y, int BPP, int Aligned,
     }
 
     {
-        if (pBest)
-            goto use_best_forward;
+        if (pBest) goto use_best_forward;
 
         // === PASS 2: Reverse/right-aligned scan ===
         for (pPack = Pack_pFree; pPack; pPack = pPack->pNext)
@@ -383,64 +372,52 @@ TSPack *Pack_Pack(int Type, int WW, int H, int *X, int *Y, int BPP, int Aligned,
                 RightEdge = ((pPack->X + pPack->W - W) & -0x40) + 0x40;
 
             Over = pPack->X + pPack->W > RightEdge;
-            if (!Over && Aligned == -1 &&
-                (((pPack->X - W) & (W - 1)) ||
-                 (pPack->Y & (H - 1))))
+            if (!Over && Aligned == -1 && (((pPack->X - W) & (W - 1)) || (pPack->Y & (H - 1))))
             {
                 Over = 1;
             }
 
             if ((!Pack_NoBottom || ((pPack->Y + H) & 0xFF)) &&
-                (!Pack_NoRight || pPack->X + pPack->W != RightEdge) &&
-                (Type < 0 || !Over))
+                (!Pack_NoRight || pPack->X + pPack->W != RightEdge) && (Type < 0 || !Over))
             {
                 if (pPack->W == W && pPack->H == H)
                 {
                     pBest = pPack;
                 }
-                else if ((pBest == 0 ||
-                          (pBest->W != W && pBest->H != H) ||
-                          pPack->W == W || pPack->H == H) &&
+                else if ((pBest == 0 || (pBest->W != W && pBest->H != H) || pPack->W == W ||
+                          pPack->H == H) &&
                          W <= pPack->W && H <= pPack->H &&
-                         (pBest == 0 ||
-                          pPack->W * pPack->H < pBest->W * pBest->H))
+                         (pBest == 0 || pPack->W * pPack->H < pBest->W * pBest->H))
                 {
                     pBest = pPack;
                 }
             }
         }
 
-        if (pBest)
-            goto use_best_reverse;
+        if (pBest) goto use_best_reverse;
 
         // === PASS 3: Relaxed (trim to alignment) ===
-        if (Aligned == -1)
-            return 0;
+        if (Aligned == -1) return 0;
 
         int AlignedX;
         int AlignedW;
 
         for (pPack = Pack_pFree; pPack; pPack = pPack->pNext)
         {
-            if ((!Pack_NoBottom || ((pPack->Y + H) & 0xFF)) &&
-                (!Pack_NoRight || WW != 0x100) &&
-                (pBest == 0 ||
-                 (pBest->W != W && pBest->H != H) ||
-                 pPack->W == W || pPack->H == H))
+            if ((!Pack_NoBottom || ((pPack->Y + H) & 0xFF)) && (!Pack_NoRight || WW != 0x100) &&
+                (pBest == 0 || (pBest->W != W && pBest->H != H) || pPack->W == W || pPack->H == H))
             {
                 AlignedX = (pPack->X + 0x40) & -0x40;
                 AlignedW = pPack->W - (AlignedX - pPack->X);
                 if (W <= AlignedW && H <= pPack->H &&
-                    (pBest == 0 ||
-                     pPack->W * pPack->H < pBest->W * pBest->H))
+                    (pBest == 0 || pPack->W * pPack->H < pBest->W * pBest->H))
                 {
                     pBest = pPack;
                 }
             }
         }
 
-        if (!pBest)
-            return 0;
+        if (!pBest) return 0;
 
         // Trim left to tpage boundary
         AlignedX = (pBest->X + 0x40) & -0x40;
@@ -462,88 +439,87 @@ TSPack *Pack_Pack(int Type, int WW, int H, int *X, int *Y, int BPP, int Aligned,
 
     // --- Reverse allocation: found the best slot in pass 2 ---
 use_best_reverse:
-{
-    OX = pBest->X;
-    OY = pBest->Y;
-    OW = pBest->W;
-    OH = pBest->H;
-    Pack_Remove(&Pack_pFree, pBest);
-
-    pNew = Pack_NewFull(OX + OW - W, OY, W, H);
-
-    if (OW != W)
     {
-        if (OH != H)
+        OX = pBest->X;
+        OY = pBest->Y;
+        OW = pBest->W;
+        OH = pBest->H;
+        Pack_Remove(&Pack_pFree, pBest);
+
+        pNew = Pack_NewFull(OX + OW - W, OY, W, H);
+
+        if (OW != W)
         {
-            TSPack *ns = Pack_NewFree(OX, OY, OW - W, OH);
-            Pack_Merge(ns);
-            ns = Pack_NewFree(OX + OW - W, OY + H, W, OH - H);
-            Pack_Merge(ns);
+            if (OH != H)
+            {
+                TSPack *ns = Pack_NewFree(OX, OY, OW - W, OH);
+                Pack_Merge(ns);
+                ns = Pack_NewFree(OX + OW - W, OY + H, W, OH - H);
+                Pack_Merge(ns);
+            }
+            else
+            {
+                TSPack *ns = Pack_NewFree(OX, OY, OW - W, OH);
+                Pack_Merge(ns);
+            }
         }
         else
         {
-            TSPack *ns = Pack_NewFree(OX, OY, OW - W, OH);
-            Pack_Merge(ns);
+            if (OH != H)
+            {
+                TSPack *ns = Pack_NewFree(OX, OY + H, OW, OH - H);
+                Pack_Merge(ns);
+            }
         }
-    }
-    else
-    {
-        if (OH != H)
-        {
-            TSPack *ns = Pack_NewFree(OX, OY + H, OW, OH - H);
-            Pack_Merge(ns);
-        }
-    }
 
-    *X = OX + OW - W;
-    goto allocation_done;
-}
+        *X = OX + OW - W;
+        goto allocation_done;
+    }
 
     // --- Forward allocation: found the best slot in pass 1 ---
 use_best_forward:
-{
-    OX = pBest->X;
-    OY = pBest->Y;
-    OW = pBest->W;
-    OH = pBest->H;
-    Pack_Remove(&Pack_pFree, pBest);
-
-    pNew = Pack_NewFull(OX, OY, W, H);
-
-    if (OW != W)
     {
-        if (OH != H)
+        OX = pBest->X;
+        OY = pBest->Y;
+        OW = pBest->W;
+        OH = pBest->H;
+        Pack_Remove(&Pack_pFree, pBest);
+
+        pNew = Pack_NewFull(OX, OY, W, H);
+
+        if (OW != W)
         {
-            TSPack *ns = Pack_NewFree(OX + W, OY, OW - W, OH);
-            Pack_Merge(ns);
-            ns = Pack_NewFree(OX, OY + H, W, OH - H);
-            Pack_Merge(ns);
+            if (OH != H)
+            {
+                TSPack *ns = Pack_NewFree(OX + W, OY, OW - W, OH);
+                Pack_Merge(ns);
+                ns = Pack_NewFree(OX, OY + H, W, OH - H);
+                Pack_Merge(ns);
+            }
+            else
+            {
+                TSPack *ns = Pack_NewFree(OX + W, OY, OW - W, OH);
+                Pack_Merge(ns);
+            }
         }
         else
         {
-            TSPack *ns = Pack_NewFree(OX + W, OY, OW - W, OH);
-            Pack_Merge(ns);
+            if (OH != H)
+            {
+                TSPack *ns = Pack_NewFree(OX, OY + H, OW, OH - H);
+                Pack_Merge(ns);
+            }
         }
-    }
-    else
-    {
-        if (OH != H)
-        {
-            TSPack *ns = Pack_NewFree(OX, OY + H, OW, OH - H);
-            Pack_Merge(ns);
-        }
-    }
 
-    *X = OX;
-allocation_done:
-    *Y = OY;
-    pNew->bpp = BPP;
-    pNew->aligned = Aligned;
-    pNew->Type = Type;
-    pNew->no_bottom = Pack_NoBottom;
-    return pNew;
-}
-
+        *X = OX;
+    allocation_done:
+        *Y = OY;
+        pNew->bpp = BPP;
+        pNew->aligned = Aligned;
+        pNew->Type = Type;
+        pNew->no_bottom = Pack_NoBottom;
+        return pNew;
+    }
 }
 
 /**
@@ -701,19 +677,16 @@ int Pack_Merge(TSPack *p_merge)
             if (p_merge->Y == p_free->Y && p_merge->H == p_free->H)
             {
                 mergeCoord = p_merge->X;
-                if (p_free->X + p_free->W == mergeCoord)
-                    goto do_merge;
+                if (p_free->X + p_free->W == mergeCoord) goto do_merge;
                 mergeEdge = mergeCoord + p_merge->W;
                 freeCoord = p_free->X;
                 goto check_tail;
             }
             if (p_merge->X == p_free->X && p_merge->W == p_free->W)
             {
-                if ((p_free->Y & 0x100) != (p_merge->Y & 0x100))
-                    goto next_p;
+                if ((p_free->Y & 0x100) != (p_merge->Y & 0x100)) goto next_p;
                 mergeCoord = p_merge->Y;
-                if (p_free->Y + p_free->H == mergeCoord)
-                    goto do_merge;
+                if (p_free->Y + p_free->H == mergeCoord) goto do_merge;
                 mergeEdge = mergeCoord + p_merge->H;
                 freeCoord = p_free->Y;
                 goto check_tail;
@@ -721,8 +694,7 @@ int Pack_Merge(TSPack *p_merge)
             goto next_p;
 
         check_tail:
-            if (mergeEdge != freeCoord)
-                goto next_p;
+            if (mergeEdge != freeCoord) goto next_p;
 
         do_merge:
             worth_continuing = 1;
@@ -760,10 +732,8 @@ REDO:
     p_loop = Pack_pFull;
     while (p_loop)
     {
-        if ((p_loop->X + (p_loop->W - 1) >= x) &&
-            (p_loop->X < x + w) &&
-            (p_loop->Y + (p_loop->H - 1) >= y) &&
-            (p_loop->Y < y + h))
+        if ((p_loop->X + (p_loop->W - 1) >= x) && (p_loop->X < x + w) &&
+            (p_loop->Y + (p_loop->H - 1) >= y) && (p_loop->Y < y + h))
         {
             break;
         }
@@ -778,9 +748,7 @@ REDO:
     else
     {
         // A rectangle already covering the requested region needs no split.
-        if ((x >= p_loop->X) &&
-            (y >= p_loop->Y) &&
-            (x + w <= p_loop->X + p_loop->W) &&
+        if ((x >= p_loop->X) && (y >= p_loop->Y) && (x + w <= p_loop->X + p_loop->W) &&
             (y + h <= p_loop->Y + p_loop->H))
         {
             return;
@@ -869,35 +837,33 @@ void Pack_DefragmentFully(void)
         // Rebuild the free regions for the active VRAM packing width.
         switch (Pack_Width)
         {
-        case 0x140:
-            // 320-wide mode
-            Pack_Zap(0x140, 0x100, 0x40, 0x100);
-            Pack_Zap(Pack_Width + 0x40, 0x100, 0x80, 0x100);
-            Pack_Zap(Pack_Width + 0xC0, 0x100, 0x200, 0x100);
-            Pack_Zap(Pack_Width, 0, 0x40, 0x100);
-            Pack_Zap(Pack_Width + 0x40, 0, 0x80, 0x100);
-            Pack_Zap(Pack_Width + 0xC0, 0, 0x200, 0x100);
-            break;
-        case 0x280:
-            // 640-wide mode
-            Pack_Zap(0x280, 0x100, 0x80, 0x100);
-            Pack_Zap(Pack_Width + 0x80, 0x100, 0x100, 0x100);
-            Pack_Zap(Pack_Width, 0, 0x80, 0x100);
-            Pack_Zap(Pack_Width + 0x80, 0, 0x100, 0x100);
-            break;
-        default:
-            // Default mode
-            Pack_Zap(Pack_Width, 0x100, 0x400 - Pack_Width, 0x100);
-            Pack_Zap(Pack_Width, 0, 0x400 - Pack_Width, 0x100);
+            case 0x140:
+                // 320-wide mode
+                Pack_Zap(0x140, 0x100, 0x40, 0x100);
+                Pack_Zap(Pack_Width + 0x40, 0x100, 0x80, 0x100);
+                Pack_Zap(Pack_Width + 0xC0, 0x100, 0x200, 0x100);
+                Pack_Zap(Pack_Width, 0, 0x40, 0x100);
+                Pack_Zap(Pack_Width + 0x40, 0, 0x80, 0x100);
+                Pack_Zap(Pack_Width + 0xC0, 0, 0x200, 0x100);
+                break;
+            case 0x280:
+                // 640-wide mode
+                Pack_Zap(0x280, 0x100, 0x80, 0x100);
+                Pack_Zap(Pack_Width + 0x80, 0x100, 0x100, 0x100);
+                Pack_Zap(Pack_Width, 0, 0x80, 0x100);
+                Pack_Zap(Pack_Width + 0x80, 0, 0x100, 0x100);
+                break;
+            default:
+                // Default mode
+                Pack_Zap(Pack_Width, 0x100, 0x400 - Pack_Width, 0x100);
+                Pack_Zap(Pack_Width, 0, 0x400 - Pack_Width, 0x100);
         }
 
         // Merge all free blocks repeatedly until stable
         do
         {
             Changes = 0;
-            for (TSPack *p_merge = Pack_pFree;
-                 p_merge;
-                 p_merge = p_merge->pNext)
+            for (TSPack *p_merge = Pack_pFree; p_merge; p_merge = p_merge->pNext)
             {
                 Changes |= Pack_Merge(p_merge);
             }

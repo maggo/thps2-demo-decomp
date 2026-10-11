@@ -6,7 +6,8 @@
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 /** One linked animation packet owned by the spooler. */
-struct AnimPacket {
+struct AnimPacket
+{
     unsigned int *pPacket;
     struct AnimPacket *pNext;
 };
@@ -28,7 +29,8 @@ struct AnimPacket {
 #include "SMODEL.h"
 
 /** Packed environment payload header followed by its linked item records. */
-struct SpoolEnvironmentData {
+struct SpoolEnvironmentData
+{
     unsigned int Header[3];
     Item Items[1];
 };
@@ -37,7 +39,8 @@ struct tag_S_Pal;
 struct STexWibItemInfo;
 
 /** Byte-addressable model counters updated by animation packet attachment. */
-struct SpoolAnimatedModelHeader {
+struct SpoolAnimatedModelHeader
+{
     unsigned char _padToNormalCount[4];
     unsigned char NormalCountLow;
     unsigned char NormalCountHigh;
@@ -53,13 +56,15 @@ struct SpoolAnimatedModelHeader {
 #include "SANIMFRAME.h"
 
 /** Variable-length animation entry prefix followed by SAnimFrame records. */
-struct SpoolAnimationEntryHeader {
+struct SpoolAnimationEntryHeader
+{
     char Name[8];
     unsigned int NumFrames;
 };
 
 /** Packed texture payload prefix followed by its pixel words. */
-struct SpoolTextureData {
+struct SpoolTextureData
+{
     unsigned int Flags;
     unsigned int NumColours;
     unsigned int PaletteChecksum;
@@ -70,24 +75,21 @@ struct SpoolTextureData {
 };
 
 typedef char SPool_Item_size_must_be_36[(sizeof(Item) == 36) ? 1 : -1];
-typedef char SPool_SDK_SVECTOR_size_must_be_8[
-    (sizeof(SVECTOR) == 8) ? 1 : -1];
-typedef char SPool_Model_vertices_offset_must_be_28[
-    ((unsigned long)&(((SModel *)0)->Vertices) == 28) ? 1 : -1];
+typedef char SPool_SDK_SVECTOR_size_must_be_8[(sizeof(SVECTOR) == 8) ? 1 : -1];
+typedef char
+    SPool_Model_vertices_offset_must_be_28[((unsigned long)&(((SModel *)0)->Vertices) == 28) ? 1
+                                                                                             : -1];
 typedef char SPool_Model_size_must_be_36[(sizeof(SModel) == 36) ? 1 : -1];
-typedef char SPool_AnimatedModelHeader_size_must_be_12[
-    (sizeof(SpoolAnimatedModelHeader) == 12) ? 1 : -1];
+typedef char
+    SPool_AnimatedModelHeader_size_must_be_12[(sizeof(SpoolAnimatedModelHeader) == 12) ? 1 : -1];
 typedef char SPool_Texture_size_must_be_40[(sizeof(Texture) == 40) ? 1 : -1];
-typedef char SPool_AnimationEntryHeader_size_must_be_12[
-    (sizeof(SpoolAnimationEntryHeader) == 12) ? 1 : -1];
-typedef char SPool_TextureData_size_must_be_24[
-    (sizeof(SpoolTextureData) == 24) ? 1 : -1];
-typedef char SPool_PSXRegion_size_must_be_64[
-    (sizeof(SPSXRegion) == 64) ? 1 : -1];
+typedef char
+    SPool_AnimationEntryHeader_size_must_be_12[(sizeof(SpoolAnimationEntryHeader) == 12) ? 1 : -1];
+typedef char SPool_TextureData_size_must_be_24[(sizeof(SpoolTextureData) == 24) ? 1 : -1];
+typedef char SPool_PSXRegion_size_must_be_64[(sizeof(SPSXRegion) == 64) ? 1 : -1];
 
 /** Advance a cursor that walks one fixed field through the region array. */
-template <class Field>
-static inline Field *NextRegionField(Field *field)
+template <class Field> static inline Field *NextRegionField(Field *field)
 {
     return (Field *)((char *)field + sizeof(SPSXRegion));
 }
@@ -125,7 +127,7 @@ unsigned int *Memories[40] __attribute__((section(".data"))) = {};
 #define ENVREGIONS_OWNER_DECLARATION
 #define ENVREGIONS_WITHIN_C_LINKAGE
 #include "ENVREGIONS.h"
-int EnvRegions[2] __attribute__((section(".sdata"))) = {-1, -1};
+int EnvRegions[2] __attribute__((section(".sdata"))) = { -1, -1 };
 static u32 *pCurrentTexWibPacket = 0;
 u32 *pTexWibPacket[2] __attribute__((section(".sdata"))) = {};
 #define ENVIROLIST_WITHIN_C_LINKAGE
@@ -144,8 +146,7 @@ AnimPacket *AnimPackets = 0;
 int TotalTextureUsage = 0;
 
 /** Lower-case PSX filename extension used while resolving packed assets. */
-static char s_LowerPsxExt[8]
-    __attribute__((section(".sdata"))) = ".psx";
+static char s_LowerPsxExt[8] __attribute__((section(".sdata"))) = ".psx";
 
 /** Current asynchronous spool phase, recorded as local SpoolMode by MAIN.SYM. */
 static int SpoolMode = 0;
@@ -154,10 +155,8 @@ static int SpoolMode = 0;
  * Filename formats used when loading a model's PSH and enumerating its part
  * textures.
  */
-static char s_PshFileFormat[8]
-    __attribute__((section(".sdata"))) = "%s.psh";
-char s_SpartPrefixFormat[8]
-    __attribute__((section(".sdata"))) = "%spart_";
+static char s_PshFileFormat[8] __attribute__((section(".sdata"))) = "%s.psh";
+char s_SpartPrefixFormat[8] __attribute__((section(".sdata"))) = "%spart_";
 
 u32 *EnvModelChecksums[2] __attribute__((section(".sdata"))) = {};
 
@@ -165,12 +164,12 @@ static int HashIndex;
 static Texture *pCurrentTex;
 
 /** Diagnostic emitted after an animation packet has been compacted in place. */
-static char s_ShrinkingAnimation[36]
-    __attribute__((section(".rdata"))) =
-        "Shrinking animation %s.psx to %d\n";
+static char s_ShrinkingAnimation[36] __attribute__((section(".rdata"))) =
+    "Shrinking animation %s.psx to %d\n";
 
 // C-linkage data and PsyQ services.
-extern "C" {
+extern "C"
+{
 #define DEFAULTANIMATIONS_SIZED_DECLARATION
 #include "DEFAULTANIMATIONS.h"
 #define SPOOL_DECLARE_OWNER_ADDRESS_VIEWS
@@ -198,7 +197,7 @@ void Spool_ClearPSX(char *regionName);
 void Spool_ClearAllPSXs(void);
 void ClearRegion(int Region, int cleanuptextures, int KeepInMemory);
 void Spool_ClearEnvironmentRegions(void);
-void PreProcessAnimPacket(unsigned int * pPSX, unsigned int * pPacket);
+void PreProcessAnimPacket(unsigned int *pPSX, unsigned int *pPacket);
 SAnimFrame *Spool_FindAnim(char *pName);
 void LoadNameExt(char *Name, char *Ext);
 int Spool_PSX(char *Name, int IsEnviro, int KeepTextures, int WhichHeap);
@@ -242,7 +241,8 @@ char *Spool_LoadPSH(char *baseName, char **nameList, int *nameCount, int unused)
  * Demangled: void Spool_Init(void)
  * Match:     PERFECT (72/72)
  */
-void Spool_Init(void) {
+void Spool_Init(void)
+{
     int i;
     u8 *animSlot;
     char *slotName;
@@ -255,15 +255,16 @@ void Spool_Init(void) {
     u32 **slotColourPulse;
     u32 **slotTexWibble;
     SHook **slotHooks;
-    u8 *slotTexLoaded;    // +0x37: textures loaded flag → $t6
-    u8 *slotPersistent;   // +0x38: persistent flag → $t7
-    u8 *slotAvailable;    // +0x39: slot available marker → $t8
+    u8 *slotTexLoaded; // +0x37: textures loaded flag → $t6
+    u8 *slotPersistent; // +0x38: persistent flag → $t7
+    u8 *slotAvailable; // +0x39: slot available marker → $t8
     Texture **hashPtr;
 
     // Clear 20 animation packet slots (each 0x11 bytes, indexed by first byte)
     i = 0;
     animSlot = &SpoolQ[0].Occupied;
-    do {
+    do
+    {
         *animSlot = 0;
         i = i + 1;
         animSlot += sizeof(SQueue);
@@ -289,8 +290,9 @@ void Spool_Init(void) {
     }
     SpoolPos = 0;
     FreePos = 0;
-    do {
-        *slotName = 0;          // Empty name = free slot
+    do
+    {
+        *slotName = 0; // Empty name = free slot
         *slotProtected = 0;
         *slotUsable = 0;
         *slotModels = 0;
@@ -302,7 +304,7 @@ void Spool_Init(void) {
         *slotHooks = 0;
         *slotTexLoaded = 0;
         *slotPersistent = 0;
-        *slotAvailable = 1;     // Mark slot as available
+        *slotAvailable = 1; // Mark slot as available
         slotAvailable = NextRegionField(slotAvailable);
         slotPersistent = NextRegionField(slotPersistent);
         slotTexLoaded = NextRegionField(slotTexLoaded);
@@ -322,7 +324,8 @@ void Spool_Init(void) {
     // Clear all 512 texture hash table buckets
     i = 0;
     hashPtr = TextureChecksumHashTable;
-    do {
+    do
+    {
         *hashPtr = 0;
         i = i + 1;
         hashPtr = hashPtr + 1;
@@ -347,13 +350,16 @@ void Spool_Init(void) {
  *
  * @return result
  */
-int Spool_FreeRegion(void) {
+int Spool_FreeRegion(void)
+{
     int freeregion = -1;
     SPSXRegion *pRegion;
     int i;
 
-    for (i = 0, pRegion = PSXRegion; i < 40; i++, pRegion++) {
-        if (pRegion->Filename[0] == 0) {
+    for (i = 0, pRegion = PSXRegion; i < 40; i++, pRegion++)
+    {
+        if (pRegion->Filename[0] == 0)
+        {
             freeregion = i;
             break;
         }
@@ -377,13 +383,16 @@ int Spool_FreeRegion(void) {
  * @param Region  PSX region index.
  * @return i
  */
-unsigned int Spool_GetModel(u32 Checksum, int Region) {
+unsigned int Spool_GetModel(u32 Checksum, int Region)
+{
     int NumModels = ((int *)PSXRegion[Region].ppModels)[-1];
     u32 *pChecksums = PSXRegion[Region].pModelChecksums;
     int i;
 
-    for (i = 0; (u32)i < (u32)NumModels; ++i, ++pChecksums) {
-        if (*pChecksums == Checksum) {
+    for (i = 0; (u32)i < (u32)NumModels; ++i, ++pChecksums)
+    {
+        if (*pChecksums == Checksum)
+        {
             return i;
         }
     }
@@ -408,18 +417,22 @@ unsigned int Spool_GetModel(u32 Checksum, int Region) {
  * @param Checksum  Model checksum to find.
  * @return The matching environment item, or null when no item uses the model.
  */
-Item *Spool_FindEnviroItem(u32 Checksum) {
+Item *Spool_FindEnviroItem(u32 Checksum)
+{
     Item *pItem = EnviroList;
     int Region = -1;
     u32 *pChecksums;
 
-    while (pItem != 0) {
-        if (pItem->Region != Region) {
+    while (pItem != 0)
+    {
+        if (pItem->Region != Region)
+        {
             Region = pItem->Region;
             pChecksums = PSXRegion[Region].pModelChecksums;
         }
 
-        if (pChecksums[pItem->Model] == Checksum) {
+        if (pChecksums[pItem->Model] == Checksum)
+        {
             return pItem;
         }
 
@@ -448,14 +461,16 @@ Item *Spool_FindEnviroItem(u32 Checksum) {
  * @param checksum  Asset hash for content lookup.
  * @return texEntry
  */
-Texture *NewTextureEntry(u32 checksum) {
+Texture *NewTextureEntry(u32 checksum)
+{
     Texture *pNew = (Texture *)Mem_New(sizeof(Texture), 0, 1);
     TotalTextureUsage += sizeof(Texture) + sizeof(u32);
     u32 Lower = checksum & 0x1ff;
     pNew->pNext = TextureChecksumHashTable[Lower];
     pNew->pPrevious = 0;
     TextureChecksumHashTable[Lower] = pNew;
-    if (pNew->pNext != 0) {
+    if (pNew->pNext != 0)
+    {
         pNew->pNext->pPrevious = pNew;
     }
     pNew->Checksum = checksum;
@@ -479,20 +494,24 @@ Texture *NewTextureEntry(u32 checksum) {
  * @param pEntry  Entry to operate on.
  */
 
-void RemoveTextureEntry(Texture *pEntry) {
+void RemoveTextureEntry(Texture *pEntry)
+{
     Texture **hashBucket;
 
     // Unlink next's prev pointer
-    if (pEntry->pNext != 0) {
+    if (pEntry->pNext != 0)
+    {
         pEntry->pNext->pPrevious = pEntry->pPrevious;
     }
     // Unlink prev's next pointer
-    if (pEntry->pPrevious != 0) {
+    if (pEntry->pPrevious != 0)
+    {
         pEntry->pPrevious->pNext = pEntry->pNext;
     }
     // If this was the hash table head, replace with next
     hashBucket = &TextureChecksumHashTable[pEntry->Checksum & 0x1ff];
-    if (pEntry == *hashBucket) {
+    if (pEntry == *hashBucket)
+    {
         *hashBucket = pEntry->pNext;
     }
     Mem_Delete(pEntry);
@@ -514,12 +533,13 @@ void RemoveTextureEntry(Texture *pEntry) {
  * @param checksum  Asset hash for content lookup.
  * @return texEntry
  */
-Texture *Spool_FindTextureEntry(u32 checksum) {
+Texture *Spool_FindTextureEntry(u32 checksum)
+{
     Texture *pSearch;
 
     for (pSearch = TextureChecksumHashTable[checksum & 0x1ff];
-         pSearch != 0 && pSearch->Checksum != checksum;
-         pSearch = pSearch->pNext) {
+         pSearch != 0 && pSearch->Checksum != checksum; pSearch = pSearch->pNext)
+    {
     }
     return pSearch;
 }
@@ -535,7 +555,8 @@ Texture *Spool_FindTextureEntry(u32 checksum) {
  * Mangled:   GotoStartOfTextureList__Fv
  * Demangled: void GotoStartOfTextureList(void)
  */
-void GotoStartOfTextureList(void) {
+void GotoStartOfTextureList(void)
+{
     HashIndex = 0;
     pCurrentTex = TextureChecksumHashTable[0];
 }
@@ -554,23 +575,26 @@ void GotoStartOfTextureList(void) {
  *
  * @return The next texture entry, or null after the final hash bucket.
  */
-Texture *NextTexture(void) {
+Texture *NextTexture(void)
+{
     Texture *pReturnedTex;
 
-    if (HashIndex >= 512)
-        return 0;
+    if (HashIndex >= 512) return 0;
 
     pReturnedTex = pCurrentTex;
-    if (pReturnedTex != 0) {
+    if (pReturnedTex != 0)
+    {
         pCurrentTex = pReturnedTex->pNext;
         return pReturnedTex;
     }
 
-    do {
+    do
+    {
         HashIndex = HashIndex + 1;
         pReturnedTex = TextureChecksumHashTable[HashIndex];
         pCurrentTex = pReturnedTex;
-        if (511 < HashIndex) {
+        if (511 < HashIndex)
+        {
             return 0;
         }
     } while (pReturnedTex == 0);
@@ -595,9 +619,11 @@ Texture *NextTexture(void) {
  * @param pPSX  PSX to operate on.
  * @return pos + 4
  */
-u32 *Spool_SkipPackets(u32 *pPSX) {
+u32 *Spool_SkipPackets(u32 *pPSX)
+{
     u32 *pPacket = (u32 *)((u8 *)pPSX + pPSX[1]);
-    while (*(int *)pPacket != -1) {
+    while (*(int *)pPacket != -1)
+    {
         pPacket++;
         int NumBytes = *(int *)pPacket;
         pPacket++;
@@ -624,11 +650,13 @@ u32 *Spool_SkipPackets(u32 *pPSX) {
  * @param region  PSX region index.
  */
 
-void DecrementTextureUsage(int region) {
+void DecrementTextureUsage(int region)
+{
     u32 *pPSX = PSXRegion[region].pPSX;
 
     // Animation-only regions have no texture references to release.
-    if (PSXRegion[region].Usable != 2) {
+    if (PSXRegion[region].Usable != 2)
+    {
         u32 *pNumModels = (u32 *)((pPSX[2] * 9 << 2) + (int)pPSX);
         u32 NumModels = pNumModels[3];
         pPSX = Spool_SkipPackets(pPSX);
@@ -636,9 +664,11 @@ void DecrementTextureUsage(int region) {
         u32 NumChecksums = ChecksumTable[-1];
         int i = 0;
 
-        if (NumChecksums != 0) {
+        if (NumChecksums != 0)
+        {
             u32 *cursor = ChecksumTable;
-            do {
+            do
+            {
                 Texture *pTexture = (Texture *)*cursor;
                 cursor = cursor + 1;
                 i = i + 1;
@@ -662,13 +692,16 @@ void DecrementTextureUsage(int region) {
  * Demangled: void Spool_RemoveUnusedTextures(void)
  */
 
-void Spool_RemoveUnusedTextures(void) {
+void Spool_RemoveUnusedTextures(void)
+{
     Texture *pTex;
 
     GotoStartOfTextureList();
-    while (pTex = NextTexture(), pTex != 0) {
+    while (pTex = NextTexture(), pTex != 0)
+    {
         // Check: loaded in VRAM (upper flags set) AND refcount == 0
-        if (pTex->InVRAM != 0 && pTex->Usage == 0) {
+        if (pTex->InVRAM != 0 && pTex->Usage == 0)
+        {
             // Decrement palette usage: palette at +0x18, palette->Usage at +0x04
             pTex->pPalette->Usage--;
             // Free VRAM region: vramX at +0x1C, vramY at +0x1E
@@ -737,7 +770,8 @@ void Spool_RemoveUnusedTextures(void) {
  * @param region  PSX region index.
  */
 
-void ProcessNewPSX(int region) {
+void ProcessNewPSX(int region)
+{
     // FIXME(match): register pin (pPSX $s3, pPacket $s0) — without both, NumItems lands in $a0 not $v1 and the NumItems*9*4 temps in $v1 not $v0 (score 6); tried: permuter best_2 decl/statement order (2, but loses a nop slot), pPSX/NumItems order, NumItems type/decl order.
     register u32 *pPSX asm("$19");
     SModel **ppModels;
@@ -759,16 +793,16 @@ void ProcessNewPSX(int region) {
         i = 0;
         NumItems = PSXRegion[region].pPSX[2];
         pPSX = PSXRegion[region].pPSX;
-        ppModels =
-            (SModel **)(NumItems * 9 * 4 + (int)pPSX + 16);
-        NumModels = (u32)*(SModel **)((char *)ppModels - 4);
+        ppModels = (SModel **)(NumItems * 9 * 4 + (int)pPSX + 16);
+        NumModels = (u32) * (SModel **)((char *)ppModels - 4);
         pCurrentTexWibPacket = 0;
-        if (NumModels != 0) {
+        if (NumModels != 0)
+        {
             SModel **pModelEntry = ppModels;
-            do {
+            do
+            {
                 ++i;
-                *pModelEntry =
-                    (SModel *)((char *)*pModelEntry + (int)pPSX);
+                *pModelEntry = (SModel *)((char *)*pModelEntry + (int)pPSX);
                 ++pModelEntry;
             } while ((u32)i < NumModels);
         }
@@ -782,13 +816,13 @@ void ProcessNewPSX(int region) {
         ChecksumTable = pChecksumBase + NumModels + 1;
         NumChecksums = ChecksumTable[-1];
         i = 0;
-        if (NumChecksums != 0) {
+        if (NumChecksums != 0)
+        {
             u32 *pChecksum = ChecksumTable;
-            do {
-                Texture *pTextureEntry =
-                    Spool_FindTextureEntry(*pChecksum);
-                if (pTextureEntry == 0)
-                    pTextureEntry = NewTextureEntry(*pChecksum);
+            do
+            {
+                Texture *pTextureEntry = Spool_FindTextureEntry(*pChecksum);
+                if (pTextureEntry == 0) pTextureEntry = NewTextureEntry(*pChecksum);
                 ++i;
                 ++pTextureEntry->Usage;
                 *pChecksum++ = (u32)pTextureEntry;
@@ -799,22 +833,24 @@ void ProcessNewPSX(int region) {
     {
         int m = 0;
         int i;
-        if (NumModels != 0) {
+        if (NumModels != 0)
+        {
             SModel **pModelEntry = ppModels;
-            do {
+            do
+            {
                 SModel *pModel = *pModelEntry;
                 u32 NumVertices = pModel->NumVertices;
                 u32 NumNormals = pModel->NumNormals;
                 u32 NumFaces = pModel->NumFaces;
-                u32 *pFace =
-                    (u32 *)&pModel->Vertices[NumVertices] + NumNormals * 2;
+                u32 *pFace = (u32 *)&pModel->Vertices[NumVertices] + NumNormals * 2;
                 int j = 0;
 
-                if (NumFaces != 0) {
-                    do {
+                if (NumFaces != 0)
+                {
+                    do
+                    {
                         i = *pFace;
-                        if (i & 1)
-                            pFace[4] = ChecksumTable[pFace[4]];
+                        if (i & 1) pFace[4] = ChecksumTable[pFace[4]];
                         pFace += (u32)i >> 18;
                         ++j;
                     } while ((u32)j < NumFaces);
@@ -833,17 +869,17 @@ void ProcessNewPSX(int region) {
         Spool_RemoveUnusedTextures();
         Pal_RemoveUnusedPalettes();
 
-        GeometryAndTableSize =
-            (u32)((char *)Spool_SkipPackets(pPSX) - (char *)pPSX) +
-            NumModels * 4 +
-            (ChecksumBytes = NumChecksums * 4 + 4);
+        GeometryAndTableSize = (u32)((char *)Spool_SkipPackets(pPSX) - (char *)pPSX) +
+                               NumModels * 4 + (ChecksumBytes = NumChecksums * 4 + 4);
         pPaletteInfo = (u32 *)((char *)pPSX + GeometryAndTableSize);
         Num16CPalettes = *pPaletteInfo++;
-        if ((u32)i < Num16CPalettes) {
-            do {
-                if (Pal_FindPaletteEntry(*pPaletteInfo) == 0) {
-                    Pal_LoadPalette(
-                        *pPaletteInfo, pPaletteInfo + 1, 1, 1);
+        if ((u32)i < Num16CPalettes)
+        {
+            do
+            {
+                if (Pal_FindPaletteEntry(*pPaletteInfo) == 0)
+                {
+                    Pal_LoadPalette(*pPaletteInfo, pPaletteInfo + 1, 1, 1);
                 }
                 ++i;
                 pPaletteInfo += 9;
@@ -855,11 +891,13 @@ void ProcessNewPSX(int region) {
         int i;
         Num256CPalettes = *pPaletteInfo++;
         i = 0;
-        if (Num256CPalettes != 0) {
-            do {
-                if (Pal_FindPaletteEntry(*pPaletteInfo) == 0) {
-                    Pal_LoadPalette(
-                        *pPaletteInfo, pPaletteInfo + 1, 2, 1);
+        if (Num256CPalettes != 0)
+        {
+            do
+            {
+                if (Pal_FindPaletteEntry(*pPaletteInfo) == 0)
+                {
+                    Pal_LoadPalette(*pPaletteInfo, pPaletteInfo + 1, 2, 1);
                 }
                 ++i;
                 pPaletteInfo += 129;
@@ -869,11 +907,10 @@ void ProcessNewPSX(int region) {
 
     Pack_NoBottom = 0;
     Pack_NoRight = 0;
-    if (PSXRegion[region].Filename[0] == 'b' &&
-        PSXRegion[region].Filename[1] == 'i' &&
-        PSXRegion[region].Filename[2] == 't' &&
-        PSXRegion[region].Filename[3] == 's' &&
-        PSXRegion[region].Filename[4] == 0) {
+    if (PSXRegion[region].Filename[0] == 'b' && PSXRegion[region].Filename[1] == 'i' &&
+        PSXRegion[region].Filename[2] == 't' && PSXRegion[region].Filename[3] == 's' &&
+        PSXRegion[region].Filename[4] == 0)
+    {
         Pack_NoBottom = 1;
         Pack_NoRight = 1;
     }
@@ -883,7 +920,8 @@ void ProcessNewPSX(int region) {
     Pack_NoBottom = 0;
     Pack_NoRight = 0;
 
-    if (PSXRegion[region].KeepTexturesInRAM == 0) {
+    if (PSXRegion[region].KeepTexturesInRAM == 0)
+    {
         Mem_Shrink((void *)pPSX, GeometryAndTableSize);
         PSXRegion[region].TexturesInRAM = 0;
         PSXRegion[region].Size = GeometryAndTableSize;
@@ -898,52 +936,46 @@ void ProcessNewPSX(int region) {
     PacketType = pPSX[1];
     pPacket = (u32 *)((char *)pPSX + PacketType);
     PacketType = *pPacket;
-    while (PacketType != -1) {
+    while (PacketType != -1)
+    {
         ++pPacket;
         int NumBytes = *pPacket++;
 
-        switch (PacketType) {
-        case 10: {
-            int EnvIndex = Spool_GetEnvIndex(region);
-            M3dZone_SetZone(EnvIndex, pPacket);
-            break;
-        }
-        case 0x45:
-            PreProcessAnimPacket(pPSX, pPacket);
-            AnimPacketFound = 1;
-            break;
-        case 0x2A:
-        case 0x2C:
-            PSXRegion[region].pAnimFile = pPacket;
-            PSXRegion[region].IsSuper = 1;
-            break;
-        case 0x73424752:
-            PSXRegion[region].pColourTable = pPacket;
-            break;
-        case 6:
-            PSXRegion[region].pTexWibData = pPacket;
-            M3dInit_FlagZeroWibbles(
-                reinterpret_cast<STexWibItemInfo *>(pPacket));
-            pCurrentTexWibPacket = pPacket - 2;
-            break;
-        case 7:
-            PSXRegion[region].pColourPulseData = pPacket;
-            break;
-        case 0x52454948:
-            PSXRegion[region].pHierarchy = (u16 *)pPacket;
-            break;
+        switch (PacketType)
+        {
+            case 10:
+            {
+                int EnvIndex = Spool_GetEnvIndex(region);
+                M3dZone_SetZone(EnvIndex, pPacket);
+                break;
+            }
+            case 0x45:
+                PreProcessAnimPacket(pPSX, pPacket);
+                AnimPacketFound = 1;
+                break;
+            case 0x2A:
+            case 0x2C:
+                PSXRegion[region].pAnimFile = pPacket;
+                PSXRegion[region].IsSuper = 1;
+                break;
+            case 0x73424752: PSXRegion[region].pColourTable = pPacket; break;
+            case 6:
+                PSXRegion[region].pTexWibData = pPacket;
+                M3dInit_FlagZeroWibbles(reinterpret_cast<STexWibItemInfo *>(pPacket));
+                pCurrentTexWibPacket = pPacket - 2;
+                break;
+            case 7: PSXRegion[region].pColourPulseData = pPacket; break;
+            case 0x52454948: PSXRegion[region].pHierarchy = (u16 *)pPacket; break;
         }
         pPacket = (u32 *)((char *)pPacket + NumBytes);
         PacketType = *pPacket;
     }
 
-    if (AnimPacketFound) {
+    if (AnimPacketFound)
+    {
         ++pPacket;
-        Mem_Shrink(
-            (void *)pPSX,
-            (u32)pPacket - (u32)pPSX);
-        PSXRegion[region].Size =
-            (u32)pPacket - (u32)pPSX;
+        Mem_Shrink((void *)pPSX, (u32)pPacket - (u32)pPSX);
+        PSXRegion[region].Size = (u32)pPacket - (u32)pPSX;
     }
     PSXRegion[region].Usable = 1;
 }
@@ -962,13 +994,18 @@ void ProcessNewPSX(int region) {
  * @param region  PSX region index.
  */
 // Purpose: Splice the region's environment item chain into the active list.
-void AttachNewEnviro(int region) {
-    if (EnviroList == 0) {
+void AttachNewEnviro(int region)
+{
+    if (EnviroList == 0)
+    {
         EnviroList = (Item *)(PSXRegion[region].pPSX + 3);
-    } else {
+    }
+    else
+    {
         Item *pStart = (Item *)(PSXRegion[region].pPSX + 3);
         Item *pScan = pStart;
-        while (pScan->NextItem != 0) {
+        while (pScan->NextItem != 0)
+        {
             pScan = pScan->NextItem;
         }
         pScan->NextItem = EnviroList;
@@ -1018,7 +1055,8 @@ void AttachNewEnviro(int region) {
  * @param defrag Whether to defragment texture memory before loading.
  */
 
-void Spool_LoadTexturesToVRAM(int Region, int defrag) {
+void Spool_LoadTexturesToVRAM(int Region, int defrag)
+{
     u32 *pPSX;
     u32 *pStuff;
     int NumModels;
@@ -1028,10 +1066,8 @@ void Spool_LoadTexturesToVRAM(int Region, int defrag) {
     u32 NumTextures;
     int i;
 
-    if (defrag)
-        Pack_DefragmentFully();
-    if (Create_ProcessingSourcePSX())
-        Create_SaveTextures();
+    if (defrag) Pack_DefragmentFully();
+    if (Create_ProcessingSourcePSX()) Create_SaveTextures();
 
     pPSX = PSXRegion[Region].pPSX;
     pStuff = Spool_SkipPackets(pPSX);
@@ -1048,10 +1084,11 @@ void Spool_LoadTexturesToVRAM(int Region, int defrag) {
     pTextureInfo = pStuff;
     NumTextures = *pTextureInfo++;
 
-    if (NumTextures != 0) {
-        do {
-            SpoolTextureData *pTexture =
-                (SpoolTextureData *)((char *)pPSX + *pTextureInfo);
+    if (NumTextures != 0)
+    {
+        do
+        {
+            SpoolTextureData *pTexture = (SpoolTextureData *)((char *)pPSX + *pTextureInfo);
             u32 Flags = pTexture->Flags;
             u32 NumColours = pTexture->NumColours;
             u32 PaletteChecksum = pTexture->PaletteChecksum;
@@ -1059,15 +1096,14 @@ void Spool_LoadTexturesToVRAM(int Region, int defrag) {
             Texture *pTextureEntry = TextureLookup[TextureIndex];
             ++pTextureInfo;
 
-            if (pTextureEntry != 0) {
-                tag_S_Pal *pPal =
-                    Pal_FindPaletteEntry(PaletteChecksum);
+            if (pTextureEntry != 0)
+            {
+                tag_S_Pal *pPal = Pal_FindPaletteEntry(PaletteChecksum);
 
-                if (pTextureEntry->InVRAM == 0) {
-                    if (pTextureEntry->Checksum == 0xCCE0187C)
-                        Flags |= 1;
-                    if (pTextureEntry->Checksum == 0x68B7B136)
-                        Flags |= 1;
+                if (pTextureEntry->InVRAM == 0)
+                {
+                    if (pTextureEntry->Checksum == 0xCCE0187C) Flags |= 1;
+                    if (pTextureEntry->Checksum == 0x68B7B136) Flags |= 1;
 
                     u16 Width = pTexture->Width;
                     u16 Height = pTexture->Height;
@@ -1076,12 +1112,12 @@ void Spool_LoadTexturesToVRAM(int Region, int defrag) {
                     int x;
                     int y;
 
-                    if (NumColours == 256) {
+                    if (NumColours == 256)
+                    {
                         int AlignedWidth = (Width + 1) & ~1;
                         RECT rec;
-                        Pack_Pack(
-                            0, AlignedWidth, Height, &x, &y, 8,
-                            (Flags & 1) ? 2 : 0, pTextureEntry->Checksum);
+                        Pack_Pack(0, AlignedWidth, Height, &x, &y, 8, (Flags & 1) ? 2 : 0,
+                                  pTextureEntry->Checksum);
                         u16 PackedX = (u16)x;
                         u16 PackedY = (u16)y;
                         pTextureEntry->x = PackedX;
@@ -1092,12 +1128,15 @@ void Spool_LoadTexturesToVRAM(int Region, int defrag) {
                         rec.h = (s16)Height;
 
                         u8 remap = pPal->RemapIndex;
-                        if (remap != 0) {
+                        if (remap != 0)
+                        {
                             int Size = Width * Height;
                             u8 *pRemap = (u8 *)pTextureData;
                             int j = 0;
-                            if (Size > 0) {
-                                do {
+                            if (Size > 0)
+                            {
+                                do
+                                {
                                     u8 pixel = *pRemap;
                                     if (pixel == 0)
                                         *pRemap = remap;
@@ -1111,26 +1150,29 @@ void Spool_LoadTexturesToVRAM(int Region, int defrag) {
                         LoadImage(&rec, pTextureData);
                     }
 
-                    if (NumColours == 16) {
+                    if (NumColours == 16)
+                    {
                         int AlignedWidth = (Width + 3) & ~3;
                         RECT rec;
-                        Pack_Pack(
-                            0, AlignedWidth, Height, &x, &y, 4,
-                            (Flags & 1) ? 2 : 0, pTextureEntry->Checksum);
+                        Pack_Pack(0, AlignedWidth, Height, &x, &y, 4, (Flags & 1) ? 2 : 0,
+                                  pTextureEntry->Checksum);
                         u16 PackedX = (u16)x;
                         u16 PackedY = (u16)y;
                         pTextureEntry->x = PackedX;
                         pTextureEntry->y = PackedY;
 
                         u8 remap = pPal->RemapIndex;
-                        if (remap != 0) {
+                        if (remap != 0)
+                        {
                             int Size = Width * Height / 2;
                             u8 hi = (u8)(remap << 4);
                             u8 lo = remap;
                             u8 *pRemap = (u8 *)pTextureData;
                             int j = 0;
-                            if (Size > 0) {
-                                do {
+                            if (Size > 0)
+                            {
+                                do
+                                {
                                     u8 x = *pRemap;
                                     u8 y = x;
                                     if ((x & 0xF0) == 0)
@@ -1141,8 +1183,7 @@ void Spool_LoadTexturesToVRAM(int Region, int defrag) {
                                         x = lo | (x & 0xF0);
                                     else if ((x & 0x0F) == lo)
                                         x &= 0xF0;
-                                    if (x != y)
-                                        *pRemap = x;
+                                    if (x != y) *pRemap = x;
                                     ++j;
                                     ++pRemap;
                                 } while (j < Size);
@@ -1162,25 +1203,18 @@ void Spool_LoadTexturesToVRAM(int Region, int defrag) {
                     u16 tpage = (u16)GetTPage(NumColours == 256, 0, x, y);
                     int U = x;
                     pTextureEntry->tpage = tpage;
-                    pTextureEntry->u0 = (u8)((U & 0x3F) *
-                        (NumColours == 256 ? 2 : 4));
+                    pTextureEntry->u0 = (u8)((U & 0x3F) * (NumColours == 256 ? 2 : 4));
                     pTextureEntry->v0 = (u8)y;
-                    pTextureEntry->u1 =
-                        (u8)(pTextureEntry->u0 + Width - 1);
+                    pTextureEntry->u1 = (u8)(pTextureEntry->u0 + Width - 1);
                     pTextureEntry->v1 = pTextureEntry->v0;
                     pTextureEntry->u2 = pTextureEntry->u0;
-                    pTextureEntry->v2 =
-                        (u8)(pTextureEntry->v0 + Height - 1);
+                    pTextureEntry->v2 = (u8)(pTextureEntry->v0 + Height - 1);
                     pTextureEntry->u3 = pTextureEntry->u1;
                     pTextureEntry->v3 = pTextureEntry->v2;
                     int VWin = (pTextureEntry->v0 & 0xF8) << 12;
-                    u32 TexWindow =
-                        ((pTextureEntry->u0 & 0xF8) << 7) | 0xE2000000;
+                    u32 TexWindow = ((pTextureEntry->u0 & 0xF8) << 7) | 0xE2000000;
                     pTextureEntry->TexWin =
-                        VWin |
-                        TexWindow |
-                        ((-Height & 0xF8) << 2) |
-                        ((-Width & 0xF8) >> 3);
+                        VWin | TexWindow | ((-Height & 0xF8) << 2) | ((-Width & 0xF8) >> 3);
                     pTextureEntry->InVRAM = 1;
                 }
             }
@@ -1204,28 +1238,34 @@ void Spool_LoadTexturesToVRAM(int Region, int defrag) {
  *
  * @param index  Environment slot index.
  */
-void DetachOldEnviro(unsigned char index) {
+void DetachOldEnviro(unsigned char index)
+{
     Item *pThisStart;
     Item *pOtherStart;
     Item *pScan;
 
     pTexWibPacket[index] = 0;
-    pThisStart = ((SpoolEnvironmentData *)
-        PSXRegion[EnvRegions[index]].pPSX)->Items;
+    pThisStart = ((SpoolEnvironmentData *)PSXRegion[EnvRegions[index]].pPSX)->Items;
     pOtherStart = 0;
 
-    if (EnvRegions[index ^ 1] != -1) {
-        pOtherStart = ((SpoolEnvironmentData *)
-            PSXRegion[EnvRegions[index ^ 1]].pPSX)->Items;
+    if (EnvRegions[index ^ 1] != -1)
+    {
+        pOtherStart = ((SpoolEnvironmentData *)PSXRegion[EnvRegions[index ^ 1]].pPSX)->Items;
     }
 
-    if (pOtherStart == 0) {
+    if (pOtherStart == 0)
+    {
         EnviroList = 0;
-    } else if (pThisStart == EnviroList) {
+    }
+    else if (pThisStart == EnviroList)
+    {
         EnviroList = pOtherStart;
-    } else {
+    }
+    else
+    {
         pScan = pOtherStart;
-        while (pScan->NextItem != pThisStart) {
+        while (pScan->NextItem != pThisStart)
+        {
             pScan = pScan->NextItem;
         }
         pScan->NextItem = 0;
@@ -1248,15 +1288,16 @@ void DetachOldEnviro(unsigned char index) {
  * @return The matching region index, or -1 when no name matches.
  */
 
-int Spool_FindRegion(char *pName) {
+int Spool_FindRegion(char *pName)
+{
     int i;
     SPSXRegion *region;
 
     i = 0;
     region = PSXRegion;
-    do {
-        if (Utils_CompareStrings(pName, region->Filename, -1) != 0)
-            return i;
+    do
+    {
+        if (Utils_CompareStrings(pName, region->Filename, -1) != 0) return i;
         i = i + 1;
         ++region;
     } while (i < 40);
@@ -1275,11 +1316,13 @@ int Spool_FindRegion(char *pName) {
  * @param pName  Asset / object name string.
  */
 
-void Spool_ClearPSX(char *pName) {
+void Spool_ClearPSX(char *pName)
+{
     int slotIndex;
 
     slotIndex = Spool_FindRegion(pName);
-    if (PSXRegion[slotIndex].Usable != 0) {
+    if (PSXRegion[slotIndex].Usable != 0)
+    {
         slotIndex = Spool_FindRegion(pName);
         ClearRegion(slotIndex, 1, 0);
     }
@@ -1298,7 +1341,8 @@ void Spool_ClearPSX(char *pName) {
  * Match:     PERFECT (28/28)
  */
 
-void Spool_ClearAllPSXs(void) {
+void Spool_ClearAllPSXs(void)
+{
     int i;
     SPSXRegion *base;
     u8 *protectedFlag;
@@ -1307,8 +1351,10 @@ void Spool_ClearAllPSXs(void) {
     Spool_ClearEnvironmentRegions();
     base = PSXRegion;
     protectedFlag = &base->Protected;
-    for (i = 0; i < 40; i++) {
-        if (*protectedFlag == 0) {
+    for (i = 0; i < 40; i++)
+    {
+        if (*protectedFlag == 0)
+        {
             ClearRegion(i, 1, 0);
         }
         protectedFlag = NextRegionField(protectedFlag);
@@ -1337,13 +1383,15 @@ void Spool_ClearAllPSXs(void) {
  * @param cleanuptextures Whether to free now-unused texture and palette data.
  * @param KeepInMemory Whether to retain the region allocation and payloads.
  */
-void ClearRegion(int Region, int cleanuptextures, int KeepInMemory) {
+void ClearRegion(int Region, int cleanuptextures, int KeepInMemory)
+{
     int EnvIndex;
 
     if (Region == -1) return;
     if (PSXRegion[Region].Filename[0] == 0) return;
 
-    if (PSXRegion[Region].Usable == 2) {
+    if (PSXRegion[Region].Usable == 2)
+    {
         Mem_Delete(PSXRegion[Region].pPSX);
         PSXRegion[Region].pPSX = 0;
         PSXRegion[Region].Filename[0] = 0;
@@ -1351,7 +1399,8 @@ void ClearRegion(int Region, int cleanuptextures, int KeepInMemory) {
     }
 
     DecrementTextureUsage(Region);
-    if (KeepInMemory == 0) {
+    if (KeepInMemory == 0)
+    {
         PSXRegion[Region].pAnimFile = 0;
         PSXRegion[Region].pColourPulseData = 0;
         PSXRegion[Region].pTexWibData = 0;
@@ -1365,7 +1414,8 @@ void ClearRegion(int Region, int cleanuptextures, int KeepInMemory) {
         PSXRegion[Region].WhichHeap = 1;
 
         EnvIndex = Spool_GetEnvIndex(Region);
-        if (EnvIndex != -1) {
+        if (EnvIndex != -1)
+        {
             M3dZone_FreePSX(EnvIndex);
             DetachOldEnviro((u8)EnvIndex);
             EnvRegions[EnvIndex] = -1;
@@ -1374,7 +1424,8 @@ void ClearRegion(int Region, int cleanuptextures, int KeepInMemory) {
         Mem_Delete(PSXRegion[Region].pPSX);
         PSXRegion[Region].pPSX = 0;
     }
-    if (cleanuptextures != 0) {
+    if (cleanuptextures != 0)
+    {
         Spool_RemoveUnusedTextures();
         Pal_RemoveUnusedPalettes();
     }
@@ -1391,7 +1442,8 @@ void ClearRegion(int Region, int cleanuptextures, int KeepInMemory) {
  * Match:     PERFECT (19/19)
  */
 
-void Spool_ClearEnvironmentRegions(void) {
+void Spool_ClearEnvironmentRegions(void)
+{
     ClearRegion(EnvRegions[0], 0, 0);
     ClearRegion(EnvRegions[1], 0, 0);
     EnvRegions[0] = -1;
@@ -1418,7 +1470,8 @@ void Spool_ClearEnvironmentRegions(void) {
  * @param pPSX  PSX to operate on.
  * @param pPacket  Packet to operate on.
  */
-void PreProcessAnimPacket(unsigned int * pPSX, unsigned int * pPacket) {
+void PreProcessAnimPacket(unsigned int *pPSX, unsigned int *pPacket)
+{
     u32 *pTextures;
     AnimPacket *pNewAnimPacket;
     u32 *entryPtr;
@@ -1439,40 +1492,40 @@ void PreProcessAnimPacket(unsigned int * pPSX, unsigned int * pPacket) {
     }
     NumAnims = *pPacket;
     pPacket = pPacket + 1;
-    if (NumAnims != 0) {
+    if (NumAnims != 0)
+    {
         pPacket = pPacket + 2;
 
-        do {
+        do
+        {
             NumFrames = *pPacket;
             pPacket = pPacket + 1;
             j = 0;
-            if (NumFrames != 0) {
+            if (NumFrames != 0)
+            {
                 entryPtr = pPacket + 1;
-                do {
+                do
+                {
                     u32 index = *entryPtr;
                     meshPtr = (u32 *)pTextures[index];
                     *entryPtr = (u32)meshPtr;
                     ((SpoolAnimatedModelHeader *)meshPtr)->FaceCount |= 0x20;
                     {
-                        SpoolAnimatedModelHeader *model =
-                            (SpoolAnimatedModelHeader *)*entryPtr;
+                        SpoolAnimatedModelHeader *model = (SpoolAnimatedModelHeader *)*entryPtr;
                         model->NormalCountLow++;
                     }
                     {
-                        SpoolAnimatedModelHeader *model =
-                            (SpoolAnimatedModelHeader *)*entryPtr;
+                        SpoolAnimatedModelHeader *model = (SpoolAnimatedModelHeader *)*entryPtr;
                         model->RadiusByte1++;
                     }
                     pPacket = pPacket + 2;
                     {
-                        SpoolAnimatedModelHeader *model =
-                            (SpoolAnimatedModelHeader *)*entryPtr;
+                        SpoolAnimatedModelHeader *model = (SpoolAnimatedModelHeader *)*entryPtr;
                         model->RadiusByte2++;
                     }
                     j = j + 1;
                     {
-                        SpoolAnimatedModelHeader *model =
-                            (SpoolAnimatedModelHeader *)*entryPtr;
+                        SpoolAnimatedModelHeader *model = (SpoolAnimatedModelHeader *)*entryPtr;
                         model->RadiusByte3++;
                     }
                     entryPtr = entryPtr + 2;
@@ -1507,16 +1560,19 @@ void PreProcessAnimPacket(unsigned int * pPSX, unsigned int * pPacket) {
  * @param pName  Asset / object name string.
  * @return Animation frame data, or null when no loaded packet contains the name.
  */
-SAnimFrame *Spool_FindAnim(char *pName) {
+SAnimFrame *Spool_FindAnim(char *pName)
+{
     AnimPacket *pPacketInfo = AnimPackets;
     SAnimFrame *pAnim = 0;
 
-    while (pPacketInfo != 0) {
+    while (pPacketInfo != 0)
+    {
         u32 NumAnims = *pPacketInfo->pPacket;
         char *pAnimName = (char *)(pPacketInfo->pPacket + 1);
         int found = 0;
 
-        for (int i = 0; i < NumAnims; i++) {
+        for (int i = 0; i < NumAnims; i++)
+        {
             char lettera;
             char letterb;
             char *pA = pName;
@@ -1527,7 +1583,8 @@ SAnimFrame *Spool_FindAnim(char *pName) {
             lettera = *(u8 *)pA & 0xDF;
             letterb = *(u8 *)pB & 0xDF;
             count = 0;
-            while (1) {
+            while (1)
+            {
                 if (lettera != letterb) break;
                 if (letterb == 0) goto match;
                 if (count >= 8) break;
@@ -1538,21 +1595,21 @@ SAnimFrame *Spool_FindAnim(char *pName) {
                 count = count + 1;
             }
 
-            if ((lettera == 0 && letterb == 0) || count == 8) {
-match:
+            if ((lettera == 0 && letterb == 0) || count == 8)
+            {
+            match:
                 found = 1;
                 break;
             }
 
             NumFrames = ((SpoolAnimationEntryHeader *)pAnimName)->NumFrames;
-            NumFrames = NumFrames * sizeof(SAnimFrame) +
-                sizeof(SpoolAnimationEntryHeader);
+            NumFrames = NumFrames * sizeof(SAnimFrame) + sizeof(SpoolAnimationEntryHeader);
             pAnimName = pAnimName + NumFrames;
         }
 
-        if (found != 0) {
-            pAnim = (SAnimFrame *)(pAnimName +
-                sizeof(SpoolAnimationEntryHeader));
+        if (found != 0)
+        {
+            pAnim = (SAnimFrame *)(pAnimName + sizeof(SpoolAnimationEntryHeader));
             break;
         }
 
@@ -1574,7 +1631,8 @@ match:
  * @param Name Base filename to copy into the active queue entry.
  * @param Ext Extension to append to the base filename.
  */
-void LoadNameExt(char * Name, char * Ext) {
+void LoadNameExt(char *Name, char *Ext)
+{
     char *p;
     char *from;
     char *to;
@@ -1585,14 +1643,16 @@ void LoadNameExt(char * Name, char * Ext) {
     p = Ext;
     to = SpoolQ[FreePos].Name;
     ch = *from;
-    while (ch != 0) {
+    while (ch != 0)
+    {
         from++;
         *to = ch;
         ch = *from;
         to++;
     }
     ch2 = *Ext;
-    while (ch2 != 0) {
+    while (ch2 != 0)
+    {
         p++;
         *to = ch2;
         ch2 = *p;
@@ -1639,7 +1699,8 @@ void LoadNameExt(char * Name, char * Ext) {
  * @return The existing or newly allocated PSX region index.
  */
 
-int Spool_PSX(char *Name, int IsEnviro, int KeepTextures, int WhichHeap) {
+int Spool_PSX(char *Name, int IsEnviro, int KeepTextures, int WhichHeap)
+{
     int freeregion;
 
     {
@@ -1648,9 +1709,11 @@ int Spool_PSX(char *Name, int IsEnviro, int KeepTextures, int WhichHeap) {
 
         i = 0;
         pRegionName = PSXRegion[0].Filename;
-        do {
+        do
+        {
             if ((*pRegionName != '\0') &&
-                (Utils_CompareStrings(Name, pRegionName, 0xffffffff) != 0)) {
+                (Utils_CompareStrings(Name, pRegionName, 0xffffffff) != 0))
+            {
                 return i;
             }
             i = i + 1;
@@ -1672,8 +1735,10 @@ int Spool_PSX(char *Name, int IsEnviro, int KeepTextures, int WhichHeap) {
         pQueueRegion = &SpoolQ[0].Region;
         queueOffset = 0;
         pQueueOccupied = &SpoolQ[0].Occupied;
-        do {
-            if (*pQueueOccupied != 0) {
+        do
+        {
+            if (*pQueueOccupied != 0)
+            {
                 char *pQName;
                 char *pPSXName;
                 int Identical;
@@ -1681,20 +1746,25 @@ int Spool_PSX(char *Name, int IsEnviro, int KeepTextures, int WhichHeap) {
                 pQName = (char *)(queueOffset + (int)pQueueBase);
                 pPSXName = Name;
                 Identical = 1;
-                while (*pPSXName != '\0') {
-                    if (*pPSXName != *pQName) {
+                while (*pPSXName != '\0')
+                {
+                    if (*pPSXName != *pQName)
+                    {
                         Identical = 0;
                         break;
                     }
                     pPSXName = pPSXName + 1;
                     pQName = pQName + 1;
                 }
-                if (Identical != 0) {
-                    if (*pQName != extensionSeparator) {
+                if (Identical != 0)
+                {
+                    if (*pQName != extensionSeparator)
+                    {
                         Identical = 0;
                     }
                 }
-                if (Identical != 0) {
+                if (Identical != 0)
+                {
                     return *pQueueRegion;
                 }
             }
@@ -1707,14 +1777,16 @@ int Spool_PSX(char *Name, int IsEnviro, int KeepTextures, int WhichHeap) {
 
     freeregion = Spool_FreeRegion();
 
-    if ((IsEnviro == 0) || (IsEnviro == 2)) {
+    if ((IsEnviro == 0) || (IsEnviro == 2))
+    {
         char *pNew;
         char *pDest;
         int c;
 
         pNew = Name;
         pDest = PSXRegion[freeregion].Filename;
-        for (c = 0; (*pNew != '\0') && (c < 9); c++) {
+        for (c = 0; (*pNew != '\0') && (c < 9); c++)
+        {
             *pDest++ = *pNew++;
         }
         *pDest = '\0';
@@ -1723,9 +1795,12 @@ int Spool_PSX(char *Name, int IsEnviro, int KeepTextures, int WhichHeap) {
     PSXRegion[freeregion].WhichHeap = WhichHeap;
     LoadNameExt(Name, SpoolAddressViews::s_LowerPsxExt);
 
-    if (IsEnviro != 2) {
+    if (IsEnviro != 2)
+    {
         SpoolQ[FreePos].FileType = IsEnviro != 0;
-    } else {
+    }
+    else
+    {
         SpoolQ[FreePos].FileType = 2;
     }
     SpoolQ[FreePos].Region = freeregion;
@@ -1750,7 +1825,8 @@ int Spool_PSX(char *Name, int IsEnviro, int KeepTextures, int WhichHeap) {
  * @param region  PSX region index.
  * @return Zero for environment slot 0, one for slot 1, or -1 otherwise.
  */
-int Spool_GetEnvIndex(int region) {
+int Spool_GetEnvIndex(int region)
+{
     if (region == EnvRegions[0]) return 0;
     if (region == EnvRegions[1]) return 1;
     return -1;
@@ -1767,7 +1843,8 @@ int Spool_GetEnvIndex(int region) {
  * Demangled: void Spool_Continue(void)
  */
 
-void Spool_Continue(void) {
+void Spool_Continue(void)
+{
     SQueue *Q = &SpoolQ[SpoolPos];
     int FileSize;
     char *pNew;
@@ -1775,99 +1852,94 @@ void Spool_Continue(void) {
     int c;
     u32 *Temp;
 
-    if (Q->Occupied == 0)
-        return;
+    if (Q->Occupied == 0) return;
 
-    switch (SpoolMode) {
-    case 0:
-        FileSize = FileIO_Open(Q->Name);
-        switch (Q->FileType) {
+    switch (SpoolMode)
+    {
+        case 0:
+            FileSize = FileIO_Open(Q->Name);
+            switch (Q->FileType)
+            {
+                case 1:
+                    if (EnvRegions[0] == -1) goto use_first_environment_slot;
+                    if (EnvRegions[1] == -1)
+                    {
+                        if (EnvRegions[0] != EnvRegions[1]) goto use_second_environment_slot;
+                        goto use_first_environment_slot;
+                    }
+
+                    Q->Region = (u8)EnvRegions[OtherEnvIndex];
+                    ClearRegion(Q->Region, 0, 0);
+                    EnvRegions[OtherEnvIndex] = Q->Region;
+                    goto environment_slot_selected;
+
+                use_first_environment_slot:
+                    EnvRegions[0] = Q->Region;
+                    goto environment_slot_selected;
+
+                use_second_environment_slot:
+                    EnvRegions[1] = Q->Region;
+
+                environment_slot_selected:
+
+                    pNew = Q->Name;
+                    pDest = PSXRegion[Q->Region].Filename;
+                    for (c = 0; *pNew != '.' && c < 9; ++c) *pDest++ = *pNew++;
+                    *pDest = 0;
+
+                    PSXRegion[Q->Region].pPSX =
+                        (u32 *)Mem_New((u32)FileSize, PSXRegion[Q->Region].WhichHeap, 1);
+                    PSXRegion[Q->Region].Size = FileSize;
+                    FileIO_Load(PSXRegion[Q->Region].pPSX);
+                    break;
+
+                case 0:
+                case 2:
+                    if (Create_ProcessingBuildPSX() || Create_ProcessingSourcePSX())
+                    {
+                        Temp = (u32 *)Mem_New(0x7800, 0, 1);
+                        PSXRegion[Q->Region].pPSX =
+                            (u32 *)Mem_New((u32)FileSize, PSXRegion[Q->Region].WhichHeap, 1);
+                        PSXRegion[Q->Region].Size = FileSize;
+                        Mem_Delete(Temp);
+                    }
+                    else
+                    {
+                        PSXRegion[Q->Region].pPSX =
+                            (u32 *)Mem_New((u32)FileSize, PSXRegion[Q->Region].WhichHeap, 1);
+                        PSXRegion[Q->Region].Size = FileSize;
+                    }
+                    FileIO_Load(PSXRegion[Q->Region].pPSX);
+                    break;
+            }
+
+            SpoolMode = 1;
+            PSXRegion[Q->Region].KeepTexturesInRAM = Q->KeepTextures;
+            break;
+
         case 1:
-            if (EnvRegions[0] == -1)
-                goto use_first_environment_slot;
-            if (EnvRegions[1] == -1) {
-                if (EnvRegions[0] != EnvRegions[1])
-                    goto use_second_environment_slot;
-                goto use_first_environment_slot;
+            if (Loading == 0) SpoolMode = 2;
+            break;
+
+        case 2:
+            switch (Q->FileType)
+            {
+                case 1:
+                {
+                    ProcessNewPSX(Q->Region);
+                    AttachNewEnviro(Q->Region);
+                    int envIndex = Spool_GetEnvIndex(Q->Region);
+                    EnvModelChecksums[envIndex] = Spool_SkipPackets(PSXRegion[Q->Region].pPSX);
+                    break;
+                }
+                case 0: ProcessNewPSX(Q->Region); break;
+                case 2: break;
             }
 
-            Q->Region = (u8)EnvRegions[OtherEnvIndex];
-            ClearRegion(Q->Region, 0, 0);
-            EnvRegions[OtherEnvIndex] = Q->Region;
-            goto environment_slot_selected;
-
-        use_first_environment_slot:
-            EnvRegions[0] = Q->Region;
-            goto environment_slot_selected;
-
-        use_second_environment_slot:
-            EnvRegions[1] = Q->Region;
-
-        environment_slot_selected:
-
-            pNew = Q->Name;
-            pDest = PSXRegion[Q->Region].Filename;
-            for (c = 0; *pNew != '.' && c < 9; ++c)
-                *pDest++ = *pNew++;
-            *pDest = 0;
-
-            PSXRegion[Q->Region].pPSX =
-                (u32 *)Mem_New(
-                    (u32)FileSize, PSXRegion[Q->Region].WhichHeap, 1);
-            PSXRegion[Q->Region].Size = FileSize;
-            FileIO_Load(PSXRegion[Q->Region].pPSX);
+            Q->Occupied = 0;
+            SpoolMode = 0;
+            SpoolPos = (SpoolPos + 1) % 20;
             break;
-
-        case 0:
-        case 2:
-            if (Create_ProcessingBuildPSX() ||
-                Create_ProcessingSourcePSX()) {
-                Temp = (u32 *)Mem_New(0x7800, 0, 1);
-                PSXRegion[Q->Region].pPSX =
-                    (u32 *)Mem_New(
-                        (u32)FileSize, PSXRegion[Q->Region].WhichHeap, 1);
-                PSXRegion[Q->Region].Size = FileSize;
-                Mem_Delete(Temp);
-            } else {
-                PSXRegion[Q->Region].pPSX =
-                    (u32 *)Mem_New(
-                        (u32)FileSize, PSXRegion[Q->Region].WhichHeap, 1);
-                PSXRegion[Q->Region].Size = FileSize;
-            }
-            FileIO_Load(PSXRegion[Q->Region].pPSX);
-            break;
-        }
-
-        SpoolMode = 1;
-        PSXRegion[Q->Region].KeepTexturesInRAM = Q->KeepTextures;
-        break;
-
-    case 1:
-        if (Loading == 0)
-            SpoolMode = 2;
-        break;
-
-    case 2:
-        switch (Q->FileType) {
-        case 1: {
-            ProcessNewPSX(Q->Region);
-            AttachNewEnviro(Q->Region);
-            int envIndex = Spool_GetEnvIndex(Q->Region);
-            EnvModelChecksums[envIndex] =
-                Spool_SkipPackets(PSXRegion[Q->Region].pPSX);
-            break;
-        }
-        case 0:
-            ProcessNewPSX(Q->Region);
-            break;
-        case 2:
-            break;
-        }
-
-        Q->Occupied = 0;
-        SpoolMode = 0;
-        SpoolPos = (SpoolPos + 1) % 20;
-        break;
     }
 }
 
@@ -1884,8 +1956,10 @@ void Spool_Continue(void) {
  * Demangled: void Spool_Sync(void)
  * Match:     PERFECT (37/37)
  */
-void Spool_Sync(void) {
-    while (Loading != 0 || SpoolQ[SpoolPos].Occupied != 0) {
+void Spool_Sync(void)
+{
+    while (Loading != 0 || SpoolQ[SpoolPos].Occupied != 0)
+    {
         Spool_Continue();
         FileIO_Continue();
     }
@@ -1913,7 +1987,8 @@ void Spool_Sync(void) {
  * @param Region  PSX region index.
  */
 
-void Spool_StripAnim(int Region) {
+void Spool_StripAnim(int Region)
+{
     u8 *pDest;
     u32 *pPSX;
     u32 *pAnim;
@@ -1942,8 +2017,10 @@ void Spool_StripAnim(int Region) {
     PSXRegion[Region].pModelChecksums = (u32 *)pDest;
 
     /* Copy block 1: entryCount words of animation name data */
-    if (NumModels != 0) {
-        do {
+    if (NumModels != 0)
+    {
+        do
+        {
             *(u32 *)pDest = *pAnim;
             pAnim++;
             i++;
@@ -1958,8 +2035,10 @@ void Spool_StripAnim(int Region) {
     *(u32 *)pDest = NumTextures;
     pDest += 4;
 
-    if ((s32)NumTextures > 0) {
-        do {
+    if ((s32)NumTextures > 0)
+    {
+        do
+        {
             *(u32 *)pDest = *pAnim;
             pAnim++;
             i++;
@@ -2004,7 +2083,8 @@ void Spool_StripAnim(int Region) {
  * @param pAnimationList  AnimationList to operate on.
  */
 
-void Spool_StripModel(int AnimRegion, s16 *pAnimationList) {
+void Spool_StripModel(int AnimRegion, s16 *pAnimationList)
+{
     u8 AnimUsed[512];
     u32 *pAnimPSX;
     u32 *pAnimHierarchy;
@@ -2059,13 +2139,15 @@ void Spool_StripModel(int AnimRegion, s16 *pAnimationList) {
         pDestBytes = (u8 *)pAnimPSX + vbytes;
     }
 
-    if ((s32)NumAnims > 0) {
+    if ((s32)NumAnims > 0)
+    {
         u32 *copyDst4 = pAnimPSX + 1;
         u32 *entrySrc4 = pAnimAnim + 1;
         u32 *copyDst = pAnimPSX;
         u32 *entrySrc = pAnimAnim;
 
-        do {
+        do
+        {
             *copyDst = *entrySrc;
             entrySrc += 2;
             i++;
@@ -2080,15 +2162,17 @@ void Spool_StripModel(int AnimRegion, s16 *pAnimationList) {
     pDA = pAnimationList;
     {
         int j = 0;
-        do {
+        do
+        {
             AnimUsed[j] = 0;
             j++;
         } while (j < 512);
     }
 
     /* Read first -1-terminated list of mesh indices into bitmap */
-    while (*pDA != -1) {
-        AnimUsed[(s16)*(u16 *)pDA] = 1;
+    while (*pDA != -1)
+    {
+        AnimUsed[(s16) * (u16 *)pDA] = 1;
         pDA++;
     }
 
@@ -2096,13 +2180,15 @@ void Spool_StripModel(int AnimRegion, s16 *pAnimationList) {
     pDA++;
 
     /* Read second -1-terminated list into bitmap */
-    while (*pDA != -1) {
-        AnimUsed[(s16)*(u16 *)pDA] = 1;
+    while (*pDA != -1)
+    {
+        AnimUsed[(s16) * (u16 *)pDA] = 1;
         pDA++;
     }
 
     /* For each mesh: keep or skip based on bitmap */
-    if ((s32)NumAnims > 0) {
+    if ((s32)NumAnims > 0)
+    {
         int m = 0;
         int last = (s32)NumAnims - 1;
         u8 *keep = AnimUsed;
@@ -2112,26 +2198,32 @@ void Spool_StripModel(int AnimRegion, s16 *pAnimationList) {
         u32 *entrySize = pAnimPSX + 1;
         u32 *entryNext = pAnimPSX + 2;
 
-        do {
+        do
+        {
             u8 *pNextSource;
 
             /* Determine end of this mesh's data */
             pNextSource = (u8 *)pAnimHierarchy;
-            if (m != last) {
+            if (m != last)
+            {
                 pNextSource = (u8 *)pAnimAnim + (*entryNext - 4);
             }
 
-            if (keep[m] == 0) {
+            if (keep[m] == 0)
+            {
                 /* Skip this mesh: clear offset/size, advance end pointer */
                 pSourceBytes = pNextSource;
                 *entryOff = 0;
                 *entrySize = 0;
-            } else {
+            }
+            else
+            {
                 /* Keep this mesh: set offset and copy vertex data */
                 *entryOff = (u32)(pDestBytes - (u8 *)pAnimPSX) + 4;
 
                 /* Copy bytes from srcVerts to dstVerts */
-                while (pSourceBytes < pNextSource) {
+                while (pSourceBytes < pNextSource)
+                {
                     *pDestBytes = *pSourceBytes;
                     pSourceBytes++;
                     pDestBytes++;
@@ -2154,7 +2246,8 @@ void Spool_StripModel(int AnimRegion, s16 *pAnimationList) {
     /* Copy hierarchy data */
     {
         int k = 0;
-        while (k < HierarchyLen / 4) {
+        while (k < HierarchyLen / 4)
+        {
             *pAnimPSX = *pAnimHierarchy;
             pAnimHierarchy++;
             pAnimPSX++;
@@ -2164,12 +2257,10 @@ void Spool_StripModel(int AnimRegion, s16 *pAnimationList) {
 
     /* Shrink allocation and update slot size */
     {
-        u32 NewLen =
-            (u32)((u8 *)pAnimPSX - (u8 *)PSXRegion[AnimRegion].pPSX);
+        u32 NewLen = (u32)((u8 *)pAnimPSX - (u8 *)PSXRegion[AnimRegion].pPSX);
         Mem_Shrink((void *)PSXRegion[AnimRegion].pPSX, NewLen);
         PSXRegion[AnimRegion].Size = NewLen;
-        printf(SpoolAddressViews::s_ShrinkingAnimation,
-            &PSXRegion[AnimRegion], NewLen);
+        printf(SpoolAddressViews::s_ShrinkingAnimation, &PSXRegion[AnimRegion], NewLen);
     }
 }
 
@@ -2195,7 +2286,8 @@ void Spool_StripModel(int AnimRegion, s16 *pAnimationList) {
  * @return ret
  */
 
-int Spool_GetReducedSkater(char *modelFile, char *animFile) {
+int Spool_GetReducedSkater(char *modelFile, char *animFile)
+{
     int ModelRegion;
     int AnimRegion;
 
@@ -2251,9 +2343,8 @@ int Spool_GetReducedSkater(char *modelFile, char *animFile) {
  */
 #include "FILEIOSIZE.h"
 
-char * Spool_LoadPSH(
-    char *pPSHName, char **pHierarchyArray, int *pPartCount,
-    int maxPartNames) {
+char *Spool_LoadPSH(char *pPSHName, char **pHierarchyArray, int *pPartCount, int maxPartNames)
+{
     char ch;
     char *pData;
     int prefixStringLength;
@@ -2279,15 +2370,18 @@ char * Spool_LoadPSH(
     ch = *pData;
 
     // Parse loop: find each occurrence of the part pattern
-    while (ch != '\0') {
+    while (ch != '\0')
+    {
         // Search for pattern in remaining text
         p = strstr(p, prefixString);
-        if (p == 0) break;       // No more matches
+        if (p == 0) break; // No more matches
         p = p + prefixStringLength;
 
         // Advance to the '_' separator (start of the actual part name)
-        if (*p != '_') {
-            do {
+        if (*p != '_')
+        {
+            do
+            {
                 p = p + 1;
             } while (*p != '_');
         }
@@ -2296,7 +2390,8 @@ char * Spool_LoadPSH(
         pHierarchyArray[*pPartCount] = p;
 
         // Find end of name: scan forward to first whitespace character
-        while (matchPos = WhiteSpace(p), matchPos == 0) {
+        while (matchPos = WhiteSpace(p), matchPos == 0)
+        {
             p = p + 1;
         }
 
@@ -2305,8 +2400,10 @@ char * Spool_LoadPSH(
         p = p + 1;
 
         // Skip remaining data on this line (advance past newline)
-        if (*p != '\n') {
-            do {
+        if (*p != '\n')
+        {
+            do
+            {
                 p = p + 1;
             } while (*p != '\n');
         }

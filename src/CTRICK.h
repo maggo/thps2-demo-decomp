@@ -3,7 +3,8 @@
 #define CTRICK_INC_H
 
 /** One trick-history entry queued by the player panel. */
-struct CTrick {
+struct CTrick
+{
     char *name;
     int point_value;
     int countdown;

@@ -1,15 +1,12 @@
-#if defined(CREATE_TEX_LIST_LAYOUT_ONLY) && \
-    !defined(CREATE_TEX_LIST_LAYOUT)
+#if defined(CREATE_TEX_LIST_LAYOUT_ONLY) && !defined(CREATE_TEX_LIST_LAYOUT)
 #error CREATE_TEX_LIST_LAYOUT_ONLY requires CREATE_TEX_LIST_LAYOUT
 #endif
 
-#if defined(CREATE_TEX_SPEC_LAYOUT_ONLY) && \
-    !defined(CREATE_TEX_SPEC_LAYOUT)
+#if defined(CREATE_TEX_SPEC_LAYOUT_ONLY) && !defined(CREATE_TEX_SPEC_LAYOUT)
 #error CREATE_TEX_SPEC_LAYOUT_ONLY requires CREATE_TEX_SPEC_LAYOUT
 #endif
 
-#if !defined(CREATE_TEX_LIST_LAYOUT_ONLY) && \
-    !defined(CREATE_TEX_SPEC_LAYOUT_ONLY)
+#if !defined(CREATE_TEX_LIST_LAYOUT_ONLY) && !defined(CREATE_TEX_SPEC_LAYOUT_ONLY)
 #ifndef CREATE_INC_H
 #define CREATE_INC_H
 
@@ -57,31 +54,27 @@ void Create_BeginSpooling(void);
 #endif // CREATE_INC_H
 #endif // !CREATE_TEX_LIST_LAYOUT_ONLY && !CREATE_TEX_SPEC_LAYOUT_ONLY
 
-#if defined(CREATE_TEX_LIST_LAYOUT) && \
-    !defined(CREATE_TEX_LIST_LAYOUT_EMITTED)
+#if defined(CREATE_TEX_LIST_LAYOUT) && !defined(CREATE_TEX_LIST_LAYOUT_EMITTED)
 #define CREATE_TEX_LIST_LAYOUT_EMITTED
 
 /** One texture choice and its front-end label. */
-struct _SCreateTexList {
+struct _SCreateTexList
+{
     char *TextureName;
     char *FrontEndName;
 };
 
 typedef struct _SCreateTexList SCreateTexList;
 
-typedef char SCreateTexList_size_must_be_8[
-    (sizeof(struct _SCreateTexList) == 8) ? 1 : -1];
-typedef char SCreateTexList_TextureName_offset_must_be_0[
-    ((unsigned long)&(((struct _SCreateTexList *)0)->TextureName) == 0)
-        ? 1 : -1];
-typedef char SCreateTexList_FrontEndName_offset_must_be_4[
-    ((unsigned long)&(((struct _SCreateTexList *)0)->FrontEndName) == 4)
-        ? 1 : -1];
+typedef char SCreateTexList_size_must_be_8[(sizeof(struct _SCreateTexList) == 8) ? 1 : -1];
+typedef char SCreateTexList_TextureName_offset_must_be_0
+    [((unsigned long)&(((struct _SCreateTexList *)0)->TextureName) == 0) ? 1 : -1];
+typedef char SCreateTexList_FrontEndName_offset_must_be_4
+    [((unsigned long)&(((struct _SCreateTexList *)0)->FrontEndName) == 4) ? 1 : -1];
 
 #endif // CREATE_TEX_LIST_LAYOUT
 
-#if defined(CREATE_TEX_SPEC_LAYOUT) && \
-    !defined(CREATE_TEX_SPEC_LAYOUT_EMITTED)
+#if defined(CREATE_TEX_SPEC_LAYOUT) && !defined(CREATE_TEX_SPEC_LAYOUT_EMITTED)
 #define CREATE_TEX_SPEC_LAYOUT_EMITTED
 
 #ifndef SRC_GLOBALS_H
@@ -99,9 +92,8 @@ struct CCreateTexSpec
 #endif
 {
 #ifdef CREATE_TEX_POLYMORPHIC_LAYOUT
-    CCreateTexSpec(char *name, char *frontEndName, int hue,
-        _SCreateTexList *list0, _SCreateTexList *list1,
-        _SCreateTexList *list2, _SCreateTexList *list3);
+    CCreateTexSpec(char *name, char *frontEndName, int hue, _SCreateTexList *list0,
+                   _SCreateTexList *list1, _SCreateTexList *list2, _SCreateTexList *list3);
     virtual ~CCreateTexSpec() {}
 #endif
 #ifdef __cplusplus

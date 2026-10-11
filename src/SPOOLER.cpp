@@ -11,11 +11,13 @@
 #include "SPOOLER.h"
 
 /** Return caller-owned storage for an ordinary placement construction. */
-inline void *operator new(unsigned int, void *storage) { return storage; }
+inline void *operator new(unsigned int, void *storage)
+{
+    return storage;
+}
 
 /** Advance a cursor that walks one fixed field through the item array. */
-template <class Field>
-static inline Field *NextSpoolItemField(Field *field)
+template <class Field> static inline Field *NextSpoolItemField(Field *field)
 {
     return (Field *)((char *)field + sizeof(SpoolItem));
 }
@@ -31,12 +33,9 @@ static inline Field *NextSpoolItemField(Field *field)
 Spooler *Spooler::SpoolMgr = 0;
 
 /** Filename and platform suffixes used by the spooler in original order. */
-static char s_FileNameFormat[4]
-    __attribute__((section(".sdata"))) = "%s";
-static char s_Ext_psx[4]
-    __attribute__((section(".sdata"))) = "psx";
-static char s_Ext_PSX[4]
-    __attribute__((section(".sdata"))) = "PSX";
+static char s_FileNameFormat[4] __attribute__((section(".sdata"))) = "%s";
+static char s_Ext_psx[4] __attribute__((section(".sdata"))) = "psx";
+static char s_Ext_PSX[4] __attribute__((section(".sdata"))) = "PSX";
 
 // Keep the call sites opaque to the literals' owner definitions above.  The
 // original compiler addressed these three strings absolutely even though the
@@ -101,21 +100,17 @@ void Spooler::OrderHelper(int *array, int num, int first)
     int n = 0;
     while (1)
     {
-        if (top >= num)
-            top = 0;
+        if (top >= num) top = 0;
         *array = bottom;
         n++;
         array++;
-        if (n == num)
-            break;
+        if (n == num) break;
         *array = top;
         n++;
         array++;
-        if (n == num)
-            break;
+        if (n == num) break;
         bottom--;
-        if (bottom < 0)
-            bottom = num - 1;
+        if (bottom < 0) bottom = num - 1;
         top++;
     }
 }
@@ -328,13 +323,12 @@ void Spooler::BeginSpoolingCurrentFile()
 
     if (mItem[current].type == 1)
     {
-        mItem[mCurrentItem].region = Spool_PSX(
-            mItem[current].name, 2, 1, 1);
+        mItem[mCurrentItem].region = Spool_PSX(mItem[current].name, 2, 1, 1);
     }
     else
     {
-        mItem[mCurrentItem].pData = (unsigned char *)Mem_New(
-            FileIO_Open(mItem[current].name), 1, 1);
+        mItem[mCurrentItem].pData =
+            (unsigned char *)Mem_New(FileIO_Open(mItem[current].name), 1, 1);
         FileIO_Load(mItem[mCurrentItem].pData);
     }
 

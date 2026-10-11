@@ -9,7 +9,8 @@
  * This narrow public definition mirrors MAIN_STRUCTS.h exactly. Each member
  * is one 32-bit pointer, giving the original 652-byte object layout.
  */
-struct LocalText {
+struct LocalText
+{
     char *pLevelHints;
     char *pEndGame;
     char *pEndRun;

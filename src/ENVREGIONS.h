@@ -6,8 +6,7 @@
  * Most consumers import the complete array at its absolute address; M3D keeps
  * the target-proven scalar first-word view used by its pointer arithmetic.
  */
-#if (defined(ENVREGIONS_OWNER_DECLARATION) + \
-     defined(ENVREGIONS_ABSOLUTE_DECLARATION) + \
+#if (defined(ENVREGIONS_OWNER_DECLARATION) + defined(ENVREGIONS_ABSOLUTE_DECLARATION) + \
      defined(ENVREGIONS_SCALAR_ABSOLUTE_DECLARATION)) != 1
 #error "Select exactly one EnvRegions declaration view"
 #elif defined(ENVREGIONS_OWNER_DECLARATION)

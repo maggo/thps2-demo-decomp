@@ -18,26 +18,20 @@ void Utils_InitialRand(int a);
 int Rnd(int n);
 void Utils_RotateY(CVector &ans, const CVector &in, int a);
 void Utils_CalcUnit(CVector &unit, const CVector &vec);
-void Utils_GetVecFromMagDir(CVector &v, int magnitude,
-                            const CSVector &direction);
-int Utils_CalcAim(CSVector &direction, const CVector &from,
-                  const CVector &to);
-void Utils_TurnTowards(CSVector current, CSVector &angularVelocity,
-                       CSVector &angularAcceleration, CSVector ideal,
-                       int accelerationFactor);
+void Utils_GetVecFromMagDir(CVector &v, int magnitude, const CSVector &direction);
+int Utils_CalcAim(CSVector &direction, const CVector &from, const CVector &to);
+void Utils_TurnTowards(CSVector current, CSVector &angularVelocity, CSVector &angularAcceleration,
+                       CSVector ideal, int accelerationFactor);
 void Utils_ClearExplosionStack(void);
-int Utils_CompareStrings(const char *lhs, const char *rhs,
-                         unsigned int maxLength);
+int Utils_CompareStrings(const char *lhs, const char *rhs, unsigned int maxLength);
 void Utils_CopyString(const char *source, char *destination);
 int Utils_ArcCos(int cosine);
 int Utils_LineOfSight(const CVector &start, const CVector &end);
 int Utils_GetGroundHeight(const CVector &position, int above, int below);
 int Utils_KillEverythingInBox(const CVector &min, const CVector &max);
-void Utils_SetVisibilityInBox(const CVector &min, const CVector &max,
-                              bool visible, bool inside);
-unsigned int Utils_CalculateSpatialAttenuation(const CVector &position,
-                                                int nearDistance,
-                                                int farDistance);
+void Utils_SetVisibilityInBox(const CVector &min, const CVector &max, bool visible, bool inside);
+unsigned int Utils_CalculateSpatialAttenuation(const CVector &position, int nearDistance,
+                                               int farDistance);
 
 #ifdef UTILS_OWNER_DECLARATIONS
 #define UTILS_SHARED_STATE_DECL_ATTR

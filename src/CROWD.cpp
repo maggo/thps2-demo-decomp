@@ -15,7 +15,8 @@ typedef signed int s32;
 #include "MAIN.h"
 
 /** Runtime state for the single ambient crowd voice. */
-struct SCrowd {
+struct SCrowd
+{
     int Voice;
     int VolL;
     int VolR;
@@ -36,8 +37,7 @@ struct SCrowd {
 SCrowd Crowd[1] __attribute__((section(".data"))) = {};
 
 /** Debug trace used when starting the crowd voice. */
-static char CrowdPitchFormat[16]
-    __attribute__((section(".sdata"))) = "Pitch = %d \n";
+static char CrowdPitchFormat[16] __attribute__((section(".sdata"))) = "Pitch = %d \n";
 
 #include <STDIO.H>
 
@@ -63,8 +63,7 @@ void Crowd_Start(void)
         for (i = 0; i < 1; i++)
         {
             Crowd[i].Voice = SFX_PlayX(0x2c, 0, 0);
-            printf(CrowdPitchFormat,
-                   (int)SFX_GetVoicePitch(Crowd[i].Voice));
+            printf(CrowdPitchFormat, (int)SFX_GetVoicePitch(Crowd[i].Voice));
             Crowd[i].VolL = Crowd[i].TargetL = Crowd[i].TargetR = Crowd[i].VolR = 0;
         }
     }
@@ -99,8 +98,7 @@ void Crowd_Stop(void)
  */
 int Crowd_MoveTowards(int &Value, int Target, int Step)
 {
-    if (Value == Target)
-        return 0;
+    if (Value == Target) return 0;
     if (Value > Target - Step && Value < Target + Step)
     {
         Value = Target;
@@ -130,8 +128,7 @@ void Crowd_Update(void)
                 if (Crowd_MoveTowards(Crowd[i].VolL, Crowd[i].TargetL, 100) ||
                     Crowd_MoveTowards(Crowd[i].VolR, Crowd[i].TargetR, 100))
                 {
-                    SFX_ModifyVol(Crowd[i].Voice, (Crowd[i].VolL * 2) / 3,
-                                  (Crowd[i].VolR * 2) / 3);
+                    SFX_ModifyVol(Crowd[i].Voice, (Crowd[i].VolL * 2) / 3, (Crowd[i].VolR * 2) / 3);
                 }
                 else if (Rnd(30) == 0)
                 {
@@ -280,8 +277,10 @@ void Crowd_Ahh(int Score)
         }
         else
         {
-            SFX_PlayX(0x2e, (short)((unsigned int)((Volume + ((unsigned int)Volume >> 0x1f)) * 0x8000) >> 0x10),
-                      0);
+            SFX_PlayX(
+                0x2e,
+                (short)((unsigned int)((Volume + ((unsigned int)Volume >> 0x1f)) * 0x8000) >> 0x10),
+                0);
         }
         SFX_PlayX(0x2f, (short)Volume, 0);
     }

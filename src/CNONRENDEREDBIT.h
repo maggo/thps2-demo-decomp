@@ -6,7 +6,8 @@
 #endif
 
 /** A transient bit effect with no render payload. */
-struct CNonRenderedBit : CBit {
+struct CNonRenderedBit : CBit
+{
     /** Construct and attach a non-rendered transient bit. */
     CNonRenderedBit();
     /** Detach and destroy a non-rendered transient bit. */

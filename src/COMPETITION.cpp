@@ -10,7 +10,8 @@
 #include "RFRONT.h"
 #include "STATS.h"
 
-enum EPausedStatus {
+enum EPausedStatus
+{
     STATUS_NORMAL = 0,
     STATUS_PAUSEDMENU = 1,
     STATUS_SKIPTORESTART = 2,
@@ -61,14 +62,16 @@ enum EPausedStatus {
     STATUS_DUMMY = 47,
 };
 
-struct SMedalMessage {
+struct SMedalMessage
+{
     char *Line1;
     char *Line2;
     char *Line3;
 };
 
 /** Stores the professional and consistency biases for one competition judge. */
-struct CJudge : CClass {
+struct CJudge : CClass
+{
     virtual ~CJudge() {}
     unsigned char mProPlayer;
     unsigned char mProBias;
@@ -77,7 +80,8 @@ struct CJudge : CClass {
 };
 
 /** Owns the competition entrants, judge results, medal state, and marquee. */
-struct CCompetition : CClass {
+struct CCompetition : CClass
+{
     int GotMedal();
     CCompetition() : mMedal1(0), mMedal2(0), mMedal3(0) {}
     unsigned char mCompetitorList[10];
@@ -108,8 +112,7 @@ struct CCompetition : CClass {
 };
 
 typedef char CJudge_size_must_be_0x08[(sizeof(CJudge) == 0x08) ? 1 : -1];
-typedef char CCompetition_size_must_be_0x130[
-    (sizeof(CCompetition) == 0x130) ? 1 : -1];
+typedef char CCompetition_size_must_be_0x130[(sizeof(CCompetition) == 0x130) ? 1 : -1];
 
 #include "GLEVEL.h"
 #define FRONTFLOWSTATE_DECLARE_ROLL_CREDITS
@@ -121,20 +124,23 @@ typedef char CCompetition_size_must_be_0x130[
 #include "GAMEFMV.h"
 
 /** Strided view beginning at each level's competition flag. */
-struct CompetitionLevelFlag {
+struct CompetitionLevelFlag
+{
     void *isCompetition;
     unsigned char _padToNext[0x74 - sizeof(void *)];
 };
 
 #include "SCHARACTERPROGRESS.h"
 
-struct CompetitionCareerOptions {
+struct CompetitionCareerOptions
+{
     unsigned char _padToMedalMessagesUsed[0x148];
     int MedalMessagesUsed[14];
 };
 
 /** COMPETITION-owned career prefix through the medal-message flags. */
-struct CompetitionCareerView {
+struct CompetitionCareerView
+{
     int Version;
     int MaxTapes;
     SCharacterProgress CharacterProgress[14];
@@ -142,15 +148,16 @@ struct CompetitionCareerView {
     CompetitionCareerOptions Options;
 };
 
-typedef char CompetitionCareerView_size_must_be_0x954[
-    (sizeof(CompetitionCareerView) == 0x954) ? 1 : -1];
+typedef char
+    CompetitionCareerView_size_must_be_0x954[(sizeof(CompetitionCareerView) == 0x954) ? 1 : -1];
 
 struct CPowerUp;
 typedef void (*CompetitionPowerUpDestructor)(CPowerUp *, int);
 typedef void (*CompetitionPowerUpDisplay)(CPowerUp *);
 
 /** Vtable entries invoked by the competition owner. */
-struct CompetitionPowerUpVtable {
+struct CompetitionPowerUpVtable
+{
     void *Reserved0;
     void *Reserved1;
     CompetitionPowerUpDestructor Destructor;
@@ -159,7 +166,8 @@ struct CompetitionPowerUpVtable {
 };
 
 /** Competition-visible slice of a medal power-up. */
-struct CPowerUp {
+struct CPowerUp
+{
     unsigned char _padToPositionY[0x08];
     int mPositionY;
     unsigned char _padToVtable[0x48 - 0x0C];
@@ -174,7 +182,8 @@ struct CPowerUp {
 };
 
 /** Panel fields read by competition judge logic. */
-struct CompetitionPanelData {
+struct CompetitionPanelData
+{
     struct CBruce *mpBruce;
     unsigned int mTotalScore;
     unsigned short mPlayerNum;
@@ -183,21 +192,20 @@ struct CompetitionPanelData {
 };
 
 /** Player slice exposing only the panel and debug-proven skater type. */
-struct CBruce {
+struct CBruce
+{
     unsigned char _padToPanelData[0x190];
     CompetitionPanelData mPanelData;
-    unsigned char _padToSkaterType[
-        0xDA8 - 0x190 - sizeof(CompetitionPanelData)];
+    unsigned char _padToSkaterType[0xDA8 - 0x190 - sizeof(CompetitionPanelData)];
     int mSkaterType;
     unsigned char _opaqueTail[5228 - 0xDAC];
 };
 
-typedef char CompetitionLevelFlag_size_must_be_0x74[
-    (sizeof(CompetitionLevelFlag) == 0x74) ? 1 : -1];
-typedef char Competition_SCharacterProgress_size_must_be_0x20[
-    (sizeof(SCharacterProgress) == 0x20) ? 1 : -1];
-typedef char Competition_CBruce_size_must_be_5228[
-    (sizeof(CBruce) == 5228) ? 1 : -1];
+typedef char
+    CompetitionLevelFlag_size_must_be_0x74[(sizeof(CompetitionLevelFlag) == 0x74) ? 1 : -1];
+typedef char
+    Competition_SCharacterProgress_size_must_be_0x20[(sizeof(SCharacterProgress) == 0x20) ? 1 : -1];
+typedef char Competition_CBruce_size_must_be_5228[(sizeof(CBruce) == 5228) ? 1 : -1];
 
 #include "MAIN.h"
 #define DB_BUFFER_LAYOUT
@@ -233,8 +241,7 @@ typedef char Competition_CBruce_size_must_be_5228[
 
 
 // === External function declarations ===
-CPowerUp *Medal_Create(EMedalType type, int x, int y, int z, int size,
-    int yVelocity);
+CPowerUp *Medal_Create(EMedalType type, int x, int y, int z, int size, int yVelocity);
 
 /*
  * Original COMPETITION.CPP initialized-data contribution.
@@ -248,96 +255,73 @@ namespace CompetitionAddressViewOwners
 {
 extern "C"
 {
-static char s_Congratulations[]
-    __attribute__((section(".rdata"), aligned(4))) = "Congratulations!";
+static char s_Congratulations[] __attribute__((section(".rdata"), aligned(4))) = "Congratulations!";
 }
 }
-static char Competition_NextDowntown[]
-    __attribute__((section(".rdata"), aligned(4))) =
-        "Next stop, the DOWNTOWN level.";
-static char Competition_NextSanFrancisco[]
-    __attribute__((section(".rdata"), aligned(4))) =
-        "Next stop, SAN FRANCISCO.";
-static char Competition_AllMedalsHeading[]
-    __attribute__((section(".rdata"), aligned(4))) =
-        "Congratulations! You've earned";
-static char Competition_AllMedalsBody[]
-    __attribute__((section(".rdata"), aligned(4))) =
-        "a medal in every competition.";
-static char Competition_AllMedalsEnding[]
-    __attribute__((section(".rdata"), aligned(4))) =
-        "Now sit back and enjoy the show...";
+static char Competition_NextDowntown[] __attribute__((section(".rdata"), aligned(4))) =
+    "Next stop, the DOWNTOWN level.";
+static char Competition_NextSanFrancisco[] __attribute__((section(".rdata"), aligned(4))) =
+    "Next stop, SAN FRANCISCO.";
+static char Competition_AllMedalsHeading[] __attribute__((section(".rdata"), aligned(4))) =
+    "Congratulations! You've earned";
+static char Competition_AllMedalsBody[] __attribute__((section(".rdata"), aligned(4))) =
+    "a medal in every competition.";
+static char Competition_AllMedalsEnding[] __attribute__((section(".rdata"), aligned(4))) =
+    "Now sit back and enjoy the show...";
 namespace CompetitionAddressViewOwners
 {
 extern "C"
 {
-static char s_YouScoredAllGolds[]
-    __attribute__((section(".rdata"), aligned(4))) =
-        "You scored all golds!";
-static char s_YourAreTheTopProSkater[]
-    __attribute__((section(".rdata"), aligned(4))) =
-        "Your are the top pro skater.";
-static char s_WatchThisGetOffCouch[]
-    __attribute__((section(".rdata"), aligned(4))) =
-        "Watch this, then get off your";
-static char s_CouchAndGoSkate[]
-    __attribute__((section(".rdata"), aligned(4))) =
-        "couch and go skate!";
-static char s_YourThirdMedal[]
-    __attribute__((section(".rdata"), aligned(4))) =
-        "Your third medal.. Good going!";
-static char s_YouJustMightBecome[]
-    __attribute__((section(".rdata"), aligned(4))) =
-        "You just might become";
-static char s_AnAverageSkater[]
-    __attribute__((section(".rdata"), aligned(4))) =
-        "an average skater.";
-static char s_ProSkatersGetAllGolds[]
-    __attribute__((section(".rdata"), aligned(4))) =
-        "pro skaters get all golds...";
-static char s_YouWinTheGold[]
-    __attribute__((section(".rdata"), aligned(4))) =
-        "You win the Gold!";
-static char s_YouWinTheSilver[]
-    __attribute__((section(".rdata"), aligned(4))) =
-        "You win the Silver!";
-static char s_YouWinTheBronze[]
-    __attribute__((section(".rdata"), aligned(4))) =
-        "You win the Bronze!";
-static char s_CompetitionStandings[]
-    __attribute__((section(".rdata"), aligned(4))) =
-        "COMPETITION STANDINGS";
-static char s_PlaceColumnsHeader[]
-    __attribute__((section(".rdata"), aligned(4))) =
-        "1         2         3           Total";
-static char s_JudgeScoreRowFormat[]
-    __attribute__((section(".rdata"), aligned(4))) =
-        "JUDGE %d     %d.%d";
-static char s_HeatScoreHeaderFormat[]
-    __attribute__((section(".rdata"), aligned(4))) =
-        "HEAT %d SCORE - ";
+static char s_YouScoredAllGolds[] __attribute__((section(".rdata"), aligned(4))) =
+    "You scored all golds!";
+static char s_YourAreTheTopProSkater[] __attribute__((section(".rdata"), aligned(4))) =
+    "Your are the top pro skater.";
+static char s_WatchThisGetOffCouch[] __attribute__((section(".rdata"), aligned(4))) =
+    "Watch this, then get off your";
+static char s_CouchAndGoSkate[] __attribute__((section(".rdata"), aligned(4))) =
+    "couch and go skate!";
+static char s_YourThirdMedal[] __attribute__((section(".rdata"), aligned(4))) =
+    "Your third medal.. Good going!";
+static char s_YouJustMightBecome[] __attribute__((section(".rdata"), aligned(4))) =
+    "You just might become";
+static char s_AnAverageSkater[] __attribute__((section(".rdata"), aligned(4))) =
+    "an average skater.";
+static char s_ProSkatersGetAllGolds[] __attribute__((section(".rdata"), aligned(4))) =
+    "pro skaters get all golds...";
+static char s_YouWinTheGold[] __attribute__((section(".rdata"), aligned(4))) = "You win the Gold!";
+static char s_YouWinTheSilver[] __attribute__((section(".rdata"), aligned(4))) =
+    "You win the Silver!";
+static char s_YouWinTheBronze[] __attribute__((section(".rdata"), aligned(4))) =
+    "You win the Bronze!";
+static char s_CompetitionStandings[] __attribute__((section(".rdata"), aligned(4))) =
+    "COMPETITION STANDINGS";
+static char s_PlaceColumnsHeader[] __attribute__((section(".rdata"), aligned(4))) =
+    "1         2         3           Total";
+static char s_JudgeScoreRowFormat[] __attribute__((section(".rdata"), aligned(4))) =
+    "JUDGE %d     %d.%d";
+static char s_HeatScoreHeaderFormat[] __attribute__((section(".rdata"), aligned(4))) =
+    "HEAT %d SCORE - ";
 }
 }
 
 /** Messages displayed for the first, second, and all-medal milestones. */
-SMedalMessage MedalMessage[3]
-    __attribute__((section(".data"))) = {
-        {
-            0,
-            (char *)s_Congratulations,
-            (char *)Competition_NextDowntown,
-        },
-        {
-            0,
-            (char *)s_Congratulations,
-            (char *)Competition_NextSanFrancisco,
-        },
-        {
-            (char *)Competition_AllMedalsHeading,
-            (char *)Competition_AllMedalsBody,
-            (char *)Competition_AllMedalsEnding,
-        },
-    };
+SMedalMessage MedalMessage[3] __attribute__((section(".data"))) = {
+    {
+        0,
+        (char *)s_Congratulations,
+        (char *)Competition_NextDowntown,
+    },
+    {
+        0,
+        (char *)s_Congratulations,
+        (char *)Competition_NextSanFrancisco,
+    },
+    {
+        (char *)Competition_AllMedalsHeading,
+        (char *)Competition_AllMedalsBody,
+        (char *)Competition_AllMedalsEnding,
+    },
+};
 
 /*
  * Original COMPETITION.CPP small-data contribution. These owners precede the
@@ -356,38 +340,24 @@ namespace CompetitionAddressViewOwners
 {
 extern "C"
 {
-static char s_HeatTitleFormat[]
-    __attribute__((section(".sdata"), aligned(4))) = "%s %s - HEAT %d";
-static char s_YouLose[]
-    __attribute__((section(".sdata"), aligned(4))) = "You lose!";
-static char s_FirstPlaceFormat[]
-    __attribute__((section(".sdata"), aligned(4))) = "%s: 1st place";
-static char s_SecondPlaceFormat[]
-    __attribute__((section(".sdata"), aligned(4))) = "%s: 2nd place";
-static char s_ThirdPlaceFormat[]
-    __attribute__((section(".sdata"), aligned(4))) = "%s: 3rd place";
-static char s_OrdinalFormat[]
-    __attribute__((section(".sdata"), aligned(4))) = "%dth";
-static char s_HeatLabel[]
-    __attribute__((section(".sdata"), aligned(4))) = "        Heat";
-static char s_StringFormat[]
-    __attribute__((section(".sdata"), aligned(4))) = "%s";
-static char s_ScoreFormat[]
-    __attribute__((section(".sdata"), aligned(4))) = "%d.%d";
-static char s_Dash[]
-    __attribute__((section(".sdata"), aligned(4))) = "-";
-static char s_HeatOverBanner[]
-    __attribute__((section(".sdata"), aligned(4))) = "HEAT %d OVER!";
-static char s_JudgesScoresTitle[]
-    __attribute__((section(".sdata"), aligned(4))) = "JUDGES SCORES";
-static char s_JudgeNumberFormat[]
-    __attribute__((section(".sdata"), aligned(4))) = "JUDGE %d";
+static char s_HeatTitleFormat[] __attribute__((section(".sdata"), aligned(4))) = "%s %s - HEAT %d";
+static char s_YouLose[] __attribute__((section(".sdata"), aligned(4))) = "You lose!";
+static char s_FirstPlaceFormat[] __attribute__((section(".sdata"), aligned(4))) = "%s: 1st place";
+static char s_SecondPlaceFormat[] __attribute__((section(".sdata"), aligned(4))) = "%s: 2nd place";
+static char s_ThirdPlaceFormat[] __attribute__((section(".sdata"), aligned(4))) = "%s: 3rd place";
+static char s_OrdinalFormat[] __attribute__((section(".sdata"), aligned(4))) = "%dth";
+static char s_HeatLabel[] __attribute__((section(".sdata"), aligned(4))) = "        Heat";
+static char s_StringFormat[] __attribute__((section(".sdata"), aligned(4))) = "%s";
+static char s_ScoreFormat[] __attribute__((section(".sdata"), aligned(4))) = "%d.%d";
+static char s_Dash[] __attribute__((section(".sdata"), aligned(4))) = "-";
+static char s_HeatOverBanner[] __attribute__((section(".sdata"), aligned(4))) = "HEAT %d OVER!";
+static char s_JudgesScoresTitle[] __attribute__((section(".sdata"), aligned(4))) = "JUDGES SCORES";
+static char s_JudgeNumberFormat[] __attribute__((section(".sdata"), aligned(4))) = "JUDGE %d";
 }
 }
 
 /** Process-lifetime competition state, constructed by the owner initializer. */
-CCompetition theCompetition
-    __attribute__((section(".data")));
+CCompetition theCompetition __attribute__((section(".data")));
 
 
 // === Function implementations (address order) ===
@@ -407,9 +377,10 @@ int Competition_WonGame(void)
     unsigned int medal_count = 0;
     int i = 0;
     CBruce *skater = GSkater[0];
-    u8 *scores = (u8 *)&reinterpret_cast<CompetitionCareerView *>(&GCareer)->CharacterProgress[0].GoalMask[0];
-    CompetitionLevelFlag *level =
-        (CompetitionLevelFlag *)&Levels[0].isCompetition;
+    u8 *scores = (u8 *)&reinterpret_cast<CompetitionCareerView *>(&GCareer)
+                     ->CharacterProgress[0]
+                     .GoalMask[0];
+    CompetitionLevelFlag *level = (CompetitionLevelFlag *)&Levels[0].isCompetition;
     do
     {
         if (level->isCompetition != 0)
@@ -443,9 +414,10 @@ int Competition_WonGameAllGold(void)
     unsigned int medal_count = 0;
     int i = 0;
     CBruce *skater = GSkater[0];
-    u8 *scores = (u8 *)&reinterpret_cast<CompetitionCareerView *>(&GCareer)->CharacterProgress[0].GoalMask[0];
-    CompetitionLevelFlag *level =
-        (CompetitionLevelFlag *)&Levels[0].isCompetition;
+    u8 *scores = (u8 *)&reinterpret_cast<CompetitionCareerView *>(&GCareer)
+                     ->CharacterProgress[0]
+                     .GoalMask[0];
+    CompetitionLevelFlag *level = (CompetitionLevelFlag *)&Levels[0].isCompetition;
     do
     {
         if (level->isCompetition != 0)
@@ -606,8 +578,7 @@ void Competition_Init(void)
         {
             if (competition.mPlacing[i] == 9)
             {
-                competition.mPlacing[i] =
-                    competition.mPlacing[competition.our_skater_num];
+                competition.mPlacing[i] = competition.mPlacing[competition.our_skater_num];
             }
             i++;
         } while (i < 10);
@@ -642,28 +613,27 @@ void Competition_JudgeLogic(void)
                 if (score > Levels[GLevel].GoldScore * 2)
                 {
                     temp = ((score - Levels[GLevel].GoldScore * 2) << 12) /
-                        (Levels[GLevel].GoldScore * 3);
+                           (Levels[GLevel].GoldScore * 3);
                     temp = ((1000 - HOLYCOW_PLACE) * temp) >> 12;
                     temp += HOLYCOW_PLACE;
                 }
                 else if (score > Levels[GLevel].GoldScore)
                 {
-                    temp = ((score - Levels[GLevel].GoldScore) << 12) /
-                        Levels[GLevel].GoldScore;
+                    temp = ((score - Levels[GLevel].GoldScore) << 12) / Levels[GLevel].GoldScore;
                     temp = ((HOLYCOW_PLACE - FIRST_PLACE) * temp) >> 12;
                     temp += FIRST_PLACE;
                 }
                 else if (score > Levels[GLevel].SilverScore)
                 {
                     temp = ((score - Levels[GLevel].SilverScore) << 12) /
-                        (Levels[GLevel].GoldScore - Levels[GLevel].SilverScore);
+                           (Levels[GLevel].GoldScore - Levels[GLevel].SilverScore);
                     temp = ((FIRST_PLACE - SECOND_PLACE) * temp) >> 12;
                     temp += SECOND_PLACE;
                 }
                 else if (score > Levels[GLevel].BronzeScore)
                 {
                     temp = ((score - Levels[GLevel].BronzeScore) << 12) /
-                        (Levels[GLevel].SilverScore - Levels[GLevel].BronzeScore);
+                           (Levels[GLevel].SilverScore - Levels[GLevel].BronzeScore);
                     temp = ((SECOND_PLACE - THIRD_PLACE) * temp) >> 12;
                     temp += THIRD_PLACE;
                 }
@@ -675,42 +645,30 @@ void Competition_JudgeLogic(void)
                 }
 
                 competition.mJudgesScore[i] = (short)temp;
-                temp = (unsigned int)pSkater->mPanelData.mNumBails *
-                    (Rnd(15) + 10);
-                if (temp > 300)
-                    temp = 300;
+                temp = (unsigned int)pSkater->mPanelData.mNumBails * (Rnd(15) + 10);
+                if (temp > 300) temp = 300;
 
                 if (temp >= (unsigned int)competition.mJudgesScore[i])
                     competition.mJudgesScore[i] = 0;
                 else
-                    competition.mJudgesScore[i] =
-                        (short)(competition.mJudgesScore[i] - temp);
+                    competition.mJudgesScore[i] = (short)(competition.mJudgesScore[i] - temp);
 
-                if (competition.mJudgesScore[i] > 8)
-                    competition.mJudgesScore[i] -= (short)Rnd(8);
+                if (competition.mJudgesScore[i] > 8) competition.mJudgesScore[i] -= (short)Rnd(8);
 
-                if (competition.mJudges[i].mProPlayer ==
-                    competition.our_skater_num)
+                if (competition.mJudges[i].mProPlayer == competition.our_skater_num)
                 {
-                    competition.mJudgesScore[i] +=
-                        competition.mJudges[i].mProBias;
+                    competition.mJudgesScore[i] += competition.mJudges[i].mProBias;
                 }
 
-                if (competition.mJudges[i].mConPlayer ==
-                        competition.our_skater_num &&
-                    competition.mJudgesScore[i] >
-                        competition.mJudges[i].mConBias)
+                if (competition.mJudges[i].mConPlayer == competition.our_skater_num &&
+                    competition.mJudgesScore[i] > competition.mJudges[i].mConBias)
                 {
-                    competition.mJudgesScore[i] -=
-                        competition.mJudges[i].mConBias;
+                    competition.mJudgesScore[i] -= competition.mJudges[i].mConBias;
                 }
 
-                if (competition.mJudgesScore[i] < 0)
-                    competition.mJudgesScore[i] = 0;
-                if (competition.mJudgesScore[i] > 999)
-                    competition.mJudgesScore[i] = 999;
-                if (score == 0)
-                    competition.mJudgesScore[i] = 0;
+                if (competition.mJudgesScore[i] < 0) competition.mJudgesScore[i] = 0;
+                if (competition.mJudgesScore[i] > 999) competition.mJudgesScore[i] = 999;
+                if (score == 0) competition.mJudgesScore[i] = 0;
 
                 i++;
             } while (i < 5);
@@ -721,8 +679,7 @@ void Competition_JudgeLogic(void)
             int i = 0;
             do
             {
-                if (competition.mJudgesScore[i] <
-                    competition.mJudgesScore[competition.mLowScore])
+                if (competition.mJudgesScore[i] < competition.mJudgesScore[competition.mLowScore])
                 {
                     competition.mLowScore = (unsigned char)i;
                 }
@@ -739,8 +696,7 @@ void Competition_JudgeLogic(void)
             do
             {
                 if (i != competition.mLowScore &&
-                    competition.mJudgesScore[competition.mHighScore] <
-                        competition.mJudgesScore[i])
+                    competition.mJudgesScore[competition.mHighScore] < competition.mJudgesScore[i])
                 {
                     competition.mHighScore = (unsigned char)i;
                 }
@@ -753,8 +709,7 @@ void Competition_JudgeLogic(void)
             int i = 0;
             do
             {
-                if (i != competition.mLowScore &&
-                    i != competition.mHighScore)
+                if (i != competition.mLowScore && i != competition.mHighScore)
                 {
                     average_score += competition.mJudgesScore[i];
                 }
@@ -762,8 +717,7 @@ void Competition_JudgeLogic(void)
             } while (i < 5);
 
             average_score = average_score / 3;
-            competition.mScore[competition.our_skater_num]
-                              [competition.mCurrentHeat] =
+            competition.mScore[competition.our_skater_num][competition.mCurrentHeat] =
                 (unsigned short)average_score;
         }
     }
@@ -788,30 +742,28 @@ void Competition_JudgeDisplay(void)
     Mess_SetScale(0x100);
     Mess_SetTextJustify(0);
     Mess_SetRGB(0xb6, 0x84, 0x24, 0);
-    sprintf(text_buf, s_HeatOverBanner,
-        competition.mCurrentHeat + 1);
+    sprintf(text_buf, s_HeatOverBanner, competition.mCurrentHeat + 1);
     Mess_DrawText(0x100, 0x28, text_buf, 0, 0, 0x100, 0);
-    Mess_DrawText(
-        0x100, 0x46, s_JudgesScoresTitle, 0, 0, 0x100, 0);
+    Mess_DrawText(0x100, 0x46, s_JudgesScoresTitle, 0, 0, 0x100, 0);
     Mess_SetRGB(0x7a, 0x7a, 0x7a, 0);
     Mess_SetTextJustify(1);
 
     int dimness = 0;
-    if (competition.mJudgeTimer > 0x4B)
-        dimness = (competition.mJudgeTimer - 0x4B) * 4;
-    if (dimness > 100)
-        dimness = 100;
+    if (competition.mJudgeTimer > 0x4B) dimness = (competition.mJudgeTimer - 0x4B) * 4;
+    if (dimness > 100) dimness = 100;
     int i = 0;
-    do {
-        if (competition.mJudgeTimer == (unsigned int)(i * 15 + 1))
-            SFX_PlayX(0x34, 0x2000, 0);
-        if ((unsigned int)(i * 15) < competition.mJudgeTimer) {
+    do
+    {
+        if (competition.mJudgeTimer == (unsigned int)(i * 15 + 1)) SFX_PlayX(0x34, 0x2000, 0);
+        if ((unsigned int)(i * 15) < competition.mJudgeTimer)
+        {
             short sval = competition.mJudgesScore[i];
             short a = sval / 10;
             short b = sval % 10;
-            sprintf(text_buf, s_JudgeScoreRowFormat,
-                i + 1, a, b);
-        } else {
+            sprintf(text_buf, s_JudgeScoreRowFormat, i + 1, a, b);
+        }
+        else
+        {
             sprintf(text_buf, s_JudgeNumberFormat, i + 1);
         }
         if (i == competition.mLowScore || i == competition.mHighScore)
@@ -823,37 +775,36 @@ void Competition_JudgeDisplay(void)
         {
             Mess_SetRGB(0x7A, 0x7A, 0x7A, 0);
         }
-        Mess_DrawText(
-            0x96, i * 0x14 + 0x5A, text_buf, 0, 0, 0x100, 0);
+        Mess_DrawText(0x96, i * 0x14 + 0x5A, text_buf, 0, 0, 0x100, 0);
         i++;
     } while (i < 5);
 
-    if (dimness >= 100) {
-        if (competition.mJudgeFullyDisplayed == 0)
-            SFX_PlayX(0x33, 0x2000, 0);
+    if (dimness >= 100)
+    {
+        if (competition.mJudgeFullyDisplayed == 0) SFX_PlayX(0x33, 0x2000, 0);
         Mess_SetTextJustify(0);
         Mess_SetRGB(0xb6, 0x84, 0x24, 0);
         int average_score = 0;
         {
             int i = 0;
-            do {
-                if (i != competition.mLowScore &&
-                    i != competition.mHighScore)
+            do
+            {
+                if (i != competition.mLowScore && i != competition.mHighScore)
                     average_score += competition.mJudgesScore[i];
                 i++;
             } while (i < 5);
         }
         average_score = average_score / 3;
         Mess_SetTextJustify(0);
-        sprintf(text_buf, s_HeatScoreHeaderFormat,
-            competition.mCurrentHeat + 1);
+        sprintf(text_buf, s_HeatScoreHeaderFormat, competition.mCurrentHeat + 1);
         Mess_DrawText(0xc8, 0xc3, text_buf, 0, 0, 0x100, 0);
-        sprintf(text_buf, s_ScoreFormat,
-            average_score / 10, average_score % 10);
+        sprintf(text_buf, s_ScoreFormat, average_score / 10, average_score % 10);
         Mess_SetScale(0x180);
         Mess_DrawText(0x14f, 0xc3, text_buf, 0, 0, 0x100, 0);
         competition.mJudgeFullyDisplayed = (void *)1;
-    } else {
+    }
+    else
+    {
         competition.mJudgeFullyDisplayed = 0;
     }
     Mess_SetScale(0x100);
@@ -895,19 +846,17 @@ void Competition_LadderLogic(void)
                 }
                 else
                 {
-                    base = (unsigned short)((int)LAST_PLACE +
-                        Rnd((int)THIRD_PLACE - (int)LAST_PLACE));
+                    base =
+                        (unsigned short)((int)LAST_PLACE + Rnd((int)THIRD_PLACE - (int)LAST_PLACE));
                 }
                 base = (unsigned short)(base - Rnd(0x12));
                 unsigned char j = 0;
                 do
                 {
                     if (i == competition.mJudges[j].mProPlayer)
-                        base = (unsigned short)(
-                            base + competition.mJudges[j].mProBias);
+                        base = (unsigned short)(base + competition.mJudges[j].mProBias);
                     if (i == competition.mJudges[j].mConPlayer)
-                        base = (unsigned short)(
-                            base - competition.mJudges[j].mConBias);
+                        base = (unsigned short)(base - competition.mJudges[j].mConBias);
                     j++;
                 } while (j < 5);
                 competition.mScore[i][competition.mCurrentHeat] = base;
@@ -939,30 +888,26 @@ void Competition_LadderDisplay(void)
     Mess_SetTextJustify(0);
     Mess_SetRGB(0xB6, 0x84, 0x24, 0);
     sprintf(text_buf, s_CompetitionStandings);
-    Mess_DrawText(
-        0x100, 0x28, text_buf, 0, 0, 0x100, 0);
+    Mess_DrawText(0x100, 0x28, text_buf, 0, 0, 0x100, 0);
 
     Mess_SetTextJustify(1);
     Mess_SetScale(0x78);
     sprintf(text_buf, s_HeatLabel);
-    Mess_DrawText(
-        0x104, 0x32, text_buf, 0, 0, 0x100, 0);
+    Mess_DrawText(0x104, 0x32, text_buf, 0, 0, 0x100, 0);
     sprintf(text_buf, s_PlaceColumnsHeader);
-    Mess_DrawText(
-        0x104, 0x3C, text_buf, 0, 0, 0x100, 0);
+    Mess_DrawText(0x104, 0x3C, text_buf, 0, 0, 0x100, 0);
 
     Mess_SetScale(0xA0);
     i = 0;
     do
     {
         sprintf(text_buf, s_StringFormat,
-            Stats[competition.mCompetitorList[competition.mOrdering[i]]].Name);
+                Stats[competition.mCompetitorList[competition.mOrdering[i]]].Name);
         if (competition.mOrdering[i] == competition.our_skater_num)
             Mess_SetRGB(0xB6, 0x84, 0x24, 0);
         else
             Mess_SetRGB(0x7A, 0x7A, 0x7A, 0);
-        Mess_DrawText(
-            0x5A, i * 14 + 0x46, text_buf, 0, 0, 0x100, 0);
+        Mess_DrawText(0x5A, i * 14 + 0x46, text_buf, 0, 0, 0x100, 0);
         i++;
     } while (i < 10);
 
@@ -1018,23 +963,18 @@ void Competition_LadderDisplay(void)
                 }
             }
 
-            if (b != 0 &&
-                (unsigned int)(b * 20) < competition.mLadderTimer)
+            if (b != 0 && (unsigned int)(b * 20) < competition.mLadderTimer)
             {
                 int temp_b = b;
                 do
                 {
-                    if (competition.mTotalScore[
-                            competition.mOrdering[temp_b]] <=
-                        competition.mTotalScore[
-                            competition.mOrdering[temp_b - 1]])
+                    if (competition.mTotalScore[competition.mOrdering[temp_b]] <=
+                        competition.mTotalScore[competition.mOrdering[temp_b - 1]])
                     {
                         break;
                     }
-                    unsigned char previous =
-                        competition.mOrdering[temp_b - 1];
-                    competition.mOrdering[temp_b - 1] =
-                        competition.mOrdering[temp_b];
+                    unsigned char previous = competition.mOrdering[temp_b - 1];
+                    competition.mOrdering[temp_b - 1] = competition.mOrdering[temp_b];
                     competition.mOrdering[temp_b] = previous;
                     temp_b--;
                 } while (temp_b > 0);
@@ -1061,8 +1001,7 @@ void Competition_LadderDisplay(void)
             if (score1 < score0 || score2 < score0)
             {
                 low_score = 2;
-                if (score1 <= score0 && score1 <= score2)
-                    low_score = 1;
+                if (score1 <= score0 && score1 <= score2) low_score = 1;
             }
 
             if (a == low_score)
@@ -1082,11 +1021,9 @@ void Competition_LadderDisplay(void)
             if (a < competition.mCurrentHeat)
             {
                 sprintf(text_buf, s_ScoreFormat,
-                    competition.mScore[competition.mOrdering[b]][a] / 10,
-                    competition.mScore[competition.mOrdering[b]][a] % 10);
-                Mess_DrawText(
-                    a * 60 + 0xFA, b * 14 + 0x46,
-                    text_buf, 0, 0, 0x100, 0);
+                        competition.mScore[competition.mOrdering[b]][a] / 10,
+                        competition.mScore[competition.mOrdering[b]][a] % 10);
+                Mess_DrawText(a * 60 + 0xFA, b * 14 + 0x46, text_buf, 0, 0, 0x100, 0);
             }
 
             if (a == competition.mCurrentHeat)
@@ -1094,8 +1031,8 @@ void Competition_LadderDisplay(void)
                 if ((unsigned int)(b * 20) < competition.mLadderTimer)
                 {
                     sprintf(text_buf, s_ScoreFormat,
-                        competition.mScore[competition.mOrdering[b]][a] / 10,
-                        competition.mScore[competition.mOrdering[b]][a] % 10);
+                            competition.mScore[competition.mOrdering[b]][a] / 10,
+                            competition.mScore[competition.mOrdering[b]][a] % 10);
                 }
                 else
                 {
@@ -1105,9 +1042,7 @@ void Competition_LadderDisplay(void)
                         Mess_SetRGB(0x7A, 0x7A, 0x7A, 0);
                     sprintf(text_buf, s_Dash);
                 }
-                Mess_DrawText(
-                    a * 60 + 0xFA, b * 14 + 0x46,
-                    text_buf, 0, 0, 0x100, 0);
+                Mess_DrawText(a * 60 + 0xFA, b * 14 + 0x46, text_buf, 0, 0, 0x100, 0);
 
                 if (competition.mOrdering[b] == competition.our_skater_num)
                     Mess_SetRGB(0xB6, 0x84, 0x24, 0);
@@ -1118,24 +1053,20 @@ void Competition_LadderDisplay(void)
                     competition.mCurrentHeat != 0)
                 {
                     sprintf(text_buf, s_ScoreFormat,
-                        competition.mTotalScore[competition.mOrdering[b]] / 10,
-                        competition.mTotalScore[competition.mOrdering[b]] % 10);
+                            competition.mTotalScore[competition.mOrdering[b]] / 10,
+                            competition.mTotalScore[competition.mOrdering[b]] % 10);
                 }
                 else
                 {
                     sprintf(text_buf, s_Dash);
                 }
-                Mess_DrawText(
-                    0x1C2, b * 14 + 0x46,
-                    text_buf, 0, 0, 0x100, 0);
+                Mess_DrawText(0x1C2, b * 14 + 0x46, text_buf, 0, 0, 0x100, 0);
             }
 
             if (competition.mCurrentHeat < a)
             {
                 sprintf(text_buf, s_Dash);
-                Mess_DrawText(
-                    a * 60 + 0xFA, b * 14 + 0x46,
-                    text_buf, 0, 0, 0x100, 0);
+                Mess_DrawText(a * 60 + 0xFA, b * 14 + 0x46, text_buf, 0, 0, 0x100, 0);
             }
 
             b++;
@@ -1162,10 +1093,11 @@ void Competition_LadderDisplay(void)
  * @param Status  Receives the next paused-game state.
  * @param Activated  Nonzero once the player confirms the screen.
  */
-#define COMP_RELEASE(powerUp) do { \
-    if ((powerUp) != 0) \
-        (powerUp)->_vf->Destructor((powerUp), 3); \
-} while (0)
+#define COMP_RELEASE(powerUp) \
+    do \
+    { \
+        if ((powerUp) != 0) (powerUp)->_vf->Destructor((powerUp), 3); \
+    } while (0)
 
 void Competition_WinLoseLogic(EPausedStatus &Status, int &Activated)
 {
@@ -1177,8 +1109,7 @@ void Competition_WinLoseLogic(EPausedStatus &Status, int &Activated)
         if (Flash_FadeFinished() != 0)
         {
             competition.mFading = 0;
-            int entry = pYesNoMenu->FindEntry(
-                (const char *)GameText.pYes);
+            int entry = pYesNoMenu->FindEntry((const char *)GameText.pYes);
             pYesNoMenu->SetLine((unsigned char)entry);
 
             COMP_RELEASE(competition.mMedal1);
@@ -1188,8 +1119,8 @@ void Competition_WinLoseLogic(EPausedStatus &Status, int &Activated)
             competition.mMedal2 = 0;
             competition.mMedal3 = 0;
 
-            reinterpret_cast<CompetitionCareerView *>(&GCareer)->Options.MedalMessagesUsed[
-                GSkater[0]->mSkaterType] |= 1 << GLevel;
+            reinterpret_cast<CompetitionCareerView *>(&GCareer)
+                ->Options.MedalMessagesUsed[GSkater[0]->mSkaterType] |= 1 << GLevel;
 
             GameFMV_StopFMV();
             Pad_ClearAll();
@@ -1206,8 +1137,7 @@ void Competition_WinLoseLogic(EPausedStatus &Status, int &Activated)
 
             void *polys = Mem_New(POLYBUFFERSIZE << 1, 1, 1);
             DoubleBuffer[0].Polys = (unsigned char *)polys;
-            DoubleBuffer[1].Polys =
-                DoubleBuffer[0].Polys + POLYBUFFERSIZE;
+            DoubleBuffer[1].Polys = DoubleBuffer[0].Polys + POLYBUFFERSIZE;
             Status = STATUS_ENDGAME;
         }
     }
@@ -1221,13 +1151,11 @@ void Competition_WinLoseLogic(EPausedStatus &Status, int &Activated)
                 int ready = 1;
                 if (competition.mMedal1 != 0)
                 {
-                    unsigned int medalStillAnimating =
-                        competition.mMedal1->mTimer < 0x28;
+                    unsigned int medalStillAnimating = competition.mMedal1->mTimer < 0x28;
                     ready = !medalStillAnimating;
                 }
 
-                if (ready == 0)
-                    return;
+                if (ready == 0) return;
 
                 if (Competition_WonGame() != 0)
                 {
@@ -1237,8 +1165,7 @@ void Competition_WinLoseLogic(EPausedStatus &Status, int &Activated)
                 }
 
                 Status = STATUS_MEDALSAVE;
-                int entry = pYesNoMenu->FindEntry(
-                    (const char *)GameText.pYes);
+                int entry = pYesNoMenu->FindEntry((const char *)GameText.pYes);
                 pYesNoMenu->SetLine((unsigned char)entry);
             }
             else
@@ -1253,8 +1180,8 @@ void Competition_WinLoseLogic(EPausedStatus &Status, int &Activated)
             competition.mMedal2 = 0;
             competition.mMedal3 = 0;
 
-            reinterpret_cast<CompetitionCareerView *>(&GCareer)->Options.MedalMessagesUsed[
-                GSkater[0]->mSkaterType] |= 1 << GLevel;
+            reinterpret_cast<CompetitionCareerView *>(&GCareer)
+                ->Options.MedalMessagesUsed[GSkater[0]->mSkaterType] |= 1 << GLevel;
         }
     }
 }
@@ -1301,7 +1228,7 @@ void Competition_WinLoseDisplay(void)
                     else
                     {
                         base = (unsigned short)((int)LAST_PLACE +
-                            Rnd((int)THIRD_PLACE - (int)LAST_PLACE));
+                                                Rnd((int)THIRD_PLACE - (int)LAST_PLACE));
                     }
 
                     base = (unsigned short)(base - Rnd(0x12));
@@ -1309,11 +1236,9 @@ void Competition_WinLoseDisplay(void)
                     do
                     {
                         if (i == competition.mJudges[j].mProPlayer)
-                            base = (unsigned short)(
-                                base + competition.mJudges[j].mProBias);
+                            base = (unsigned short)(base + competition.mJudges[j].mProBias);
                         if (i == competition.mJudges[j].mConPlayer)
-                            base = (unsigned short)(
-                                base - competition.mJudges[j].mConBias);
+                            base = (unsigned short)(base - competition.mJudges[j].mConBias);
                         j++;
                     } while (j < 5);
 
@@ -1401,125 +1326,102 @@ void Competition_WinLoseDisplay(void)
         int i = 0;
         do
         {
-            if (competition.mPlacing[i] == competition.our_skater_num)
-                our_placing = i;
+            if (competition.mPlacing[i] == competition.our_skater_num) our_placing = i;
             i++;
         } while (i < 10);
     }
 
     switch (our_placing)
     {
-    case 0:
-    {
-        Mess_DrawText(
-            0x100, 0x28, s_YouWinTheGold,
-            0, 0, 0x100, 0);
-        if (competition.mMedal1 == 0)
+        case 0:
         {
-            Career_GiveMedal(GLevel, MEDAL_GOLD);
-            competition.mMedal1 =
-                Medal_Create(MEDAL_GOLD, 0, -5, 0x8C, 0x800, 10);
+            Mess_DrawText(0x100, 0x28, s_YouWinTheGold, 0, 0, 0x100, 0);
+            if (competition.mMedal1 == 0)
+            {
+                Career_GiveMedal(GLevel, MEDAL_GOLD);
+                competition.mMedal1 = Medal_Create(MEDAL_GOLD, 0, -5, 0x8C, 0x800, 10);
+            }
+            if (competition.mWinLoseCheer == 0)
+            {
+                SFX_PlayX(0x2D, 0x2000, 0);
+                SFX_PlayX(0x30, 0x2000, 0);
+                competition.mWinLoseCheer = (void *)1;
+            }
+            break;
         }
-        if (competition.mWinLoseCheer == 0)
+        case 1:
         {
-            SFX_PlayX(0x2D, 0x2000, 0);
-            SFX_PlayX(0x30, 0x2000, 0);
-            competition.mWinLoseCheer = (void *)1;
+            Mess_DrawText(0x100, 0x28, s_YouWinTheSilver, 0, 0, 0x100, 0);
+            if (competition.mMedal1 == 0)
+            {
+                Career_GiveMedal(GLevel, MEDAL_SILVER);
+                competition.mMedal1 = Medal_Create(MEDAL_SILVER, 0, -5, 0x8C, 0x800, 10);
+            }
+            if (competition.mWinLoseCheer == 0)
+            {
+                SFX_PlayX(0x30, 0x2000, 0);
+                competition.mWinLoseCheer = (void *)1;
+            }
+            break;
         }
-        break;
-    }
-    case 1:
-    {
-        Mess_DrawText(
-            0x100, 0x28, s_YouWinTheSilver,
-            0, 0, 0x100, 0);
-        if (competition.mMedal1 == 0)
+        case 2:
         {
-            Career_GiveMedal(GLevel, MEDAL_SILVER);
-            competition.mMedal1 =
-                Medal_Create(MEDAL_SILVER, 0, -5, 0x8C, 0x800, 10);
+            Mess_DrawText(0x100, 0x28, s_YouWinTheBronze, 0, 0, 0x100, 0);
+            if (competition.mMedal1 == 0)
+            {
+                Career_GiveMedal(GLevel, MEDAL_BRONZE);
+                competition.mMedal1 = Medal_Create(MEDAL_BRONZE, 0, -5, 0x8C, 0x800, 10);
+            }
+            if (competition.mWinLoseCheer == 0)
+            {
+                SFX_PlayX(0x2D, 0x2000, 0);
+                competition.mWinLoseCheer = (void *)1;
+            }
+            break;
         }
-        if (competition.mWinLoseCheer == 0)
+        default:
         {
-            SFX_PlayX(0x30, 0x2000, 0);
-            competition.mWinLoseCheer = (void *)1;
+            if (competition.mWinLoseCheer == 0)
+            {
+                SFX_PlayX(0x2F, 0x2000, 0);
+                competition.mWinLoseCheer = (void *)1;
+            }
+
+            Mess_DrawText(0x100, 0x28, s_YouLose, 0, 0, 0x100, 0);
+
+            int first;
+            int second;
+            int third;
+            int i = 0;
+            do
+            {
+                if (competition.mPlacing[0] == i) first = i;
+                if (competition.mOrdering[1] == i) second = i;
+                if (competition.mOrdering[2] == i) third = i;
+                i++;
+            } while (i < 10);
+
+            Mess_SetRGB(0xB6, 0x84, 0x24, 0);
+            Mess_SetScale(0xA0);
+
+            sprintf(buf, s_FirstPlaceFormat, Stats[competition.mCompetitorList[first]].Name);
+            Mess_DrawText(0x100, 0x3C, buf, 0, 0, 0x100, 0);
+
+            sprintf(buf, s_SecondPlaceFormat, Stats[competition.mCompetitorList[second]].Name);
+            Mess_DrawText(0x100, 0x46, buf, 0, 0, 0x100, 0);
+
+            sprintf(buf, s_ThirdPlaceFormat, Stats[competition.mCompetitorList[third]].Name);
+            Mess_DrawText(0x100, 0x50, buf, 0, 0, 0x100, 0);
+
+            Mess_SetRGB(0x7A, 0x7A, 0x7A, 0);
+            sprintf(buf, s_OrdinalFormat, our_placing + 1);
+            Mess_SetScale(0x180);
+            Mess_DrawText(0x100, 0x78,
+                          Stats[competition.mCompetitorList[competition.our_skater_num]].Name, 0, 0,
+                          0x100, 0);
+            Mess_DrawText(0x100, 0x96, buf, 0, 0, 0x100, 0);
+            break;
         }
-        break;
-    }
-    case 2:
-    {
-        Mess_DrawText(
-            0x100, 0x28, s_YouWinTheBronze,
-            0, 0, 0x100, 0);
-        if (competition.mMedal1 == 0)
-        {
-            Career_GiveMedal(GLevel, MEDAL_BRONZE);
-            competition.mMedal1 =
-                Medal_Create(MEDAL_BRONZE, 0, -5, 0x8C, 0x800, 10);
-        }
-        if (competition.mWinLoseCheer == 0)
-        {
-            SFX_PlayX(0x2D, 0x2000, 0);
-            competition.mWinLoseCheer = (void *)1;
-        }
-        break;
-    }
-    default:
-    {
-        if (competition.mWinLoseCheer == 0)
-        {
-            SFX_PlayX(0x2F, 0x2000, 0);
-            competition.mWinLoseCheer = (void *)1;
-        }
-
-        Mess_DrawText(
-            0x100, 0x28, s_YouLose,
-            0, 0, 0x100, 0);
-
-        int first;
-        int second;
-        int third;
-        int i = 0;
-        do
-        {
-            if (competition.mPlacing[0] == i)
-                first = i;
-            if (competition.mOrdering[1] == i)
-                second = i;
-            if (competition.mOrdering[2] == i)
-                third = i;
-            i++;
-        } while (i < 10);
-
-        Mess_SetRGB(0xB6, 0x84, 0x24, 0);
-        Mess_SetScale(0xA0);
-
-        sprintf(buf, s_FirstPlaceFormat,
-            Stats[competition.mCompetitorList[first]].Name);
-        Mess_DrawText(
-            0x100, 0x3C, buf, 0, 0, 0x100, 0);
-
-        sprintf(buf, s_SecondPlaceFormat,
-            Stats[competition.mCompetitorList[second]].Name);
-        Mess_DrawText(
-            0x100, 0x46, buf, 0, 0, 0x100, 0);
-
-        sprintf(buf, s_ThirdPlaceFormat,
-            Stats[competition.mCompetitorList[third]].Name);
-        Mess_DrawText(
-            0x100, 0x50, buf, 0, 0, 0x100, 0);
-
-        Mess_SetRGB(0x7A, 0x7A, 0x7A, 0);
-        sprintf(buf, s_OrdinalFormat, our_placing + 1);
-        Mess_SetScale(0x180);
-        Mess_DrawText(
-            0x100, 0x78,
-            Stats[competition.mCompetitorList[competition.our_skater_num]].Name,
-            0, 0, 0x100, 0);
-        Mess_DrawText(
-            0x100, 0x96, buf, 0, 0, 0x100, 0);
-        break;
-    }
     }
 
     if (competition.mMedal1 != 0)
@@ -1527,8 +1429,10 @@ void Competition_WinLoseDisplay(void)
         competition.mMedal1->_vf->Display(competition.mMedal1);
 
         competition.medal_mask = 0;
-        if ((reinterpret_cast<CompetitionCareerView *>(&GCareer)->CharacterProgress[
-                GSkater[0]->mSkaterType].GoalMask[GLevel] & 0xE0) != 0)
+        if ((reinterpret_cast<CompetitionCareerView *>(&GCareer)
+                 ->CharacterProgress[GSkater[0]->mSkaterType]
+                 .GoalMask[GLevel] &
+             0xE0) != 0)
         {
             competition.medal_mask = 1 << GLevel;
         }
@@ -1536,107 +1440,76 @@ void Competition_WinLoseDisplay(void)
         Mess_SetScale(0x100);
         Mess_SetRGB(0x7A, 0x7A, 0x7A, 0);
 
-        unsigned int used = reinterpret_cast<CompetitionCareerView *>(&GCareer)->Options.MedalMessagesUsed[
-            GSkater[0]->mSkaterType];
+        unsigned int used = reinterpret_cast<CompetitionCareerView *>(&GCareer)
+                                ->Options.MedalMessagesUsed[GSkater[0]->mSkaterType];
 
         if (used == 0x148)
         {
             CPowerUp *medal = competition.mMedal1;
             medal->mWobbleAmplitude = 2;
             medal->mMaxWobbleAmplitude = 2;
-            competition.mMedal1->mPositionY =
-                competition.mMedal1->mOrgPositionY - 0x5000;
+            competition.mMedal1->mPositionY = competition.mMedal1->mOrgPositionY - 0x5000;
 
             if (MedalMessage[2].Line1 != 0)
-                Mess_DrawText(
-                    0x100, 0x9B, MedalMessage[2].Line1,
-                    0, 0, 0x100, 0);
+                Mess_DrawText(0x100, 0x9B, MedalMessage[2].Line1, 0, 0, 0x100, 0);
             if (MedalMessage[2].Line2 != 0)
-                Mess_DrawText(
-                    0x100, 0xAF, MedalMessage[2].Line2,
-                    0, 0, 0x100, 0);
+                Mess_DrawText(0x100, 0xAF, MedalMessage[2].Line2, 0, 0, 0x100, 0);
             if (MedalMessage[2].Line3 != 0)
-                Mess_DrawText(
-                    0x100, 0xC3, MedalMessage[2].Line3,
-                    0, 0, 0x100, 0);
+                Mess_DrawText(0x100, 0xC3, MedalMessage[2].Line3, 0, 0, 0x100, 0);
         }
         else
         {
-            int newMessage =
-                (used & competition.medal_mask) ^ competition.medal_mask;
+            int newMessage = (used & competition.medal_mask) ^ competition.medal_mask;
             switch (newMessage)
             {
-        case 8:
-        {
-            if (MedalMessage[0].Line1 != 0)
-                Mess_DrawText(
-                    0x100, 0x9B, MedalMessage[0].Line1,
-                    0, 0, 0x100, 0);
-            if (MedalMessage[0].Line2 != 0)
-                Mess_DrawText(
-                    0x100, 0xAF, MedalMessage[0].Line2,
-                    0, 0, 0x100, 0);
-            if (MedalMessage[0].Line3 != 0)
-                Mess_DrawText(
-                    0x100, 0xC3, MedalMessage[0].Line3,
-                    0, 0, 0x100, 0);
-            break;
-        }
-        case 0x40:
-        {
-            if (MedalMessage[1].Line1 != 0)
-                Mess_DrawText(
-                    0x100, 0x9B, MedalMessage[1].Line1,
-                    0, 0, 0x100, 0);
-            if (MedalMessage[1].Line2 != 0)
-                Mess_DrawText(
-                    0x100, 0xAF, MedalMessage[1].Line2,
-                    0, 0, 0x100, 0);
-            if (MedalMessage[1].Line3 != 0)
-                Mess_DrawText(
-                    0x100, 0xC3, MedalMessage[1].Line3,
-                    0, 0, 0x100, 0);
-            break;
-        }
-        case 0x100:
-        {
-            CPowerUp *medal = competition.mMedal1;
-            medal->mWobbleAmplitude = 2;
-            medal->mMaxWobbleAmplitude = 2;
-            competition.mMedal1->mPositionY =
-                competition.mMedal1->mOrgPositionY - 0x5000;
+                case 8:
+                {
+                    if (MedalMessage[0].Line1 != 0)
+                        Mess_DrawText(0x100, 0x9B, MedalMessage[0].Line1, 0, 0, 0x100, 0);
+                    if (MedalMessage[0].Line2 != 0)
+                        Mess_DrawText(0x100, 0xAF, MedalMessage[0].Line2, 0, 0, 0x100, 0);
+                    if (MedalMessage[0].Line3 != 0)
+                        Mess_DrawText(0x100, 0xC3, MedalMessage[0].Line3, 0, 0, 0x100, 0);
+                    break;
+                }
+                case 0x40:
+                {
+                    if (MedalMessage[1].Line1 != 0)
+                        Mess_DrawText(0x100, 0x9B, MedalMessage[1].Line1, 0, 0, 0x100, 0);
+                    if (MedalMessage[1].Line2 != 0)
+                        Mess_DrawText(0x100, 0xAF, MedalMessage[1].Line2, 0, 0, 0x100, 0);
+                    if (MedalMessage[1].Line3 != 0)
+                        Mess_DrawText(0x100, 0xC3, MedalMessage[1].Line3, 0, 0, 0x100, 0);
+                    break;
+                }
+                case 0x100:
+                {
+                    CPowerUp *medal = competition.mMedal1;
+                    medal->mWobbleAmplitude = 2;
+                    medal->mMaxWobbleAmplitude = 2;
+                    competition.mMedal1->mPositionY = competition.mMedal1->mOrgPositionY - 0x5000;
 
-            if (MedalMessage[2].Line1 != 0)
-                Mess_DrawText(
-                    0x100, 0x9B, MedalMessage[2].Line1,
-                    0, 0, 0x100, 0);
-            if (MedalMessage[2].Line2 != 0)
-                Mess_DrawText(
-                    0x100, 0xAF, MedalMessage[2].Line2,
-                    0, 0, 0x100, 0);
-            if (MedalMessage[2].Line3 != 0)
-                Mess_DrawText(
-                    0x100, 0xC3, MedalMessage[2].Line3,
-                    0, 0, 0x100, 0);
-            break;
-        }
-        default:
-            break;
+                    if (MedalMessage[2].Line1 != 0)
+                        Mess_DrawText(0x100, 0x9B, MedalMessage[2].Line1, 0, 0, 0x100, 0);
+                    if (MedalMessage[2].Line2 != 0)
+                        Mess_DrawText(0x100, 0xAF, MedalMessage[2].Line2, 0, 0, 0x100, 0);
+                    if (MedalMessage[2].Line3 != 0)
+                        Mess_DrawText(0x100, 0xC3, MedalMessage[2].Line3, 0, 0, 0x100, 0);
+                    break;
+                }
+                default: break;
             }
         }
         int ready = 1;
         if (competition.mMedal1 != 0)
         {
-            unsigned int medalStillAnimating =
-                competition.mMedal1->mTimer < 0x28;
+            unsigned int medalStillAnimating = competition.mMedal1->mTimer < 0x28;
             ready = !medalStillAnimating;
         }
-        if (ready == 0)
-            return;
+        if (ready == 0) return;
     }
 
-    if (competition.mFading == 0)
-        Front_PrintCentredPrompt((const char *)GameText.pContinue);
+    if (competition.mFading == 0) Front_PrintCentredPrompt((const char *)GameText.pContinue);
 }
 
 /**
@@ -1736,9 +1609,7 @@ void Competition_MarqueeDisplay(void)
             competition.mMarqueeTimer = 0;
         }
         int x = 0x200 - competition.mMarqueeTimer;
-        Mess_DrawText(
-            x, 0xC8, competition.mMarqueeText,
-            0, 0, 0x100, 0);
+        Mess_DrawText(x, 0xC8, competition.mMarqueeText, 0, 0, 0x100, 0);
         competition.mMarqueeTimer += 5;
     }
 }
@@ -1867,8 +1738,7 @@ void Competition_ResetMarquee(void)
             {
                 if (competition.mPlacing[i] == 9)
                 {
-                    competition.mPlacing[i] =
-                        competition.mPlacing[competition.our_skater_num];
+                    competition.mPlacing[i] = competition.mPlacing[competition.our_skater_num];
                 }
                 i++;
             } while (i < 10);
@@ -1878,11 +1748,8 @@ void Competition_ResetMarquee(void)
 
     competition.mMarqueeTimer = 0;
     competition.mMarqueeText = 0;
-    sprintf(competition.mMarqueeTextBuf,
-            s_HeatTitleFormat,
-            Levels[GLevel].pLevelName,
-            Levels[GLevel].pCityName,
-            competition.mCurrentHeat + 1);
+    sprintf(competition.mMarqueeTextBuf, s_HeatTitleFormat, Levels[GLevel].pLevelName,
+            Levels[GLevel].pCityName, competition.mCurrentHeat + 1);
     competition.mMarqueeText = competition.mMarqueeTextBuf;
 }
 
@@ -1915,8 +1782,8 @@ void Competition_EndGameLogic(EPausedStatus &Status, int &Activated)
             competition.mMedal2 = 0;
             competition.mMedal3 = 0;
 
-            reinterpret_cast<CompetitionCareerView *>(&GCareer)->Options.MedalMessagesUsed[
-                GSkater[0]->mSkaterType] |= 1 << GLevel;
+            reinterpret_cast<CompetitionCareerView *>(&GCareer)
+                ->Options.MedalMessagesUsed[GSkater[0]->mSkaterType] |= 1 << GLevel;
 
             GameFMV_StopFMV();
             Pad_ClearAll();
@@ -1933,8 +1800,7 @@ void Competition_EndGameLogic(EPausedStatus &Status, int &Activated)
 
             void *polys = Mem_New(POLYBUFFERSIZE << 1, 1, 1);
             DoubleBuffer[0].Polys = (unsigned char *)polys;
-            DoubleBuffer[1].Polys =
-                DoubleBuffer[0].Polys + POLYBUFFERSIZE;
+            DoubleBuffer[1].Polys = DoubleBuffer[0].Polys + POLYBUFFERSIZE;
             Status = STATUS_MEDALSAVE;
         }
     }
@@ -1950,8 +1816,7 @@ void Competition_EndGameLogic(EPausedStatus &Status, int &Activated)
         if (ready != 0)
         {
             GRollCredits = 1;
-            int entry = pYesNoMenu->FindEntry(
-                (const char *)GameText.pYes);
+            int entry = pYesNoMenu->FindEntry((const char *)GameText.pYes);
             pYesNoMenu->SetLine((unsigned char)entry);
 
             if (Competition_WonGameAllGold() != 0)
@@ -1969,8 +1834,8 @@ void Competition_EndGameLogic(EPausedStatus &Status, int &Activated)
             competition.mMedal2 = 0;
             competition.mMedal3 = 0;
 
-            reinterpret_cast<CompetitionCareerView *>(&GCareer)->Options.MedalMessagesUsed[
-                GSkater[0]->mSkaterType] |= 1 << GLevel;
+            reinterpret_cast<CompetitionCareerView *>(&GCareer)
+                ->Options.MedalMessagesUsed[GSkater[0]->mSkaterType] |= 1 << GLevel;
         }
     }
 }
@@ -1994,62 +1859,41 @@ void Competition_EndGameDisplay(void)
 
     if (Competition_WonGameAllGold() != 0)
     {
-        Mess_DrawText(
-            0x100, 0x28, s_YouScoredAllGolds,
-            0, 0, 0x100, 0);
-        Mess_DrawText(
-            0x100, 0x3C, s_YourAreTheTopProSkater,
-            0, 0, 0x100, 0);
-        Mess_DrawText(
-            0x100, 0x50, s_Congratulations,
-            0, 0, 0x100, 0);
-        Mess_DrawText(
-            0x100, 0xB4, s_WatchThisGetOffCouch,
-            0, 0, 0x100, 0);
-        Mess_DrawText(
-            0x100, 0xC8, s_CouchAndGoSkate,
-            0, 0, 0x100, 0);
+        Mess_DrawText(0x100, 0x28, s_YouScoredAllGolds, 0, 0, 0x100, 0);
+        Mess_DrawText(0x100, 0x3C, s_YourAreTheTopProSkater, 0, 0, 0x100, 0);
+        Mess_DrawText(0x100, 0x50, s_Congratulations, 0, 0, 0x100, 0);
+        Mess_DrawText(0x100, 0xB4, s_WatchThisGetOffCouch, 0, 0, 0x100, 0);
+        Mess_DrawText(0x100, 0xC8, s_CouchAndGoSkate, 0, 0, 0x100, 0);
 
         if (competition.mMedal1 == 0)
         {
-            competition.mMedal1 =
-                Medal_Create(MEDAL_GOLD, -30, 5, 140, 0x600, 3);
+            competition.mMedal1 = Medal_Create(MEDAL_GOLD, -30, 5, 140, 0x600, 3);
         }
         if (competition.mMedal2 == 0)
         {
-            competition.mMedal2 =
-                Medal_Create(MEDAL_GOLD, 0, 5, 140, 0x600, 3);
+            competition.mMedal2 = Medal_Create(MEDAL_GOLD, 0, 5, 140, 0x600, 3);
         }
         if (competition.mMedal3 == 0)
         {
-            competition.mMedal3 =
-                Medal_Create(MEDAL_GOLD, 30, 5, 140, 0x600, 3);
+            competition.mMedal3 = Medal_Create(MEDAL_GOLD, 30, 5, 140, 0x600, 3);
         }
     }
     else
     {
-        Mess_DrawText(
-            0x100, 0x28, s_YourThirdMedal,
-            0, 0, 0x100, 0);
-        Mess_DrawText(
-            0x100, 0x3C, s_YouJustMightBecome,
-            0, 0, 0x100, 0);
-        Mess_DrawText(
-            0x100, 0x50, s_AnAverageSkater,
-            0, 0, 0x100, 0);
-        Mess_DrawText(
-            0x100, 0xB4, s_ProSkatersGetAllGolds,
-            0, 0, 0x100, 0);
+        Mess_DrawText(0x100, 0x28, s_YourThirdMedal, 0, 0, 0x100, 0);
+        Mess_DrawText(0x100, 0x3C, s_YouJustMightBecome, 0, 0, 0x100, 0);
+        Mess_DrawText(0x100, 0x50, s_AnAverageSkater, 0, 0, 0x100, 0);
+        Mess_DrawText(0x100, 0xB4, s_ProSkatersGetAllGolds, 0, 0, 0x100, 0);
 
         EMedalType m[3];
         int i = 0;
-        const char *goalMasks = reinterpret_cast<CompetitionCareerView *>(&GCareer)->CharacterProgress[0].GoalMask;
+        const char *goalMasks =
+            reinterpret_cast<CompetitionCareerView *>(&GCareer)->CharacterProgress[0].GoalMask;
         EMedalType *medal = m;
         do
         {
             int goalOffset = i;
-            goalOffset += GSkater[0]->mSkaterType *
-                sizeof(SCharacterProgress);
+            goalOffset += GSkater[0]->mSkaterType * sizeof(SCharacterProgress);
             // Pointer indexing changes target operand order in GCC 2.91.
             char goalMask = *(const char *)(goalOffset + (int)goalMasks);
             if ((goalMask & 0x20) != 0)
@@ -2069,18 +1913,15 @@ void Competition_EndGameDisplay(void)
 
         if (competition.mMedal1 == 0)
         {
-            competition.mMedal1 =
-                Medal_Create(m[0], -30, 5, 140, 0x500, 5);
+            competition.mMedal1 = Medal_Create(m[0], -30, 5, 140, 0x500, 5);
         }
         if (competition.mMedal2 == 0)
         {
-            competition.mMedal2 =
-                Medal_Create(m[1], 0, 5, 140, 0x500, 5);
+            competition.mMedal2 = Medal_Create(m[1], 0, 5, 140, 0x500, 5);
         }
         if (competition.mMedal3 == 0)
         {
-            competition.mMedal3 =
-                Medal_Create(m[2], 30, 5, 140, 0x500, 5);
+            competition.mMedal3 = Medal_Create(m[2], 30, 5, 140, 0x500, 5);
         }
     }
 

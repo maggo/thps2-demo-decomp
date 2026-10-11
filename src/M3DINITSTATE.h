@@ -5,8 +5,7 @@
  */
 struct SRotatedVertex;
 
-#if defined(M3DINITSTATE_OWNER_DECLARATION) && \
-    defined(M3DINITSTATE_ABSOLUTE_DECLARATION)
+#if defined(M3DINITSTATE_OWNER_DECLARATION) && defined(M3DINITSTATE_ABSOLUTE_DECLARATION)
 #error "Select only one M3DINIT state declaration view"
 #elif defined(M3DINITSTATE_OWNER_DECLARATION)
 #define M3DINITSTATE_DECL_ATTR

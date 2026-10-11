@@ -90,8 +90,7 @@ void Front_SaveGameState(void);
 void Front_LoadGame(SSaveGame *game);
 
 /** Decode the shared front-end button actions for one frame. */
-void Front_GetButtons(int &activated, int &goBack, int &anyButton,
-                      int &start);
+void Front_GetButtons(int &activated, int &goBack, int &anyButton, int &start);
 
 /** Select which payload the memory-card loader should read. */
 void Front_SetLoadAction(ELoadAction action);
@@ -121,8 +120,7 @@ void LoadingScreen_SetCurrentLevel(int level, int mode, int unused);
 EPausedStatus Front_MemCardUpdate(void);
 
 /** Initialize the memory-card menus for one save or load operation. */
-void Front_InitMemCardMenus(int resolution, EMemCardState startState,
-                            EPausedStatus returnToState);
+void Front_InitMemCardMenus(int resolution, EMemCardState startState, EPausedStatus returnToState);
 
 /** Draw the active low-resolution memory-card menu. */
 void Front_MemCardDisplay(void);

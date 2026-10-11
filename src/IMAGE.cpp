@@ -10,7 +10,8 @@
 struct SDoubleBuffer;
 
 /** One rectangular pixel slice owned by SlicedImage2. */
-struct Slice {
+struct Slice
+{
     short x;
     short y;
     short w;
@@ -31,13 +32,15 @@ struct Slice {
 #include "MEM.h"
 #include "PACK.h"
 /** One sine/cosine pair in the 4096-entry fixed-point lookup table. */
-struct ImageSinCos {
+struct ImageSinCos
+{
     short sin;
     short cos;
 };
 
 /** BMP header fields consumed by the 8-bit image loader. */
-struct ImageBmpHeader {
+struct ImageBmpHeader
+{
     unsigned char opaque_before_width[0x12];
     unsigned short width;
     unsigned char opaque_before_height[0x16 - 0x14];
@@ -48,7 +51,8 @@ struct ImageBmpHeader {
 };
 
 /** Four-byte palette record consumed by the BMP decoder. */
-struct ImageBmpPaletteEntry {
+struct ImageBmpPaletteEntry
+{
     unsigned char r;
     unsigned char g;
     unsigned char b;
@@ -62,10 +66,8 @@ struct ImageBmpPaletteEntry {
 
 // === Free function declarations ===
 void MakeTransparentClut2(int x, int y);
-int Load8BitBMP_2(
-    char *pData, char **data, int *ww, int *hh, unsigned short *clut);
-int Load8BitBMP_(
-    char *file, char **data, int *ww, int *hh, unsigned short *clut);
+int Load8BitBMP_2(char *pData, char **data, int *ww, int *hh, unsigned short *clut);
+int Load8BitBMP_(char *file, char **data, int *ww, int *hh, unsigned short *clut);
 
 // === External function declarations ===
 // These palette return types are the declarations IMAGE was compiled against;
@@ -79,27 +81,22 @@ unsigned short Get256SlotNumber(unsigned short clut);
 #define RCOSSIN_SCALAR_VIEW
 #include "RCOSSIN.h"
 
-#define IMAGE_SIN(angle) \
-    ((&rcossin_tbl)[(angle) & 0xfff].sin)
-#define IMAGE_COS(angle) \
-    ((&rcossin_tbl)[(angle) & 0xfff].cos)
-#define IMAGE_BMP_HEADER(data) \
-    (*(ImageBmpHeader *)(data))
-#define IMAGE_BMP_COLOR(data) \
-    (*(ImageBmpPaletteEntry *)(data))
+#define IMAGE_SIN(angle) ((&rcossin_tbl)[(angle) & 0xfff].sin)
+#define IMAGE_COS(angle) ((&rcossin_tbl)[(angle) & 0xfff].cos)
+#define IMAGE_BMP_HEADER(data) (*(ImageBmpHeader *)(data))
+#define IMAGE_BMP_COLOR(data) (*(ImageBmpPaletteEntry *)(data))
 // SlicedImage2::draw advances a byte stride independently of its logical
 // index.  Replacing this target-proven access shape with SliceTab[index]
 // changes operand order, so keep the cast confined to this named accessor.
-#define IMAGE_SLICE_AT_OFFSET(table, offset) \
-    (*(Slice *)((offset) + (int)(table)))
-#define IMAGE_ROTATE_SLICE(index) \
-    (this->SliceTab[(index)])
+#define IMAGE_SLICE_AT_OFFSET(table, offset) (*(Slice *)((offset) + (int)(table)))
+#define IMAGE_ROTATE_SLICE(index) (this->SliceTab[(index)])
 
 
 // === Function implementations (address order) ===
 
 /** Set the active clipping box and relink its primitive into the panel OT. */
-void SetClippingBox2(int x, int y, int w, int h) {
+void SetClippingBox2(int x, int y, int w, int h)
+{
     SDoubleBuffer *buffer = pDoubleBuffer;
     RECT r;
     DR_AREA *pClip = (DR_AREA *)pPoly;
@@ -125,9 +122,9 @@ void SetClippingBox2(int x, int y, int w, int h) {
  * @param x  X coordinate.
  * @param y  Y coordinate.
  */
-void MakeTransparentClut2(int x, int y) {
-    unsigned short *buf =
-        (unsigned short *)Mem_New(256 * sizeof(unsigned short), 1, 1);
+void MakeTransparentClut2(int x, int y)
+{
+    unsigned short *buf = (unsigned short *)Mem_New(256 * sizeof(unsigned short), 1, 1);
     RECT temp;
     temp.x = x;
     temp.y = y;
@@ -137,9 +134,11 @@ void MakeTransparentClut2(int x, int y) {
     DrawSync(0);
     unsigned short *buf2 = buf;
     int i = 0;
-    do {
+    do
+    {
         unsigned short val = *buf2;
-        if (val != 0) {
+        if (val != 0)
+        {
             *buf2 = val | 0x8000;
         }
         i++;
@@ -165,8 +164,8 @@ void MakeTransparentClut2(int x, int y) {
  * @param clut  Receives the uploaded palette's CLUT identifier.
  * @return 1 after the palette and pixel data have been decoded.
  */
-int Load8BitBMP_2(
-    char *pData, char **data, int *ww, int *hh, unsigned short *clut) {
+int Load8BitBMP_2(char *pData, char **data, int *ww, int *hh, unsigned short *clut)
+{
     unsigned short colorTab[256];
     int clutx;
     int cluty;
@@ -184,26 +183,32 @@ int Load8BitBMP_2(
     w = IMAGE_BMP_HEADER(pData).width;
     colors = IMAGE_BMP_HEADER(pData).color_count;
     h = IMAGE_BMP_HEADER(pData).height;
-    if (colors == 0) {
+    if (colors == 0)
+    {
         colors = 256;
     }
     pColor = pData + sizeof(ImageBmpHeader);
     int i = 0;
     transparent_color = 0;
-    if (colors != 0) {
+    if (colors != 0)
+    {
         // Keeping the opaque-black sentinel named hoists it once outside the
         // palette loop, as the original does.
         unsigned short opaqueBlack = 0x8000;
         // The recovered advancing palette pointer is also load-bearing;
         // indexing colorTab by i compiles differently.
         unsigned short *pal = colorTab;
-        do {
+        do
+        {
             unsigned short r = IMAGE_BMP_COLOR(pColor).r;
             unsigned short g = IMAGE_BMP_COLOR(pColor).g;
             unsigned short b = IMAGE_BMP_COLOR(pColor).b;
-            if (r >= 0xf8) {
-                if (g == 0) {
-                    if (b >= 0xf8) {
+            if (r >= 0xf8)
+            {
+                if (g == 0)
+                {
+                    if (b >= 0xf8)
+                    {
                         transparent_color = i;
                         *pal = 0;
                         goto next;
@@ -213,9 +218,12 @@ int Load8BitBMP_2(
             r = r >> 3;
             g = g >> 3;
             b = b >> 3;
-            if (r == 0) {
-                if (g == 0) {
-                    if (b == 0) {
+            if (r == 0)
+            {
+                if (g == 0)
+                {
+                    if (b == 0)
+                    {
                         *pal = opaqueBlack;
                         goto next;
                     }
@@ -242,12 +250,14 @@ int Load8BitBMP_2(
     // The temporary keeps signed rounding in v0 before `pad` takes over in
     // s0; folding it into pad changes the register use.
     int t = w;
-    if (w < 0) {
+    if (w < 0)
+    {
         t = w + 3;
     }
     pad = t >> 2;
     pad = w - (pad << 2);
-    if (pad > 0) {
+    if (pad > 0)
+    {
         pad = 4 - pad;
     }
     w = w + pad;
@@ -258,12 +268,16 @@ int Load8BitBMP_2(
     in = pData + (colors * 4 + sizeof(ImageBmpHeader));
     out = *data + (h - 1) * w;
     int j = 0;
-    if (h != 0) {
-        do {
-            for (int i = 0; i < w - pad; i++) {
+    if (h != 0)
+    {
+        do
+        {
+            for (int i = 0; i < w - pad; i++)
+            {
                 *out++ = *in++;
             }
-            for (int i = 0; i < pad; i++) {
+            for (int i = 0; i < pad; i++)
+            {
                 *out++ = transparent_color;
                 in++;
             }
@@ -292,15 +306,17 @@ int Load8BitBMP_2(
  * @param clut  Receives the uploaded palette's CLUT identifier.
  * @return 1 on success, or 0 if the file cannot be opened or buffered.
  */
-int Load8BitBMP_(
-    char *file, char **data, int *ww, int *hh, unsigned short *clut) {
+int Load8BitBMP_(char *file, char **data, int *ww, int *hh, unsigned short *clut)
+{
     int size = FileIO_Open(file);
-    if (size <= 0) {
+    if (size <= 0)
+    {
         printf("\nFile %s not found", file);
         return 0;
     }
     char *pData = (char *)Mem_New(size, 1, 1);
-    if (pData != 0) {
+    if (pData != 0)
+    {
         FileIO_Load(pData);
         FileIO_Sync();
         Load8BitBMP_2(pData, data, ww, hh, clut);
@@ -322,7 +338,8 @@ int Load8BitBMP_(
  * @param image Image being initialized.
  * @return `this` pointer (GCC 2.x ctor convention).
  */
-Image::Image() {
+Image::Image()
+{
     Transparent = 0;
     Shaded = 0;
     TransType = 0;
@@ -345,7 +362,8 @@ Image::Image() {
  * @param image Sliced image being initialized.
  * @return `this` pointer (GCC 2.x ctor convention).
  */
-SlicedImage2::SlicedImage2() {
+SlicedImage2::SlicedImage2()
+{
     InMemory = 0;
     Packed = 0;
     SliceTab = 0;
@@ -369,15 +387,13 @@ SlicedImage2::SlicedImage2() {
  * @param clut  Palette CLUT (color lookup table) address.
  * @return `this` pointer (GCC 2.x ctor convention).
  */
-SlicedImage2::SlicedImage2(
-    void *pData, int width, int height,
-    int slice_width, int slice_height, unsigned char bpp,
-    unsigned short clut) {
+SlicedImage2::SlicedImage2(void *pData, int width, int height, int slice_width, int slice_height,
+                           unsigned char bpp, unsigned short clut)
+{
     InMemory = 0;
     Packed = 0;
     SliceTab = 0;
-    newSlicedImage2(
-        pData, width, height, slice_width, slice_height, bpp, clut);
+    newSlicedImage2(pData, width, height, slice_width, slice_height, bpp, clut);
 }
 
 
@@ -390,15 +406,19 @@ SlicedImage2::SlicedImage2(
  * @param image Sliced image being destroyed.
  * @param __in_chrg GCC 2.x in-charge flag; bit 0 also frees the object.
  */
-SlicedImage2::~SlicedImage2() {
-    if (Packed != 0) {
+SlicedImage2::~SlicedImage2()
+{
+    if (Packed != 0)
+    {
         unpack();
     }
-    if (InMemory != 0) {
+    if (InMemory != 0)
+    {
         removeFromMemory();
     }
     Slice *data = SliceTab;
-    if (data != 0) {
+    if (data != 0)
+    {
         Mem_Delete(data);
     }
 }
@@ -420,10 +440,9 @@ SlicedImage2::~SlicedImage2() {
  * @param bpp Source bit depth used to select the horizontal packing shift.
  * @param clut  Palette CLUT (color lookup table) address.
  */
-void SlicedImage2::newSlicedImage2(
-    void *pData, int width, int height,
-    int slice_width, int slice_height, unsigned char bpp,
-    unsigned short clut) {
+void SlicedImage2::newSlicedImage2(void *pData, int width, int height, int slice_width,
+                                   int slice_height, unsigned char bpp, unsigned short clut)
+{
     SlicedImage2 *image = this;
     image->W = width;
     image->H = height;
@@ -436,10 +455,12 @@ void SlicedImage2::newSlicedImage2(
 shift2:
     image->BppShift = 2;
 shiftDone:
-    if (image->SliceW == 0) {
+    if (image->SliceW == 0)
+    {
         image->SliceW = 255;
     }
-    if (image->SliceH == 0) {
+    if (image->SliceH == 0)
+    {
         image->SliceH = 255;
     }
     image->W >>= image->BppShift;
@@ -458,15 +479,19 @@ shiftDone:
  * @param data  Data buffer.
  */
 static inline void Image_CopySlice(unsigned short *src, Slice *slice, int slicew, int sliceh,
-                                   int sourcew, bool alloc) {
+                                   int sourcew, bool alloc)
+{
     unsigned short *out;
     unsigned short *in = src;
-    if (alloc) {
+    if (alloc)
+    {
         slice->data = (unsigned short *)Mem_New(slicew * sliceh * sizeof(unsigned short), 1, 1);
     }
     out = slice->data;
-    for (int j = 0; j < sliceh; j++) {
-        for (int i = 0; i < slicew; i++) {
+    for (int j = 0; j < sliceh; j++)
+    {
+        for (int i = 0; i < slicew; i++)
+        {
             *out++ = *in++;
         }
         in += sourcew - slicew;
@@ -475,7 +500,8 @@ static inline void Image_CopySlice(unsigned short *src, Slice *slice, int slicew
     slice->h = sliceh;
 }
 
-void SlicedImage2::setData(void *data) {
+void SlicedImage2::setData(void *data)
+{
     int remX;
     int remY;
     unsigned short *line_start;
@@ -488,17 +514,20 @@ void SlicedImage2::setData(void *data) {
     remY = H % SliceH;
     if (remY == 0) remY = SliceH;
 
-    if (!InMemory) {
+    if (!InMemory)
+    {
         SliceCountX = (W + SliceW - 1) / SliceW;
         SliceCountY = (H + SliceH - 1) / SliceH;
         SliceTab = (Slice *)Mem_New(sizeof(Slice) * SliceCountX * SliceCountY, 1, 1);
     }
 
     line_start = (unsigned short *)data;
-    for (j = 0; j < SliceCountY - 1; j++) {
+    for (j = 0; j < SliceCountY - 1; j++)
+    {
         unsigned short *in = line_start;
         int i;
-        for (i = 0; i < SliceCountX - 1; i++) {
+        for (i = 0; i < SliceCountX - 1; i++)
+        {
             Image_CopySlice(in, &SliceTab[j * SliceCountX + i], SliceW, SliceH, W, !InMemory);
             in += SliceW;
         }
@@ -506,14 +535,16 @@ void SlicedImage2::setData(void *data) {
         line_start += W * SliceH;
     }
     in = line_start;
-    for (i = 0; i < SliceCountX - 1; i++) {
+    for (i = 0; i < SliceCountX - 1; i++)
+    {
         Image_CopySlice(in, &SliceTab[j * SliceCountX + i], SliceW, remY, W, !InMemory);
         in += SliceW;
     }
     Image_CopySlice(in, &SliceTab[j * SliceCountX + i], remX, remY, W, !InMemory);
 
     InMemory = 1;
-    if (Packed != 0) {
+    if (Packed != 0)
+    {
         repack();
     }
 }
@@ -528,10 +559,13 @@ void SlicedImage2::setData(void *data) {
  *
  * @param image Sliced image whose copied tile pixels are released.
  */
-void SlicedImage2::removeFromMemory() {
-    if (SliceCountX * SliceCountY > 0) {
+void SlicedImage2::removeFromMemory()
+{
+    if (SliceCountX * SliceCountY > 0)
+    {
         int i = 0;
-        do {
+        do
+        {
             Mem_Delete(SliceTab[i].data);
             i++;
         } while (i < SliceCountX * SliceCountY);
@@ -549,24 +583,26 @@ void SlicedImage2::removeFromMemory() {
  *
  * @param image Sliced image whose tiles are allocated in VRAM.
  */
-void SlicedImage2::pack() {
+void SlicedImage2::pack()
+{
     SlicedImage2 *image = this;
     int totalTiles = image->SliceCountX * image->SliceCountY;
     int temp1 = Pack_NoBottom;
     int temp2 = Pack_NoRight;
     Pack_NoBottom = 1;
     Pack_NoRight = 1;
-    if (totalTiles > 0) {
+    if (totalTiles > 0)
+    {
         int i = 0;
-        do {
+        do
+        {
             int tileW = image->SliceTab[i].w;
             int tileH = image->SliceTab[i].h;
             int shift = image->BppShift;
             int packW = 16 >> shift;
             int shiftedW = tileW << shift;
             int x, y;
-            Pack_Pack(
-                0, shiftedW, tileH, &x, &y, packW, 0, 0);
+            Pack_Pack(0, shiftedW, tileH, &x, &y, packW, 0, 0);
             image->SliceTab[i].x = (unsigned short)x;
             image->SliceTab[i].y = (unsigned short)y;
             i++;
@@ -588,22 +624,26 @@ void SlicedImage2::pack() {
  *
  * @param image Sliced image whose tile pixels are uploaded to VRAM.
  */
-void SlicedImage2::repack() {
+void SlicedImage2::repack()
+{
     int j = 0;
-    if (SliceCountY > 0) {
-        do {
+    if (SliceCountY > 0)
+    {
+        do
+        {
             int i = 0;
             short colLimit = SliceCountX;
             // The original reuses this scalar first as a zero-extended column
             // count and then as the slice-table address.  Splitting those
             // roles into typed locals changes this function's register use.
             int tilePtr = (unsigned short)SliceCountX;
-            if (colLimit > 0) {
-                do {
+            if (colLimit > 0)
+            {
+                do
+                {
                     int index = j * (short)tilePtr + i;
                     tilePtr = (int)SliceTab;
-                    Slice *slice =
-                        (Slice *)(index * sizeof(Slice) + tilePtr);
+                    Slice *slice = (Slice *)(index * sizeof(Slice) + tilePtr);
                     RECT r;
                     r.w = slice->w;
                     r.h = slice->h;
@@ -611,8 +651,7 @@ void SlicedImage2::repack() {
                     unsigned short tileY = slice->y;
                     i++;
                     r.y = tileY;
-                    LoadImage(
-                        &r, reinterpret_cast<unsigned long *>(slice->data));
+                    LoadImage(&r, reinterpret_cast<unsigned long *>(slice->data));
                     DrawSync(0);
                     tilePtr = (unsigned short)SliceCountX;
                 } while (i < SliceCountX);
@@ -632,12 +671,14 @@ void SlicedImage2::repack() {
  *
  * @param image Sliced image whose packed VRAM rectangles are released.
  */
-void SlicedImage2::unpack() {
-    if (SliceCountX * SliceCountY > 0) {
+void SlicedImage2::unpack()
+{
+    if (SliceCountX * SliceCountY > 0)
+    {
         int i = 0;
-        do {
-            Pack_Unpack(
-                SliceTab[i].x, SliceTab[i].y);
+        do
+        {
+            Pack_Unpack(SliceTab[i].x, SliceTab[i].y);
             i++;
         } while (i < SliceCountX * SliceCountY);
     }
@@ -658,7 +699,8 @@ void SlicedImage2::unpack() {
  * @param drawFirst Nonzero to draw at the far end of the main ordering table;
  *                  zero to use the panel ordering table.
  */
-void SlicedImage2::draw(int x, int y, int drawFirst) {
+void SlicedImage2::draw(int x, int y, int drawFirst)
+{
     SlicedImage2 *image = this;
     POLY_FT4 *apoly;
     unsigned int *pOT;
@@ -669,23 +711,29 @@ void SlicedImage2::draw(int x, int y, int drawFirst) {
     int index;
     int yt;
 
-    if (image->Packed == 0) {
+    if (image->Packed == 0)
+    {
         return;
     }
 
-    if (drawFirst != 0) {
+    if (drawFirst != 0)
+    {
         pOT = pDoubleBuffer->OrderingTable + 0xfff;
-    } else {
+    }
+    else
+    {
         pOT = pDoubleBuffer->PanelOT;
     }
 
     just_x = image->JustX ? image->W << image->BppShift : 0;
-    if (image->JustX == 1) {
+    if (image->JustX == 1)
+    {
         just_x >>= 1;
     }
 
     just_y = image->JustY ? image->H : 0;
-    if (image->JustY == 1) {
+    if (image->JustY == 1)
+    {
         just_y >>= 1;
     }
 
@@ -696,41 +744,46 @@ void SlicedImage2::draw(int x, int y, int drawFirst) {
     index = 0;
     yt = y - just_y;
 
-    if ((unsigned short)(image->SliceCountY - 1) >= 15) {
+    if ((unsigned short)(image->SliceCountY - 1) >= 15)
+    {
         printf("weird SliceCountY\n");
-        if ((unsigned short)(image->SliceCountY - 1) >= 15) {
+        if ((unsigned short)(image->SliceCountY - 1) >= 15)
+        {
             printf("weird SliceCountY\n");
         }
     }
-    if ((unsigned int)image->BppShift >= 3) {
+    if ((unsigned int)image->BppShift >= 3)
+    {
         printf("weird BppShift %d\n", image->BppShift);
     }
 
-    for (int j = 0; j < image->SliceCountY; j++) {
+    for (int j = 0; j < image->SliceCountY; j++)
+    {
         int xt = x - just_x;
         int i = 0;
-        if (image->SliceCountX > 0) {
+        if (image->SliceCountX > 0)
+        {
             // The independent byte offset is load-bearing: direct typed
             // indexing changes two operand choices, while mixing the two
             // forms destabilizes the surrounding schedule substantially.
             int sliceOffset = index * sizeof(Slice);
-            do {
-                if (image->SliceW <
-                    IMAGE_SLICE_AT_OFFSET(image->SliceTab, sliceOffset).w) {
+            do
+            {
+                if (image->SliceW < IMAGE_SLICE_AT_OFFSET(image->SliceTab, sliceOffset).w)
+                {
                     printf("weird slice width\n");
                 }
-                if (IMAGE_SLICE_AT_OFFSET(image->SliceTab, sliceOffset).h >
-                    image->SliceH) {
+                if (IMAGE_SLICE_AT_OFFSET(image->SliceTab, sliceOffset).h > image->SliceH)
+                {
                     printf("weird slice height\n");
                 }
-                if ((unsigned short)(
-                        IMAGE_SLICE_AT_OFFSET(
-                            image->SliceTab, sliceOffset).x - 0x200) >=
-                    0x200) {
+                if ((unsigned short)(IMAGE_SLICE_AT_OFFSET(image->SliceTab, sliceOffset).x -
+                                     0x200) >= 0x200)
+                {
                     printf("weird slice x loc\n");
                 }
-                if ((unsigned short)IMAGE_SLICE_AT_OFFSET(
-                        image->SliceTab, sliceOffset).y >= 0x200) {
+                if ((unsigned short)IMAGE_SLICE_AT_OFFSET(image->SliceTab, sliceOffset).y >= 0x200)
+                {
                     printf("weird slice y loc\n");
                 }
 
@@ -738,58 +791,41 @@ void SlicedImage2::draw(int x, int y, int drawFirst) {
                 pPoly = (unsigned int *)(apoly + 1);
                 setPolyFT4(apoly);
                 setXY4(
-                    apoly,
-                    xt,
-                    yt,
-                    xt + (((IMAGE_SLICE_AT_OFFSET(
-                                image->SliceTab, sliceOffset).w
-                            << image->BppShift) * image->Scale) >> 12),
-                    yt,
-                    xt,
-                    yt + ((IMAGE_SLICE_AT_OFFSET(
-                               image->SliceTab, sliceOffset).h *
-                           image->Scale) >> 12),
-                    xt + (((IMAGE_SLICE_AT_OFFSET(
-                                image->SliceTab, sliceOffset).w
-                            << image->BppShift) * image->Scale) >> 12),
-                    yt + ((IMAGE_SLICE_AT_OFFSET(
-                               image->SliceTab, sliceOffset).h *
-                           image->Scale) >> 12));
-                setUV0(
-                    apoly,
-                    (IMAGE_SLICE_AT_OFFSET(
-                         image->SliceTab, sliceOffset).x & 0x3f)
-                        << image->BppShift,
-                    (unsigned char)IMAGE_SLICE_AT_OFFSET(
-                        image->SliceTab, sliceOffset).y);
-                apoly->u1 =
-                    (IMAGE_SLICE_AT_OFFSET(
-                         image->SliceTab, sliceOffset).w +
-                     (IMAGE_SLICE_AT_OFFSET(
-                          image->SliceTab, sliceOffset).x & 0x3f))
-                    << image->BppShift;
-                apoly->v1 = (unsigned char)IMAGE_SLICE_AT_OFFSET(
-                    image->SliceTab, sliceOffset).y;
-                apoly->u2 =
-                    (IMAGE_SLICE_AT_OFFSET(
-                         image->SliceTab, sliceOffset).x & 0x3f)
-                    << image->BppShift;
+                    apoly, xt, yt,
+                    xt + (((IMAGE_SLICE_AT_OFFSET(image->SliceTab, sliceOffset).w
+                            << image->BppShift) *
+                           image->Scale) >>
+                          12),
+                    yt, xt,
+                    yt + ((IMAGE_SLICE_AT_OFFSET(image->SliceTab, sliceOffset).h * image->Scale) >>
+                          12),
+                    xt + (((IMAGE_SLICE_AT_OFFSET(image->SliceTab, sliceOffset).w
+                            << image->BppShift) *
+                           image->Scale) >>
+                          12),
+                    yt + ((IMAGE_SLICE_AT_OFFSET(image->SliceTab, sliceOffset).h * image->Scale) >>
+                          12));
+                setUV0(apoly,
+                       (IMAGE_SLICE_AT_OFFSET(image->SliceTab, sliceOffset).x & 0x3f)
+                           << image->BppShift,
+                       (unsigned char)IMAGE_SLICE_AT_OFFSET(image->SliceTab, sliceOffset).y);
+                apoly->u1 = (IMAGE_SLICE_AT_OFFSET(image->SliceTab, sliceOffset).w +
+                             (IMAGE_SLICE_AT_OFFSET(image->SliceTab, sliceOffset).x & 0x3f))
+                            << image->BppShift;
+                apoly->v1 = (unsigned char)IMAGE_SLICE_AT_OFFSET(image->SliceTab, sliceOffset).y;
+                apoly->u2 = (IMAGE_SLICE_AT_OFFSET(image->SliceTab, sliceOffset).x & 0x3f)
+                            << image->BppShift;
                 {
-                    Slice *slice =
-                        &IMAGE_SLICE_AT_OFFSET(image->SliceTab, sliceOffset);
+                    Slice *slice = &IMAGE_SLICE_AT_OFFSET(image->SliceTab, sliceOffset);
                     unsigned char sliceY = slice->y;
                     unsigned char sliceH = slice->h;
                     apoly->v2 = sliceH + sliceY;
                 }
-                apoly->u3 =
-                    (IMAGE_SLICE_AT_OFFSET(
-                         image->SliceTab, sliceOffset).w +
-                     (IMAGE_SLICE_AT_OFFSET(
-                          image->SliceTab, sliceOffset).x & 0x3f))
-                    << image->BppShift;
+                apoly->u3 = (IMAGE_SLICE_AT_OFFSET(image->SliceTab, sliceOffset).w +
+                             (IMAGE_SLICE_AT_OFFSET(image->SliceTab, sliceOffset).x & 0x3f))
+                            << image->BppShift;
                 {
-                    Slice *slice =
-                        &IMAGE_SLICE_AT_OFFSET(image->SliceTab, sliceOffset);
+                    Slice *slice = &IMAGE_SLICE_AT_OFFSET(image->SliceTab, sliceOffset);
                     unsigned char sliceY = slice->y;
                     unsigned char sliceH = slice->h;
                     apoly->v3 = sliceH + sliceY;
@@ -800,14 +836,16 @@ void SlicedImage2::draw(int x, int y, int drawFirst) {
 
                 xt += dx;
                 apoly->tpage =
-                    (((2 - image->BppShift) & 3) << 7) |
-                    ((image->TransType & 3) << 5) |
-                    (((short)((unsigned short)IMAGE_SLICE_AT_OFFSET(
-                        image->SliceTab, sliceOffset).y & 0x100)) >> 4) |
-                    (((unsigned short)IMAGE_SLICE_AT_OFFSET(
-                        image->SliceTab, sliceOffset).x & 0x3ff) >> 6) |
-                    (((unsigned short)IMAGE_SLICE_AT_OFFSET(
-                        image->SliceTab, sliceOffset).y & 0x200) << 2);
+                    (((2 - image->BppShift) & 3) << 7) | ((image->TransType & 3) << 5) |
+                    (((short)((unsigned short)IMAGE_SLICE_AT_OFFSET(image->SliceTab, sliceOffset)
+                                  .y &
+                              0x100)) >>
+                     4) |
+                    (((unsigned short)IMAGE_SLICE_AT_OFFSET(image->SliceTab, sliceOffset).x &
+                      0x3ff) >>
+                     6) |
+                    (((unsigned short)IMAGE_SLICE_AT_OFFSET(image->SliceTab, sliceOffset).y & 0x200)
+                     << 2);
                 apoly->clut = image->Clut;
                 addPrim(pOT, apoly);
 
@@ -833,18 +871,18 @@ void SlicedImage2::draw(int x, int y, int drawFirst) {
  * @param slice_w Maximum width of one VRAM slice.
  * @param slice_h Maximum height of one VRAM slice.
  */
-Sprite2::Sprite2(
-    char *filename, int pack, int slice_w, int slice_h) {
+Sprite2::Sprite2(char *filename, int pack, int slice_w, int slice_h)
+{
     Sprite2 *sprite = this;
     unsigned short clut;
     char *pixel_data_buf;
     int w;
     int h;
     Load8BitBMP_(filename, &pixel_data_buf, &w, &h, &clut);
-    sprite->newSlicedImage2(
-        pixel_data_buf, w, h, slice_w, slice_h, 8, clut);
+    sprite->newSlicedImage2(pixel_data_buf, w, h, slice_w, slice_h, 8, clut);
     Mem_Delete(pixel_data_buf);
-    if (pack != 0) {
+    if (pack != 0)
+    {
         sprite->pack();
     }
     unsigned short slot = Get256SlotNumber(clut);
@@ -866,18 +904,18 @@ Sprite2::Sprite2(
  * @param slice_w Maximum width of one VRAM slice.
  * @param slice_h Maximum height of one VRAM slice.
  */
-Sprite2::Sprite2(
-    unsigned char *buffer, int pack, int slice_w, int slice_h) {
+Sprite2::Sprite2(unsigned char *buffer, int pack, int slice_w, int slice_h)
+{
     Sprite2 *sprite = this;
     unsigned short clut;
     char *pixel_data_buf;
     int w;
     int h;
     Load8BitBMP_2((char *)buffer, &pixel_data_buf, &w, &h, &clut);
-    sprite->newSlicedImage2(
-        pixel_data_buf, w, h, slice_w, slice_h, 8, clut);
+    sprite->newSlicedImage2(pixel_data_buf, w, h, slice_w, slice_h, 8, clut);
     Mem_Delete(pixel_data_buf);
-    if (pack != 0) {
+    if (pack != 0)
+    {
         sprite->pack();
     }
     unsigned short slot = Get256SlotNumber(clut);
@@ -896,8 +934,10 @@ Sprite2::Sprite2(
  * @param sprite Sprite being destroyed.
  * @param __in_chrg GCC 2.x in-charge flag; bit 0 also frees the object.
  */
-Sprite2::~Sprite2() {
-    if (BppShift == 1) {
+Sprite2::~Sprite2()
+{
+    if (BppShift == 1)
+    {
         Free256Slot(Clut);
     }
 }
@@ -913,14 +953,16 @@ Sprite2::~Sprite2() {
  * @param sprite Sprite receiving replacement bitmap data.
  * @param data  Data buffer.
  */
-void Sprite2::setData(void *data) {
+void Sprite2::setData(void *data)
+{
     Sprite2 *sprite = this;
     char *pixel_data_buf;
     unsigned short clut;
     int w;
     int h;
     Load8BitBMP_2((char *)data, &pixel_data_buf, &w, &h, &clut);
-    if (sprite->BppShift == 1) {
+    if (sprite->BppShift == 1)
+    {
         Free256Slot(sprite->Clut);
     }
     sprite->Clut = clut;
@@ -939,7 +981,8 @@ void Sprite2::setData(void *data) {
  * @param image Sliced image being measured.
  * @return Scaled screen width in pixels.
  */
-int SlicedImage2::screenWidth() {
+int SlicedImage2::screenWidth()
+{
     return ((W << BppShift) * Scale) >> 12;
 }
 
@@ -954,7 +997,8 @@ int SlicedImage2::screenWidth() {
  * @param image Sliced image being measured.
  * @return Scaled screen height in pixels.
  */
-int SlicedImage2::screenHeight() {
+int SlicedImage2::screenHeight()
+{
     return (H * Scale) >> 12;
 }
 
@@ -972,9 +1016,9 @@ int SlicedImage2::screenHeight() {
  * @param slice_h Maximum height of one VRAM slice.
  * @return `this` pointer (GCC 2.x ctor convention).
  */
-RotateSprite::RotateSprite(
-    char *filename, int pack, int slice_w, int slice_h)
-    : Sprite2(filename, pack, slice_w, slice_h) {
+RotateSprite::RotateSprite(char *filename, int pack, int slice_w, int slice_h)
+    : Sprite2(filename, pack, slice_w, slice_h)
+{
     AspectType = 1;
 }
 
@@ -990,7 +1034,8 @@ RotateSprite::RotateSprite(
  * @param y  Y coordinate.
  * @param rot  Twelve-bit rotation-table angle; values wrap every 4096 units.
  */
-void RotateSprite::draw(int x, int y, int rot) {
+void RotateSprite::draw(int x, int y, int rot)
+{
     POLY_FT4 *apoly;
     unsigned int *pOT;
     int dux[2];
@@ -1008,24 +1053,23 @@ void RotateSprite::draw(int x, int y, int rot) {
     int ybig1;
     int slice_type_y;
 
-    if (this->Packed == 0) {
+    if (this->Packed == 0)
+    {
         return;
     }
 
     pOT = pDoubleBuffer->PanelOT;
 
-    switch (AspectType) {
-    case 0:
-        aspect = 0x1000;
-        break;
-    case 1:
-        aspect = 0xa00;
-        break;
+    switch (AspectType)
+    {
+        case 0: aspect = 0x1000; break;
+        case 1: aspect = 0xa00; break;
     }
 
     {
         int i = 0;
-        do {
+        do
+        {
             dux[i] = IMAGE_COS(rot);
             duy[i] = (-IMAGE_SIN(rot) * aspect) >> 12;
             dvx[i] = IMAGE_SIN(rot);
@@ -1039,37 +1083,27 @@ void RotateSprite::draw(int x, int y, int rot) {
     }
 
     just_ux = dux[0];
-    dux[0] *= this->SliceW <<
-        this->BppShift;
+    dux[0] *= this->SliceW << this->BppShift;
     just_uy = duy[0];
-    duy[0] *= this->SliceW <<
-        this->BppShift;
-    dux[1] *=
-        this->SliceTab[this->SliceCountX - 1].w
-        << this->BppShift;
-    duy[1] *=
-        this->SliceTab[this->SliceCountX - 1].w
-        << this->BppShift;
+    duy[0] *= this->SliceW << this->BppShift;
+    dux[1] *= this->SliceTab[this->SliceCountX - 1].w << this->BppShift;
+    duy[1] *= this->SliceTab[this->SliceCountX - 1].w << this->BppShift;
     just_vx = dvx[0];
     dvx[0] *= this->SliceH;
     just_vy = dvy[0];
     dvy[0] *= this->SliceH;
-    dvx[1] *= this->SliceTab[
-        this->SliceCountX * (this->SliceCountY - 1)].h;
-    dvy[1] *= this->SliceTab[
-        this->SliceCountX * (this->SliceCountY - 1)].h;
+    dvx[1] *= this->SliceTab[this->SliceCountX * (this->SliceCountY - 1)].h;
+    dvy[1] *= this->SliceTab[this->SliceCountX * (this->SliceCountY - 1)].h;
 
-    just_u = this->JustX
-        ? this->W << this->BppShift
-        : 0;
-    if (this->JustX == 1) {
+    just_u = this->JustX ? this->W << this->BppShift : 0;
+    if (this->JustX == 1)
+    {
         just_u >>= 1;
     }
 
-    just_v = this->JustY
-        ? this->H
-        : 0;
-    if (this->JustY == 1) {
+    just_v = this->JustY ? this->H : 0;
+    if (this->JustY == 1)
+    {
         just_v >>= 1;
     }
 
@@ -1083,7 +1117,8 @@ void RotateSprite::draw(int x, int y, int rot) {
         // The loop latch consumes the same 16-bit count as both an unsigned
         // next-iteration sentinel and a signed loop bound.  Keep those two
         // type-correct views in shared storage so neither view is widened.
-        union {
+        union
+        {
             short signedCount;
             unsigned short unsignedCount;
         } nextCountBits;
@@ -1098,13 +1133,16 @@ void RotateSprite::draw(int x, int y, int rot) {
         xbig1 = (x << 12) - just_ux - just_vx;
         ybig1 = (y << 12) - just_uy - just_vy;
 
-        if (this->SliceCountY > 0) {
+        if (this->SliceCountY > 0)
+        {
             entry = 0;
-            do {
+            do
+            {
                 int xbig2;
                 int ybig2;
                 int slice_type_x;
-                if (j == (short)sliceCount - 1) {
+                if (j == (short)sliceCount - 1)
+                {
                     slice_type_y = 1;
                 }
 
@@ -1116,66 +1154,44 @@ void RotateSprite::draw(int x, int y, int rot) {
                     i = 0;
                     // Share the zero-extended count across both slice loops.
                     sliceCount = this->SliceCountX;
-                    if ((short)sliceCount > 0) {
-                        do {
-                            if (i == (short)sliceCount - 1) {
+                    if ((short)sliceCount > 0)
+                    {
+                        do
+                        {
+                            if (i == (short)sliceCount - 1)
+                            {
                                 slice_type_x = 1;
                             }
 
                             apoly = (POLY_FT4 *)pPoly;
                             pPoly = (unsigned int *)(apoly + 1);
                             setPolyFT4(apoly);
-                            setXY4(
-                                apoly,
-                                xbig2 >> 12,
-                                ybig2 >> 12,
-                                (xbig2 + dux[slice_type_x]) >> 12,
-                                (ybig2 + duy[slice_type_x]) >> 12,
-                                (xbig2 + dvx[slice_type_y]) >> 12,
-                                (ybig2 + dvy[slice_type_y]) >> 12,
-                                (xbig2 + dux[slice_type_x] +
-                                 dvx[slice_type_y]) >> 12,
-                                (ybig2 + duy[slice_type_x] +
-                                 dvy[slice_type_y]) >> 12);
+                            setXY4(apoly, xbig2 >> 12, ybig2 >> 12,
+                                   (xbig2 + dux[slice_type_x]) >> 12,
+                                   (ybig2 + duy[slice_type_x]) >> 12,
+                                   (xbig2 + dvx[slice_type_y]) >> 12,
+                                   (ybig2 + dvy[slice_type_y]) >> 12,
+                                   (xbig2 + dux[slice_type_x] + dvx[slice_type_y]) >> 12,
+                                   (ybig2 + duy[slice_type_x] + dvy[slice_type_y]) >> 12);
 
-                            setUV4(
-                                apoly,
-                                (IMAGE_ROTATE_SLICE(entry).x & 0x3f)
-                                    << this->BppShift,
-                                (unsigned char)IMAGE_ROTATE_SLICE(entry).y,
-                                ((IMAGE_ROTATE_SLICE(entry).x & 0x3f)
-                                     << this->BppShift) +
-                                    ((IMAGE_ROTATE_SLICE(entry).w
-                                      << this->BppShift) - 1),
-                                (unsigned char)IMAGE_ROTATE_SLICE(entry).y,
-                                (IMAGE_ROTATE_SLICE(entry).x & 0x3f)
-                                    << this->BppShift,
-                                IMAGE_ROTATE_SLICE(entry).h - 1 +
-                                    IMAGE_ROTATE_SLICE(entry).y,
-                                ((IMAGE_ROTATE_SLICE(entry).x & 0x3f)
-                                     << this->BppShift) +
-                                    ((IMAGE_ROTATE_SLICE(entry).w
-                                      << this->BppShift) - 1),
-                                IMAGE_ROTATE_SLICE(entry).h - 1 +
-                                    IMAGE_ROTATE_SLICE(entry).y);
+                            setUV4(apoly, (IMAGE_ROTATE_SLICE(entry).x & 0x3f) << this->BppShift,
+                                   (unsigned char)IMAGE_ROTATE_SLICE(entry).y,
+                                   ((IMAGE_ROTATE_SLICE(entry).x & 0x3f) << this->BppShift) +
+                                       ((IMAGE_ROTATE_SLICE(entry).w << this->BppShift) - 1),
+                                   (unsigned char)IMAGE_ROTATE_SLICE(entry).y,
+                                   (IMAGE_ROTATE_SLICE(entry).x & 0x3f) << this->BppShift,
+                                   IMAGE_ROTATE_SLICE(entry).h - 1 + IMAGE_ROTATE_SLICE(entry).y,
+                                   ((IMAGE_ROTATE_SLICE(entry).x & 0x3f) << this->BppShift) +
+                                       ((IMAGE_ROTATE_SLICE(entry).w << this->BppShift) - 1),
+                                   IMAGE_ROTATE_SLICE(entry).h - 1 + IMAGE_ROTATE_SLICE(entry).y);
 
-                            setRGB0(
-                                apoly,
-                                this->R,
-                                this->G,
-                                this->B);
-                            setSemiTrans(
-                                apoly,
-                                this->Transparent != 0);
-                            setShadeTex(
-                                apoly,
-                                this->Shaded == 0);
+                            setRGB0(apoly, this->R, this->G, this->B);
+                            setSemiTrans(apoly, this->Transparent != 0);
+                            setShadeTex(apoly, this->Shaded == 0);
 
-                            apoly->tpage = getTPage(
-                                2 - this->BppShift,
-                                this->TransType,
-                                IMAGE_ROTATE_SLICE(entry).x,
-                                IMAGE_ROTATE_SLICE(entry).y);
+                            apoly->tpage =
+                                getTPage(2 - this->BppShift, this->TransType,
+                                         IMAGE_ROTATE_SLICE(entry).x, IMAGE_ROTATE_SLICE(entry).y);
                             apoly->clut = this->Clut;
                             addPrim(pOT, apoly);
 

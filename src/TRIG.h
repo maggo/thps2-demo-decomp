@@ -22,34 +22,31 @@ extern "C" int NumHorseRestarts TRIG_SHARED_STATE_DECL_ATTR; // 0x800DA26C
 extern "C" int RestartNode TRIG_SHARED_STATE_DECL_ATTR; // 0x800DA274
 
 /** Region containing the active level's object models. */
-extern "C" unsigned char CurrentObjFileRegion
-    TRIG_SHARED_STATE_DECL_ATTR; // 0x800DA2C8
+extern "C" unsigned char CurrentObjFileRegion TRIG_SHARED_STATE_DECL_ATTR; // 0x800DA2C8
 
 /** Region containing the shared item-pickup models. */
-extern "C" unsigned char CurrentItemsFileRegion
-    TRIG_SHARED_STATE_DECL_ATTR; // 0x800DA2C9
+extern "C" unsigned char CurrentItemsFileRegion TRIG_SHARED_STATE_DECL_ATTR; // 0x800DA2C9
 
 /** Region containing the shared medal-pickup models. */
-extern "C" unsigned char CurrentMedalsFileRegion
-    TRIG_SHARED_STATE_DECL_ATTR; // 0x800DA2CA
+extern "C" unsigned char CurrentMedalsFileRegion TRIG_SHARED_STATE_DECL_ATTR; // 0x800DA2CA
 
 #undef TRIG_SHARED_STATE_DECL_ATTR
 
 /** Score and display metadata for one trigger-defined gap trick. */
-struct SGapTrick {
+struct SGapTrick
+{
     short Type;
     short Score;
     char *Name;
 };
 
-typedef char SGapTrick_Type_offset_must_be_0[
-    ((unsigned long)&(((SGapTrick *)0)->Type) == 0) ? 1 : -1];
-typedef char SGapTrick_Score_offset_must_be_2[
-    ((unsigned long)&(((SGapTrick *)0)->Score) == 2) ? 1 : -1];
-typedef char SGapTrick_Name_offset_must_be_4[
-    ((unsigned long)&(((SGapTrick *)0)->Name) == 4) ? 1 : -1];
-typedef char SGapTrick_size_must_be_8[
-    (sizeof(SGapTrick) == 8) ? 1 : -1];
+typedef char
+    SGapTrick_Type_offset_must_be_0[((unsigned long)&(((SGapTrick *)0)->Type) == 0) ? 1 : -1];
+typedef char
+    SGapTrick_Score_offset_must_be_2[((unsigned long)&(((SGapTrick *)0)->Score) == 2) ? 1 : -1];
+typedef char
+    SGapTrick_Name_offset_must_be_4[((unsigned long)&(((SGapTrick *)0)->Name) == 4) ? 1 : -1];
+typedef char SGapTrick_size_must_be_8[(sizeof(SGapTrick) == 8) ? 1 : -1];
 
 /** Clear the trigger-file menu entries. */
 void Trig_ClearTrigMenu(void);
@@ -64,8 +61,7 @@ void Trig_ResetCPCollisionFlags(int player);
 void Trig_ResetCPExecutedFlags(int player);
 
 /** Find and trigger a command point by checksum. */
-SCommandPoint *Trig_TriggerCommandPoint(
-    unsigned int checksum, bool shouldAssert);
+SCommandPoint *Trig_TriggerCommandPoint(unsigned int checksum, bool shouldAssert);
 
 /** Select the named restart node. */
 void Trig_SetRestart(char *name);

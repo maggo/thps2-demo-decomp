@@ -73,7 +73,8 @@ u8 HasTrans256[Palette256SlotCount] __attribute__((section(".data"))) = {};
  * Match:     PERFECT (107/107)
  */
 
-void Pal_Init(void) {
+void Pal_Init(void)
+{
     int i;
     RECT rec;
 
@@ -81,18 +82,17 @@ void Pal_Init(void) {
     pPaletteList = 0;
 
     // Allocate VRAM rectangle for 256-color palettes (256 wide × 75 tall)
-    Pack_Pack(
-        -1, Palette256ColourCount, Palette256SlotCount,
-        &Pal256X, &Pal256Y, Palette16ColourCount, 0, 0);
+    Pack_Pack(-1, Palette256ColourCount, Palette256SlotCount, &Pal256X, &Pal256Y,
+              Palette16ColourCount, 0, 0);
 
     // Allocate VRAM rectangle for 16-color palettes (16 wide × 256 tall)
-    Pack_Pack(
-        -1, Palette16ColourCount, Palette16SlotCount,
-        &Pal16X, &Pal16Y, Palette16ColourCount, 0, 0);
+    Pack_Pack(-1, Palette16ColourCount, Palette16SlotCount, &Pal16X, &Pal16Y, Palette16ColourCount,
+              0, 0);
 
     // Mark all 256 16-color palette slots as available
     i = 0;
-    do {
+    do
+    {
         Free16Slots[i] = 1;
         i = i + 1;
     } while (i < Palette16SlotCount);
@@ -100,7 +100,8 @@ void Pal_Init(void) {
     // Reserve slot 0 of 256-color palettes, mark rest as available
     Free256Slots[0] = 0;
     i = 1;
-    do {
+    do
+    {
         Free256Slots[i] = 1;
         i = i + 1;
     } while (i < Palette256SlotCount);
@@ -150,21 +151,21 @@ void Pal_Init(void) {
  * @return Newly allocated palette record.
  */
 
-tag_S_Pal *NewPaletteEntry(u32 checksum) {
+tag_S_Pal *NewPaletteEntry(u32 checksum)
+{
     tag_S_Pal *pNew;
     int totalUsage;
     tag_S_Pal *listHead;
 
-    pNew = static_cast<tag_S_Pal *>(
-        Mem_New(sizeof(tag_S_Pal), 0, 1));
+    pNew = static_cast<tag_S_Pal *>(Mem_New(sizeof(tag_S_Pal), 0, 1));
     totalUsage = TotalPaletteUsage;
     listHead = pPaletteList;
     pNew->pPrevious = 0;
     pPaletteList = pNew;
-    TotalPaletteUsage =
-        totalUsage + sizeof(tag_S_Pal) + PaletteAllocationOverhead;
+    TotalPaletteUsage = totalUsage + sizeof(tag_S_Pal) + PaletteAllocationOverhead;
     pNew->pNext = listHead;
-    if (listHead != 0) {
+    if (listHead != 0)
+    {
         listHead->pPrevious = pNew;
     }
     pNew->Checksum = checksum;
@@ -188,22 +189,25 @@ tag_S_Pal *NewPaletteEntry(u32 checksum) {
  * @param pEntry  Entry to operate on.
  */
 
-void RemovePaletteEntry(tag_S_Pal *pEntry) {
+void RemovePaletteEntry(tag_S_Pal *pEntry)
+{
     // Unlink: update next's prev pointer
-    if (pEntry->pNext != 0) {
+    if (pEntry->pNext != 0)
+    {
         pEntry->pNext->pPrevious = pEntry->pPrevious;
     }
     // Unlink: update prev's next pointer
-    if (pEntry->pPrevious != 0) {
+    if (pEntry->pPrevious != 0)
+    {
         pEntry->pPrevious->pNext = pEntry->pNext;
     }
     // If we were the head, replace with our next
-    if (pEntry == pPaletteList) {
+    if (pEntry == pPaletteList)
+    {
         pPaletteList = pEntry->pNext;
     }
     Mem_Delete(pEntry);
-    TotalPaletteUsage =
-        TotalPaletteUsage - sizeof(tag_S_Pal) - PaletteAllocationOverhead;
+    TotalPaletteUsage = TotalPaletteUsage - sizeof(tag_S_Pal) - PaletteAllocationOverhead;
 }
 
 /**
@@ -218,12 +222,13 @@ void RemovePaletteEntry(tag_S_Pal *pEntry) {
  * @param checksum  Asset hash for content lookup.
  * @return Matching palette record, or null when absent.
  */
-tag_S_Pal *Pal_FindPaletteEntry(u32 checksum) {
+tag_S_Pal *Pal_FindPaletteEntry(u32 checksum)
+{
     tag_S_Pal *pSearch;
 
-    for (pSearch = pPaletteList;
-         pSearch != 0 && pSearch->Checksum != checksum;
-         pSearch = pSearch->pNext) {
+    for (pSearch = pPaletteList; pSearch != 0 && pSearch->Checksum != checksum;
+         pSearch = pSearch->pNext)
+    {
     }
     return pSearch;
 }
@@ -241,20 +246,25 @@ tag_S_Pal *Pal_FindPaletteEntry(u32 checksum) {
  * Demangled: void Pal_RemoveUnusedPalettes(void)
  */
 
-void Pal_RemoveUnusedPalettes(void) {
+void Pal_RemoveUnusedPalettes(void)
+{
     tag_S_Pal *pPal;
     tag_S_Pal *pNext;
 
     pPal = pPaletteList;
-    while (pPal != 0) {
+    while (pPal != 0)
+    {
         pNext = pPal->pNext;
-        if (pPal->Usage == 0) {
+        if (pPal->Usage == 0)
+        {
             // Free 16-color VRAM slot
-            if ((pPal->flags & PaletteFlag16Colour) != 0) {
+            if ((pPal->flags & PaletteFlag16Colour) != 0)
+            {
                 Free16Slots[pPal->slot] = 1;
             }
             // Free 256-color VRAM slot
-            if ((pPal->flags & PaletteFlag256Colour) != 0) {
+            if ((pPal->flags & PaletteFlag256Colour) != 0)
+            {
                 Free256Slots[pPal->slot] = 1;
             }
             RemovePaletteEntry(pPal);
@@ -276,12 +286,15 @@ void Pal_RemoveUnusedPalettes(void) {
  *
  * @return i
  */
-int GetFree16Slot(void) {
+int GetFree16Slot(void)
+{
     int i;
 
     i = 0;
-    if (Free16Slots[i] == 0) {
-        do {
+    if (Free16Slots[i] == 0)
+    {
+        do
+        {
             i++;
         } while (i < Palette16SlotCount && Free16Slots[i] == 0);
     }
@@ -303,11 +316,14 @@ int GetFree16Slot(void) {
  *
  * @param clut  Palette CLUT (color lookup table) address.
  */
-void Free16Slot(unsigned short clut) {
+void Free16Slot(unsigned short clut)
+{
     int i;
 
-    for (i = 0; i < Palette16SlotCount; i++) {
-        if (GetClut(Pal16X, Pal16Y + i) == clut) {
+    for (i = 0; i < Palette16SlotCount; i++)
+    {
+        if (GetClut(Pal16X, Pal16Y + i) == clut)
+        {
             break;
         }
     }
@@ -327,12 +343,15 @@ void Free16Slot(unsigned short clut) {
  *
  * @return i
  */
-int GetFree256Slot(void) {
+int GetFree256Slot(void)
+{
     int i;
 
     i = 0;
-    if (Free256Slots[i] == 0) {
-        do {
+    if (Free256Slots[i] == 0)
+    {
+        do
+        {
             i++;
         } while (i < Palette256SlotCount && Free256Slots[i] == 0);
     }
@@ -354,11 +373,14 @@ int GetFree256Slot(void) {
  *
  * @param clut  Palette CLUT (color lookup table) address.
  */
-void Free256Slot(unsigned short clut) {
+void Free256Slot(unsigned short clut)
+{
     int i;
 
-    for (i = 0; i < Palette256SlotCount; i++) {
-        if (GetClut(Pal256X, Pal256Y + i) == clut) {
+    for (i = 0; i < Palette256SlotCount; i++)
+    {
+        if (GetClut(Pal256X, Pal256Y + i) == clut)
+        {
             break;
         }
     }
@@ -380,11 +402,14 @@ void Free256Slot(unsigned short clut) {
  * @param clut  Palette CLUT (color lookup table) address.
  * @return i
  */
-int Get256SlotNumber(unsigned short clut) {
+int Get256SlotNumber(unsigned short clut)
+{
     int i;
 
-    for (i = 0; i < Palette256SlotCount; i++) {
-        if (GetClut(Pal256X, Pal256Y + i) == clut) {
+    for (i = 0; i < Palette256SlotCount; i++)
+    {
+        if (GetClut(Pal256X, Pal256Y + i) == clut)
+        {
             break;
         }
     }
@@ -407,8 +432,9 @@ int Get256SlotNumber(unsigned short clut) {
  * @return Newly allocated and resident palette record.
  */
 
-tag_S_Pal *Pal_LoadPalette(
-    unsigned int checksum, unsigned int *pData, unsigned char flags, int Remap) {
+tag_S_Pal *Pal_LoadPalette(unsigned int checksum, unsigned int *pData, unsigned char flags,
+                           int Remap)
+{
     tag_S_Pal *pNew;
     int transparent_encountered;
     u16 *pEntry;
@@ -423,24 +449,32 @@ tag_S_Pal *Pal_LoadPalette(
     pNew->flags = flags;
     rec.h = 1;
 
-    if (flags & PaletteFlag16Colour) {
+    if (flags & PaletteFlag16Colour)
+    {
         entries = Palette16ColourCount;
     }
 
     transparent_index = 0;
     {
         int i = 0;
-        if (entries != 0) {
-            do {
-                if ((*pEntry & 0x7FFF) == 0x7C1F) {
+        if (entries != 0)
+        {
+            do
+            {
+                if ((*pEntry & 0x7FFF) == 0x7C1F)
+                {
                     // Transparent key color (magenta)
-                    if (transparent_encountered == 0) {
+                    if (transparent_encountered == 0)
+                    {
                         *pEntry = 0;
                         transparent_index = i;
                         transparent_encountered = 1;
                     }
-                } else {
-                    if (transparent_encountered || *pEntry == 0 || TransparentPalForEditor) {
+                }
+                else
+                {
+                    if (transparent_encountered || *pEntry == 0 || TransparentPalForEditor)
+                    {
                         *pEntry |= 0x8000;
                     }
                 }
@@ -451,23 +485,29 @@ tag_S_Pal *Pal_LoadPalette(
     }
 
     // Swap transparent color to index 0
-    if (Remap != 0 && transparent_encountered != 0) {
+    if (Remap != 0 && transparent_encountered != 0)
+    {
         u16 tmp;
         tmp = *reinterpret_cast<u16 *>(pData);
         u16 transColor = *PAL_COLOUR_AT_INDEX(pData, transparent_index);
         *PAL_COLOUR_AT_INDEX(pData, transparent_index) = tmp;
         *reinterpret_cast<u16 *>(pData) = transColor;
         pNew->RemapIndex = (u8)transparent_index;
-    } else {
+    }
+    else
+    {
         pNew->RemapIndex = 0;
     }
 
     // If no transparent found, set STP bit on all colors
-    if (transparent_encountered == 0) {
+    if (transparent_encountered == 0)
+    {
         pEntry = reinterpret_cast<u16 *>(pData);
         int i = 0;
-        if (transparent_encountered < entries) {
-            do {
+        if (transparent_encountered < entries)
+        {
+            do
+            {
                 i = i + 1;
                 *pEntry = *pEntry | 0x8000;
                 pEntry = pEntry + 1;
@@ -475,24 +515,33 @@ tag_S_Pal *Pal_LoadPalette(
         }
     }
 
-    if (entries == Palette16ColourCount) {
+    if (entries == Palette16ColourCount)
+    {
         pNew->slot = (u8)GetFree16Slot();
         rec.x = (short)Pal16X;
         rec.y = (short)(Pal16Y + pNew->slot);
         pNew->Clut = (u16)(((Pal16Y + pNew->slot) << 6) | ((Pal16X >> 4) & 0x3F));
-        if (transparent_encountered != 0) {
+        if (transparent_encountered != 0)
+        {
             HasTrans16[pNew->slot] = 1;
-        } else {
+        }
+        else
+        {
             HasTrans16[pNew->slot] = 0;
         }
-    } else {
+    }
+    else
+    {
         pNew->slot = (u8)GetFree256Slot();
         rec.x = (short)Pal256X;
         rec.y = (short)(Pal256Y + pNew->slot);
         pNew->Clut = (u16)(((Pal256Y + pNew->slot) << 6) | ((Pal256X >> 4) & 0x3F));
-        if (transparent_encountered != 0) {
+        if (transparent_encountered != 0)
+        {
             HasTrans256[pNew->slot] = 1;
-        } else {
+        }
+        else
+        {
             HasTrans256[pNew->slot] = 0;
         }
     }
@@ -521,16 +570,20 @@ tag_S_Pal *Pal_LoadPalette(
  * @param p_pal  Palette record identifying the VRAM slot.
  * @param p_buffer  Destination buffer for palette colours.
  */
-void Pal_CopyToMemory(tag_S_Pal *p_pal, void *p_buffer) {
+void Pal_CopyToMemory(tag_S_Pal *p_pal, void *p_buffer)
+{
     RECT rc;
 
-    if (p_pal->flags & PaletteFlag16Colour) {
+    if (p_pal->flags & PaletteFlag16Colour)
+    {
         // 16-color palette
         rc.x = (short)Pal16X;
         rc.w = Palette16ColourCount;
         rc.h = 1;
         rc.y = (short)(Pal16Y + p_pal->slot);
-    } else {
+    }
+    else
+    {
         // 256-color palette
         rc.x = (short)Pal256X;
         rc.w = Palette256ColourCount;
@@ -559,14 +612,16 @@ void Pal_CopyToMemory(tag_S_Pal *p_pal, void *p_buffer) {
  * @param p_buffer  Source buffer containing palette colours.
  */
 
-void Pal_StoreFromMemory(tag_S_Pal *p_pal, void *p_buffer) {
-    if (p_pal->flags & PaletteFlag16Colour) {
+void Pal_StoreFromMemory(tag_S_Pal *p_pal, void *p_buffer)
+{
+    if (p_pal->flags & PaletteFlag16Colour)
+    {
         /* 16-color palette */
-        LoadClut2(reinterpret_cast<unsigned long *>(p_buffer),
-                  Pal16X, Pal16Y + p_pal->slot);
-    } else {
+        LoadClut2(reinterpret_cast<unsigned long *>(p_buffer), Pal16X, Pal16Y + p_pal->slot);
+    }
+    else
+    {
         /* 256-color palette */
-        LoadClut(reinterpret_cast<unsigned long *>(p_buffer),
-                 Pal256X, Pal256Y + p_pal->slot);
+        LoadClut(reinterpret_cast<unsigned long *>(p_buffer), Pal256X, Pal256Y + p_pal->slot);
     }
 }

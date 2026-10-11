@@ -1,0 +1,31 @@
+# Source style. Whitespace-only: formatting must never change compiled output
+# (verify.py stays 1646/1646). Include order and comment text are left alone.
+BasedOnStyle: LLVM
+Standard: c++03
+IndentWidth: 4
+ContinuationIndentWidth: 4
+ColumnLimit: 100
+BreakBeforeBraces: Allman
+PointerAlignment: Right
+SortIncludes: Never
+ReflowComments: false
+IndentCaseLabels: true
+IndentPPDirectives: None
+AllowShortFunctionsOnASingleLine: InlineOnly
+AllowShortIfStatementsOnASingleLine: WithoutElse
+AllowShortLoopsOnASingleLine: true
+AllowShortBlocksOnASingleLine: Empty
+AllowShortCaseLabelsOnASingleLine: true
+AccessModifierOffset: -4
+NamespaceIndentation: None
+FixNamespaceComments: false
+SpaceBeforeParens: ControlStatements
+Cpp11BracedListStyle: false
+AlignTrailingComments: false
+AlignConsecutiveMacros: None
+AlignEscapedNewlines: DontAlign
+MaxEmptyLinesToKeep: 2
+IndentExternBlock: NoIndent
+BinPackParameters: true
+BinPackArguments: true
+AllowAllParametersOfDeclarationOnNextLine: true

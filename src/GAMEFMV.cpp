@@ -12,19 +12,15 @@
 #undef GAMEFMV_DEFINE_OWNER_LOCAL_DECODER_STATE
 #include "MAIN.h"
 
-typedef char GameFMV_StHEADER_size_must_be_32[
-    (sizeof(StHEADER) == 32) ? 1 : -1];
-typedef char GameFMV_movie_details_size_must_be_32[
-    (sizeof(SMovieDetails) == 32) ? 1 : -1];
-typedef char GameFMV_cd_file_size_must_be_24[
-    (sizeof(CdlFILE) == 24) ? 1 : -1];
+typedef char GameFMV_StHEADER_size_must_be_32[(sizeof(StHEADER) == 32) ? 1 : -1];
+typedef char GameFMV_movie_details_size_must_be_32[(sizeof(SMovieDetails) == 32) ? 1 : -1];
+typedef char GameFMV_cd_file_size_must_be_24[(sizeof(CdlFILE) == 24) ? 1 : -1];
 
 #include <LIBPRESS.H>
 #include "STCDINTRFLAG.h"
 
 /** Typed view of the generated decoder-buffer prefix. */
-#define GameFMV_AsyncVlcBuffers \
-    (reinterpret_cast<unsigned int **>(&vlcBuffer))
+#define GameFMV_AsyncVlcBuffers (reinterpret_cast<unsigned int **>(&vlcBuffer))
 
 /**
  * Reads the packed byte through an aliasing view that preserves the target's
@@ -32,8 +28,7 @@ typedef char GameFMV_cd_file_size_must_be_24[
  * direct field read or an inline-function wrapper reorders the loads in
  * `GameFMV_SetStartTrack`.
  */
-#define GameFMV_Read24BitFlag(movie_) \
-    (*reinterpret_cast<const u8 *>(&(movie_).is24bit))
+#define GameFMV_Read24BitFlag(movie_) (*reinterpret_cast<const u8 *>(&(movie_).is24bit))
 
 #include "FRONT.h"
 
@@ -53,12 +48,12 @@ typedef char GameFMV_cd_file_size_must_be_24[
 #include <LIBGPU.H>
 
 /** Owner-local fixed-point vector with the original empty default constructor. */
-struct GameFMVSoundVector : CVector {
+struct GameFMVSoundVector : CVector
+{
     GameFMVSoundVector() {}
 };
 
-typedef char GameFMV_sound_vector_size_must_be_12[
-    (sizeof(GameFMVSoundVector) == 12) ? 1 : -1];
+typedef char GameFMV_sound_vector_size_must_be_12[(sizeof(GameFMVSoundVector) == 12) ? 1 : -1];
 
 /** Playback-mode flag owned by GAMEFMV. */
 int GameFMV_IsMovie = 0;
@@ -80,7 +75,7 @@ GameFMVSoundVector GameFMV_SoundSource[8];
  * Movie geometry, decoder sizing, and source-disc filenames in track order.
  */
 #define GAMEFMV_MOVIE(name_, width_, height_, end_, vlc_, ring_, rgb_, music_) \
-    {name_, width_, height_, end_, vlc_, ring_, rgb_, {0, 0, 0}, 1, music_}
+    { name_, width_, height_, end_, vlc_, ring_, rgb_, { 0, 0, 0 }, 1, music_ }
 
 static SMovieDetails movieDetails[30] __attribute__((section(".data"))) = {
     GAMEFMV_MOVIE("\\ATVILOGO.STR;1", 320, 240, 208, 0x25800, 48, 1, 128),
@@ -125,14 +120,12 @@ static int alreadyHandledPause = 0;
 
 /** Stable public-to-table track mapping used during disc lookup. */
 static u8 indices[30] __attribute__((section(".data"))) = {
-    0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
-    10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
-    20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
+    0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14,
+    15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
 };
 
 /** Decoder output slices allocated for the active movie. */
-unsigned short *decodeSliceBuffer[11]
-    __attribute__((section(".data"))) = {};
+unsigned short *decodeSliceBuffer[11] __attribute__((section(".data"))) = {};
 
 /** Owner-local ring buffer pointer (a local common record in MAIN.SYM). */
 static unsigned long *pRingBuffer;
@@ -152,15 +145,21 @@ static void strKickCD(void);
  *
  * Address: 0x8007EDD0
  */
-void GameFMV_Init(void) {
+void GameFMV_Init(void)
+{
     int i = 0;
     CdlFILE fmv_file;
 
-    do {
-        if (movieDetails[indices[i]].startsector) {
-            if (CdSearchFile(&fmv_file, movieDetails[indices[i]].name)) {
+    do
+    {
+        if (movieDetails[indices[i]].startsector)
+        {
+            if (CdSearchFile(&fmv_file, movieDetails[indices[i]].name))
+            {
                 movieDetails[indices[i]].startsector = CdPosToInt(&fmv_file.pos);
-            } else {
+            }
+            else
+            {
                 movieDetails[indices[i]].startsector = 0;
             }
         }
@@ -177,12 +176,14 @@ void GameFMV_Init(void) {
  *
  * Address: 0x8007EEA0
  */
-void GameFMV_PlayMovie(int track) {
+void GameFMV_PlayMovie(int track)
+{
     DISPENV disp;
     short old_screen_w;
     CdlATV atv;
 
-    if (GameFMV_Active) {
+    if (GameFMV_Active)
+    {
         return;
     }
 
@@ -190,12 +191,12 @@ void GameFMV_PlayMovie(int track) {
     GameFMV_SetStartTrack(track);
 
     GameFMV_StartX = (0x140 - GameFMV_Width) / 2;
-    GameFMV_EndX = GameFMV_StartX
-        + (GameFMV_Is24Bit ? (GameFMV_Width * 3) / 2 : GameFMV_Width);
+    GameFMV_EndX = GameFMV_StartX + (GameFMV_Is24Bit ? (GameFMV_Width * 3) / 2 : GameFMV_Width);
     GameFMV_StartY = (0xf0 - GameFMV_Height) / 2;
     GameFMV_RewindSwitch = 0;
 
-    if (movieDetails[GameFMV_CurrentTrack].startsector == 0) {
+    if (movieDetails[GameFMV_CurrentTrack].startsector == 0)
+    {
         return;
     }
 
@@ -211,10 +212,11 @@ void GameFMV_PlayMovie(int track) {
         old_screen_w = DoubleBuffer[0].Disp.screen.w;
         int i = 0;
         unsigned int **vlc_buffer = GameFMV_AsyncVlcBuffers;
-        do {
-            *vlc_buffer = static_cast<unsigned int *>(
-                Mem_New(GameFMV_VLCBufferSize, 1, 0));
-            if (*vlc_buffer == 0) {
+        do
+        {
+            *vlc_buffer = static_cast<unsigned int *>(Mem_New(GameFMV_VLCBufferSize, 1, 0));
+            if (*vlc_buffer == 0)
+            {
                 goto InsufficientMemory;
             }
             i++;
@@ -222,9 +224,9 @@ void GameFMV_PlayMovie(int track) {
         } while (i < 2);
     }
 
-    pRingBuffer = static_cast<unsigned long *>(Mem_New(
-        GameFMV_RingBufferSectors << 11, 1, 0));
-    if (pRingBuffer == 0) {
+    pRingBuffer = static_cast<unsigned long *>(Mem_New(GameFMV_RingBufferSectors << 11, 1, 0));
+    if (pRingBuffer == 0)
+    {
         goto FreeVlcBuffers;
     }
 
@@ -232,16 +234,20 @@ void GameFMV_PlayMovie(int track) {
         GameFMV_SliceBuffers = 2;
         int i = 0;
         unsigned short **slice_buffer = decodeSliceBuffer;
-        do {
+        do
+        {
             unsigned int buffer_size = GameFMV_Height;
-            if (GameFMV_Is24Bit) {
+            if (GameFMV_Is24Bit)
+            {
                 buffer_size = (buffer_size * 3) << 4;
-            } else {
+            }
+            else
+            {
                 buffer_size <<= 5;
             }
-            *slice_buffer = static_cast<unsigned short *>(
-                Mem_New(buffer_size, 1, 0));
-            if (*slice_buffer == 0) {
+            *slice_buffer = static_cast<unsigned short *>(Mem_New(buffer_size, 1, 0));
+            if (*slice_buffer == 0)
+            {
                 goto InsufficientMemory;
             }
             slice_buffer++;
@@ -258,14 +264,20 @@ void GameFMV_PlayMovie(int track) {
 
     atv.val2 = 0;
     atv.val3 = 0;
-    if (track == 3) {
+    if (track == 3)
+    {
         atv.val0 = 0xc0;
         atv.val1 = atv.val0;
-    } else {
+    }
+    else
+    {
         int fmv_level;
-        if (MIDILEVEL < 0x40) {
+        if (MIDILEVEL < 0x40)
+        {
             fmv_level = MIDILEVEL * 3;
-        } else {
+        }
+        else
+        {
             fmv_level = ((MIDILEVEL - 0x40) * 0x3f) / 0x40 + 0xc0;
         }
         atv.val0 = fmv_level;
@@ -278,68 +290,73 @@ void GameFMV_PlayMovie(int track) {
     Pad[0].Start.Triggered = 0;
     Pad[0].X.Triggered = 0;
 
-    while (strNextVlc(1) == 0) {
+    while (strNextVlc(1) == 0)
+    {
     }
 
     {
         unsigned char result[8];
         int count;
 
-        for (;;) {
-            DecDCTin(
-                reinterpret_cast<unsigned long *>(
-                    GameFMV_AsyncVlcBuffers[currentVlcBuffer]),
-                GameFMV_Is24Bit ? 3 : 2);
-            DecDCTout(
-                reinterpret_cast<unsigned long *>(decodeSliceBuffer[currentDecodeBuffer]),
-                (decodeSlice.w * decodeSlice.h) / 2);
+        for (;;)
+        {
+            DecDCTin(reinterpret_cast<unsigned long *>(GameFMV_AsyncVlcBuffers[currentVlcBuffer]),
+                     GameFMV_Is24Bit ? 3 : 2);
+            DecDCTout(reinterpret_cast<unsigned long *>(decodeSliceBuffer[currentDecodeBuffer]),
+                      (decodeSlice.w * decodeSlice.h) / 2);
 
             CdControl(1, 0, result);
-            if (result[0] & 0x10) {
+            if (result[0] & 0x10)
+            {
                 handleLidOpen();
                 break;
             }
 
             count = 0x800000;
-            while (strNextVlc(1) == 0) {
-                if (count == 0) {
+            while (strNextVlc(1) == 0)
+            {
+                if (count == 0)
+                {
                     goto StopMovie;
                 }
                 count--;
             }
-            if (count == 0) {
+            if (count == 0)
+            {
                 goto StopMovie;
             }
 
             count = 0x800000;
-            while (decodeSlice.x != GameFMV_StartX) {
-                if (count == 0) {
+            while (decodeSlice.x != GameFMV_StartX)
+            {
+                if (count == 0)
+                {
                     goto StopMovie;
                 }
                 count--;
             }
-            if (count == 0) {
+            if (count == 0)
+            {
                 goto StopMovie;
             }
 
-            SetDefDispEnv(
-                &disp,
-                0,
-                decodeSlice.y < 0x100 ? 0x100 : 0,
-                GameFMV_Is24Bit ? 0x1e0 : 0x140,
-                0xf0);
-            if (GameFMV_Is24Bit) {
+            SetDefDispEnv(&disp, 0, decodeSlice.y < 0x100 ? 0x100 : 0,
+                          GameFMV_Is24Bit ? 0x1e0 : 0x140, 0xf0);
+            if (GameFMV_Is24Bit)
+            {
                 disp.isrgb24 = 1;
                 disp.disp.w = (short)((disp.disp.w * 2) / 3);
             }
             VSync(0);
             PutDispEnv(&disp);
 
-            if (GameFMV_RewindSwitch) {
+            if (GameFMV_RewindSwitch)
+            {
                 break;
             }
             Pad_Update();
-            if (Pad[0].Start.Triggered || Pad[0].X.Triggered) {
+            if (Pad[0].Start.Triggered || Pad[0].X.Triggered)
+            {
                 break;
             }
         }
@@ -366,7 +383,8 @@ StopMovie:
     CdControlB(9, 0, 0);
 
 InsufficientMemory:
-    if (pRingBuffer) {
+    if (pRingBuffer)
+    {
         Mem_Delete(pRingBuffer);
         pRingBuffer = 0;
     }
@@ -375,8 +393,10 @@ FreeVlcBuffers:
     {
         int i = 0;
         unsigned int **vlc_buffer = GameFMV_AsyncVlcBuffers;
-        do {
-            if (*vlc_buffer) {
+        do
+        {
+            if (*vlc_buffer)
+            {
                 Mem_Delete(*vlc_buffer);
                 *vlc_buffer = 0;
             }
@@ -388,10 +408,13 @@ FreeVlcBuffers:
     {
         int i = 0;
         unsigned int count = GameFMV_SliceBuffers;
-        if (count) {
+        if (count)
+        {
             unsigned short **slice_buffer = decodeSliceBuffer;
-            do {
-                if (*slice_buffer) {
+            do
+            {
+                if (*slice_buffer)
+                {
                     Mem_Delete(*slice_buffer);
                     count = GameFMV_SliceBuffers;
                     *slice_buffer = 0;
@@ -411,23 +434,31 @@ FreeVlcBuffers:
  *
  * Address: 0x8007F3EC
  */
-void GameFMV_SetStartTrack(int track) {
-    if (GameFMV_Active != 0) {
+void GameFMV_SetStartTrack(int track)
+{
+    if (GameFMV_Active != 0)
+    {
         return;
     }
 
-    if (track < 0) {
+    if (track < 0)
+    {
         track = ~track;
-    } else {
+    }
+    else
+    {
         track = CycleTracks;
         CycleTracks++;
-        while (CycleTracks < 30) {
-            if (movieDetails[CycleTracks].width == 0x60) {
+        while (CycleTracks < 30)
+        {
+            if (movieDetails[CycleTracks].width == 0x60)
+            {
                 break;
             }
             CycleTracks++;
         }
-        if (CycleTracks == 30) {
+        if (CycleTracks == 30)
+        {
             CycleTracks = 2;
         }
     }
@@ -451,7 +482,8 @@ void GameFMV_SetStartTrack(int track) {
  *
  * Address: 0x8007F4E4
  */
-void GameFMV_StartFMV(int Decoding) {
+void GameFMV_StartFMV(int Decoding)
+{
     if (GameFMV_Active) goto done;
 
     if (movieDetails[GameFMV_CurrentTrack].startsector == 0) goto done;
@@ -460,7 +492,8 @@ void GameFMV_StartFMV(int Decoding) {
     decodeSlice.y = GameFMV_StartY;
     {
         int w = 0x10;
-        if (GameFMV_Is24Bit) {
+        if (GameFMV_Is24Bit)
+        {
             w = 0x18;
         }
         decodeSlice.w = static_cast<s16>(w);
@@ -472,32 +505,35 @@ void GameFMV_StartFMV(int Decoding) {
     sendVLC = 0;
     decodeSlice.h = static_cast<s16>(GameFMV_Height);
 
-    if (Decoding) {
+    if (Decoding)
+    {
         int i = 0;
         unsigned int **vlc_buffer = GameFMV_AsyncVlcBuffers;
-        do {
-            *vlc_buffer = static_cast<unsigned int *>(
-                Mem_New(GameFMV_VLCBufferSize, 1, 1));
+        do
+        {
+            *vlc_buffer = static_cast<unsigned int *>(Mem_New(GameFMV_VLCBufferSize, 1, 1));
             i++;
             vlc_buffer++;
         } while (i < 2);
     }
 
-    pRingBuffer = static_cast<unsigned long *>(
-        Mem_New(GameFMV_RingBufferSectors << 11, 1, 1));
+    pRingBuffer = static_cast<unsigned long *>(Mem_New(GameFMV_RingBufferSectors << 11, 1, 1));
     {
         unsigned int slice_count = GameFMV_Width;
         slice_count = slice_count >> 4;
         GameFMV_SliceBuffers = static_cast<u8>(slice_count);
 
-        if (Decoding) {
+        if (Decoding)
+        {
             int slice_mask = slice_count & 0xff;
-            if (slice_mask) {
+            if (slice_mask)
+            {
                 int i = 0;
                 unsigned short **slice_buffer = decodeSliceBuffer;
-                do {
-                    *slice_buffer = static_cast<unsigned short *>(Mem_New(
-                        static_cast<unsigned int>(GameFMV_Height) << 5, 1, 1));
+                do
+                {
+                    *slice_buffer = static_cast<unsigned short *>(
+                        Mem_New(static_cast<unsigned int>(GameFMV_Height) << 5, 1, 1));
                     i++;
                     slice_buffer++;
                 } while (i < static_cast<int>(GameFMV_SliceBuffers));
@@ -511,8 +547,7 @@ void GameFMV_StartFMV(int Decoding) {
     strInit();
     strNextVlc(1);
 
-done:
-    ;
+done:;
 }
 
 
@@ -521,7 +556,8 @@ done:
  *
  * Address: 0x8007F644
  */
-void GameFMV_StopFMV(void) {
+void GameFMV_StopFMV(void)
+{
     CdlATV atv;
     CdlLOC pos;
     RECT r;
@@ -529,63 +565,71 @@ void GameFMV_StopFMV(void) {
     GameFMV_NumSoundSources = 0;
     GameFMV_FrameBufferCopyActive = 0;
 
-    if (GameFMV_Active) {
-
-    atv.val0 = 0;
-    atv.val1 = 0;
-    atv.val2 = 0;
-    atv.val3 = 0;
-    CdMix(&atv);
-
-    GameFMV_Active = 0;
-    DecDCToutCallback(0);
-    StUnSetRing();
-
-    CdIntToPos(GameFMV_StartSector, &pos);
-    CdControl(0x16, reinterpret_cast<u_char *>(&pos), 0);
-
-    if (pRingBuffer) {
-        Mem_Delete(pRingBuffer);
-        pRingBuffer = 0;
-    }
-
+    if (GameFMV_Active)
     {
-        int i = 0;
-        int slice_count = GameFMV_SliceBuffers;
-        if (slice_count) {
-            unsigned short **slice_buffer = decodeSliceBuffer;
-            do {
-                if (*slice_buffer) {
-                    Mem_Delete(*slice_buffer);
-                    slice_count = GameFMV_SliceBuffers;
-                    *slice_buffer = 0;
+
+        atv.val0 = 0;
+        atv.val1 = 0;
+        atv.val2 = 0;
+        atv.val3 = 0;
+        CdMix(&atv);
+
+        GameFMV_Active = 0;
+        DecDCToutCallback(0);
+        StUnSetRing();
+
+        CdIntToPos(GameFMV_StartSector, &pos);
+        CdControl(0x16, reinterpret_cast<u_char *>(&pos), 0);
+
+        if (pRingBuffer)
+        {
+            Mem_Delete(pRingBuffer);
+            pRingBuffer = 0;
+        }
+
+        {
+            int i = 0;
+            int slice_count = GameFMV_SliceBuffers;
+            if (slice_count)
+            {
+                unsigned short **slice_buffer = decodeSliceBuffer;
+                do
+                {
+                    if (*slice_buffer)
+                    {
+                        Mem_Delete(*slice_buffer);
+                        slice_count = GameFMV_SliceBuffers;
+                        *slice_buffer = 0;
+                    }
+                    i++;
+                    slice_buffer++;
+                } while (i < slice_count);
+            }
+        }
+
+        {
+            int i = 0;
+            unsigned int **vlc_buffer = GameFMV_AsyncVlcBuffers;
+            do
+            {
+                if (*vlc_buffer)
+                {
+                    Mem_Delete(*vlc_buffer);
+                    *vlc_buffer = 0;
                 }
                 i++;
-                slice_buffer++;
-            } while (i < slice_count);
+                vlc_buffer++;
+            } while (i < 2);
         }
-    }
 
-    {
-        int i = 0;
-        unsigned int **vlc_buffer = GameFMV_AsyncVlcBuffers;
-        do {
-            if (*vlc_buffer) {
-                Mem_Delete(*vlc_buffer);
-                *vlc_buffer = 0;
-            }
-            i++;
-            vlc_buffer++;
-        } while (i < 2);
-    }
-
-    if (GameFMV_StartX != -1) {
-        r.x = GameFMV_StartX;
-        r.y = GameFMV_StartY;
-        r.w = static_cast<s16>(GameFMV_Width);
-        r.h = static_cast<s16>(GameFMV_Height);
-        ClearImage(&r, 1, 1, 1);
-    }
+        if (GameFMV_StartX != -1)
+        {
+            r.x = GameFMV_StartX;
+            r.y = GameFMV_StartY;
+            r.w = static_cast<s16>(GameFMV_Width);
+            r.h = static_cast<s16>(GameFMV_Height);
+            ClearImage(&r, 1, 1, 1);
+        }
 
     } // end if (GameFMV_Active)
 }
@@ -598,54 +642,60 @@ void GameFMV_StopFMV(void) {
  *
  * Address: 0x8007F79C
  */
-void GameFMV_SyncFMV(int DecodeData) {
-    if (GameFMV_Active) {
+void GameFMV_SyncFMV(int DecodeData)
+{
+    if (GameFMV_Active)
+    {
 
-    DecDCTvlcBuild3();
+        DecDCTvlcBuild3();
 
-    int paused = alreadyHandledPause;
-    if (paused) goto pause_check;
+        int paused = alreadyHandledPause;
+        if (paused) goto pause_check;
 
-    if (GameFMV_RewindSwitch) {
-        GameFMV_RewindSwitch = 0;
-        strKickCD();
-    }
+        if (GameFMV_RewindSwitch)
+        {
+            GameFMV_RewindSwitch = 0;
+            strKickCD();
+        }
 
-    if (sendVLC) {
-        DecDCTin(reinterpret_cast<unsigned long *>(
-            GameFMV_AsyncVlcBuffers[currentVlcBuffer]), 2);
+        if (sendVLC)
+        {
+            DecDCTin(reinterpret_cast<unsigned long *>(GameFMV_AsyncVlcBuffers[currentVlcBuffer]),
+                     2);
 
-        int slice_width = decodeSlice.w;
-        int slice_height = decodeSlice.h;
+            int slice_width = decodeSlice.w;
+            int slice_height = decodeSlice.h;
 
-        unsigned short **slice_buffers = decodeSliceBuffer;
-        int decode_index = currentDecodeBuffer;
-        currentVlcBuffer = 1 - currentVlcBuffer;
-        unsigned long *output_buffer = reinterpret_cast<unsigned long *>(
-            slice_buffers[decode_index]);
+            unsigned short **slice_buffers = decodeSliceBuffer;
+            int decode_index = currentDecodeBuffer;
+            currentVlcBuffer = 1 - currentVlcBuffer;
+            unsigned long *output_buffer =
+                reinterpret_cast<unsigned long *>(slice_buffers[decode_index]);
 
-        DecDCTout(output_buffer, (slice_width * slice_height) / 2);
-    }
+            DecDCTout(output_buffer, (slice_width * slice_height) / 2);
+        }
 
-    sendVLC = strNextVlc(DecodeData);
-    paused = alreadyHandledPause;
+        sendVLC = strNextVlc(DecodeData);
+        paused = alreadyHandledPause;
 
-pause_check:
-    if (GamePaused || GameFrozen || MusicStopped) {
-        if (paused) goto end;
-        alreadyHandledPause = 1;
-        StSetMask(1, 0, -1);
-        CdControlB(9, 0, 0);
-    } else {
-        if (!paused) goto end;
-        alreadyHandledPause = 0;
-        StSetMask(0, 0, -1);
-        CdRead2(0x1e0);
-    }
+    pause_check:
+        if (GamePaused || GameFrozen || MusicStopped)
+        {
+            if (paused) goto end;
+            alreadyHandledPause = 1;
+            StSetMask(1, 0, -1);
+            CdControlB(9, 0, 0);
+        }
+        else
+        {
+            if (!paused) goto end;
+            alreadyHandledPause = 0;
+            StSetMask(0, 0, -1);
+            CdRead2(0x1e0);
+        }
 
     } // end if (GameFMV_Active)
-end:
-    ;
+end:;
 }
 
 
@@ -654,14 +704,17 @@ end:
  *
  * Address: 0x8007F910
  */
-static void handleLidOpen(void) {
+static void handleLidOpen(void)
+{
     unsigned char result[8];
-    do {
+    do
+    {
         CdControlB(1, 0, result);
     } while (result[0] & 0x10);
 
     CdControlB(0x13, 0, 0);
-    while (!(result[0] & 2)) {
+    while (!(result[0] & 2))
+    {
         CdControlB(1, 0, result);
     }
 }
@@ -672,7 +725,8 @@ static void handleLidOpen(void) {
  *
  * Address: 0x8007F980
  */
-static void strInit(void) {
+static void strInit(void)
+{
     DecDCTReset(0);
     DecDCToutCallback(strCallback);
     StSetRing(pRingBuffer, GameFMV_RingBufferSectors);
@@ -690,12 +744,15 @@ static void strInit(void) {
  *
  * Address: 0x8007F9F8
  */
-static void strCallback(void) {
+static void strCallback(void)
+{
     RECT old_slice;
     unsigned long *p_old_buffer;
 
-    if (GameFMV_Is24Bit) {
-        if (StCdIntrFlag) {
+    if (GameFMV_Is24Bit)
+    {
+        if (StCdIntrFlag)
+        {
             StCdInterrupt();
             StCdIntrFlag = 0;
         }
@@ -710,7 +767,8 @@ static void strCallback(void) {
         unsigned short **old_buffer_entry = slice_buffers + decode_index;
         currentDecodeBuffer = next_decode_index;
         p_old_buffer = reinterpret_cast<unsigned long *>(*old_buffer_entry);
-        if (next_decode_index >= slice_count) {
+        if (next_decode_index >= slice_count)
+        {
             currentDecodeBuffer = 0;
         }
     }
@@ -720,27 +778,35 @@ static void strCallback(void) {
         u16 word_width = static_cast<u16>(decodeSlice.w);
         int next_x = slice_x + word_width;
         decodeSlice.x = static_cast<s16>(next_x);
-        if (static_cast<s16>(next_x) < static_cast<int>(GameFMV_EndX)) {
+        if (static_cast<s16>(next_x) < static_cast<int>(GameFMV_EndX))
+        {
             int slice_width = static_cast<s16>(word_width);
             int slice_height = decodeSlice.h;
-            unsigned long *output_buffer = reinterpret_cast<unsigned long *>(
-                decodeSliceBuffer[currentDecodeBuffer]);
+            unsigned long *output_buffer =
+                reinterpret_cast<unsigned long *>(decodeSliceBuffer[currentDecodeBuffer]);
             DecDCTout(output_buffer, (slice_width * slice_height) / 2);
-        } else {
+        }
+        else
+        {
             decodeSlice.x = GameFMV_StartX;
-            if (GameFMV_IsMovie) {
+            if (GameFMV_IsMovie)
+            {
                 s16 signed_y = decodeSlice.y;
                 u16 unsigned_y = static_cast<u16>(decodeSlice.y);
-                if (signed_y < 0x100) {
+                if (signed_y < 0x100)
+                {
                     decodeSlice.y = static_cast<s16>(unsigned_y + 0x100);
-                } else {
+                }
+                else
+                {
                     decodeSlice.y = static_cast<s16>(unsigned_y - 0x100);
                 }
             }
         }
     }
 
-    if (GameFMV_StartX != -1) {
+    if (GameFMV_StartX != -1)
+    {
         LoadImage(&old_slice, p_old_buffer);
     }
 }
@@ -753,7 +819,8 @@ static void strCallback(void) {
  *
  * Address: 0x8007FB44
  */
-static unsigned long *strNext(void) {
+static unsigned long *strNext(void)
+{
     unsigned long *addr;
     StHEADER *sector;
     int err = StGetNext(&addr, reinterpret_cast<u_long **>(&sector));
@@ -761,7 +828,8 @@ static unsigned long *strNext(void) {
     int end_frame = GameFMV_EndFrame;
     int frame = sector->frameCount;
     GameFMV_CurrentFrame = frame;
-    if (frame >= end_frame) {
+    if (frame >= end_frame)
+    {
         GameFMV_RewindSwitch = 1;
     }
     return addr;
@@ -776,14 +844,14 @@ static unsigned long *strNext(void) {
  *
  * Address: 0x8007FB98
  */
-static int strNextVlc(int DecodeData) {
+static int strNextVlc(int DecodeData)
+{
     unsigned long *next = strNext();
     if (next == 0) return 0;
-    if (DecodeData) {
-        DecDCTvlc3(
-            reinterpret_cast<const unsigned int *>(next),
-            GameFMV_AsyncVlcBuffers[currentVlcBuffer]
-        );
+    if (DecodeData)
+    {
+        DecDCTvlc3(reinterpret_cast<const unsigned int *>(next),
+                   GameFMV_AsyncVlcBuffers[currentVlcBuffer]);
     }
     StFreeRing(next);
     return DecodeData;
@@ -795,12 +863,18 @@ static int strNextVlc(int DecodeData) {
  *
  * Address: 0x8007FC00
  */
-static void strKickCD(void) {
+static void strKickCD(void)
+{
     CdlLOC loc;
     unsigned char param = 0x80;
     CdIntToPos(GameFMV_StartSector, &loc);
-    do {
-        do {} while (CdControl(2, reinterpret_cast<u_char *>(&loc), 0) == 0);
-        do {} while (CdControl(0xe, &param, 0) == 0);
+    do
+    {
+        do
+        {
+        } while (CdControl(2, reinterpret_cast<u_char *>(&loc), 0) == 0);
+        do
+        {
+        } while (CdControl(0xe, &param, 0) == 0);
     } while (CdRead2(0x1e0) == 0);
 }

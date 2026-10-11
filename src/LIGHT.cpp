@@ -8,19 +8,24 @@
 #include "globals.h"
 
 /** Return caller-owned storage for an ordinary placement construction. */
-inline void *operator new(unsigned int, void *storage) { return storage; }
+inline void *operator new(unsigned int, void *storage)
+{
+    return storage;
+}
 
 struct CBit;
 
 /** GCC 2.x virtual-table prefix shared by the bit hierarchy. */
-struct LightBitVTable {
+struct LightBitVTable
+{
     int baseOffset;
     int typeInfo;
     void (*Destroy)(CBit *bit, int __in_chrg);
 };
 
 /** Base particle record embedded in non-rendered light objects. */
-struct CBit {
+struct CBit
+{
     struct CBit *mPrevious;
     struct CBit *mNext;
     short mAge;
@@ -50,13 +55,10 @@ struct CBit {
 #include "CLIGHT.h"
 
 typedef char Light_CBit_size_must_be_72[(sizeof(CBit) == 72) ? 1 : -1];
-typedef char Light_BitVTable_prefix_size_must_be_12[
-    (sizeof(LightBitVTable) == 12) ? 1 : -1];
-typedef char Light_CNonRenderedBit_size_must_be_72[
-    (sizeof(CNonRenderedBit) == 72) ? 1 : -1];
+typedef char Light_BitVTable_prefix_size_must_be_12[(sizeof(LightBitVTable) == 12) ? 1 : -1];
+typedef char Light_CNonRenderedBit_size_must_be_72[(sizeof(CNonRenderedBit) == 72) ? 1 : -1];
 typedef char Light_CGlow_size_must_be_104[(sizeof(CGlow) == 104) ? 1 : -1];
-typedef char Light_CWobblyGlow_size_must_be_176[
-    (sizeof(CWobblyGlow) == 176) ? 1 : -1];
+typedef char Light_CWobblyGlow_size_must_be_176[(sizeof(CWobblyGlow) == 176) ? 1 : -1];
 typedef char CLight_size_must_be_100[(sizeof(CLight) == 100) ? 1 : -1];
 
 #include "BIT.h"
@@ -117,10 +119,9 @@ static inline void DeleteBit(CBit *bit)
  * @param r0,g0,b0  Centre colour.
  * @param r1,g1,b1  Fringe colour.
  */
-CLight::CLight(const CVector &Pos, int Node, int ClipDist,
-               int InnerRadius, int FringeRadius, int Amp,
-               unsigned char r0, unsigned char g0, unsigned char b0,
-               unsigned char r1, unsigned char g1, unsigned char b1)
+CLight::CLight(const CVector &Pos, int Node, int ClipDist, int InnerRadius, int FringeRadius,
+               int Amp, unsigned char r0, unsigned char g0, unsigned char b0, unsigned char r1,
+               unsigned char g1, unsigned char b1)
 {
     _vf = Light_VTable();
     mPos = Pos;
@@ -148,8 +149,7 @@ CLight::CLight(const CVector &Pos, int Node, int ClipDist,
 CLight::~CLight()
 {
     _vf = Light_VTable();
-    if (mpGlow != 0)
-        DeleteBit(static_cast<CBit *>(mpGlow));
+    if (mpGlow != 0) DeleteBit(static_cast<CBit *>(mpGlow));
 }
 
 /**
@@ -164,17 +164,12 @@ CLight::~CLight()
 // Shared CLight member function
 void CLight::Move()
 {
-    if (mOn == 0)
-        goto cleanup;
+    if (mOn == 0) goto cleanup;
     {
-        int dx = (mPos.vx -
-                  MechList->CItem.mPos.vx) >> 12;
-        if (dx < 0)
-            dx = -dx;
-        int dz = (mPos.vz -
-                  MechList->CItem.mPos.vz) >> 12;
-        if (dz < 0)
-            dz = -dz;
+        int dx = (mPos.vx - MechList->CItem.mPos.vx) >> 12;
+        if (dx < 0) dx = -dx;
+        int dz = (mPos.vz - MechList->CItem.mPos.vz) >> 12;
+        if (dz < 0) dz = -dz;
         int Dist;
         if (dx < dz)
         {
@@ -184,20 +179,17 @@ void CLight::Move()
         {
             Dist = dx + dz / 2;
         }
-        if (Dist >= mClipDist)
-            goto cleanup;
+        if (Dist >= mClipDist) goto cleanup;
         if (mpGlow == 0)
         {
             UseCacheForBits = 0;
             // Writing allocation/construction results directly through
             // mpGlow changes thirty-nine instructions and three relocations.
-            CWobblyGlow *obj = static_cast<CWobblyGlow *>(
-                CBit::operator new(sizeof(CWobblyGlow)));
+            CWobblyGlow *obj = static_cast<CWobblyGlow *>(CBit::operator new(sizeof(CWobblyGlow)));
             if (obj != 0)
             {
-                obj = ::new (obj) CWobblyGlow(
-                    mPos, mInnerRadius,
-                    mFringeRadius, mAmp, mr0, mg0, mb0, mr1, mg1, mb1);
+                obj = ::new (obj) CWobblyGlow(mPos, mInnerRadius, mFringeRadius, mAmp, mr0, mg0,
+                                              mb0, mr1, mg1, mb1);
             }
             mpGlow = obj;
             UseCacheForBits = 1;

@@ -50,10 +50,8 @@ struct CBody
 #include "SVIEWPORT.h"
 #include "APOCALYPSEVIEWPORT.h"
 
-typedef char InitCItemLayout_size_must_be_0x4c[
-    (sizeof(InitCItemLayout) == 0x4c) ? 1 : -1];
-typedef char InitCBodyPrefix_size_must_be_0x54[
-    (sizeof(CBody) == 0x54) ? 1 : -1];
+typedef char InitCItemLayout_size_must_be_0x4c[(sizeof(InitCItemLayout) == 0x4c) ? 1 : -1];
+typedef char InitCBodyPrefix_size_must_be_0x54[(sizeof(CBody) == 0x54) ? 1 : -1];
 // Absolute-addressed globals used by the initialization owner.
 #define INIT_DECLARE_TOP_OF_CODE_ABSOLUTE_VIEW
 #include "INIT.h"
@@ -87,8 +85,7 @@ typedef char InitCBodyPrefix_size_must_be_0x54[
 #include "BODYLISTS.h"
 
 /** Typed access to one target-fixed global that has no usable source symbol. */
-template <typename T, unsigned int Address>
-static inline T &Init_FixedAddress(void)
+template <typename T, unsigned int Address> static inline T &Init_FixedAddress(void)
 {
     return *reinterpret_cast<T *>(Address);
 }
@@ -187,22 +184,18 @@ static inline unsigned int &Init_SuspendDistance(void)
  * Placeholder trigger name used before a level has supplied its real TRG
  * filename.
  */
-static char Init_DefaultTrigFileName[8]
-    __attribute__((section(".sdata"))) = "prsn_t";
+static char Init_DefaultTrigFileName[8] __attribute__((section(".sdata"))) = "prsn_t";
 
 /**
  * Debug continuation marker retained by the original initialization module.
  */
-static const char Init_ContinueTRGName[24]
-    __attribute__((section(".rdata"))) = "********blaablaa";
+static const char Init_ContinueTRGName[24] __attribute__((section(".rdata"))) = "********blaablaa";
 
 /** Active trigger filename initialized to the module's placeholder name. */
-char *TrigFileName
-    __attribute__((section(".sdata"))) = Init_DefaultTrigFileName;
+char *TrigFileName __attribute__((section(".sdata"))) = Init_DefaultTrigFileName;
 
 /** Optional trigger continuation name used by the debug continuation path. */
-char *ContinueTRG
-    __attribute__((section(".sdata"))) = const_cast<char *>(Init_ContinueTRGName);
+char *ContinueTRG __attribute__((section(".sdata"))) = const_cast<char *>(Init_ContinueTRGName);
 
 /**
  * Full-screen clear rectangle copied to the stack during boot graphics
@@ -212,17 +205,15 @@ namespace InitAddressViewOwners
 {
 extern "C"
 {
-static RECT StartupClearRect
-    __attribute__((section(".sdata"))) = {0, 0, 1024, 512};
+static RECT StartupClearRect __attribute__((section(".sdata"))) = { 0, 0, 1024, 512 };
 }
 }
 
 /** Number of trigger continuation requests pending at startup. */
-int NumContinues
-    __attribute__((section(".sdata"))) = 0;
+int NumContinues __attribute__((section(".sdata"))) = 0;
 
 // === Owner-local function declaration ===
-static void DeleteList(CBody * pList);
+static void DeleteList(CBody *pList);
 
 // === Function implementations (address order) ===
 
@@ -235,12 +226,17 @@ static void DeleteList(CBody * pList);
  *
  * @param pList  List to operate on.
  */
-static void DeleteList(CBody * pList) {
-    if (pList != 0) {
+static void DeleteList(CBody *pList)
+{
+    if (pList != 0)
+    {
         CBody *pNext = pList->CItem.mNextItem;
-        while (1) {
-            if (!(pList->mCBodyFlags & 0x20)) {
-                if (pList != 0) {
+        while (1)
+        {
+            if (!(pList->mCBodyFlags & 0x20))
+            {
+                if (pList != 0)
+                {
                     pList->CItem._vf->Destroy(pList, 3);
                 }
             }
@@ -261,7 +257,8 @@ static void DeleteList(CBody * pList) {
  *            Delete all active gameplay object lists, then clear trick, rail, bit, and message systems.
  *
  */
-void Init_KillAll(void) {
+void Init_KillAll(void)
+{
     DeleteList(MechList);
     DeleteList(CameraList);
     DeleteList(BaddyList);
@@ -285,7 +282,8 @@ void Init_KillAll(void) {
  *
  * @param type  Type code.
  */
-void Init_Cleanup(int type) {
+void Init_Cleanup(int type)
+{
     pCurrentViewport = &ApocalypseViewport;
 
     SFX_ResetMIDIPausedPriorToPause();
@@ -301,17 +299,21 @@ void Init_Cleanup(int type) {
     Trig_DeleteCommandPoints();
     CamPt_Cleanup();
 
-    if (type == 0) {
+    if (type == 0)
+    {
         SFX_MIDIStop();
         SFX_SpoolOutMIDI();
         SFX_ReverbOff();
 
-        if (Create_UseSkater(Init_SelectedSkater())) {
+        if (Create_UseSkater(Init_SelectedSkater()))
+        {
             Create_FreeSkater();
         }
 
-        if (Init_NumberOfPlayers() >= 2) {
-            if (Create_UseSkater(Init_SelectedSkater2())) {
+        if (Init_NumberOfPlayers() >= 2)
+        {
+            if (Create_UseSkater(Init_SelectedSkater2()))
+            {
                 Create_FreeSkater();
             }
         }
@@ -321,7 +323,9 @@ void Init_Cleanup(int type) {
         Trig_DeleteTrigFile();
         Pack_DefragmentFully();
         LastGameState.State.RestartName[0] = 0;
-    } else if (type == 1) {
+    }
+    else if (type == 1)
+    {
         Spool_ClearEnvironmentRegions();
     }
 
@@ -329,7 +333,8 @@ void Init_Cleanup(int type) {
     Trig_ClearTrigMenu();
     Flash_Reset();
 
-    if (type != 2) {
+    if (type != 2)
+    {
         M3dZone_Init();
         TrickOb_Init();
         Rail_Init();
@@ -355,7 +360,8 @@ void Init_Cleanup(int type) {
  *
  * @param Heap0Size  Number of bytes reserved for the primary heap.
  */
-int Init_ResetMemory(int Heap0Size) {
+int Init_ResetMemory(int Heap0Size)
+{
     Init_Heap0Start() = TopOfCode;
     Init_Heap0End() = TopOfCode + Heap0Size;
     Init_Heap1Start() = TopOfCode + Heap0Size;
@@ -383,7 +389,8 @@ int Init_ResetMemory(int Heap0Size) {
  * @param Mode  Pack-buffer layout selected for the restarted game mode.
  * @param SmallHeapSize  Number of bytes reserved for the primary heap.
  */
-void Init_Restart(EPackInitType Mode, int SmallHeapSize) {
+void Init_Restart(EPackInitType Mode, int SmallHeapSize)
+{
     pBMR = 0;
     pCompressedBMR = 0;
 
@@ -396,9 +403,12 @@ void Init_Restart(EPackInitType Mode, int SmallHeapSize) {
 
     Flash_Reset();
 
-    if (Mode == PACK640x480) {
+    if (Mode == PACK640x480)
+    {
         Pack_Init640x480();
-    } else {
+    }
+    else
+    {
         Pack_Init();
     }
 
@@ -417,7 +427,8 @@ void Init_Restart(EPackInitType Mode, int SmallHeapSize) {
  * Demangled: Init_ForGame(void)
  *
  */
-void Init_ForGame(void) {
+void Init_ForGame(void)
+{
     pCurrentViewport = &ApocalypseViewport;
     Db_Init();
     Front_Init();
@@ -435,7 +446,8 @@ void Init_ForGame(void) {
  * Demangled: Init_DebugStuff(void)
  *
  */
-void Init_DebugStuff(void) {
+void Init_DebugStuff(void)
+{
 }
 
 
@@ -448,7 +460,8 @@ void Init_DebugStuff(void) {
  *            Initialize callbacks, graphics, input, boot clearing, RNG, audio, file, FMV, 3D, and XA systems.
  *
  */
-void Init_AtStart(void) {
+void Init_AtStart(void)
+{
     ResetCallback();
     Card_Init(1);
 

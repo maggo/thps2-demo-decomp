@@ -4,8 +4,7 @@
  * This header is intentionally re-entrant so each flag stays at its original
  * declaration point.
  */
-#if defined(CAREERLOADSTATE_OWNER_DECLARATION) && \
-    defined(CAREERLOADSTATE_ABSOLUTE_DECLARATION)
+#if defined(CAREERLOADSTATE_OWNER_DECLARATION) && defined(CAREERLOADSTATE_ABSOLUTE_DECLARATION)
 #error "Select only one career-load state declaration view"
 #elif defined(CAREERLOADSTATE_OWNER_DECLARATION)
 #define CAREERLOADSTATE_DECL_ATTR
@@ -22,14 +21,12 @@
 
 #ifdef CAREERLOADSTATE_DECLARE_HAS_CAREER_LOADED
 /** Whether a career has been loaded into the front end. */
-extern int GHasCareerLoaded
-    CAREERLOADSTATE_DECL_ATTR;
+extern int GHasCareerLoaded CAREERLOADSTATE_DECL_ATTR;
 #endif
 
 #ifdef CAREERLOADSTATE_DECLARE_LOADED_CAREER_IS_SAVED
 /** Whether the loaded career has already been saved. */
-extern int GLoadedCareerIsSaved
-    CAREERLOADSTATE_DECL_ATTR;
+extern int GLoadedCareerIsSaved CAREERLOADSTATE_DECL_ATTR;
 #endif
 
 #undef CAREERLOADSTATE_DECL_ATTR

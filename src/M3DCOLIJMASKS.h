@@ -4,8 +4,7 @@
  * This header is intentionally re-entrant so both declarations stay at their
  * original owner-local encounter points.
  */
-#if defined(M3DCOLIJMASKS_OWNER_DECLARATION) && \
-    defined(M3DCOLIJMASKS_ABSOLUTE_DECLARATION)
+#if defined(M3DCOLIJMASKS_OWNER_DECLARATION) && defined(M3DCOLIJMASKS_ABSOLUTE_DECLARATION)
 #error "Select only one M3DCOLIJ mask declaration view"
 #elif defined(M3DCOLIJMASKS_OWNER_DECLARATION)
 #define M3DCOLIJMASKS_DECL_ATTR
@@ -22,12 +21,10 @@
 #endif
 
 /** Collision-face bits accepted by the active environment zone. */
-M3DCOLIJMASKS_DECL_LINKAGE unsigned int M3dColij_OneMask
-    M3DCOLIJMASKS_DECL_ATTR;
+M3DCOLIJMASKS_DECL_LINKAGE unsigned int M3dColij_OneMask M3DCOLIJMASKS_DECL_ATTR;
 
 /** Collision-face bits rejected by the active environment zone. */
-M3DCOLIJMASKS_DECL_LINKAGE unsigned int M3dColij_ZeroMask
-    M3DCOLIJMASKS_DECL_ATTR;
+M3DCOLIJMASKS_DECL_LINKAGE unsigned int M3dColij_ZeroMask M3DCOLIJMASKS_DECL_ATTR;
 
 #undef M3DCOLIJMASKS_DECL_LINKAGE
 #undef M3DCOLIJMASKS_DECL_ATTR

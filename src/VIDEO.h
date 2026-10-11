@@ -1,5 +1,4 @@
-#if defined(VIDEO_LAYOUT_ONLY) && \
-    !defined(VIDEO_HIGHLIGHT_LAYOUT) && !defined(VIDEO_HEAD_LAYOUT)
+#if defined(VIDEO_LAYOUT_ONLY) && !defined(VIDEO_HIGHLIGHT_LAYOUT) && !defined(VIDEO_HEAD_LAYOUT)
 #error VIDEO_LAYOUT_ONLY requires VIDEO_HIGHLIGHT_LAYOUT or VIDEO_HEAD_LAYOUT
 #endif
 
@@ -60,8 +59,7 @@ void Video_SyncObsIfNeeded(void);
 void Video_Cleanup(void);
 
 /** Start recording or playing one skater replay stream. */
-void Video_Start(CBruce *skater, EVideoMode mode,
-                 int startFrame, int endFrame);
+void Video_Start(CBruce *skater, EVideoMode mode, int startFrame, int endFrame);
 
 /** Stop the active replay stream for one skater. */
 void Video_Stop(CBruce *skater);
@@ -83,20 +81,20 @@ void Video_HandleStepping(void);
 #define VIDEO_HIGHLIGHT_LAYOUT_EMITTED
 
 /** One recorded highlight window inside a replay stream. */
-struct SHighlight {
+struct SHighlight
+{
     short FromFrame;
     short ToFrame;
     int Score;
 };
 
-typedef char SHighlight_size_must_be_8[
-    (sizeof(struct SHighlight) == 8) ? 1 : -1];
-typedef char SHighlight_FromFrame_offset_must_be_0[
-    ((unsigned long)&(((struct SHighlight *)0)->FromFrame) == 0) ? 1 : -1];
-typedef char SHighlight_ToFrame_offset_must_be_2[
-    ((unsigned long)&(((struct SHighlight *)0)->ToFrame) == 2) ? 1 : -1];
-typedef char SHighlight_Score_offset_must_be_4[
-    ((unsigned long)&(((struct SHighlight *)0)->Score) == 4) ? 1 : -1];
+typedef char SHighlight_size_must_be_8[(sizeof(struct SHighlight) == 8) ? 1 : -1];
+typedef char SHighlight_FromFrame_offset_must_be_0
+    [((unsigned long)&(((struct SHighlight *)0)->FromFrame) == 0) ? 1 : -1];
+typedef char SHighlight_ToFrame_offset_must_be_2
+    [((unsigned long)&(((struct SHighlight *)0)->ToFrame) == 2) ? 1 : -1];
+typedef char SHighlight_Score_offset_must_be_4
+    [((unsigned long)&(((struct SHighlight *)0)->Score) == 4) ? 1 : -1];
 
 #endif // highlight layout request
 
@@ -108,7 +106,8 @@ typedef char SHighlight_Score_offset_must_be_4[
 #endif
 
 /** Serialized replay header stored after the memory-card sector prefix. */
-struct SVideoHead {
+struct SVideoHead
+{
     unsigned long NumFrames;
     struct SHighlight Highlights[5];
     short NumSkaters;
@@ -121,27 +120,26 @@ struct SVideoHead {
     char Padding[7];
 };
 
-typedef char SVideoHead_size_must_be_64[
-    (sizeof(struct SVideoHead) == 64) ? 1 : -1];
-typedef char SVideoHead_NumFrames_offset_must_be_0[
-    ((unsigned long)&(((struct SVideoHead *)0)->NumFrames) == 0) ? 1 : -1];
-typedef char SVideoHead_Highlights_offset_must_be_4[
-    ((unsigned long)&(((struct SVideoHead *)0)->Highlights) == 4) ? 1 : -1];
-typedef char SVideoHead_NumSkaters_offset_must_be_44[
-    ((unsigned long)&(((struct SVideoHead *)0)->NumSkaters) == 44) ? 1 : -1];
-typedef char SVideoHead_Skater_offset_must_be_46[
-    ((unsigned long)&(((struct SVideoHead *)0)->Skater) == 46) ? 1 : -1];
-typedef char SVideoHead_Skater2_offset_must_be_48[
-    ((unsigned long)&(((struct SVideoHead *)0)->Skater2) == 48) ? 1 : -1];
-typedef char SVideoHead_Level_offset_must_be_50[
-    ((unsigned long)&(((struct SVideoHead *)0)->Level) == 50) ? 1 : -1];
-typedef char SVideoHead_GGame_offset_must_be_52[
-    ((unsigned long)&(((struct SVideoHead *)0)->GGame) == 52) ? 1 : -1];
-typedef char SVideoHead_Checksum_offset_must_be_54[
-    ((unsigned long)&(((struct SVideoHead *)0)->Checksum) == 54) ? 1 : -1];
-typedef char SVideoHead_VideoFlags_offset_must_be_56[
-    ((unsigned long)&(((struct SVideoHead *)0)->VideoFlags) == 56) ? 1 : -1];
-typedef char SVideoHead_Padding_offset_must_be_57[
-    ((unsigned long)&(((struct SVideoHead *)0)->Padding) == 57) ? 1 : -1];
+typedef char SVideoHead_size_must_be_64[(sizeof(struct SVideoHead) == 64) ? 1 : -1];
+typedef char SVideoHead_NumFrames_offset_must_be_0
+    [((unsigned long)&(((struct SVideoHead *)0)->NumFrames) == 0) ? 1 : -1];
+typedef char SVideoHead_Highlights_offset_must_be_4
+    [((unsigned long)&(((struct SVideoHead *)0)->Highlights) == 4) ? 1 : -1];
+typedef char SVideoHead_NumSkaters_offset_must_be_44
+    [((unsigned long)&(((struct SVideoHead *)0)->NumSkaters) == 44) ? 1 : -1];
+typedef char SVideoHead_Skater_offset_must_be_46
+    [((unsigned long)&(((struct SVideoHead *)0)->Skater) == 46) ? 1 : -1];
+typedef char SVideoHead_Skater2_offset_must_be_48
+    [((unsigned long)&(((struct SVideoHead *)0)->Skater2) == 48) ? 1 : -1];
+typedef char SVideoHead_Level_offset_must_be_50
+    [((unsigned long)&(((struct SVideoHead *)0)->Level) == 50) ? 1 : -1];
+typedef char SVideoHead_GGame_offset_must_be_52
+    [((unsigned long)&(((struct SVideoHead *)0)->GGame) == 52) ? 1 : -1];
+typedef char SVideoHead_Checksum_offset_must_be_54
+    [((unsigned long)&(((struct SVideoHead *)0)->Checksum) == 54) ? 1 : -1];
+typedef char SVideoHead_VideoFlags_offset_must_be_56
+    [((unsigned long)&(((struct SVideoHead *)0)->VideoFlags) == 56) ? 1 : -1];
+typedef char SVideoHead_Padding_offset_must_be_57
+    [((unsigned long)&(((struct SVideoHead *)0)->Padding) == 57) ? 1 : -1];
 
 #endif // VIDEO_HEAD_LAYOUT

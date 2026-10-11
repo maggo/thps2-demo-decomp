@@ -15,7 +15,8 @@
 #include "PSXREGION.h"
 
 /** Euler angles and pivot packed after each decompressed matrix array. */
-struct SEulerPivot {
+struct SEulerPivot
+{
     short vx;
     short vy;
     short vz;
@@ -25,20 +26,23 @@ struct SEulerPivot {
 };
 
 /** DECOMP's proven CItem prefix through the region selector. */
-struct DecompCItemOwner {
+struct DecompCItemOwner
+{
     u8 pad_to_mRegion[27];
     u8 mRegion;
     u8 pad_after_mRegion[48];
 };
 
 /** DECOMP's opaque CBody slice containing the CItem prefix. */
-struct DecompCBodyOwner {
+struct DecompCBodyOwner
+{
     struct DecompCItemOwner CItem;
     u8 pad_after_CItem[188];
 };
 
 /** Animation state consumed by DECOMP, with target-proven field offsets. */
-struct CSuper {
+struct CSuper
+{
     struct DecompCBodyOwner CBody;
     u32 mExtraFlags;
     u16 *mpCalculationOrder;
@@ -51,12 +55,9 @@ struct CSuper {
     u8 opaque_after_mAnim[116];
 };
 
-typedef char DecompCItemOwner_size_must_be_0x4c[
-    (sizeof(DecompCItemOwner) == 0x4c) ? 1 : -1];
-typedef char DecompCBodyOwner_size_must_be_0x108[
-    (sizeof(DecompCBodyOwner) == 0x108) ? 1 : -1];
-typedef char DecompCSuper_size_must_be_0x190[
-    (sizeof(CSuper) == 0x190) ? 1 : -1];
+typedef char DecompCItemOwner_size_must_be_0x4c[(sizeof(DecompCItemOwner) == 0x4c) ? 1 : -1];
+typedef char DecompCBodyOwner_size_must_be_0x108[(sizeof(DecompCBodyOwner) == 0x108) ? 1 : -1];
+typedef char DecompCSuper_size_must_be_0x190[(sizeof(CSuper) == 0x190) ? 1 : -1];
 
 /** Animation data owned by M3DUTILS and shared with the decompressor. */
 #define TWEENBUFFER_CONSUMER_DECLARATION
@@ -67,7 +68,8 @@ typedef char DecompCSuper_size_must_be_0x190[
 #include "M3DMATHS.h"
 #undef M3DMATHS_TYPED_API
 
-enum {
+enum
+{
     DECOMP_PACKET_UNCOMPRESSED = 0x2A,
     DECOMP_PACKET_COMPRESSED = 0x2C,
     DECOMP_NO_ROOT_MODEL = 0xFFFF
@@ -77,7 +79,7 @@ enum {
 static inline void Decomp_SetRotation(SEulerPivot *pEulerPivot, SMatrix *pMat)
 {
     M3dMaths_RotMatrixYXZ(reinterpret_cast<SVECTOR *>(pEulerPivot),
-        reinterpret_cast<MATRIX *>(pMat));
+                          reinterpret_cast<MATRIX *>(pMat));
 }
 
 /** Read one packed 32-bit word for a GTE register transfer. */
@@ -87,27 +89,22 @@ static inline int Decomp_PackedWord(const void *pMat, int index = 0)
 }
 
 /** Locate an eight-byte animation table entry in a packet. */
-static inline unsigned char *Decomp_AnimEntry(
-    unsigned int *pAnimFile, int AnimNumber)
+static inline unsigned char *Decomp_AnimEntry(unsigned int *pAnimFile, int AnimNumber)
 {
-    return reinterpret_cast<unsigned char *>(
-        (AnimNumber << 3) + reinterpret_cast<unsigned int>(pAnimFile));
+    return reinterpret_cast<unsigned char *>((AnimNumber << 3) +
+                                             reinterpret_cast<unsigned int>(pAnimFile));
 }
 
 /** Read the interpolation flag stored in an animation table entry. */
-static inline unsigned short Decomp_AnimTweenFlag(
-    unsigned int *pAnimFile, int AnimNumber)
+static inline unsigned short Decomp_AnimTweenFlag(unsigned int *pAnimFile, int AnimNumber)
 {
-    return *reinterpret_cast<unsigned short *>(
-        Decomp_AnimEntry(pAnimFile, AnimNumber) + 10);
+    return *reinterpret_cast<unsigned short *>(Decomp_AnimEntry(pAnimFile, AnimNumber) + 10);
 }
 
 /** Read the frame-data offset stored in an animation table entry. */
-static inline unsigned int Decomp_AnimFrameOffset(
-    unsigned int *pAnimFile, int AnimNumber)
+static inline unsigned int Decomp_AnimFrameOffset(unsigned int *pAnimFile, int AnimNumber)
 {
-    return *reinterpret_cast<unsigned int *>(
-        Decomp_AnimEntry(pAnimFile, AnimNumber) + 4);
+    return *reinterpret_cast<unsigned int *>(Decomp_AnimEntry(pAnimFile, AnimNumber) + 4);
 }
 
 /** Read the model count stored immediately before the region's pointer table. */
@@ -117,8 +114,7 @@ static inline unsigned int Decomp_ModelCount(SPSXRegion *pRegion)
 }
 
 /** Locate the Euler-frame storage packed after an object's matrix array. */
-static inline SEulerPivot *Decomp_EulerFrames(
-    SMatrix *matrices, unsigned int NumModels)
+static inline SEulerPivot *Decomp_EulerFrames(SMatrix *matrices, unsigned int NumModels)
 {
     return reinterpret_cast<SEulerPivot *>(matrices + NumModels);
 }
@@ -144,174 +140,212 @@ static inline SEulerPivot *Decomp_EulerFrames(
  * @param StreamLength  Number of values to decode.
  * @return The first unread byte in the compressed stream.
  */
-unsigned char *DecompressStream(
-    unsigned char *pSource, short *pDest, int StepSize, int StreamLength)
+unsigned char *DecompressStream(unsigned char *pSource, short *pDest, int StepSize,
+                                int StreamLength)
 {
     int Interval;
     unsigned char Type;
     int Segs;
     int RemainderLength;
-    int Val;                                 /* decoded value */
+    int Val; /* decoded value */
 
     Type = *pSource++;
     Interval = (Type >> 4) + 1;
     Type &= 0xF;
 
-    if (Interval >= 2) {
+    if (Interval >= 2)
+    {
         Segs = (StreamLength - 1) / Interval;
         int consumed = Segs * Interval + 1;
         RemainderLength = StreamLength - consumed;
-    } else {
+    }
+    else
+    {
         Segs = StreamLength - 1;
         RemainderLength = 0;
     }
 
-    switch (Type) {
-    case 0: {
-        /* 16-bit linear interpolation, 2 bytes per segment endpoint */
-        short v = *pSource++;
-        v = v + (*pSource++ << 8);
-        int i = 0;
-        *pDest = v;
-        pDest = pDest + StepSize;
-        if (Segs > 0) {
-            int lim = Interval - 1;
-            do {
+    switch (Type)
+    {
+        case 0:
+        {
+            /* 16-bit linear interpolation, 2 bytes per segment endpoint */
+            short v = *pSource++;
+            v = v + (*pSource++ << 8);
+            int i = 0;
+            *pDest = v;
+            pDest = pDest + StepSize;
+            if (Segs > 0)
+            {
+                int lim = Interval - 1;
+                do
+                {
+                    short NewVal = *pSource++;
+                    NewVal += *pSource++ << 8;
+                    short Inc = (NewVal - v) / Interval;
+                    int j = 0;
+                    if (lim > 0)
+                    {
+                        do
+                        {
+                            v = v + Inc;
+                            *pDest = v;
+                            j++;
+                            pDest = pDest + StepSize;
+                        } while (j < lim);
+                    }
+                    v = NewVal;
+                    *pDest = v;
+                    i++;
+                    pDest = pDest + StepSize;
+                } while (i < Segs);
+            }
+            if (RemainderLength != 0)
+            {
+                int lim = RemainderLength - 1;
                 short NewVal = *pSource++;
                 NewVal += *pSource++ << 8;
-                short Inc = (NewVal - v) / Interval;
+                short Inc = (NewVal - v) / RemainderLength;
                 int j = 0;
-                if (lim > 0) {
-                    do {
+                if (lim > 0)
+                {
+                    do
+                    {
                         v = v + Inc;
                         *pDest = v;
                         j++;
                         pDest = pDest + StepSize;
                     } while (j < lim);
                 }
-                v = NewVal;
-                *pDest = v;
-                i++;
-                pDest = pDest + StepSize;
-            } while (i < Segs);
-        }
-        if (RemainderLength != 0) {
-            int lim = RemainderLength - 1;
-            short NewVal = *pSource++;
-            NewVal += *pSource++ << 8;
-            short Inc = (NewVal - v) / RemainderLength;
-            int j = 0;
-            if (lim > 0) {
-                do {
-                    v = v + Inc;
-                    *pDest = v;
-                    j++;
-                    pDest = pDest + StepSize;
-                } while (j < lim);
+                *pDest = NewVal;
             }
-            *pDest = NewVal;
+            break;
         }
-        break;
-    }
 
-    case 1: case 2: case 3: case 4: case 5: case 6: case 7:
-    case 8: case 9: case 10: case 11: case 12: case 13: {
-        /* bit-packed delta interpolation, bit width = Type + 1 */
-        int Bits = Type + 1;
-        int Off;
-        Val = *pSource++;
-        int b1 = *pSource++;
-        Val = Val + (b1 << 8);
-        int i = 0;
-        Off = 0;
-        *pDest = Val;
-        pDest = pDest + StepSize;
-        if (Segs > 0) {
-            int shiftAmt = 32 - Bits;
-            int lim = Interval - 1;
-            do {
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+        case 5:
+        case 6:
+        case 7:
+        case 8:
+        case 9:
+        case 10:
+        case 11:
+        case 12:
+        case 13:
+        {
+            /* bit-packed delta interpolation, bit width = Type + 1 */
+            int Bits = Type + 1;
+            int Off;
+            Val = *pSource++;
+            int b1 = *pSource++;
+            Val = Val + (b1 << 8);
+            int i = 0;
+            Off = 0;
+            *pDest = Val;
+            pDest = pDest + StepSize;
+            if (Segs > 0)
+            {
+                int shiftAmt = 32 - Bits;
+                int lim = Interval - 1;
+                do
+                {
+                    int k = pSource[0];
+                    k = (k << 8) | pSource[1];
+                    k = (k << 8) | pSource[2];
+                    k <<= Off + 8;
+                    k >>= shiftAmt;
+                    short NewVal = Val + k;
+                    int d = Off + Bits;
+                    pSource = pSource + (d >> 3);
+                    Off = d & 7;
+                    short Inc = k / Interval;
+                    int j = 0;
+                    if (lim > 0)
+                    {
+                        do
+                        {
+                            Val = Val + Inc;
+                            *pDest = Val;
+                            j++;
+                            pDest = pDest + StepSize;
+                        } while (j < lim);
+                    }
+                    Val = NewVal;
+                    *pDest = Val;
+                    i++;
+                    pDest = pDest + StepSize;
+                } while (i < Segs);
+            }
+            if (RemainderLength != 0)
+            {
                 int k = pSource[0];
                 k = (k << 8) | pSource[1];
                 k = (k << 8) | pSource[2];
                 k <<= Off + 8;
-                k >>= shiftAmt;
+                k >>= 32 - Bits;
                 short NewVal = Val + k;
                 int d = Off + Bits;
                 pSource = pSource + (d >> 3);
                 Off = d & 7;
-                short Inc = k / Interval;
+                short Inc = k / RemainderLength;
+                int rlim = RemainderLength - 1;
                 int j = 0;
-                if (lim > 0) {
-                    do {
+                if (rlim > 0)
+                {
+                    do
+                    {
                         Val = Val + Inc;
                         *pDest = Val;
                         j++;
                         pDest = pDest + StepSize;
-                    } while (j < lim);
+                    } while (j < rlim);
                 }
-                Val = NewVal;
-                *pDest = Val;
-                i++;
-                pDest = pDest + StepSize;
-            } while (i < Segs);
-        }
-        if (RemainderLength != 0) {
-            int k = pSource[0];
-            k = (k << 8) | pSource[1];
-            k = (k << 8) | pSource[2];
-            k <<= Off + 8;
-            k >>= 32 - Bits;
-            short NewVal = Val + k;
-            int d = Off + Bits;
-            pSource = pSource + (d >> 3);
-            Off = d & 7;
-            short Inc = k / RemainderLength;
-            int rlim = RemainderLength - 1;
-            int j = 0;
-            if (rlim > 0) {
-                do {
-                    Val = Val + Inc;
-                    *pDest = Val;
-                    j++;
-                    pDest = pDest + StepSize;
-                } while (j < rlim);
+                *pDest = NewVal;
             }
-            *pDest = NewVal;
+            if (Off != 0)
+            {
+                pSource = pSource + 1;
+            }
+            break;
         }
-        if (Off != 0) {
-            pSource = pSource + 1;
-        }
-        break;
-    }
 
-    case 14: {
-        /* repeat single 16-bit value */
-        Val = *pSource++;
-        int b1 = *pSource++;
-        Val = Val + (b1 << 8);
-        int i = 0;
-        if (StreamLength > 0) {
-            do {
-                *pDest = Val;
-                i++;
-                pDest = pDest + StepSize;
-            } while (i < StreamLength);
+        case 14:
+        {
+            /* repeat single 16-bit value */
+            Val = *pSource++;
+            int b1 = *pSource++;
+            Val = Val + (b1 << 8);
+            int i = 0;
+            if (StreamLength > 0)
+            {
+                do
+                {
+                    *pDest = Val;
+                    i++;
+                    pDest = pDest + StepSize;
+                } while (i < StreamLength);
+            }
+            break;
         }
-        break;
-    }
 
-    case 15: {
-        /* fill zeros */
-        int i = 0;
-        if (StreamLength > 0) {
-            do {
-                *pDest = 0;
-                i++;
-                pDest = pDest + StepSize;
-            } while (i < StreamLength);
+        case 15:
+        {
+            /* fill zeros */
+            int i = 0;
+            if (StreamLength > 0)
+            {
+                do
+                {
+                    *pDest = 0;
+                    i++;
+                    pDest = pDest + StepSize;
+                } while (i < StreamLength);
+            }
+            break;
         }
-        break;
-    }
     }
 
     return pSource;
@@ -346,224 +380,250 @@ SMatrix *Decomp_GetAnimTransform(CSuper *pSuper)
     NumItems = pRegion->pPSX[2];
     AnimNumber = pSuper->mAnim;
 
-    switch (pAnimFile[-2]) {
-    case DECOMP_PACKET_UNCOMPRESSED:
+    switch (pAnimFile[-2])
     {
-        if (Decomp_AnimTweenFlag(pAnimFile, AnimNumber) != 0) {
-            M3dUtils_InBetween(pSuper);
-            return TweenBuffer;
+        case DECOMP_PACKET_UNCOMPRESSED:
+        {
+            if (Decomp_AnimTweenFlag(pAnimFile, AnimNumber) != 0)
+            {
+                M3dUtils_InBetween(pSuper);
+                return TweenBuffer;
+            }
+            return reinterpret_cast<SMatrix *>(reinterpret_cast<unsigned char *>(pAnimFile) +
+                                               Decomp_AnimFrameOffset(pAnimFile, AnimNumber) +
+                                               pSuper->mFrame * NumItems * sizeof(SMatrix));
         }
-        return reinterpret_cast<SMatrix *>(reinterpret_cast<unsigned char *>(pAnimFile) +
-            Decomp_AnimFrameOffset(pAnimFile, AnimNumber) +
-            pSuper->mFrame * NumItems * sizeof(SMatrix));
-    }
 
-    case DECOMP_PACKET_COMPRESSED:
-    {
-        int NewBuffer;
-        unsigned int *pAnimHeader;
-        int NewAnim;
+        case DECOMP_PACKET_COMPRESSED:
+        {
+            int NewBuffer;
+            unsigned int *pAnimHeader;
+            int NewAnim;
 
-        NewBuffer = 0;
+            NewBuffer = 0;
 
-        if (pSuper->mpDecompressedFrame == 0) {
-            unsigned int *pHeader;
-            int NumAnims;
-            int MaxFrames;
-            unsigned int CalculationOrderSize;
-            unsigned short *pParent;
-            unsigned short *pChild;
-            int c;
-
-            NumAnims = *pAnimFile;
-            pHeader = pAnimFile + 1;
-            MaxFrames = 0;
+            if (pSuper->mpDecompressedFrame == 0)
             {
-                int i;
+                unsigned int *pHeader;
+                int NumAnims;
+                int MaxFrames;
+                unsigned int CalculationOrderSize;
+                unsigned short *pParent;
+                unsigned short *pChild;
+                int c;
 
-                i = 0;
-                if (NumAnims > 0) {
-                    do {
-                        pHeader++;
-                        {
-                            unsigned int NumFrames;
-                            NumFrames = *pHeader;
-                            if (MaxFrames < NumFrames) {
-                                MaxFrames = NumFrames;
-                            }
-                        }
-                        i++;
-                        pHeader++;
-                    } while (i < NumAnims);
-                }
-            }
-
-            CalculationOrderSize = NumModels * sizeof(unsigned short);
-
-            pSuper->mpDecompressedFrame = static_cast<SMatrix *>(Mem_New(
-                NumModels * sizeof(SMatrix) + MaxFrames * NumModels * sizeof(SEulerPivot),
-                1, 1));
-
-            pSuper->mpCalculationOrder = static_cast<unsigned short *>(Mem_New(
-                CalculationOrderSize, 0, 1));
-            pSuper->mRoot = DECOMP_NO_ROOT_MODEL;
-
-            {
-                int i = 0;
-                if (NumModels != 0) {
-                    do {
-                        if (pRegion->pHierarchy[i] == i) {
-                            pSuper->mRoot = i;
-                        }
-                        i++;
-                    } while (i < NumModels);
-                }
-            }
-
-            pSuper->mpCalculationOrder[0] = pSuper->mRoot;
-            pParent = pSuper->mpCalculationOrder;
-            pChild = pParent + 1;
-            for (c = NumModels - 1; c != 0; pParent++) {
-                unsigned short *pHi = pRegion->pHierarchy;
+                NumAnims = *pAnimFile;
+                pHeader = pAnimFile + 1;
+                MaxFrames = 0;
                 {
                     int i;
 
                     i = 0;
-                    if (NumModels != 0) {
-                        do {
-                            if (i != pSuper->mRoot && *pHi == *pParent) {
-                                *pChild++ = i;
-                                c--;
+                    if (NumAnims > 0)
+                    {
+                        do
+                        {
+                            pHeader++;
+                            {
+                                unsigned int NumFrames;
+                                NumFrames = *pHeader;
+                                if (MaxFrames < NumFrames)
+                                {
+                                    MaxFrames = NumFrames;
+                                }
                             }
                             i++;
-                            pHi++;
+                            pHeader++;
+                        } while (i < NumAnims);
+                    }
+                }
+
+                CalculationOrderSize = NumModels * sizeof(unsigned short);
+
+                pSuper->mpDecompressedFrame = static_cast<SMatrix *>(Mem_New(
+                    NumModels * sizeof(SMatrix) + MaxFrames * NumModels * sizeof(SEulerPivot), 1,
+                    1));
+
+                pSuper->mpCalculationOrder =
+                    static_cast<unsigned short *>(Mem_New(CalculationOrderSize, 0, 1));
+                pSuper->mRoot = DECOMP_NO_ROOT_MODEL;
+
+                {
+                    int i = 0;
+                    if (NumModels != 0)
+                    {
+                        do
+                        {
+                            if (pRegion->pHierarchy[i] == i)
+                            {
+                                pSuper->mRoot = i;
+                            }
+                            i++;
                         } while (i < NumModels);
                     }
                 }
-            }
 
-            NewBuffer = 1;
-        }
-
-        {
-            NewAnim = 0;
-            pAnimHeader = pAnimFile + (AnimNumber * 2 + 1);
-
-            if (pSuper->mDecompressedAnim != AnimNumber || NewBuffer != 0) {
+                pSuper->mpCalculationOrder[0] = pSuper->mRoot;
+                pParent = pSuper->mpCalculationOrder;
+                pChild = pParent + 1;
+                for (c = NumModels - 1; c != 0; pParent++)
                 {
-                    int NumFrames;
-                    int StepSize;
-                    unsigned char *pCompressedStream;
-                    SEulerPivot *pEulerPivot;
+                    unsigned short *pHi = pRegion->pHierarchy;
                     {
-                        int m;
+                        int i;
 
-                        pEulerPivot = Decomp_EulerFrames(
-                            pSuper->mpDecompressedFrame, NumModels);
-                        m = 0;
-                        pCompressedStream = reinterpret_cast<unsigned char *>(pAnimFile) +
-                            pAnimHeader[0];
-                        NumFrames = pAnimHeader[1];
-                        StepSize = NumModels * 6;
-                        if (NumModels != 0) {
-                            do {
-                                pCompressedStream = DecompressStream(pCompressedStream, &pEulerPivot->vx, StepSize, NumFrames);
-                                pCompressedStream = DecompressStream(pCompressedStream, &pEulerPivot->vy, StepSize, NumFrames);
-                                pCompressedStream = DecompressStream(pCompressedStream, &pEulerPivot->vz, StepSize, NumFrames);
-                                pCompressedStream = DecompressStream(pCompressedStream, &pEulerPivot->px, StepSize, NumFrames);
-                                pCompressedStream = DecompressStream(pCompressedStream, &pEulerPivot->py, StepSize, NumFrames);
-                                pCompressedStream = DecompressStream(pCompressedStream, &pEulerPivot->pz, StepSize, NumFrames);
-                                m++;
-                                pEulerPivot++;
-                            } while (m < NumModels);
-                        }
-                    }
-                }
-
-                NewAnim = 1;
-                pSuper->mDecompressedAnim = AnimNumber;
-            }
-        }
-
-        {
-            if (pSuper->mDecompressedFrame != pSuper->mFrame || NewAnim != 0) {
-                SEulerPivot *pEulerPivots;
-                SMatrix *pMat;
-                SEulerPivot *pRootEuler;
-                unsigned short *pModel;
-
-                pEulerPivots = Decomp_EulerFrames(
-                    pSuper->mpDecompressedFrame, NumModels);
-                {
-                    int i;
-
-                    pMat = &pSuper->mpDecompressedFrame[pSuper->mRoot];
-                    pEulerPivots += NumModels * pSuper->mFrame;
-                    pRootEuler = &pEulerPivots[pSuper->mRoot];
-
-                    Decomp_SetRotation(pRootEuler, pMat);
-                    pMat->t[0] = pRootEuler->px;
-                    pMat->t[1] = pRootEuler->py;
-                    pMat->t[2] = pRootEuler->pz;
-                    pModel = pSuper->mpCalculationOrder + 1;
-
-                    for (i = 1; i < NumModels; i++) {
-                        SMatrix *pParentMat;
-                        SEulerPivot *pEulerPivot;
-
-                        pMat = &pSuper->mpDecompressedFrame[*pModel];
-                        pEulerPivot = &pEulerPivots[*pModel];
-                        pParentMat = &pSuper->mpDecompressedFrame[pRegion->pHierarchy[*pModel++]];
-
-                        Decomp_SetRotation(pEulerPivot, pMat);
-
-                        // --- Parent-rotate the child's local translation (GTE MVMVA) ---
-                        //
-                        //     t_child(parent space) = (parentRot * t_local) >> 12   (this block)
-                        //                            + t_parent                     (added below)
-                        //
-                        // t_local = pEulerPivot's three translation components.
-                        // parentRot = pParentMat's packed 3.12 fixed-point rotation,
-                        // loaded into GTE ctrl $0..$4. MVMVA 0x4A486012 computes
-                        // (R*V0)>>12, results saturated to s16 in IR1/IR2/IR3.
-                        //
-                        // Two load paths keyed on (pEulerPivot & 3): the record is only
-                        // guaranteed 2-aligned (12-byte records). When 2-mod-4 aligned,
-                        // +6/+0xA are word-aligned and each pair is one lw; when 4-aligned,
-                        // the three shorts are staged through an aligned stack scratch.
+                        i = 0;
+                        if (NumModels != 0)
                         {
-                            if ((reinterpret_cast<unsigned int>(pEulerPivot) & 3) == 0) {
-                                SVECTOR vec;
-                                vec.vx = pEulerPivot->px;
-                                vec.vy = pEulerPivot->py;
-                                vec.vz = pEulerPivot->pz;
-                                gte_ldvxy0(Decomp_PackedWord(&vec.vx));
-                                gte_ldvz0(Decomp_PackedWord(&vec.vz));
-                            } else {
-                                gte_ldvxy0(Decomp_PackedWord(&pEulerPivot->px));
-                                gte_ldvz0(Decomp_PackedWord(&pEulerPivot->pz));
-                            }
-                            gte_ldrot0(Decomp_PackedWord(pParentMat, 0));
-                            gte_ldrot1(Decomp_PackedWord(pParentMat, 1));
-                            gte_ldrot2(Decomp_PackedWord(pParentMat, 2));
-                            gte_ldrot3(Decomp_PackedWord(pParentMat, 3));
-                            gte_ldrot4(Decomp_PackedWord(pParentMat, 4));
+                            do
+                            {
+                                if (i != pSuper->mRoot && *pHi == *pParent)
+                                {
+                                    *pChild++ = i;
+                                    c--;
+                                }
+                                i++;
+                                pHi++;
+                            } while (i < NumModels);
                         }
-                        gte_rtv0(); // (RotMatrix * V0) >> 12
-                        gte_stsv(&pMat->t[0]);
-
-                        // Add parent translation
-                        pMat->t[0] += pParentMat->t[0];
-                        pMat->t[1] += pParentMat->t[1];
-                        pMat->t[2] += pParentMat->t[2];
                     }
                 }
 
-                pSuper->mDecompressedFrame = pSuper->mFrame;
+                NewBuffer = 1;
             }
-        }
-        return pSuper->mpDecompressedFrame;
-    }
 
+            {
+                NewAnim = 0;
+                pAnimHeader = pAnimFile + (AnimNumber * 2 + 1);
+
+                if (pSuper->mDecompressedAnim != AnimNumber || NewBuffer != 0)
+                {
+                    {
+                        int NumFrames;
+                        int StepSize;
+                        unsigned char *pCompressedStream;
+                        SEulerPivot *pEulerPivot;
+                        {
+                            int m;
+
+                            pEulerPivot =
+                                Decomp_EulerFrames(pSuper->mpDecompressedFrame, NumModels);
+                            m = 0;
+                            pCompressedStream =
+                                reinterpret_cast<unsigned char *>(pAnimFile) + pAnimHeader[0];
+                            NumFrames = pAnimHeader[1];
+                            StepSize = NumModels * 6;
+                            if (NumModels != 0)
+                            {
+                                do
+                                {
+                                    pCompressedStream = DecompressStream(
+                                        pCompressedStream, &pEulerPivot->vx, StepSize, NumFrames);
+                                    pCompressedStream = DecompressStream(
+                                        pCompressedStream, &pEulerPivot->vy, StepSize, NumFrames);
+                                    pCompressedStream = DecompressStream(
+                                        pCompressedStream, &pEulerPivot->vz, StepSize, NumFrames);
+                                    pCompressedStream = DecompressStream(
+                                        pCompressedStream, &pEulerPivot->px, StepSize, NumFrames);
+                                    pCompressedStream = DecompressStream(
+                                        pCompressedStream, &pEulerPivot->py, StepSize, NumFrames);
+                                    pCompressedStream = DecompressStream(
+                                        pCompressedStream, &pEulerPivot->pz, StepSize, NumFrames);
+                                    m++;
+                                    pEulerPivot++;
+                                } while (m < NumModels);
+                            }
+                        }
+                    }
+
+                    NewAnim = 1;
+                    pSuper->mDecompressedAnim = AnimNumber;
+                }
+            }
+
+            {
+                if (pSuper->mDecompressedFrame != pSuper->mFrame || NewAnim != 0)
+                {
+                    SEulerPivot *pEulerPivots;
+                    SMatrix *pMat;
+                    SEulerPivot *pRootEuler;
+                    unsigned short *pModel;
+
+                    pEulerPivots = Decomp_EulerFrames(pSuper->mpDecompressedFrame, NumModels);
+                    {
+                        int i;
+
+                        pMat = &pSuper->mpDecompressedFrame[pSuper->mRoot];
+                        pEulerPivots += NumModels * pSuper->mFrame;
+                        pRootEuler = &pEulerPivots[pSuper->mRoot];
+
+                        Decomp_SetRotation(pRootEuler, pMat);
+                        pMat->t[0] = pRootEuler->px;
+                        pMat->t[1] = pRootEuler->py;
+                        pMat->t[2] = pRootEuler->pz;
+                        pModel = pSuper->mpCalculationOrder + 1;
+
+                        for (i = 1; i < NumModels; i++)
+                        {
+                            SMatrix *pParentMat;
+                            SEulerPivot *pEulerPivot;
+
+                            pMat = &pSuper->mpDecompressedFrame[*pModel];
+                            pEulerPivot = &pEulerPivots[*pModel];
+                            pParentMat =
+                                &pSuper->mpDecompressedFrame[pRegion->pHierarchy[*pModel++]];
+
+                            Decomp_SetRotation(pEulerPivot, pMat);
+
+                            // --- Parent-rotate the child's local translation (GTE MVMVA) ---
+                            //
+                            //     t_child(parent space) = (parentRot * t_local) >> 12   (this block)
+                            //                            + t_parent                     (added below)
+                            //
+                            // t_local = pEulerPivot's three translation components.
+                            // parentRot = pParentMat's packed 3.12 fixed-point rotation,
+                            // loaded into GTE ctrl $0..$4. MVMVA 0x4A486012 computes
+                            // (R*V0)>>12, results saturated to s16 in IR1/IR2/IR3.
+                            //
+                            // Two load paths keyed on (pEulerPivot & 3): the record is only
+                            // guaranteed 2-aligned (12-byte records). When 2-mod-4 aligned,
+                            // +6/+0xA are word-aligned and each pair is one lw; when 4-aligned,
+                            // the three shorts are staged through an aligned stack scratch.
+                            {
+                                if ((reinterpret_cast<unsigned int>(pEulerPivot) & 3) == 0)
+                                {
+                                    SVECTOR vec;
+                                    vec.vx = pEulerPivot->px;
+                                    vec.vy = pEulerPivot->py;
+                                    vec.vz = pEulerPivot->pz;
+                                    gte_ldvxy0(Decomp_PackedWord(&vec.vx));
+                                    gte_ldvz0(Decomp_PackedWord(&vec.vz));
+                                }
+                                else
+                                {
+                                    gte_ldvxy0(Decomp_PackedWord(&pEulerPivot->px));
+                                    gte_ldvz0(Decomp_PackedWord(&pEulerPivot->pz));
+                                }
+                                gte_ldrot0(Decomp_PackedWord(pParentMat, 0));
+                                gte_ldrot1(Decomp_PackedWord(pParentMat, 1));
+                                gte_ldrot2(Decomp_PackedWord(pParentMat, 2));
+                                gte_ldrot3(Decomp_PackedWord(pParentMat, 3));
+                                gte_ldrot4(Decomp_PackedWord(pParentMat, 4));
+                            }
+                            gte_rtv0(); // (RotMatrix * V0) >> 12
+                            gte_stsv(&pMat->t[0]);
+
+                            // Add parent translation
+                            pMat->t[0] += pParentMat->t[0];
+                            pMat->t[1] += pParentMat->t[1];
+                            pMat->t[2] += pParentMat->t[2];
+                        }
+                    }
+
+                    pSuper->mDecompressedFrame = pSuper->mFrame;
+                }
+            }
+            return pSuper->mpDecompressedFrame;
+        }
     }
 }

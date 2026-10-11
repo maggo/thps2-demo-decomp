@@ -9,7 +9,8 @@ struct SlicedImage2;
 struct TextEffect;
 
 /** Registry for the eight resident fonts. */
-struct FontManager {
+struct FontManager
+{
     static Font *LoadFont(char *filename);
     static Font *LoadFont(unsigned char *pData, char *fontname);
     static Font *GetFont(char *fontname);
@@ -22,7 +23,8 @@ private:
 };
 
 /** Metrics and image storage for one font glyph. */
-struct FontCharacter {
+struct FontCharacter
+{
     SlicedImage2 *Image;
     int W;
     int H;
@@ -100,20 +102,17 @@ struct Font
 #ifdef FONTTOOLS_POLYMORPHIC_LAYOUT
     virtual
 #endif
-    ~Font();
+        ~Font();
 
 #ifndef FONTTOOLS_POLYMORPHIC_LAYOUT
     /** Allocate font storage through the shared CClass arena. */
-    static void *operator new(unsigned int size)
-    {
-        return ::CClass::operator new(size);
-    }
+    static void *operator new(unsigned int size) { return ::CClass::operator new(size); }
 #endif
 
 #ifdef FONTTOOLS_POLYMORPHIC_LAYOUT
     virtual
 #endif
-    void draw(int x, int y, char *str, int drawFirst);
+        void draw(int x, int y, char *str, int drawFirst);
     int width(char *str);
     int height(char *str);
     int heightAboveBaseline(char *str);
@@ -130,7 +129,8 @@ struct Font
 
 #ifndef FONTTOOLS_POLYMORPHIC_LAYOUT
 /** Target dispatch table shared by virtual Font consumers. */
-struct FontVTable {
+struct FontVTable
+{
     int baseOffset;
     void *typeInfo;
     void (*destroy)(Font *font, int inCharge);
@@ -159,19 +159,17 @@ inline const Font *FontFromStorage(const FontStorage *storage)
 
 #endif
 
-typedef char FontCharacter_size_must_be_0x10[
-    (sizeof(FontCharacter) == 0x10) ? 1 : -1];
+typedef char FontCharacter_size_must_be_0x10[(sizeof(FontCharacter) == 0x10) ? 1 : -1];
 #ifndef FONTTOOLS_POLYMORPHIC_LAYOUT
-typedef char FontStorage_size_must_be_0x50[
-    (sizeof(FontStorage) == 0x50) ? 1 : -1];
+typedef char FontStorage_size_must_be_0x50[(sizeof(FontStorage) == 0x50) ? 1 : -1];
 #endif
-typedef char Font_size_must_be_0x50[
-    (sizeof(Font) == 0x50) ? 1 : -1];
+typedef char Font_size_must_be_0x50[(sizeof(Font) == 0x50) ? 1 : -1];
 
 #ifdef FONTTOOLS_OWNER_DECLARATIONS
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 // Primitive types

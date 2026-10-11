@@ -21,24 +21,21 @@ struct Texture;
 #define BITSTATE_DECL_ATTR __attribute__((section(".data")))
 #endif
 
-#if defined(BITSTATE_DECLARE_USE_CACHE_FOR_BITS) && \
-    !defined(BITSTATE_USE_CACHE_FOR_BITS_DECLARED)
+#if defined(BITSTATE_DECLARE_USE_CACHE_FOR_BITS) && !defined(BITSTATE_USE_CACHE_FOR_BITS_DECLARED)
 #define BITSTATE_USE_CACHE_FOR_BITS_DECLARED
 /** Select whether new transient bits may use the shared effect cache. */
 extern int UseCacheForBits BITSTATE_DECL_ATTR;
 #endif
 #undef BITSTATE_DECLARE_USE_CACHE_FOR_BITS
 
-#if defined(BITSTATE_DECLARE_BIT_COUNT) && \
-    !defined(BITSTATE_BIT_COUNT_DECLARED)
+#if defined(BITSTATE_DECLARE_BIT_COUNT) && !defined(BITSTATE_BIT_COUNT_DECLARED)
 #define BITSTATE_BIT_COUNT_DECLARED
 /** Number of live transient bit effects. */
 extern int BitCount BITSTATE_DECL_ATTR;
 #endif
 #undef BITSTATE_DECLARE_BIT_COUNT
 
-#if defined(BITSTATE_DECLARE_TOTAL_BIT_USAGE) && \
-    !defined(BITSTATE_TOTAL_BIT_USAGE_DECLARED)
+#if defined(BITSTATE_DECLARE_TOTAL_BIT_USAGE) && !defined(BITSTATE_TOTAL_BIT_USAGE_DECLARED)
 #define BITSTATE_TOTAL_BIT_USAGE_DECLARED
 /** Bytes currently owned by transient bit effects. */
 extern int TotalBitUsage BITSTATE_DECL_ATTR;
@@ -53,40 +50,35 @@ extern CNonRenderedBit *NonRenderedBitList BITSTATE_DECL_ATTR;
 #endif
 #undef BITSTATE_DECLARE_NON_RENDERED_BIT_LIST
 
-#if defined(BITSTATE_DECLARE_G_LINE_LIST) && \
-    !defined(BITSTATE_G_LINE_LIST_DECLARED)
+#if defined(BITSTATE_DECLARE_G_LINE_LIST) && !defined(BITSTATE_G_LINE_LIST_DECLARED)
 #define BITSTATE_G_LINE_LIST_DECLARED
 /** Head of the Gouraud line-effect list. */
 extern CGLine *GLineList BITSTATE_DECL_ATTR;
 #endif
 #undef BITSTATE_DECLARE_G_LINE_LIST
 
-#if defined(BITSTATE_DECLARE_G_POLY_LINE_LIST) && \
-    !defined(BITSTATE_G_POLY_LINE_LIST_DECLARED)
+#if defined(BITSTATE_DECLARE_G_POLY_LINE_LIST) && !defined(BITSTATE_G_POLY_LINE_LIST_DECLARED)
 #define BITSTATE_G_POLY_LINE_LIST_DECLARED
 /** Head of the Gouraud polyline-effect list. */
 extern CGPolyLine *GPolyLineList BITSTATE_DECL_ATTR;
 #endif
 #undef BITSTATE_DECLARE_G_POLY_LINE_LIST
 
-#if defined(BITSTATE_DECLARE_POLY_LINE_LIST) && \
-    !defined(BITSTATE_POLY_LINE_LIST_DECLARED)
+#if defined(BITSTATE_DECLARE_POLY_LINE_LIST) && !defined(BITSTATE_POLY_LINE_LIST_DECLARED)
 #define BITSTATE_POLY_LINE_LIST_DECLARED
 /** Head of the flat polyline-effect list. */
 extern CPolyLine *PolyLineList BITSTATE_DECL_ATTR;
 #endif
 #undef BITSTATE_DECLARE_POLY_LINE_LIST
 
-#if defined(BITSTATE_DECLARE_SHADOW_TEXTURE) && \
-    !defined(BITSTATE_SHADOW_TEXTURE_DECLARED)
+#if defined(BITSTATE_DECLARE_SHADOW_TEXTURE) && !defined(BITSTATE_SHADOW_TEXTURE_DECLARED)
 #define BITSTATE_SHADOW_TEXTURE_DECLARED
 /** Texture used by projected blob shadows. */
 extern Texture *pShadowTexture BITSTATE_DECL_ATTR;
 #endif
 #undef BITSTATE_DECLARE_SHADOW_TEXTURE
 
-#if defined(BITSTATE_DECLARE_SPARK_SEMI_TRANS) && \
-    !defined(BITSTATE_SPARK_SEMI_TRANS_DECLARED)
+#if defined(BITSTATE_DECLARE_SPARK_SEMI_TRANS) && !defined(BITSTATE_SPARK_SEMI_TRANS_DECLARED)
 #define BITSTATE_SPARK_SEMI_TRANS_DECLARED
 /** Nonzero when newly constructed sparks use semi-transparency. */
 extern void *SparkSemiTrans BITSTATE_DECL_ATTR;

@@ -15,8 +15,8 @@ extern CBody *BaddyList __attribute__((section(".data"))); // 0x800D9B04
 #include "BIT.h"
 #include "UTILS.h"
 
-typedef char smoke_api_size_must_match_layout[
-    (SMOKE_JET_STORAGE_SIZE == sizeof(CSmokeJet)) ? 1 : -1];
+typedef char
+    smoke_api_size_must_match_layout[(SMOKE_JET_STORAGE_SIZE == sizeof(CSmokeJet)) ? 1 : -1];
 
 /** Packed fixed-point sine/cosine entry used by the original table macros. */
 struct SSinCos
@@ -42,8 +42,7 @@ enum
  * a distinct GCC 2.x parameter and changes Move's register allocation.
  */
 #define Smoke_Sine(angle) \
-    (reinterpret_cast<const SSinCos *>( \
-        &rcossin_tbl + ((angle) & SMOKE_ANGLE_MASK))->Sin)
+    (reinterpret_cast<const SSinCos *>(&rcossin_tbl + ((angle) & SMOKE_ANGLE_MASK))->Sin)
 #include "CVECTOROPS.h"
 #include "M3DCOLIJ.h"
 
@@ -74,17 +73,9 @@ enum
  * @param ScrollSpeed Texture-scroll increment.
  * @param Checksum Texture checksum.
  */
-CSmokeJet::CSmokeJet(
-    const CVector &BasePos,
-    const CSVector &Angles,
-    int Length,
-    unsigned short Duration,
-    int Damage,
-    int r,
-    int g,
-    int b,
-    unsigned char ScrollSpeed,
-    unsigned int Checksum)
+CSmokeJet::CSmokeJet(const CVector &BasePos, const CSVector &Angles, int Length,
+                     unsigned short Duration, int Damage, int r, int g, int b,
+                     unsigned char ScrollSpeed, unsigned int Checksum)
     : CTexturedRibbon(SMOKE_POINT_COUNT, 0)
 {
     mAngles = Angles;
@@ -93,7 +84,8 @@ CSmokeJet::CSmokeJet(
 
     mLifetime = Duration;
     mDamage = Damage;
-    if (mDamage >= 1000) {
+    if (mDamage >= 1000)
+    {
         mDamageBaddies = 1;
         mDamage = Damage - 1000;
     }
@@ -104,7 +96,8 @@ CSmokeJet::CSmokeJet(
     {
         int i;
 
-        for (i = 0; i < SMOKE_POINT_COUNT; i++) {
+        for (i = 0; i < SMOKE_POINT_COUNT; i++)
+        {
             int scaledr;
             int scaledg;
             int scaledb;
@@ -115,18 +108,23 @@ CSmokeJet::CSmokeJet(
             mPhase[i] = Rnd(SMOKE_ANGLE_COUNT);
             mFreq[i] = 80;
 
-            if (i != 0) {
+            if (i != 0)
+            {
                 *amp = Length / 80;
-            } else {
+            }
+            else
+            {
                 *amp = 0;
             }
 
             mWidthWobble[i].TChange = Rnd(16);
-            if (i == 0) {
+            if (i == 0)
+            {
                 mWidthWobble[0].TargetWidth = Rnd(60) + 20;
-            } else {
-                mWidthWobble[i].TargetWidth =
-                    mWidthWobble[i - 1].TargetWidth * 148 / 128;
+            }
+            else
+            {
+                mWidthWobble[i].TargetWidth = mWidthWobble[i - 1].TargetWidth * 148 / 128;
             }
 
             scaledr = (SMOKE_LAST_POINT - i) * r / SMOKE_LAST_POINT;
@@ -200,29 +198,32 @@ void CSmokeJet::SetPos(const CVector &Pos)
  */
 void CSmokeJet::Move()
 {
-    if (mLifetime ==
-        SMOKE_PERMANENT_LIFETIME) {
-        int dx = (mpPoints[0].Pos.vx -
-                  MechList->mPos.vx) >> 12;
+    if (mLifetime == SMOKE_PERMANENT_LIFETIME)
+    {
+        int dx = (mpPoints[0].Pos.vx - MechList->mPos.vx) >> 12;
         if (dx < 0) dx = -dx;
 
-        int dz = (mpPoints[0].Pos.vz -
-                  MechList->mPos.vz) >> 12;
+        int dz = (mpPoints[0].Pos.vz - MechList->mPos.vz) >> 12;
         if (dz < 0) dz = -dz;
 
         int Dist;
-        if (dx < dz) {
+        if (dx < dz)
+        {
             Dist = dz + dx / 2;
-        } else {
+        }
+        else
+        {
             Dist = dx + dz / 2;
         }
 
-        if (Dist > 10000) {
+        if (Dist > 10000)
+        {
             mDontDisplay = 1;
             return;
         }
-    } else if (mLifetime == 0 ||
-               --mLifetime == 0) {
+    }
+    else if (mLifetime == 0 || --mLifetime == 0)
+    {
         Die();
     }
 
@@ -230,34 +231,31 @@ void CSmokeJet::Move()
     mU = Smoke_Sine(TTime << 4) / 128;
     mV += mScrollSpeed;
 
-    for (int i = 0; i < SMOKE_POINT_COUNT; i++) {
+    for (int i = 0; i < SMOKE_POINT_COUNT; i++)
+    {
         mpPoints[i].Pos.vx =
             mOrgX[i] +
-            ((mAmp[i] *
-              Smoke_Sine(mFreq[i] * TTime + mPhase[i])) /
-             SMOKE_ANGLE_COUNT << 12);
+            ((mAmp[i] * Smoke_Sine(mFreq[i] * TTime + mPhase[i])) / SMOKE_ANGLE_COUNT << 12);
     }
 
     mpPoints[0].Width = 20;
     mpPoints[0].WidthB = 60;
     mWidthWobble[0].TargetWidth = Rnd(60) + 20;
 
-    for (int i = 1; i < 10; i++) {
-        mpPoints[i].Width +=
-            (mWidthWobble[i].TargetWidth -
-             mpPoints[i].Width) / 8;
-        mpPoints[i].WidthB =
-            mpPoints[i].Width + 40;
+    for (int i = 1; i < 10; i++)
+    {
+        mpPoints[i].Width += (mWidthWobble[i].TargetWidth - mpPoints[i].Width) / 8;
+        mpPoints[i].WidthB = mpPoints[i].Width + 40;
 
-        if ((TTime & 0xf) == mWidthWobble[i].TChange) {
+        if ((TTime & 0xf) == mWidthWobble[i].TChange)
+        {
             mWidthWobble[i].TChange = Rnd(16);
-            mWidthWobble[i].TargetWidth =
-                mWidthWobble[i - 1].TargetWidth * 148 / 128;
+            mWidthWobble[i].TargetWidth = mWidthWobble[i - 1].TargetWidth * 148 / 128;
         }
     }
 
-    if ((mDamageTimer == 0 || --mDamageTimer == 0) &&
-        mDamage) {
+    if ((mDamageTimer == 0 || --mDamageTimer == 0) && mDamage)
+    {
         CVector Start = mpPoints[0].Pos;
         CVector End = mpPoints[SMOKE_LAST_POINT].Pos;
         CVector Unit = End - Start;
@@ -265,17 +263,19 @@ void CSmokeJet::Move()
 
         Utils_CalcUnit(Unit, Unit);
 
-        CBody *pBody = M3dColij_LineToSphere(
-            Start, End, dummy, MechList, 0, SMOKE_COLLISION_SCALE);
-        if (pBody != 0) {
+        CBody *pBody = M3dColij_LineToSphere(Start, End, dummy, MechList, 0, SMOKE_COLLISION_SCALE);
+        if (pBody != 0)
+        {
             pBody->Hit(mDamage, Unit, 31);
             mDamageTimer = 15;
         }
 
-        if (mDamageBaddies != 0) {
-            CBody *pBody = M3dColij_LineToSphere(
-                Start, End, dummy, BaddyList, 0, SMOKE_COLLISION_SCALE);
-            if (pBody != 0) {
+        if (mDamageBaddies != 0)
+        {
+            CBody *pBody =
+                M3dColij_LineToSphere(Start, End, dummy, BaddyList, 0, SMOKE_COLLISION_SCALE);
+            if (pBody != 0)
+            {
                 pBody->Hit(mDamage, Unit, 31);
                 mDamageTimer = 15;
             }

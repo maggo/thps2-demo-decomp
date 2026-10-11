@@ -3,7 +3,8 @@
 #define CCHUNKBIT_INC_H
 
 /** Four-corner textured chunk in model-local and world space. */
-struct CChunkBit : CBit {
+struct CChunkBit : CBit
+{
     SVECTOR mPosA;
     SVECTOR mPosB;
     SVECTOR mPosC;
@@ -24,17 +25,14 @@ struct CChunkBit : CBit {
     unsigned int mTexWin;
 
     /** Build a textured chunk from three triangle corners. */
-    CChunkBit(const struct CSVector &a, const struct CSVector &b,
-              const struct CSVector &c);
+    CChunkBit(const struct CSVector &a, const struct CSVector &b, const struct CSVector &c);
     /** Detach and destroy a textured chunk. */
     ~CChunkBit();
     /** Set the packed colours for all four chunk vertices. */
     void SetRGB(unsigned char r, unsigned char g, unsigned char b);
     /** Set the chunk texture page, CLUT, and UV coordinates. */
-    void SetUVs(unsigned short clut, unsigned short tpage,
-                unsigned char u0, unsigned char v0,
-                unsigned char u1, unsigned char v1,
-                unsigned char u2, unsigned char v2);
+    void SetUVs(unsigned short clut, unsigned short tpage, unsigned char u0, unsigned char v0,
+                unsigned char u1, unsigned char v1, unsigned char u2, unsigned char v2);
     /** Transform the four model-local corners into world space. */
     void CalculateWorldCoords();
     /** Release chunk storage through the CBit allocator. */

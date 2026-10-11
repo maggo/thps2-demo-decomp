@@ -18,7 +18,8 @@ typedef unsigned long ulong;
 #include "DB.h"
 
 /** Runtime glyph placement and texture metadata. */
-struct Character {
+struct Character
+{
     int w;
     int h;
     int x;
@@ -38,7 +39,8 @@ struct Character {
 };
 
 /** Loaded font descriptor used by the message renderer. */
-struct FontInfo {
+struct FontInfo
+{
     char mFont_name[16];
     int mNum_chars;
     Character *mChar_table;
@@ -60,7 +62,8 @@ struct Texture;
 #include "FONT.h"
 
 /** Intrusive message-list entry allocated and updated by MESS.cpp. */
-struct Message {
+struct Message
+{
     char *pText;
     unsigned short T;
     unsigned short T_total;
@@ -73,7 +76,8 @@ struct Message {
 };
 
 /** One glyph-metadata record at the front of a font file. */
-struct MessFontFileGlyph {
+struct MessFontFileGlyph
+{
     int width;
     int height;
     int baseline;
@@ -81,12 +85,14 @@ struct MessFontFileGlyph {
 };
 
 /** Owner-local display-buffer slice through the panel ordering table. */
-struct MessDoubleBuffer {
+struct MessDoubleBuffer
+{
     unsigned char beforePanelOT[0x84];
     unsigned int *PanelOT;
 };
 
-enum {
+enum
+{
     MessFontHeaderSize = sizeof(int),
     MessFontFileGlyphSize = sizeof(MessFontFileGlyph),
     MessCharacterHeightOffset = 4,
@@ -104,10 +110,8 @@ enum {
 
 typedef char mess_program_size_must_be_32[(sizeof(SMessageProg) == 32) ? 1 : -1];
 typedef char mess_message_size_must_be_28[(sizeof(Message) == 28) ? 1 : -1];
-typedef char mess_font_file_glyph_size_must_be_16[
-    (sizeof(MessFontFileGlyph) == 16) ? 1 : -1];
-typedef char mess_double_buffer_size_must_be_136[
-    (sizeof(MessDoubleBuffer) == 136) ? 1 : -1];
+typedef char mess_font_file_glyph_size_must_be_16[(sizeof(MessFontFileGlyph) == 16) ? 1 : -1];
+typedef char mess_double_buffer_size_must_be_136[(sizeof(MessDoubleBuffer) == 136) ? 1 : -1];
 #include "MEM.h"
 #include "PACK.h"
 #include <STDDEF.H>
@@ -119,8 +123,7 @@ typedef char mess_double_buffer_size_must_be_136[
 #include <STDIO.H>
 #include <STRINGS.H>
 
-typedef char mess_poly_gt4_size_must_be_52[
-    (sizeof(POLY_GT4) == 52) ? 1 : -1];
+typedef char mess_poly_gt4_size_must_be_52[(sizeof(POLY_GT4) == 52) ? 1 : -1];
 
 // === Free function declarations ===
 int Mess_TextWidth2(const char *pMessage);
@@ -134,32 +137,25 @@ void Mess_SetNewFont(unsigned char which);
 
 // === Source-owned message programs and font table ===
 #define MESSAGE_PROGRAM(duration, start_scale, end_scale, color_cycle, next_offset) \
-    {                                                                            \
-        duration, 1, 0, start_scale, end_scale,                                  \
-        0xff, 0xff, 0xff, 0xff, 0xff, 0xff,                                     \
-        0, 0, 0x100, 0x5a, 0x100, 0x5a, 0, color_cycle, next_offset             \
-    }
+    { duration, 1, 0, start_scale, end_scale, 0xff,  0xff, 0xff, 0xff,        0xff, \
+      0xff,     0, 0, 0x100,       0x5a,      0x100, 0x5a, 0,    color_cycle, next_offset }
 
 /** Standard zoom-in, hold, and zoom-out message animation. */
 SMessageProg Messprog_Zoom[5] = {
-    MESSAGE_PROGRAM(5, 0, 0x180, 0, 1),
-    MESSAGE_PROGRAM(1, 0x180, 0x180, 0, 1),
-    MESSAGE_PROGRAM(4, 0x180, 0x100, 0, 1),
-    MESSAGE_PROGRAM(10, 0x100, 0x100, 0, 1),
+    MESSAGE_PROGRAM(5, 0, 0x180, 0, 1),     MESSAGE_PROGRAM(1, 0x180, 0x180, 0, 1),
+    MESSAGE_PROGRAM(4, 0x180, 0x100, 0, 1), MESSAGE_PROGRAM(10, 0x100, 0x100, 0, 1),
     MESSAGE_PROGRAM(15, 0x100, 0, 0, 0),
 };
 
 /** Goal/tape notification variant with color cycling enabled. */
 SMessageProg Messprog_Goal[5] = {
-    MESSAGE_PROGRAM(5, 0, 0x180, 1, 1),
-    MESSAGE_PROGRAM(1, 0x180, 0x180, 1, 1),
-    MESSAGE_PROGRAM(4, 0x180, 0x100, 1, 1),
-    MESSAGE_PROGRAM(30, 0x100, 0x100, 1, 1),
+    MESSAGE_PROGRAM(5, 0, 0x180, 1, 1),     MESSAGE_PROGRAM(1, 0x180, 0x180, 1, 1),
+    MESSAGE_PROGRAM(4, 0x180, 0x100, 1, 1), MESSAGE_PROGRAM(30, 0x100, 0x100, 1, 1),
     MESSAGE_PROGRAM(15, 0x100, 0, 1, 0),
 };
 
 /** Runtime font descriptors populated by Mess_LoadFont. */
-FontInfo Font_table[10] = {{0}};
+FontInfo Font_table[10] = { { 0 } };
 
 #undef MESSAGE_PROGRAM
 
@@ -170,8 +166,7 @@ static u32 FlagsBGR = 0x2c808080;
 static u16 Scale = 0;
 static u16 Sort = 0;
 int MessFade = 0x40;
-static char MessMemoryError[] __attribute__((section(".sdata"))) =
-    "\nmemory error";
+static char MessMemoryError[] __attribute__((section(".sdata"))) = "\nmemory error";
 
 /**
  * MESS-owned saved color state.
@@ -279,9 +274,7 @@ void Mess_SetSort(int sort)
  */
 void Mess_SetRGB(unsigned char r, unsigned char g, unsigned char b, int semitrans)
 {
-    u32 rgb = ((u32)(b & 0xff) << 16) |
-              ((u32)(g & 0xff) << 8) |
-              (u32)(r & 0xff);
+    u32 rgb = ((u32)(b & 0xff) << 16) | ((u32)(g & 0xff) << 8) | (u32)(r & 0xff);
     FlagsBGR = rgb;
     FlagsBGR = rgb | (semitrans ? 0x2E000000 : 0x2C000000);
 }
@@ -301,7 +294,8 @@ void Mess_SetRGB(unsigned char r, unsigned char g, unsigned char b, int semitran
  * @param FireRGB  Reserved fire-effect colour argument.
  * @param FireSquash  Reserved fire-effect squash argument.
  */
-int Mess_DrawPanelText(int x, int y, const char *pMessage, int Angle, unsigned int FireRGB, int FireSquash)
+int Mess_DrawPanelText(int x, int y, const char *pMessage, int Angle, unsigned int FireRGB,
+                       int FireSquash)
 {
     return Mess_DrawText(x, y, pMessage, Angle, FireRGB, FireSquash, 1);
 }
@@ -326,27 +320,18 @@ int Mess_TextWidth2(const char *pMessage)
         do
         {
             int frame = BigFont_Mapping[*(u8 *)pScan];
-            if (frame == 0xFE)
-                frame = -1;
-            if (frame == 0xFD)
-                frame = -1;
-            if (frame == 0xFC)
-                frame = -1;
-            if (frame == 0xFB)
-                frame = -1;
-            if (frame == 0xF9)
-                frame = -1;
-            if (frame == 0xF8)
-                frame = -1;
-            if (frame == 0xFA)
-                frame = -1;
-            if (frame == 0xFF)
-                frame = -1;
+            if (frame == 0xFE) frame = -1;
+            if (frame == 0xFD) frame = -1;
+            if (frame == 0xFC) frame = -1;
+            if (frame == 0xFB) frame = -1;
+            if (frame == 0xF9) frame = -1;
+            if (frame == 0xF8) frame = -1;
+            if (frame == 0xFA) frame = -1;
+            if (frame == 0xFF) frame = -1;
             if (frame >= 0)
             {
                 NumLetters++;
-                Length += BigFontAnim[frame].Width +
-                          BigFontAnim[frame].OffX;
+                Length += BigFontAnim[frame].Width + BigFontAnim[frame].OffX;
             }
             else
             {
@@ -378,22 +363,14 @@ int Mess_TextHeight2(const char *pMessage)
         do
         {
             int frame = BigFont_Mapping[(u8)*pScan];
-            if (frame == 0xFE)
-                frame = -1;
-            if (frame == 0xFD)
-                frame = -1;
-            if (frame == 0xFC)
-                frame = -1;
-            if (frame == 0xFB)
-                frame = -1;
-            if (frame == 0xF9)
-                frame = -1;
-            if (frame == 0xF8)
-                frame = -1;
-            if (frame == 0xFA)
-                frame = -1;
-            if (frame == 0xFF)
-                frame = -1;
+            if (frame == 0xFE) frame = -1;
+            if (frame == 0xFD) frame = -1;
+            if (frame == 0xFC) frame = -1;
+            if (frame == 0xFB) frame = -1;
+            if (frame == 0xF9) frame = -1;
+            if (frame == 0xF8) frame = -1;
+            if (frame == 0xFA) frame = -1;
+            if (frame == 0xFF) frame = -1;
             if (frame >= 0)
             {
                 int temp = BigFontAnim[frame].Height;
@@ -532,7 +509,8 @@ void Mess_DeleteAll(void)
  * @param xOffset  Horizontal offset from the animation-program position.
  * @param yOffset  Vertical offset from the animation-program position.
  */
-Message *Mess_Message(const char *pText, SMessageProg *pProg, bool recenter, short xOffset, short yOffset)
+Message *Mess_Message(const char *pText, SMessageProg *pProg, bool recenter, short xOffset,
+                      short yOffset)
 {
     Message *pNew = CreateMessage();
     pNew->pText = (char *)pText;
@@ -578,8 +556,7 @@ void Mess_Update(void)
                 pMess = pNext;
                 goto check;
             }
-            if (nextProg == 0x7f)
-                goto done_msg;
+            if (nextProg == 0x7f) goto done_msg;
             newProg = pProg + nextProg;
             nextProg = pMess->T_total;
             pMess->pProg = newProg;
@@ -640,8 +617,7 @@ void Mess_Display(void)
             {
                 int flash = pMess->T / pProg->FlashDuration;
                 flash &= 1;
-                if (flash == 0)
-                    goto next;
+                if (flash == 0) goto next;
             }
             {
                 TextJustification = pProg->Justify;
@@ -655,8 +631,7 @@ void Mess_Display(void)
 
                 int t = pMess->T;
                 // FIXME(match): register pin — rDiff in $a1 forces EndR to load before StartR and avoids the rDiff/gDiff register swap (unpinned: single-expression r gives 1 insn load-order diff, split rDiff gives 13); tried: nested expression, r1/r0 temps, copy-then-accumulate, r/g/b computed late.
-                register int rDiff asm("$5") =
-                    (pProg->EndR - pProg->StartR) * t / Dur;
+                register int rDiff asm("$5") = (pProg->EndR - pProg->StartR) * t / Dur;
                 int r = (pProg->StartR + rDiff) & 0xFF;
 
                 int g1 = pProg->EndG;
@@ -738,26 +713,24 @@ int Mess_TextWidth(const char *pMessage)
         do
         {
             int c = GetCharIndex(*(u8 *)pScan);
-            if ((unsigned)(c - 0xFB) < 3)
-                goto skip;
-            if (c == 0xF9)
-                goto skip;
-            if (c == 0xF8)
-                goto skip;
-            if (c == 0xFE)
-                goto skip;
-            if (c == 0xFA)
-                goto skip;
+            if ((unsigned)(c - 0xFB) < 3) goto skip;
+            if (c == 0xF9) goto skip;
+            if (c == 0xF8) goto skip;
+            if (c == 0xFE) goto skip;
+            if (c == 0xFA) goto skip;
             if (c == 0xFF)
             {
-                Length += ((Font_table[Current_font].mSpace_width + Font_table[Current_font].mChar_sep) *
-                           Font_table[Current_font].mFont_scale) >> 8;
+                Length +=
+                    ((Font_table[Current_font].mSpace_width + Font_table[Current_font].mChar_sep) *
+                     Font_table[Current_font].mFont_scale) >>
+                    8;
             }
             else
             {
                 Length += ((Font_table[Current_font].mChar_table[c].real_w +
                             Font_table[Current_font].mChar_sep) *
-                           Font_table[Current_font].mFont_scale) >> 8;
+                           Font_table[Current_font].mFont_scale) >>
+                          8;
             }
         skip:
             pScan++;
@@ -793,25 +766,19 @@ int Mess_TextHeightBelowBaseline(const char *pMessage)
         {
             int c = GetCharIndex(*(u8 *)pScan);
             int temph = 0;
-            if ((unsigned)(c - 0xFB) < 3)
-                goto check_max;
-            if (c == 0xF9)
-                goto check_max;
-            if (c == 0xF8)
-                goto check_max;
-            if (c == 0xFE)
-                goto check_max;
-            if (c == 0xFA)
-                goto check_max;
-            if (c == 0xFF)
-                goto check_max;
+            if ((unsigned)(c - 0xFB) < 3) goto check_max;
+            if (c == 0xF9) goto check_max;
+            if (c == 0xF8) goto check_max;
+            if (c == 0xFE) goto check_max;
+            if (c == 0xFA) goto check_max;
+            if (c == 0xFF) goto check_max;
             {
                 int cf = Current_font;
                 int off = cf * 36;
                 int charData = *(int *)(off + charDataBase);
                 int entry = c * 36 + charData;
                 temph = *(int *)(entry + MessCharacterHeightOffset) -
-                    *(int *)(entry + MessCharacterBaselineOffset);
+                        *(int *)(entry + MessCharacterBaselineOffset);
             }
         check_max:
             if (Height < temph)
@@ -852,16 +819,11 @@ int Mess_TextHeightAboveBaseline(const char *pMessage)
         {
             int c = GetCharIndex(*(u8 *)pScan);
             int temph;
-            if ((unsigned)(c - 0xFB) < 3)
-                goto set_h_zero;
-            if (c == 0xF9)
-                goto set_h_zero;
-            if (c == 0xF8)
-                goto set_h_zero;
-            if (c == 0xFE)
-                goto set_h_zero;
-            if (c == 0xFA)
-                goto set_h_zero;
+            if ((unsigned)(c - 0xFB) < 3) goto set_h_zero;
+            if (c == 0xF9) goto set_h_zero;
+            if (c == 0xF8) goto set_h_zero;
+            if (c == 0xFE) goto set_h_zero;
+            if (c == 0xFA) goto set_h_zero;
             if (c == 0xFF)
             {
             set_h_zero:
@@ -902,8 +864,7 @@ int Mess_TextHeight(const char *pMessage)
     {
         return Mess_TextHeight2(pMessage);
     }
-    return Mess_TextHeightAboveBaseline(pMessage) +
-           Mess_TextHeightBelowBaseline(pMessage);
+    return Mess_TextHeightAboveBaseline(pMessage) + Mess_TextHeightBelowBaseline(pMessage);
 }
 
 /**
@@ -925,78 +886,47 @@ int GetCharIndex(char ch)
     if (numChars < 15)
     {
         characterIndex = ch - 0x30;
-        if ((u8)characterIndex < 10)
-            return characterIndex;
-        if (ch == 0x3A)
-            return 10;
+        if ((u8)characterIndex < 10) return characterIndex;
+        if (ch == 0x3A) return 10;
         return 0;
     }
 
-    if (ch == 0x20)
-        return 0xFF;
-    if (ch == 0x5B)
-        return 0xFE;
-    if (ch == 0x5D)
-        return 0xFD;
-    if (ch == 0x7B)
-        return 0xFE;
-    if (ch == 0x7D)
-        return 0xFC;
-    if (ch == 0x3C)
-        return 0xFE;
-    if (ch == 0x3E)
-        return 0xFB;
-    if (ch == 0x7C)
-        return 0xFE;
-    if (ch == 0x60)
-        return 0xF9;
-    if (ch == 0x7E)
-        return 0xFE;
-    if (ch == 0x26)
-        return 0xF8;
-    if (ch == 0x5E)
-        return 0xFA;
+    if (ch == 0x20) return 0xFF;
+    if (ch == 0x5B) return 0xFE;
+    if (ch == 0x5D) return 0xFD;
+    if (ch == 0x7B) return 0xFE;
+    if (ch == 0x7D) return 0xFC;
+    if (ch == 0x3C) return 0xFE;
+    if (ch == 0x3E) return 0xFB;
+    if (ch == 0x7C) return 0xFE;
+    if (ch == 0x60) return 0xF9;
+    if (ch == 0x7E) return 0xFE;
+    if (ch == 0x26) return 0xF8;
+    if (ch == 0x5E) return 0xFA;
 
     characterIndex = ch - 0x41;
-    if ((u8)characterIndex < 0x1A)
-        return characterIndex;
+    if ((u8)characterIndex < 0x1A) return characterIndex;
     characterIndex = ch - 0x61;
-    if ((u8)characterIndex < 0x1A)
-        return characterIndex;
-    if ((u8)(ch - 0x30) < 10)
-        return ch - 0x16;
+    if ((u8)characterIndex < 0x1A) return characterIndex;
+    if ((u8)(ch - 0x30) < 10) return ch - 0x16;
     switch (ch)
     {
-    case '!':
-        return 0x25;
-    case ':':
-        return 0x26;
-    case '.':
-        return 0x27;
-    case ',':
-        return 0x28;
-    case '-':
-    case '_':
-        return 0x29;
-    case '%':
-        return 0x2A;
-    case '+':
-        return 0x2B;
-    case '\'':
-        if (Font_table[Current_font].mNum_chars >= 0x2D)
-            return 0x2C;
-    case '?':
-        return 0x24;
-    case '#':
-        return 0x2D;
-    case '"':
-        return 0x2E;
-    case '&':
-        return 0x2F;
-    case '@':
-        return 0x30;
-    default:
-        return 0x24;
+        case '!': return 0x25;
+        case ':': return 0x26;
+        case '.': return 0x27;
+        case ',': return 0x28;
+        case '-':
+        case '_': return 0x29;
+        case '%': return 0x2A;
+        case '+': return 0x2B;
+        case '\'':
+            if (Font_table[Current_font].mNum_chars >= 0x2D) return 0x2C;
+        case '?': return 0x24;
+        case '#': return 0x2D;
+        case '"': return 0x2E;
+        case '&': return 0x2F;
+        case '@': return 0x30;
+        default: return 0x24;
     }
 }
 
@@ -1016,7 +946,8 @@ int GetCharIndex(char ch)
  * @param IsPanel  Whether to submit primitives through Panel_addPrim.
  * @return The rendered text width.
  */
-int Mess_DrawText(int x, int y, const char *pMessage, int DrawSolid, unsigned int FireRGB, int FireSquash, bool IsPanel)
+int Mess_DrawText(int x, int y, const char *pMessage, int DrawSolid, unsigned int FireRGB,
+                  int FireSquash, bool IsPanel)
 {
     char *pScan;
     int Off;
@@ -1034,19 +965,14 @@ int Mess_DrawText(int x, int y, const char *pMessage, int DrawSolid, unsigned in
 
     switch (TextJustification)
     {
-    case 0:
-        Off = -length / 2;
-        break;
-    case 2:
-        Off = -length;
-        break;
-    case 1:
-        Off = 0;
-        break;
+        case 0: Off = -length / 2; break;
+        case 2: Off = -length; break;
+        case 1: Off = 0; break;
     }
 
     shadow_off = ((unsigned int)(Font_table[Current_font].mFont_shadow_offset *
-                                 Font_table[Current_font].mFont_scale) >> 8) *
+                                 Font_table[Current_font].mFont_scale) >>
+                  8) *
                  0x10001;
 
     ScreenX = x + Off;
@@ -1114,22 +1040,23 @@ int Mess_DrawText(int x, int y, const char *pMessage, int DrawSolid, unsigned in
         }
         if (n == 0xFF)
         {
-            ScreenX -= ((Font_table[Current_font].mSpace_width +
-                         Font_table[Current_font].mChar_sep) *
-                        Font_table[Current_font].mFont_scale) >> 8;
+            ScreenX -=
+                ((Font_table[Current_font].mSpace_width + Font_table[Current_font].mChar_sep) *
+                 Font_table[Current_font].mFont_scale) >>
+                8;
             continue;
         }
 
-        ScreenX -= ((Font_table[Current_font].mChar_table[n].real_w +
-                     Font_table[Current_font].mChar_sep) *
-                    Font_table[Current_font].mFont_scale) >> 8;
+        ScreenX -=
+            ((Font_table[Current_font].mChar_table[n].real_w + Font_table[Current_font].mChar_sep) *
+             Font_table[Current_font].mFont_scale) >>
+            8;
 
         apoly = (POLY_GT4 *)pPoly;
         shadow = (POLY_FT4 *)((u8 *)apoly + sizeof(POLY_GT4));
         anothershadow = shadow + 1;
         newppoly = (u8 *)anothershadow + sizeof(POLY_FT4);
-        if (PolyBufferEnd < newppoly)
-            return length;
+        if (PolyBufferEnd < newppoly) return length;
         pPoly = (u32 *)newppoly;
 
         *(u32 *)&apoly->r0 = (FlagsBGR & 0x00FFFFFF) + 0x3E000000;
@@ -1156,14 +1083,19 @@ int Mess_DrawText(int x, int y, const char *pMessage, int DrawSolid, unsigned in
 
         int geomFont = Current_font;
         apoly->x0 = ScreenX;
-        apoly->y0 = y - ((Font_table[geomFont].mChar_table[n].baseline *
-                          Font_table[geomFont].mFont_scale) >> 8);
-        apoly->x1 = ScreenX + (((Font_table[geomFont].mChar_table[n].w << 2) *
-                               Font_table[geomFont].mFont_scale) >> 8);
+        apoly->y0 =
+            y -
+            ((Font_table[geomFont].mChar_table[n].baseline * Font_table[geomFont].mFont_scale) >>
+             8);
+        apoly->x1 =
+            ScreenX +
+            (((Font_table[geomFont].mChar_table[n].w << 2) * Font_table[geomFont].mFont_scale) >>
+             8);
         apoly->y1 = apoly->y0;
         apoly->x2 = ScreenX;
-        apoly->y2 = apoly->y0 + ((Font_table[geomFont].mChar_table[n].h *
-                                  Font_table[geomFont].mFont_scale) >> 8);
+        apoly->y2 =
+            apoly->y0 +
+            ((Font_table[geomFont].mChar_table[n].h * Font_table[geomFont].mFont_scale) >> 8);
         apoly->x3 = apoly->x1;
         apoly->y3 = apoly->y2;
 
@@ -1185,11 +1117,8 @@ int Mess_DrawText(int x, int y, const char *pMessage, int DrawSolid, unsigned in
         *(u32 *)&shadow->u1 = u1;
         *(u16 *)&shadow->u2 = u2;
         *(u16 *)&shadow->u3 = u3;
-        setXY4(shadow,
-               apoly->x0, apoly->y0,
-               apoly->x1, apoly->y1,
-               apoly->x2, apoly->y2,
-               apoly->x3, apoly->y3);
+        setXY4(shadow, apoly->x0, apoly->y0, apoly->x1, apoly->y1, apoly->x2, apoly->y2, apoly->x3,
+               apoly->y3);
         shadow->code |= 2;
         setRGB0(shadow, 0x80, 0x80, 0x80);
         shadow->tpage = (shadow->tpage & 0xFF9F) | 0x40;
@@ -1248,7 +1177,8 @@ int Mess_DrawText(int x, int y, const char *pMessage, int DrawSolid, unsigned in
         else
         {
             addPrim(reinterpret_cast<MessDoubleBuffer *>(pDoubleBuffer)->PanelOT + Sort, apoly);
-            addPrim(reinterpret_cast<MessDoubleBuffer *>(pDoubleBuffer)->PanelOT + Sort, anothershadow);
+            addPrim(reinterpret_cast<MessDoubleBuffer *>(pDoubleBuffer)->PanelOT + Sort,
+                    anothershadow);
             addPrim(reinterpret_cast<MessDoubleBuffer *>(pDoubleBuffer)->PanelOT + Sort, shadow);
         }
     }
@@ -1320,13 +1250,12 @@ int Mess_LoadFont(char *filename, char *file_buffer, int char_sep, int shadow_of
 
         clutx = Pal16X;
         cluty = Pal16Y + GetFree16Slot();
-        clut = (unsigned short *)Mem_New(
-            MessPaletteColorCount * MessPaletteEntrySize, 1, 1);
+        clut = (unsigned short *)Mem_New(MessPaletteColorCount * MessPaletteEntrySize, 1, 1);
         for (int i = 0; i < MessPaletteColorCount; i++)
         {
             clut[i] = *(unsigned short *)(file_buffer +
-                                         Font_table[this_font].mNum_chars * MessFontFileGlyphSize +
-                                         MessFontHeaderSize + i * MessPaletteEntrySize);
+                                          Font_table[this_font].mNum_chars * MessFontFileGlyphSize +
+                                          MessFontHeaderSize + i * MessPaletteEntrySize);
         }
     }
 
@@ -1348,11 +1277,9 @@ int Mess_LoadFont(char *filename, char *file_buffer, int char_sep, int shadow_of
 
     {
         int i;
-        MessFontFileGlyph *tb =
-            (MessFontFileGlyph *)(file_buffer + sizeof(int));
+        MessFontFileGlyph *tb = (MessFontFileGlyph *)(file_buffer + sizeof(int));
         db = file_buffer +
-             (Font_table[this_font].mNum_chars * MessFontFileGlyphSize +
-              MessFontHeaderSize) +
+             (Font_table[this_font].mNum_chars * MessFontFileGlyphSize + MessFontHeaderSize) +
              MessPaletteColorCount * MessPaletteEntrySize;
         for (i = 0; i < Font_table[this_font].mNum_chars; i++)
         {
@@ -1393,16 +1320,11 @@ int Mess_LoadFont(char *filename, char *file_buffer, int char_sep, int shadow_of
             Font_table[this_font].mChar_table[i].v0 = (unsigned char)y;
             Font_table[this_font].mChar_table[i].u1 =
                 Font_table[this_font].mChar_table[i].u0 + w * 4;
-            Font_table[this_font].mChar_table[i].v1 =
-                Font_table[this_font].mChar_table[i].v0;
-            Font_table[this_font].mChar_table[i].u2 =
-                Font_table[this_font].mChar_table[i].u0;
-            Font_table[this_font].mChar_table[i].v2 =
-                Font_table[this_font].mChar_table[i].v0 + h;
-            Font_table[this_font].mChar_table[i].u3 =
-                Font_table[this_font].mChar_table[i].u1;
-            Font_table[this_font].mChar_table[i].v3 =
-                Font_table[this_font].mChar_table[i].v2;
+            Font_table[this_font].mChar_table[i].v1 = Font_table[this_font].mChar_table[i].v0;
+            Font_table[this_font].mChar_table[i].u2 = Font_table[this_font].mChar_table[i].u0;
+            Font_table[this_font].mChar_table[i].v2 = Font_table[this_font].mChar_table[i].v0 + h;
+            Font_table[this_font].mChar_table[i].u3 = Font_table[this_font].mChar_table[i].u1;
+            Font_table[this_font].mChar_table[i].v3 = Font_table[this_font].mChar_table[i].v2;
             Font_table[this_font].mChar_table[i].tp = GetTPage(0, 0, x, y);
             Font_table[this_font].mChar_table[i].clut = Clut;
 
@@ -1420,8 +1342,7 @@ int Mess_LoadFont(char *filename, char *file_buffer, int char_sep, int shadow_of
 
     if (shadow_offset == -1)
     {
-        Font_table[this_font].mFont_shadow_offset =
-            Font_table[this_font].mChar_table[0].w >> 1;
+        Font_table[this_font].mFont_shadow_offset = Font_table[this_font].mChar_table[0].w >> 1;
     }
     else
     {
@@ -1437,8 +1358,7 @@ int Mess_LoadFont(char *filename, char *file_buffer, int char_sep, int shadow_of
         Font_table[this_font].mChar_sep = char_sep;
     }
 
-    Font_table[this_font].mSpace_width =
-        Font_table[this_font].mChar_table[0].w * 28 / 10;
+    Font_table[this_font].mSpace_width = Font_table[this_font].mChar_table[0].w * 28 / 10;
     Pack_NoBottom = 0;
     Pack_NoRight = 0;
     Current_font = this_font;
@@ -1501,8 +1421,7 @@ void Mess_UnloadFont(void)
         do
         {
             previous = remaining;
-            if (previous < 1)
-                return;
+            if (previous < 1) return;
             int newCount = previous - 1;
             Num_fonts = newCount;
             remaining = newCount;
@@ -1539,8 +1458,7 @@ void Mess_SetCurrentFont(char *font_name)
     int i;
     for (i = 0; i < Num_fonts; i++)
     {
-        if (strcmp(font_name, Font_table[i].mFont_name) == 0)
-            break;
+        if (strcmp(font_name, Font_table[i].mFont_name) == 0) break;
     }
     Current_font = i;
 }

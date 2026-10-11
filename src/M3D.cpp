@@ -31,7 +31,8 @@ struct CBody;
 #include "VERTICES.h"
 
 /** Pulsing-colour keyframe entry. */
-struct SRGBI {
+struct SRGBI
+{
     u8 r;
     u8 g;
     u8 b;
@@ -39,7 +40,8 @@ struct SRGBI {
 };
 
 /** Four texture-wibble vertices attached to one face. */
-struct STexWibFaceInfo {
+struct STexWibFaceInfo
+{
     STexWibVertInfo p0;
     STexWibVertInfo p1;
     STexWibVertInfo p2;
@@ -56,13 +58,15 @@ struct STexWibFaceInfo {
 #include "PSXREGION.h"
 
 /** Draw-environment prefix consumed by the M3D frame setup. */
-struct SDrawEnvLocal {
+struct SDrawEnvLocal
+{
     RECT clip;
     u8 padding_0008[0x54];
 };
 
 /** Active render-buffer fields consumed by M3D primitive submission. */
-struct SDoubleBufferLocal {
+struct SDoubleBufferLocal
+{
     SDrawEnvLocal Draw;
     u8 Disp[0x14];
     int Visible;
@@ -81,7 +85,8 @@ struct SDoubleBufferLocal {
 #include "SLIGHT.h"
 
 /** CItem prefix consumed by the item-lighting and reflection paths. */
-struct M3dCItemRenderLayout {
+struct M3dCItemRenderLayout
+{
     Item ItemBase;
     CSVector mScale;
     u32 mTRN;
@@ -94,7 +99,8 @@ struct M3dCItemRenderLayout {
 };
 
 /** Owner-local CSuper fields consumed while rendering articulated models. */
-struct CSuper {
+struct CSuper
+{
     u8 opaque_0000[0x88];
     u32 mEllipsoidRGB;
     u16 mEllipsoidScale;
@@ -123,7 +129,8 @@ struct tag_S_Pal;
 #include "SANIMFRAME.h"
 
 /** Derived object slice used by M3d_BuildTransform's matrix fast path. */
-struct M3dSuperTransformLayout {
+struct M3dSuperTransformLayout
+{
     Item ItemBase;
     u8 padding_0024[0xE4];
     u32 mExtraFlags;
@@ -135,29 +142,28 @@ struct M3dSuperTransformLayout {
 
 typedef char M3d_SMatrix_size_must_be_24[(sizeof(SMatrix) == 24) ? 1 : -1];
 typedef char M3d_Light_size_must_be_52[(sizeof(SLight) == 52) ? 1 : -1];
-typedef char M3d_CItem_render_prefix_size_must_be_64[
-    (sizeof(M3dCItemRenderLayout) == 64) ? 1 : -1];
+typedef char M3d_CItem_render_prefix_size_must_be_64[(sizeof(M3dCItemRenderLayout) == 64) ? 1 : -1];
 typedef char M3d_Texture_size_must_be_40[(sizeof(Texture) == 40) ? 1 : -1];
-typedef char M3d_Super_transform_slice_size_must_be_3760[
-    (sizeof(M3dSuperTransformLayout) == 3760) ? 1 : -1];
-typedef char M3d_Super_render_size_must_be_400[
-    (sizeof(CSuper) == 400) ? 1 : -1];
-typedef char M3d_PSXRegion_size_must_be_64[
-    (sizeof(SPSXRegion) == 64) ? 1 : -1];
+typedef char
+    M3d_Super_transform_slice_size_must_be_3760[(sizeof(M3dSuperTransformLayout) == 3760) ? 1 : -1];
+typedef char M3d_Super_render_size_must_be_400[(sizeof(CSuper) == 400) ? 1 : -1];
+typedef char M3d_PSXRegion_size_must_be_64[(sizeof(SPSXRegion) == 64) ? 1 : -1];
 
 /** Return the target-proven derived slice accepted by M3d_BuildTransform. */
-static inline M3dSuperTransformLayout *M3d_GetTransformLayout(
-    CSuper *pSuper) {
+static inline M3dSuperTransformLayout *M3d_GetTransformLayout(CSuper *pSuper)
+{
     return (M3dSuperTransformLayout *)pSuper;
 }
 
 /** View the common Item prefix as M3D's recovered CItem rendering slice. */
-static inline M3dCItemRenderLayout *M3d_GetRenderItem(Item *pItem) {
+static inline M3dCItemRenderLayout *M3d_GetRenderItem(Item *pItem)
+{
     return (M3dCItemRenderLayout *)pItem;
 }
 
 /** View an Item known to use the articulated CSuper rendering path. */
-static inline CSuper *M3d_GetSuper(Item *pItem) {
+static inline CSuper *M3d_GetSuper(Item *pItem)
+{
     return (CSuper *)pItem;
 }
 
@@ -175,18 +181,18 @@ static inline CSuper *M3d_GetSuper(Item *pItem) {
 
 SLight M3d_DefaultLight = {
     {
-        {0, 0x1000, 0},
-        {0, -0x1000, 0},
-        {0, 0, 0x1000},
+        { 0, 0x1000, 0 },
+        { 0, -0x1000, 0 },
+        { 0, 0, 0x1000 },
     },
     0,
     {
-        {0x1000, 0x0900, 0x0800},
-        {0x0800, 0x0d00, 0x0800},
-        {0x0200, 0x1000, 0x0800},
+        { 0x1000, 0x0900, 0x0800 },
+        { 0x0800, 0x0d00, 0x0800 },
+        { 0x0200, 0x1000, 0x0800 },
     },
     0,
-    {0x0200, 0x0200, 0x0200},
+    { 0x0200, 0x0200, 0x0200 },
 };
 
 /** Shared transformed-vertex workspace initialized by M3dInit. */
@@ -269,103 +275,67 @@ void M3dMaths_MulRotMatrix(MATRIX *src, MATRIX *dst);
 // Character-pose helpers retain their natural C++ spelling so GCC emits the
 // original MAIN.SYM names from their recovered signatures.
 SMatrix *Decomp_GetAnimTransform(CSuper *pSuper);
-static inline void setCopControlWord_m3d(int reg, int value) {
-    switch (reg) {
-        case 0:
-
-            break;
-        case 0x800:
-
-            break;
-        case 0x1000:
-
-            break;
-        case 0x1800:
-
-            break;
-        case 0x2000:
-
-            break;
-        case 0xc000:
-
-            break;
-        case 0xc800:
-
-            break;
-        case 0xd000:
-
-            break;
-        default:
-            break;
+static inline void setCopControlWord_m3d(int reg, int value)
+{
+    switch (reg)
+    {
+        case 0: break;
+        case 0x800: break;
+        case 0x1000: break;
+        case 0x1800: break;
+        case 0x2000: break;
+        case 0xc000: break;
+        case 0xc800: break;
+        case 0xd000: break;
+        default: break;
     }
 }
 
-static inline void setCopReg_m3d(int reg, int value) {
-    switch (reg) {
-        case 0:
-
-            break;
-        case 4:
-
-            break;
-        case 0x3000:
-
-            break;
-        case 0x4000:
-
-            break;
-        case 0x4800:
-
-            break;
-        case 0x5000:
-
-            break;
-        case 0x5800:
-
-            break;
-        case 0xf000:
-
-            break;
-        default:
-            break;
+static inline void setCopReg_m3d(int reg, int value)
+{
+    switch (reg)
+    {
+        case 0: break;
+        case 4: break;
+        case 0x3000: break;
+        case 0x4000: break;
+        case 0x4800: break;
+        case 0x5000: break;
+        case 0x5800: break;
+        case 0xf000: break;
+        default: break;
     }
 }
 
-static inline int getCopReg_m3d(int reg) {
+static inline int getCopReg_m3d(int reg)
+{
     int value = 0;
 
-    switch (reg) {
-        case 0x4800:
-
-            break;
-        case 0x5000:
-
-            break;
-        case 0x5800:
-
-            break;
-        default:
-            break;
+    switch (reg)
+    {
+        case 0x4800: break;
+        case 0x5000: break;
+        case 0x5800: break;
+        default: break;
     }
 
     return value;
 }
 
-static inline void copFunction_m3d(int op) {
-    switch (op) {
-        case 0x486012:
-
-            break;
-        default:
-            break;
+static inline void copFunction_m3d(int op)
+{
+    switch (op)
+    {
+        case 0x486012: break;
+        default: break;
     }
 }
 
 
 // === Free function declarations ===
 void M3d_Line(int x0, int y0, int x1, int y1, int Color, int z);
-int Wireframe_ProcessPolys(unsigned int * pFaceX, int Num, int color);
-void RenderSuperItem(Item * pItem);
+int Wireframe_ProcessPolys(unsigned int *pFaceX, int Num, int color);
+void RenderSuperItem(Item *pItem);
 void RenderModel(SModel *pModel);
 void RenderModelFast(SModel *pModel, VECTOR *pPosnRelCam);
 void RenderBackgroundModel(SModel *pModel);
@@ -373,8 +343,8 @@ void RenderModelInSuper(SModel *pModel);
 void RenderModelInSuperFast(SModel *pModel);
 void RenderModelNonRotated(SModel *pModel, VECTOR *pPosnRelCam);
 void RenderBackgroundModelNonRotated(SModel *pModel);
-int uWibble(STexWibVertInfo * pTexWibVertInfo);
-int vWibble(STexWibVertInfo * pTexWibVertInfo);
+int uWibble(STexWibVertInfo *pTexWibVertInfo);
+int vWibble(STexWibVertInfo *pTexWibVertInfo);
 void M3d_PreprocessWibblyTextures(int Region);
 void M3d_PreprocessPulsingColours(int Region);
 
@@ -396,12 +366,14 @@ void M3d_PreprocessPulsingColours(int Region);
  * @param Color  GPU command colour for the line.
  * @param z  Ordering-table depth.
  */
-void M3d_Line(int x0, int y0, int x1, int y1, int Color, int z) {
+void M3d_Line(int x0, int y0, int x1, int y1, int Color, int z)
+{
     int t;
 
     if (x0 == x1 && y0 == y1) return;
 
-    if (x1 < x0) {
+    if (x1 < x0)
+    {
         t = x0;
         x0 = x1;
         x1 = t;
@@ -412,17 +384,20 @@ void M3d_Line(int x0, int y0, int x1, int y1, int Color, int z) {
 
     if (x1 < 0 || x0 >= 0x200) return;
 
-    if (x0 < 0) {
+    if (x0 < 0)
+    {
         y0 = ((-x0) * (y1 - y0)) / (x1 - x0) + y0;
         x0 = 0;
     }
 
-    if (x1 >= 0x200) {
+    if (x1 >= 0x200)
+    {
         y1 = ((0x1FF - x0) * (y1 - y0)) / (x1 - x0) + y0;
         x1 = 0x1FF;
     }
 
-    if (y1 < y0) {
+    if (y1 < y0)
+    {
         t = x0;
         x0 = x1;
         x1 = t;
@@ -433,12 +408,14 @@ void M3d_Line(int x0, int y0, int x1, int y1, int Color, int z) {
 
     if (y1 < 0 || y0 >= 0xF0) return;
 
-    if (y0 < 0) {
+    if (y0 < 0)
+    {
         x0 = ((-y0) * (x1 - x0)) / (y1 - y0) + x0;
         y0 = 0;
     }
 
-    if (y1 >= 0xF0) {
+    if (y1 >= 0xF0)
+    {
         x1 = ((0xEF - y0) * (x1 - x0)) / (y1 - y0) + x0;
         y1 = 0xEF;
     }
@@ -470,8 +447,10 @@ void M3d_Line(int x0, int y0, int x1, int y1, int Color, int z) {
  * @param color Base RGB value used for each wireframe edge.
  * @return No defined value; the target integer function falls through.
  */
-int Wireframe_ProcessPolys(unsigned int * pFaceX, int Num, int color) {
-    if (ForceWireFrameColor) {
+int Wireframe_ProcessPolys(unsigned int *pFaceX, int Num, int color)
+{
+    if (ForceWireFrameColor)
+    {
         color = ForceWireFrameColor;
     }
 
@@ -480,8 +459,8 @@ int Wireframe_ProcessPolys(unsigned int * pFaceX, int Num, int color) {
     int FaceG;
     int FaceB;
 
-    for (int i = 0; i < Num;
-        i++, pFaceX += (*(u16 *)((u8 *)pFaceX + 2) & 0xFFFC) >> 2) {
+    for (int i = 0; i < Num; i++, pFaceX += (*(u16 *)((u8 *)pFaceX + 2) & 0xFFFC) >> 2)
+    {
         u8 *pVertexIndex = (u8 *)(pFaceX + 1);
 
         int x0 = pVertices[pVertexIndex[0]].X;
@@ -494,7 +473,8 @@ int Wireframe_ProcessPolys(unsigned int * pFaceX, int Num, int color) {
         int y2 = pVertices[pVertexIndex[2]].Y;
         int z2 = pVertices[pVertexIndex[0]].z;
 
-        if ((x1 - x0) * (y2 - y0) < (x2 - x0) * (y1 - y0)) {
+        if ((x1 - x0) * (y2 - y0) < (x2 - x0) * (y1 - y0))
+        {
             continue;
         }
 
@@ -502,15 +482,16 @@ int Wireframe_ProcessPolys(unsigned int * pFaceX, int Num, int color) {
         if (z1 > zmax) zmax = z1;
         if (z2 > zmax) zmax = z2;
 
-        if (!(*(u16 *)pFaceX & 0x10) &&
-            ((*pFaceX & 0x40) || (*pFaceX & 0x80))) {
+        if (!(*(u16 *)pFaceX & 0x10) && ((*pFaceX & 0x40) || (*pFaceX & 0x80)))
+        {
             int x3 = pVertices[pVertexIndex[3]].X;
             int y3 = pVertices[pVertexIndex[3]].Y;
             int z3 = pVertices[pVertexIndex[0]].z;
             if (z3 > zmax) zmax = z3;
 
             int color2 = color;
-            if (color2 == 0x800080) {
+            if (color2 == 0x800080)
+            {
                 if (*(u16 *)pFaceX & 0x2000) color2 = 0x008000;
                 if (*(u16 *)pFaceX & 0x4000) color2 = 0x000080;
             }
@@ -520,25 +501,31 @@ int Wireframe_ProcessPolys(unsigned int * pFaceX, int Num, int color) {
             M3d_Line(x2, y2, x3, y3, color2, zmax);
             M3d_Line(x2, y2, x0, y0, color2, zmax);
 
-            if (M3d_WireframeMode == 2 &&
-                !((pFaceX[3] >> 16) & 1)) {
+            if (M3d_WireframeMode == 2 && !((pFaceX[3] >> 16) & 1))
+            {
                 FaceR = 0;
                 FaceG = 0;
                 FaceB = 0;
 
-                if (*(u16 *)pFaceX & 0x2000) {
+                if (*(u16 *)pFaceX & 0x2000)
+                {
                     int push = *(s16 *)0x1F8002B4 / 32;
                     if (push < -255) push = -255;
                     if (push > 255) push = 255;
-                    if (push < 0) FaceG -= push;
-                    else FaceR += push;
+                    if (push < 0)
+                        FaceG -= push;
+                    else
+                        FaceR += push;
                 }
-                if (*(u16 *)pFaceX & 0x4000) {
+                if (*(u16 *)pFaceX & 0x4000)
+                {
                     int push = *(s16 *)0x1F8002B4 / 32;
                     if (push < -255) push = -255;
                     if (push > 255) push = 255;
-                    if (push < 0) FaceG -= push;
-                    else FaceR += push;
+                    if (push < 0)
+                        FaceG -= push;
+                    else
+                        FaceR += push;
                 }
 
                 POLY_F4 *p_poly = (POLY_F4 *)pPoly;
@@ -547,13 +534,14 @@ int Wireframe_ProcessPolys(unsigned int * pFaceX, int Num, int color) {
                 setRGB0(p_poly, FaceR, FaceG, FaceB);
                 SDoubleBufferLocal *db = reinterpret_cast<SDoubleBufferLocal *>(pDoubleBuffer);
                 setXY4(p_poly, x0, y0, x1, y1, x2, y2, x3, y3);
-                addPrim(db->OrderingTable +
-                            ((zmax >> 2) & 0xFFF),
-                        p_poly);
+                addPrim(db->OrderingTable + ((zmax >> 2) & 0xFFF), p_poly);
             }
-        } else if ((*pFaceX & 0x40) || (*pFaceX & 0x80)) {
+        }
+        else if ((*pFaceX & 0x40) || (*pFaceX & 0x80))
+        {
             int color2 = color;
-            if (color2 == 0x800080) {
+            if (color2 == 0x800080)
+            {
                 if (*(u16 *)pFaceX & 0x2000) color2 = 0x008000;
                 if (*(u16 *)pFaceX & 0x4000) color2 = 0x000080;
             }
@@ -562,25 +550,31 @@ int Wireframe_ProcessPolys(unsigned int * pFaceX, int Num, int color) {
             M3d_Line(x1, y1, x2, y2, color2, zmax);
             M3d_Line(x2, y2, x0, y0, color2, zmax);
 
-            if (M3d_WireframeMode == 2 &&
-                !((pFaceX[3] >> 16) & 1)) {
+            if (M3d_WireframeMode == 2 && !((pFaceX[3] >> 16) & 1))
+            {
                 FaceR = 0;
                 FaceG = 0;
                 FaceB = 0;
 
-                if (*(u16 *)pFaceX & 0x2000) {
+                if (*(u16 *)pFaceX & 0x2000)
+                {
                     int push = *(s16 *)0x1F8002B4 / 32;
                     if (push < -255) push = -255;
                     if (push > 255) push = 255;
-                    if (push < 0) FaceG -= push;
-                    else FaceR += push;
+                    if (push < 0)
+                        FaceG -= push;
+                    else
+                        FaceR += push;
                 }
-                if (*(u16 *)pFaceX & 0x4000) {
+                if (*(u16 *)pFaceX & 0x4000)
+                {
                     int push = *(s16 *)0x1F8002B4 / 32;
                     if (push < -255) push = -255;
                     if (push > 255) push = 255;
-                    if (push < 0) FaceG -= push;
-                    else FaceR += push;
+                    if (push < 0)
+                        FaceG -= push;
+                    else
+                        FaceR += push;
                 }
 
                 POLY_F3 *p_poly = (POLY_F3 *)pPoly;
@@ -589,9 +583,7 @@ int Wireframe_ProcessPolys(unsigned int * pFaceX, int Num, int color) {
                 setRGB0(p_poly, FaceR, FaceG, FaceB);
                 SDoubleBufferLocal *db = reinterpret_cast<SDoubleBufferLocal *>(pDoubleBuffer);
                 setXY3(p_poly, x0, y0, x1, y1, x2, y2);
-                addPrim(db->OrderingTable +
-                            ((zmax >> 2) & 0xFFF),
-                        p_poly);
+                addPrim(db->OrderingTable + ((zmax >> 2) & 0xFFF), p_poly);
             }
         }
     }
@@ -609,10 +601,12 @@ int Wireframe_ProcessPolys(unsigned int * pFaceX, int Num, int color) {
  * @param pVP  VP to operate on.
  * @param ot Ordering table receiving this frame's primitives.
  */
-void M3d_RenderSetup(SCamera * pCamera, SViewport * pVP, unsigned int * ot) {
+void M3d_RenderSetup(SCamera *pCamera, SViewport *pVP, unsigned int *ot)
+{
     XblanksThen = XblanksNow;
     XblanksNow = Xblanks;
-    if (XblanksThen != XblanksNow) {
+    if (XblanksThen != XblanksNow)
+    {
         FrameNo++;
     }
 
@@ -635,8 +629,7 @@ void M3d_RenderSetup(SCamera * pCamera, SViewport * pVP, unsigned int * ot) {
     u32 adj;
     u32 hyp;
 
-    pVP->Zoom = (((pVP->xR - pVP->xL) >> 1) << 12) /
-                pVP->TanHalf * 4096 / PixelAspectY;
+    pVP->Zoom = (((pVP->xR - pVP->xL) >> 1) << 12) / pVP->TanHalf * 4096 / PixelAspectY;
     pVP->xC = (pVP->xL + pVP->xR) >> 1;
     pVP->yC = (pVP->yT + pVP->yB) >> 1;
 
@@ -651,8 +644,7 @@ void M3d_RenderSetup(SCamera * pCamera, SViewport * pVP, unsigned int * ot) {
 
     opp = (pVP->xR - pVP->xL) << 11;
     adj = pVP->Zoom * PixelAspectX;
-    hyp = M3dMaths_SquareRoot0((opp >> 12) * (opp >> 12) +
-                                    (adj >> 12) * (adj >> 12));
+    hyp = M3dMaths_SquareRoot0((opp >> 12) * (opp >> 12) + (adj >> 12) * (adj >> 12));
     FrustumNormals[2].vx = 0;
     FrustumNormals[2].vy = adj / hyp;
     FrustumNormals[2].vz = opp / hyp;
@@ -664,8 +656,7 @@ void M3d_RenderSetup(SCamera * pCamera, SViewport * pVP, unsigned int * ot) {
 
     opp = (pVP->xR - pVP->xL) << 11;
     adj = pVP->Zoom * PixelAspectY;
-    hyp = M3dMaths_SquareRoot0((opp >> 12) * (opp >> 12) +
-                                    (adj >> 12) * (adj >> 12));
+    hyp = M3dMaths_SquareRoot0((opp >> 12) * (opp >> 12) + (adj >> 12) * (adj >> 12));
     FrustumNormals[4].vx = adj / hyp;
     FrustumNormals[4].vy = 0;
     FrustumNormals[4].vz = opp / hyp;
@@ -700,7 +691,8 @@ void M3d_RenderSetup(SCamera * pCamera, SViewport * pVP, unsigned int * ot) {
     FrustumNormals[9].pad = 0;
 
     gte_SetRotMatrix(&pCamera->Transform);
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 3; i++)
+    {
         gte_ldv0(&FrustumNormals[i]);
         gte_rtv0();
         gte_stsv(&FrustumMatrix1.m[i]);
@@ -713,7 +705,8 @@ void M3d_RenderSetup(SCamera * pCamera, SViewport * pVP, unsigned int * ot) {
     SetGeomScreen(pVP->Zoom);
     SetGeomOffset(pVP->xC, pVP->yC);
     M3dMaths_TransposeMat((u16 *)&pCamera->Transform, (u16 *)&pCamera->Inverse);
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 3; i++)
+    {
         pCamera->View.m[0][i] = pCamera->Inverse.m[0][i] * PixelAspectY >> 12;
         pCamera->View.m[1][i] = pCamera->Inverse.m[1][i] * PixelAspectX >> 12;
         pCamera->View.m[2][i] = pCamera->Inverse.m[2][i];
@@ -746,30 +739,34 @@ void M3d_RenderSetup(SCamera * pCamera, SViewport * pVP, unsigned int * ot) {
  * Demangled: M3d_RenderCleanup(void)
  *
  */
-void M3d_RenderCleanup(void) {
+void M3d_RenderCleanup(void)
+{
     DR_AREA *pClipArea = (DR_AREA *)pPoly;
     RECT Window;
 
     Window.x = pCurrentViewport->xL;
-    Window.y = pCurrentViewport->yT + reinterpret_cast<SDoubleBufferLocal *>(pDoubleBuffer)->Draw.clip.y +
+    Window.y = pCurrentViewport->yT +
+               reinterpret_cast<SDoubleBufferLocal *>(pDoubleBuffer)->Draw.clip.y +
                (u16)M3d_Widescreen;
     Window.w = pCurrentViewport->xR - pCurrentViewport->xL;
     int widescreen = M3d_Widescreen;
-    Window.h = pCurrentViewport->yB - pCurrentViewport->yT -
-               (u16)(widescreen << 1);
+    Window.h = pCurrentViewport->yB - pCurrentViewport->yT - (u16)(widescreen << 1);
     SetDrawArea(pClipArea, &Window);
 
     addPrim(&CurrentOrderingTable[0xfff], pClipArea);
     pPoly = (u32 *)(pClipArea + 1);
-    if (M3d_Widescreen != 0) {
-        for (int i = 0; i < 2; i++) {
+    if (M3d_Widescreen != 0)
+    {
+        for (int i = 0; i < 2; i++)
+        {
             POLY_F4 *p_polyF4 = (POLY_F4 *)pPoly;
             pPoly = (u32 *)(p_polyF4 + 1);
             *(u32 *)&p_polyF4->r0 = 0;
             setlen(p_polyF4, 5);
             setcode(p_polyF4, 0x28);
 
-            if (i != 0) {
+            if (i != 0)
+            {
                 p_polyF4->x0 = 0;
                 p_polyF4->y0 = 0;
                 p_polyF4->x1 = 0x200;
@@ -778,7 +775,9 @@ void M3d_RenderCleanup(void) {
                 p_polyF4->x3 = 0x200;
                 p_polyF4->y2 = (u16)M3d_Widescreen;
                 p_polyF4->y3 = p_polyF4->y2;
-            } else {
+            }
+            else
+            {
                 p_polyF4->x0 = 0;
                 p_polyF4->y0 = 0xf0;
                 p_polyF4->x1 = 0x200;
@@ -804,7 +803,8 @@ void M3d_RenderCleanup(void) {
  *
  * @param p  Head of the Item list to render.
  */
-void M3d_Render(void * p) {
+void M3d_Render(void *p)
+{
     Item *pItem = (Item *)p;
     VECTOR Position;
     VECTOR PosnRelCam;
@@ -815,25 +815,26 @@ void M3d_Render(void * p) {
     unsigned int GlobalFaceFlags;
     unsigned short yon;
 
-    if (pItem == 0) {
+    if (pItem == 0)
+    {
         return;
     }
 
     gte_SetLightMatrix(&FrustumMatrix1);
     gte_SetColorMatrix(&FrustumMatrix2);
-    gte_ldbkdir(
-        (short)FrustumNormals[0].pad >> 1,
-        (short)FrustumNormals[1].pad >> 1,
-        0);
+    gte_ldbkdir((short)FrustumNormals[0].pad >> 1, (short)FrustumNormals[1].pad >> 1, 0);
 
-    if ((CBody *)pItem != BaddyList) {
-        M3dAsm_BoundingSpherePreprocessing(
-            pItem, Camera_CurrentMikeCamera != 0 ? 0x40 : 1);
-    } else {
+    if ((CBody *)pItem != BaddyList)
+    {
+        M3dAsm_BoundingSpherePreprocessing(pItem, Camera_CurrentMikeCamera != 0 ? 0x40 : 1);
+    }
+    else
+    {
         M3dAsm_BoundingSpherePreprocessing(pItem, 1);
     }
 
-    if (pItem == EnviroList) {
+    if (pItem == EnviroList)
+    {
         M3d_PreprocessWibblyTextures(((int *)&EnvRegions)[0]);
         M3d_PreprocessWibblyTextures(((int *)&EnvRegions)[1]);
     }
@@ -848,65 +849,73 @@ void M3d_Render(void * p) {
     *(u32 *)0x1f800354 = M3d_FadeColour;
 
     M3d_WireframeLast = M3d_WireframeMode;
-    while (pItem != 0) {
+    while (pItem != 0)
+    {
         M3d_WireframeMode = M3d_WireframeLast;
 
-        if ((pItem->Flags & 0x8000) == 0 &&
-            PSXRegion[pItem->Region].Usable != 0) {
+        if ((pItem->Flags & 0x8000) == 0 && PSXRegion[pItem->Region].Usable != 0)
+        {
             GlobalFaceFlags = 0xffff0000;
-            if ((pItem->Flags & 0x80) != 0) {
+            if ((pItem->Flags & 0x80) != 0)
+            {
                 GlobalFaceFlags = 0xfff70004;
-                if ((pItem->Flags & 0x400) != 0) {
+                if ((pItem->Flags & 0x400) != 0)
+                {
                     GlobalFaceFlags = 0xffff000c;
                 }
-            } else if ((pItem->Flags & 0x400) != 0) {
+            }
+            else if ((pItem->Flags & 0x400) != 0)
+            {
                 GlobalFaceFlags = 0xfffb0008;
-                *(u32 *)0x1f8003e4 =
-                    ((pItem->RGB & 0xff) << 2) |
-                    ((pItem->RGB & 0xff00) << 5) |
-                    ((pItem->RGB & 0xff0000) << 8);
+                *(u32 *)0x1f8003e4 = ((pItem->RGB & 0xff) << 2) | ((pItem->RGB & 0xff00) << 5) |
+                                     ((pItem->RGB & 0xff0000) << 8);
             }
 
-            if ((pItem->Flags & 0x4000) != 0) {
+            if ((pItem->Flags & 0x4000) != 0)
+            {
                 GlobalFaceFlags |= 2;
                 GlobalFaceFlags &= 0xfffeffff;
                 GlobalFaceFlags &= 0xffdfffff;
-            } else {
+            }
+            else
+            {
                 GlobalFaceFlags &= 0xfffffffd;
                 GlobalFaceFlags |= 0x10000;
                 GlobalFaceFlags |= 0x200000;
             }
 
-            if ((pItem->Flags & 0x800) != 0) {
-                unsigned int globalFaceBits =
-                    GlobalFaceFlags & 0xfffffe7f;
-                unsigned int itemFaceFlags =
-                    (M3d_GetRenderItem(pItem)->mTRN & 0x180) |
-                    0x40;
+            if ((pItem->Flags & 0x800) != 0)
+            {
+                unsigned int globalFaceBits = GlobalFaceFlags & 0xfffffe7f;
+                unsigned int itemFaceFlags = (M3d_GetRenderItem(pItem)->mTRN & 0x180) | 0x40;
                 GlobalFaceFlags = globalFaceBits | itemFaceFlags;
             }
 
             *(u32 *)0x1f8003f4 = GlobalFaceFlags;
             TestTheWater = (pItem->Flags >> 3) & 1;
 
-            if ((pItem->Flags & 2) != 0) {
+            if ((pItem->Flags & 2) != 0)
+            {
                 WaterNormal.pad =
-                    (short)(CurrentWaterLevel >> 12) -
-                    (short)pCurrentCamera->Position.vy;
+                    (short)(CurrentWaterLevel >> 12) - (short)pCurrentCamera->Position.vy;
                 RenderSuperItem(pItem);
 
-                if (TestTheWater != 0) {
+                if (TestTheWater != 0)
+                {
                     int tmp = pItem->Flags;
                     int r;
                     int g;
                     int b;
 
                     pItem->Flags = (tmp | 0x400) & 0xff7f;
-                    if (GLevel == 0) {
+                    if (GLevel == 0)
+                    {
                         b = 10;
                         g = 13;
                         r = 8;
-                    } else {
+                    }
+                    else
+                    {
                         b = 0x22;
                         g = 0x20;
                         r = 0x20;
@@ -916,141 +925,129 @@ void M3d_Render(void * p) {
                     GlobalFaceFlags |= 8;
                     pItem->RGB = (b << 16) | (g << 8) | r;
                     WaterClipValue = 0;
-                    *(u32 *)0x1f8003e4 =
-                        ((pItem->RGB & 0xff) << 2) |
-                        ((pItem->RGB & 0xff00) << 5) |
-                        ((pItem->RGB & 0xff0000) << 8);
+                    *(u32 *)0x1f8003e4 = ((pItem->RGB & 0xff) << 2) | ((pItem->RGB & 0xff00) << 5) |
+                                         ((pItem->RGB & 0xff0000) << 8);
                     *(u32 *)0x1f8003f4 = GlobalFaceFlags;
                     RenderSuperItem(pItem);
                     WaterClipValue = 0xffff;
                     pItem->Flags = (u16)tmp;
                 }
-            } else {
-                pModel =
-                    PSXRegion[pItem->Region].ppModels[pItem->Model];
-                if ((pModel->Flags & 0x20) == 0) {
-                    if ((pModel->Flags & 0x200) != 0) {
+            }
+            else
+            {
+                pModel = PSXRegion[pItem->Region].ppModels[pItem->Model];
+                if ((pModel->Flags & 0x20) == 0)
+                {
+                    if ((pModel->Flags & 0x200) != 0)
+                    {
                         GModelVideoDisplayed = 1;
                     }
-                    if ((pModel->Flags & 0x400) != 0) {
+                    if ((pModel->Flags & 0x400) != 0)
+                    {
                         M3d_WireframeMode = 1;
                     }
 
                     gte_SetRotMatrix(&pCurrentCamera->View);
                     gte_ZeroTransVector();
 
-                    PosnRelCam.vx =
-                        (pItem->Position.vx >> 12) -
-                        pCurrentCamera->Position.vx;
-                    PosnRelCam.vy =
-                        (pItem->Position.vy >> 12) -
-                        pCurrentCamera->Position.vy;
-                    PosnRelCam.vz =
-                        (pItem->Position.vz >> 12) -
-                        pCurrentCamera->Position.vz;
+                    PosnRelCam.vx = (pItem->Position.vx >> 12) - pCurrentCamera->Position.vx;
+                    PosnRelCam.vy = (pItem->Position.vy >> 12) - pCurrentCamera->Position.vy;
+                    PosnRelCam.vz = (pItem->Position.vz >> 12) - pCurrentCamera->Position.vz;
                     gte_ldlv0(&PosnRelCam);
                     gte_rtv0();
                     gte_stlvnl(&Position);
 
-                    if (pModel->zMax < 0) {
-                        while (-(((short)(
-                                      (pModel->zMax *
-                                       pCurrentViewport->Zoom) / 0xbf) *
-                                  DpqMax) >> 10) <
-                                   Position.vz &&
-                               pModel->NextLOD != 0xffff) {
-                            pModel =
-                                PSXRegion[pItem->Region]
-                                    .ppModels[pModel->NextLOD];
+                    if (pModel->zMax < 0)
+                    {
+                        while (
+                            -(((short)((pModel->zMax * pCurrentViewport->Zoom) / 0xbf) * DpqMax) >>
+                              10) < Position.vz &&
+                            pModel->NextLOD != 0xffff)
+                        {
+                            pModel = PSXRegion[pItem->Region].ppModels[pModel->NextLOD];
                         }
 
-                        if (pModel->zMax < 0) {
-                            if (-((short)(
-                                      (pModel->zMax *
-                                       pCurrentViewport->Zoom) /
-                                      0xbf) *
-                                  DpqMax >>
+                        if (pModel->zMax < 0)
+                        {
+                            if (-((short)((pModel->zMax * pCurrentViewport->Zoom) / 0xbf) *
+                                      DpqMax >>
                                   10) < Position.vz &&
-                                pModel->NextLOD == 0xffff) {
+                                pModel->NextLOD == 0xffff)
+                            {
                                 goto next_item;
                             }
-                        } else {
+                        }
+                        else
+                        {
                             int tmp = pModel->zMax;
                             tmp *= pCurrentViewport->Zoom;
                             tmp /= 0xbf;
-                            if (tmp < Position.vz &&
-                                pModel->NextLOD == 0xffff) {
+                            if (tmp < Position.vz && pModel->NextLOD == 0xffff)
+                            {
                                 goto next_item;
                             }
                         }
-                    } else {
-                        while ((pModel->zMax *
-                                pCurrentViewport->Zoom) / 0xbf <
-                                   Position.vz &&
-                               pModel->NextLOD != 0xffff) {
-                            pModel =
-                                PSXRegion[pItem->Region]
-                                    .ppModels[pModel->NextLOD];
+                    }
+                    else
+                    {
+                        while ((pModel->zMax * pCurrentViewport->Zoom) / 0xbf < Position.vz &&
+                               pModel->NextLOD != 0xffff)
+                        {
+                            pModel = PSXRegion[pItem->Region].ppModels[pModel->NextLOD];
                         }
-                        if ((pModel->zMax *
-                             pCurrentViewport->Zoom) / 0xbf <
-                                Position.vz &&
-                            pModel->NextLOD == 0xffff) {
+                        if ((pModel->zMax * pCurrentViewport->Zoom) / 0xbf < Position.vz &&
+                            pModel->NextLOD == 0xffff)
+                        {
                             goto next_item;
                         }
                     }
 
-                    if (pModel->NumVertices < 0x65 &&
-                        (pModel->Flags & 0x100) == 0 &&
+                    if (pModel->NumVertices < 0x65 && (pModel->Flags & 0x100) == 0 &&
                         (pItem->Flags & 0x480) == 0 &&
-                        Position.vz - (pModel->Radius >> 12) >
-                            pCurrentViewport->Yon / 10 &&
-                        (pItem->Angles.vx |
-                         pItem->Angles.vy |
-                         pItem->Angles.vz) == 0) {
+                        Position.vz - (pModel->Radius >> 12) > pCurrentViewport->Yon / 10 &&
+                        (pItem->Angles.vx | pItem->Angles.vy | pItem->Angles.vz) == 0)
+                    {
                         Fast = 1;
-                    } else {
+                    }
+                    else
+                    {
                         Fast = 0;
                     }
 
-                    if (pItem->Angles.vx != 0 ||
-                        pItem->Angles.vy != 0 ||
-                        pItem->Angles.vz != 0) {
-                        M3dMaths_RotMatrixYXZ(
-                            (SVECTOR *)&pItem->Angles, &WorldTransform);
-                        if ((pItem->Flags & 0x200) != 0) {
+                    if (pItem->Angles.vx != 0 || pItem->Angles.vy != 0 || pItem->Angles.vz != 0)
+                    {
+                        M3dMaths_RotMatrixYXZ((SVECTOR *)&pItem->Angles, &WorldTransform);
+                        if ((pItem->Flags & 0x200) != 0)
+                        {
                             M3dMaths_ScaleMatrix(pItem, &WorldTransform);
                         }
                         M3dMaths_MulRotMatrix(&WorldTransform, &Transform);
                         gte_SetRotMatrix(&Transform);
-                    } else {
+                    }
+                    else
+                    {
                         M3dMaths_SetIdentityRotation(&WorldTransform);
-                        if ((pItem->Flags & 0x200) != 0) {
+                        if ((pItem->Flags & 0x200) != 0)
+                        {
                             M3dMaths_ScaleMatrix(pItem, &WorldTransform);
-                            M3dMaths_MulRotMatrix(
-                                &WorldTransform, &Transform);
+                            M3dMaths_MulRotMatrix(&WorldTransform, &Transform);
                             gte_SetRotMatrix(&Transform);
                         }
                     }
 
-                    pColourTable =
-                        PSXRegion[pItem->Region].pColourTable;
+                    pColourTable = PSXRegion[pItem->Region].pColourTable;
 
-                    if ((pModel->Flags & 1) != 0 ||
-                        (pItem->Flags & 0x4000) != 0) {
-                        M3dAsm_GetReflectionMapping(
-                            &WorldTransform,
-                            (long *)&Position,
-                            (u32 *)pModel);
-                    } else if ((pModel->Flags & 4) != 0 ||
-                               (pItem->Flags & 0x80) != 0) {
-                        if (pItem->Angles.vx != 0 ||
-                            pItem->Angles.vy != 0 ||
-                            pItem->Angles.vz != 0) {
+                    if ((pModel->Flags & 1) != 0 || (pItem->Flags & 0x4000) != 0)
+                    {
+                        M3dAsm_GetReflectionMapping(&WorldTransform, (long *)&Position,
+                                                    (u32 *)pModel);
+                    }
+                    else if ((pModel->Flags & 4) != 0 || (pItem->Flags & 0x80) != 0)
+                    {
+                        if (pItem->Angles.vx != 0 || pItem->Angles.vy != 0 || pItem->Angles.vz != 0)
+                        {
                             gte_SetRotMatrix(
-                                (MATRIX *)
-                                    M3d_GetRenderItem(pItem)
-                                        ->mpLight->LightMatrix);
+                                (MATRIX *)M3d_GetRenderItem(pItem)->mpLight->LightMatrix);
                             gte_ldclmv(&WorldTransform.m[0][0]);
                             gte_rtir();
                             gte_stclmv(&TempMatrix.m[0][0]);
@@ -1061,106 +1058,95 @@ void M3d_Render(void * p) {
                             gte_rtir();
                             gte_stclmv(&TempMatrix.m[0][2]);
                             gte_SetLightMatrix(&TempMatrix);
-                        } else {
+                        }
+                        else
+                        {
                             gte_SetLightMatrix(
-                                (MATRIX *)
-                                    M3d_GetRenderItem(pItem)
-                                        ->mpLight->LightMatrix);
+                                (MATRIX *)M3d_GetRenderItem(pItem)->mpLight->LightMatrix);
                         }
                         gte_SetColorMatrix(
-                            (MATRIX *)
-                                M3d_GetRenderItem(pItem)
-                                    ->mpLight->ColorMatrix);
-                        M3dAsm_SetAmbient(
-                            M3d_GetRenderItem(pItem)
-                                ->mpLight->BackColor);
-                        M3dAsm_GetDynamicLighting(
-                            pModel->Vertices +
-                                pModel->NumVertices,
-                            pModel->NumNormals);
+                            (MATRIX *)M3d_GetRenderItem(pItem)->mpLight->ColorMatrix);
+                        M3dAsm_SetAmbient(M3d_GetRenderItem(pItem)->mpLight->BackColor);
+                        M3dAsm_GetDynamicLighting(pModel->Vertices + pModel->NumVertices,
+                                                  pModel->NumNormals);
                     }
 
                     yon = pCurrentViewport->Yon;
-                    if ((pItem->Flags & 0x2000) != 0) {
+                    if ((pItem->Flags & 0x2000) != 0)
+                    {
                         *(u16 *)0x1f800284 = 0x7fff;
                         *(u16 *)0x1f8002d4 = 0;
                         pCurrentViewport->Yon = 0x7fff;
                     }
 
-                    if (Fast != 0) {
-                        if (pItem->Frame != 0 ||
-                            pItem->Anim != 0) {
-                            if (pItem->Frame != 0) {
-                                *(u16 *)0x1f8002b4 =
-                                    (signed char)pItem->Frame
-                                    << 5;
+                    if (Fast != 0)
+                    {
+                        if (pItem->Frame != 0 || pItem->Anim != 0)
+                        {
+                            if (pItem->Frame != 0)
+                            {
+                                *(u16 *)0x1f8002b4 = (signed char)pItem->Frame << 5;
                             }
-                            if (pItem->Anim != 0) {
-                                *(u16 *)0x1f8002c4 =
-                                    (signed char)pItem->Anim
-                                    << 5;
+                            if (pItem->Anim != 0)
+                            {
+                                *(u16 *)0x1f8002c4 = (signed char)pItem->Anim << 5;
                             }
-                            RenderModelFast(
-                                pModel, &PosnRelCam);
-                            *(u16 *)0x1f8002b4 =
-                                (u16)M3d_OTPushback;
-                            *(u16 *)0x1f8002c4 =
-                                (u16)M3d_OTPushback2;
-                        } else {
-                            RenderModelFast(
-                                pModel, &PosnRelCam);
+                            RenderModelFast(pModel, &PosnRelCam);
+                            *(u16 *)0x1f8002b4 = (u16)M3d_OTPushback;
+                            *(u16 *)0x1f8002c4 = (u16)M3d_OTPushback2;
                         }
-                    } else if (pItem->Angles.vx == 0 &&
-                               pItem->Angles.vy == 0 &&
-                               pItem->Angles.vz == 0 &&
-                               (pItem->Flags & 0x200) == 0) {
-                        if (pItem->Frame != 0 ||
-                            pItem->Anim != 0) {
-                            if (pItem->Frame != 0) {
-                                *(u16 *)0x1f8002b4 =
-                                    (signed char)pItem->Frame
-                                    << 5;
-                            }
-                            if (pItem->Anim != 0) {
-                                *(u16 *)0x1f8002c4 =
-                                    (signed char)pItem->Anim
-                                    << 5;
-                            }
-                            RenderModelNonRotated(
-                                pModel, &PosnRelCam);
-                            *(u16 *)0x1f8002b4 =
-                                (u16)M3d_OTPushback;
-                            *(u16 *)0x1f8002c4 =
-                                (u16)M3d_OTPushback2;
-                        } else {
-                            RenderModelNonRotated(
-                                pModel, &PosnRelCam);
+                        else
+                        {
+                            RenderModelFast(pModel, &PosnRelCam);
                         }
-                    } else {
+                    }
+                    else if (pItem->Angles.vx == 0 && pItem->Angles.vy == 0 &&
+                             pItem->Angles.vz == 0 && (pItem->Flags & 0x200) == 0)
+                    {
+                        if (pItem->Frame != 0 || pItem->Anim != 0)
+                        {
+                            if (pItem->Frame != 0)
+                            {
+                                *(u16 *)0x1f8002b4 = (signed char)pItem->Frame << 5;
+                            }
+                            if (pItem->Anim != 0)
+                            {
+                                *(u16 *)0x1f8002c4 = (signed char)pItem->Anim << 5;
+                            }
+                            RenderModelNonRotated(pModel, &PosnRelCam);
+                            *(u16 *)0x1f8002b4 = (u16)M3d_OTPushback;
+                            *(u16 *)0x1f8002c4 = (u16)M3d_OTPushback2;
+                        }
+                        else
+                        {
+                            RenderModelNonRotated(pModel, &PosnRelCam);
+                        }
+                    }
+                    else
+                    {
                         gte_SetTransVector(&Position);
-                        if (pItem->Frame != 0 ||
-                            pItem->Anim != 0) {
-                            if (pItem->Frame != 0) {
-                                *(u16 *)0x1f8002b4 =
-                                    (signed char)pItem->Frame
-                                    << 5;
+                        if (pItem->Frame != 0 || pItem->Anim != 0)
+                        {
+                            if (pItem->Frame != 0)
+                            {
+                                *(u16 *)0x1f8002b4 = (signed char)pItem->Frame << 5;
                             }
-                            if (pItem->Anim != 0) {
-                                *(u16 *)0x1f8002c4 =
-                                    (signed char)pItem->Anim
-                                    << 5;
+                            if (pItem->Anim != 0)
+                            {
+                                *(u16 *)0x1f8002c4 = (signed char)pItem->Anim << 5;
                             }
                             RenderModel(pModel);
-                            *(u16 *)0x1f8002b4 =
-                                (u16)M3d_OTPushback;
-                            *(u16 *)0x1f8002c4 =
-                                (u16)M3d_OTPushback2;
-                        } else {
+                            *(u16 *)0x1f8002b4 = (u16)M3d_OTPushback;
+                            *(u16 *)0x1f8002c4 = (u16)M3d_OTPushback2;
+                        }
+                        else
+                        {
                             RenderModel(pModel);
                         }
                     }
 
-                    if ((pItem->Flags & 0x2000) != 0) {
+                    if ((pItem->Flags & 0x2000) != 0)
+                    {
                         *(u16 *)0x1f8002d4 = 0;
                         *(u16 *)0x1f800284 = (u16)DpqMin;
                         pCurrentViewport->Yon = yon;
@@ -1169,7 +1155,7 @@ void M3d_Render(void * p) {
             }
         }
 
-next_item:
+    next_item:
         pItem = pItem->NextItem;
     }
 
@@ -1192,7 +1178,8 @@ next_item:
 // Uses COP2 (GTE) instructions for matrix loads, stack-local MATRIX buffers.
 // Callee-saves: $s0-$s5, $ra. Stack: 0x90. Local MATRIXes at sp+0x30 and sp+0x50.
 
-void M3d_RenderBackground(void *p) {
+void M3d_RenderBackground(void *p)
+{
     // MAIN.SYM records these workspaces in this order; the vectors occupy the
     // otherwise-unused slots before the two transformation matrices.
     VECTOR Position;
@@ -1203,33 +1190,38 @@ void M3d_RenderBackground(void *p) {
     SModel *pModel;
     u32 GlobalFaceFlags;
 
-    if (pItem != 0) {
+    if (pItem != 0)
+    {
         GlobalFaceFlags = 0xFFFF0000;
         *(unsigned short *)0x1f800284 = 0x7fff;
         *(unsigned short *)0x1f8002d4 = 0;
-        do {
-            if (((pItem->Flags & 0x8001) == 0) &&
-                (PSXRegion[pItem->Region].Usable != 0)) {
+        do
+        {
+            if (((pItem->Flags & 0x8001) == 0) && (PSXRegion[pItem->Region].Usable != 0))
+            {
                 *(unsigned int *)0x1f8003f4 = GlobalFaceFlags;
 
                 gte_SetRotMatrix(&pCurrentCamera->View);
-                if ((*(int *)&pItem->Angles != 0) ||
-                    (pItem->Angles.vz != 0)) {
-                    M3dMaths_RotMatrixYXZ(
-                        (SVECTOR *)&pItem->Angles, &WorldTransform);
+                if ((*(int *)&pItem->Angles != 0) || (pItem->Angles.vz != 0))
+                {
+                    M3dMaths_RotMatrixYXZ((SVECTOR *)&pItem->Angles, &WorldTransform);
                     M3dMaths_MulRotMatrix(&WorldTransform, &Transform);
                     gte_SetRotMatrix(&Transform);
-                } else {
+                }
+                else
+                {
                     M3dMaths_SetIdentityRotation(&WorldTransform);
                 }
 
                 pColourTable = PSXRegion[pItem->Region].pColourTable;
                 pModel = PSXRegion[pItem->Region].ppModels[pItem->Model];
 
-                if ((*(int *)&pItem->Angles == 0) &&
-                    (pItem->Angles.vz == 0)) {
+                if ((*(int *)&pItem->Angles == 0) && (pItem->Angles.vz == 0))
+                {
                     RenderBackgroundModelNonRotated(pModel);
-                } else {
+                }
+                else
+                {
                     RenderBackgroundModel(pModel);
                 }
             }
@@ -1250,7 +1242,8 @@ void M3d_RenderBackground(void *p) {
  *
  * @param pItem Character item guaranteed valid by M3d_Render.
  */
-void RenderSuperItem(Item *pItem) {
+void RenderSuperItem(Item *pItem)
+{
     unsigned int NumParts;
     unsigned int Rgb;
     VECTOR Position;
@@ -1270,69 +1263,66 @@ void RenderSuperItem(Item *pItem) {
     SMatrix *pFirstTransform;
 
     ItemFlags = pItem->Flags;
-    if (PSXRegion[pItem->Region].Fastable == 0 ||
-        (ItemFlags & 0x0c80) != 0) {
+    if (PSXRegion[pItem->Region].Fastable == 0 || (ItemFlags & 0x0c80) != 0)
+    {
         Fast = 0;
-    } else {
+    }
+    else
+    {
         Fast = 1;
     }
 
     /* Reflection rendering mirrors the first column only for this pass. */
-    if ((M3d_GetSuper(pItem)->mExtraFlags & 2) != 0) {
+    if ((M3d_GetSuper(pItem)->mExtraFlags & 2) != 0)
+    {
         *(u16 *)0x1f8002d4 = 1;
-        M3d_GetSuper(pItem)->mTransform.m[0][0] =
-            -M3d_GetSuper(pItem)->mTransform.m[0][0];
-        M3d_GetSuper(pItem)->mTransform.m[1][0] =
-            -M3d_GetSuper(pItem)->mTransform.m[1][0];
-        M3d_GetSuper(pItem)->mTransform.m[2][0] =
-            -M3d_GetSuper(pItem)->mTransform.m[2][0];
-    } else {
+        M3d_GetSuper(pItem)->mTransform.m[0][0] = -M3d_GetSuper(pItem)->mTransform.m[0][0];
+        M3d_GetSuper(pItem)->mTransform.m[1][0] = -M3d_GetSuper(pItem)->mTransform.m[1][0];
+        M3d_GetSuper(pItem)->mTransform.m[2][0] = -M3d_GetSuper(pItem)->mTransform.m[2][0];
+    }
+    else
+    {
         *(u16 *)0x1f8002d4 = 0;
     }
 
     gte_SetRotMatrix(&pCurrentCamera->View);
-    M3dMaths_MulRotMatrix(
-        &M3d_GetSuper(pItem)->mTransform, &SuperTransform);
+    M3dMaths_MulRotMatrix(&M3d_GetSuper(pItem)->mTransform, &SuperTransform);
 
-    Position.vx =
-        (pItem->Position.vx >> 12) - pCurrentCamera->Position.vx;
-    Position.vy =
-        (pItem->Position.vy >> 12) - pCurrentCamera->Position.vy;
-    Position.vz =
-        (pItem->Position.vz >> 12) - pCurrentCamera->Position.vz;
+    Position.vx = (pItem->Position.vx >> 12) - pCurrentCamera->Position.vx;
+    Position.vy = (pItem->Position.vy >> 12) - pCurrentCamera->Position.vy;
+    Position.vz = (pItem->Position.vz >> 12) - pCurrentCamera->Position.vz;
     gte_ldlvl(&Position);
     gte_rtir();
     gte_stlvnl(&SuperTransform.t[0]);
 
-    if ((short)SuperTransform.t[2] < 1000) {
+    if ((short)SuperTransform.t[2] < 1000)
+    {
         Dewibble = 1;
-        Position.vx =
-            (pItem->Position.vx >> 8) -
-            (pCurrentCamera->Position.vx << 4);
-        Position.vy =
-            (pItem->Position.vy >> 8) -
-            (pCurrentCamera->Position.vy << 4);
-        Position.vz =
-            (pItem->Position.vz >> 8) -
-            (pCurrentCamera->Position.vz << 4);
+        Position.vx = (pItem->Position.vx >> 8) - (pCurrentCamera->Position.vx << 4);
+        Position.vy = (pItem->Position.vy >> 8) - (pCurrentCamera->Position.vy << 4);
+        Position.vz = (pItem->Position.vz >> 8) - (pCurrentCamera->Position.vz << 4);
         gte_ldlvl(&Position);
         gte_rtir();
         gte_stlvnl(&SuperTransform.t[0]);
-    } else {
+    }
+    else
+    {
         Dewibble = 0;
     }
 
     ppModels = PSXRegion[pItem->Region].ppModels;
     NumParts = PSXRegion[pItem->Region].NumParts;
-    if ((ItemFlags & 4) != 0) {
+    if ((ItemFlags & 4) != 0)
+    {
         pAnimTransform = M3d_GetSuper(pItem)->mpPoseBuffer;
-    } else {
+    }
+    else
+    {
         pAnimTransform = Decomp_GetAnimTransform(M3d_GetSuper(pItem));
     }
     pFirstTransform = pAnimTransform;
 
-    gte_SetRotMatrix(
-        (MATRIX *)M3d_GetRenderItem(pItem)->mpLight->LightMatrix);
+    gte_SetRotMatrix((MATRIX *)M3d_GetRenderItem(pItem)->mpLight->LightMatrix);
     gte_ldclmv(&M3d_GetSuper(pItem)->mTransform.m[0][0]);
     gte_rtir();
     gte_stclmv(&SuperLightTransform.m[0][0]);
@@ -1344,9 +1334,11 @@ void RenderSuperItem(Item *pItem) {
     gte_stclmv(&SuperLightTransform.m[0][2]);
 
     Type = M3d_GetSuper(pItem)->mEllipsoidRGB >> 24;
-    if ((Type & 0x7f) != 0) {
+    if ((Type & 0x7f) != 0)
+    {
         int Lookup = (Type - 1) & 0x7f;
-        if (Lookup < 0) {
+        if (Lookup < 0)
+        {
             Lookup = 0;
         }
         pAnimTex = QuickAnimLookup[Lookup];
@@ -1356,20 +1348,19 @@ void RenderSuperItem(Item *pItem) {
         pAnimTex += FrameNo % (unsigned int)pAnimTex[-1].pTexture;
     }
 
-    FreeStitchVertex =
-        Fast == 0 ? ProjectedVertices + 399
-                  : (SProjectedVertex *)0x1f8003f8;
+    FreeStitchVertex = Fast == 0 ? ProjectedVertices + 399 : (SProjectedVertex *)0x1f8003f8;
     pColourTable = PSXRegion[pItem->Region].pColourTable;
 
-    for (i = 0; i < NumParts; i++, pAnimTransform++) {
+    for (i = 0; i < NumParts; i++, pAnimTransform++)
+    {
         pModel = ppModels[i];
-        SubObjectMasked =
-            (M3d_GetSuper(pItem)->mSubObjectDisplayMask & (1 << i)) != 0;
-        if (M3d_GetSuper(pItem)->mUseAnimOrder != 0) {
-            pAnimTransform =
-                pFirstTransform + M3d_GetSuper(pItem)->mAnimOrder[i];
+        SubObjectMasked = (M3d_GetSuper(pItem)->mSubObjectDisplayMask & (1 << i)) != 0;
+        if (M3d_GetSuper(pItem)->mUseAnimOrder != 0)
+        {
+            pAnimTransform = pFirstTransform + M3d_GetSuper(pItem)->mAnimOrder[i];
         }
-        if ((pModel->Flags & 0x20) != 0) {
+        if ((pModel->Flags & 0x20) != 0)
+        {
             SubObjectMasked = 1;
         }
 
@@ -1384,45 +1375,46 @@ void RenderSuperItem(Item *pItem) {
         gte_rtir();
         gte_stclmv(&WorldTransform.m[0][2]);
 
-        if (Dewibble != 0) {
-            M3dAsm_SetSuperTransformsDewibbled(
-                &SuperTransform, &SuperLightTransform, pAnimTransform);
-        } else {
-            M3dAsm_SetSuperTransforms(
-                &SuperTransform, &SuperLightTransform, pAnimTransform);
+        if (Dewibble != 0)
+        {
+            M3dAsm_SetSuperTransformsDewibbled(&SuperTransform, &SuperLightTransform,
+                                               pAnimTransform);
+        }
+        else
+        {
+            M3dAsm_SetSuperTransforms(&SuperTransform, &SuperLightTransform, pAnimTransform);
         }
 
-        if ((pModel->Flags & 1) != 0 ||
-            (pItem->Flags & 0x4000) != 0) {
-            M3dAsm_GetReflectionMapping(
-                &WorldTransform, (long *)&SuperTransform.t[0],
-                (u32 *)pModel);
-        } else if ((pModel->Flags & 4) != 0 ||
-                   (ItemFlags & 0x80) != 0) {
-            gte_SetColorMatrix(
-                (MATRIX *)M3d_GetRenderItem(pItem)
-                    ->mpLight->ColorMatrix);
-            M3dAsm_SetAmbient(
-                M3d_GetRenderItem(pItem)->mpLight->BackColor);
-            M3dAsm_GetDynamicLighting(
-                pModel->Vertices + pModel->NumVertices,
-                pModel->NumNormals);
+        if ((pModel->Flags & 1) != 0 || (pItem->Flags & 0x4000) != 0)
+        {
+            M3dAsm_GetReflectionMapping(&WorldTransform, (long *)&SuperTransform.t[0],
+                                        (u32 *)pModel);
+        }
+        else if ((pModel->Flags & 4) != 0 || (ItemFlags & 0x80) != 0)
+        {
+            gte_SetColorMatrix((MATRIX *)M3d_GetRenderItem(pItem)->mpLight->ColorMatrix);
+            M3dAsm_SetAmbient(M3d_GetRenderItem(pItem)->mpLight->BackColor);
+            M3dAsm_GetDynamicLighting(pModel->Vertices + pModel->NumVertices, pModel->NumNormals);
         }
 
-        if ((Type & 0x80) == 0) {
-            if (Fast != 0) {
+        if ((Type & 0x80) == 0)
+        {
+            if (Fast != 0)
+            {
                 RenderModelInSuperFast(pModel);
-            } else {
+            }
+            else
+            {
                 RenderModelInSuper(pModel);
             }
         }
 
         int DoEllipsoids = Type & 0x7f;
         int DoShadows = M3d_GetSuper(pItem)->mShadowLights != 0;
-        if (DoEllipsoids != 0 || DoShadows != 0) {
+        if (DoEllipsoids != 0 || DoShadows != 0)
+        {
             gte_ldsv(&pAnimTransform->t[0]);
-            M3dMaths_TransformLastVec(
-                (unsigned short *)&M3d_GetSuper(pItem)->mTransform);
+            M3dMaths_TransformLastVec((unsigned short *)&M3d_GetSuper(pItem)->mTransform);
             gte_stlvnl(&WorldTransform.t[0]);
             WorldTransform.t[0] >>= 4;
             WorldTransform.t[1] >>= 4;
@@ -1433,36 +1425,32 @@ void RenderSuperItem(Item *pItem) {
         }
 
         if (DoEllipsoids != 0 &&
-            (TestTheWater == 0 ||
-             WorldTransform.t[1] <
-                 (CurrentWaterLevel >> 12) - 40)) {
-            M3dElips_RenderEllipsoid(
-                pModel, &WorldTransform, Rgb, Scale, OTPushback,
-                pAnimTex->pTexture);
+            (TestTheWater == 0 || WorldTransform.t[1] < (CurrentWaterLevel >> 12) - 40))
+        {
+            M3dElips_RenderEllipsoid(pModel, &WorldTransform, Rgb, Scale, OTPushback,
+                                     pAnimTex->pTexture);
         }
 
-        if (DoShadows != 0) {
-            for (int s = 0;
-                 s < M3d_GetSuper(pItem)->mShadowLights; s++) {
-                if (SubObjectMasked == 0) {
+        if (DoShadows != 0)
+        {
+            for (int s = 0; s < M3d_GetSuper(pItem)->mShadowLights; s++)
+            {
+                if (SubObjectMasked == 0)
+                {
                     M3dElips_RenderShadow(
-                        pModel, &WorldTransform,
-                        &M3d_GetSuper(pItem)->mShadowNormal,
-                        &M3d_GetSuper(pItem)->mShadowPos,
-                        &M3d_GetSuper(pItem)->mpShadowSource[s],
+                        pModel, &WorldTransform, &M3d_GetSuper(pItem)->mShadowNormal,
+                        &M3d_GetSuper(pItem)->mShadowPos, &M3d_GetSuper(pItem)->mpShadowSource[s],
                         ((CSuper *)pItem)->mpShadowRGB[s]);
                 }
             }
         }
     }
 
-    if ((M3d_GetSuper(pItem)->mExtraFlags & 2) != 0) {
-        M3d_GetSuper(pItem)->mTransform.m[0][0] =
-            -M3d_GetSuper(pItem)->mTransform.m[0][0];
-        M3d_GetSuper(pItem)->mTransform.m[1][0] =
-            -M3d_GetSuper(pItem)->mTransform.m[1][0];
-        M3d_GetSuper(pItem)->mTransform.m[2][0] =
-            -M3d_GetSuper(pItem)->mTransform.m[2][0];
+    if ((M3d_GetSuper(pItem)->mExtraFlags & 2) != 0)
+    {
+        M3d_GetSuper(pItem)->mTransform.m[0][0] = -M3d_GetSuper(pItem)->mTransform.m[0][0];
+        M3d_GetSuper(pItem)->mTransform.m[1][0] = -M3d_GetSuper(pItem)->mTransform.m[1][0];
+        M3d_GetSuper(pItem)->mTransform.m[2][0] = -M3d_GetSuper(pItem)->mTransform.m[2][0];
     }
 }
 
@@ -1490,14 +1478,16 @@ void RenderSuperItem(Item *pItem) {
  * @param pModel  Model data being processed.
  */
 
-void RenderModel(SModel *pModel) {
+void RenderModel(SModel *pModel)
+{
     SVECTOR *pGeom = pModel->Vertices;
     unsigned int Num = pModel->NumVertices;
     unsigned int Outcode;
 
     Outcode = M3dAsm_TransformAndOutcodeItemVertices(pGeom, Num);
 
-    if (TestTheWater) {
+    if (TestTheWater)
+    {
         M3dAsm_OutcodeVerticesInWater(Num, WaterClipValue);
     }
 
@@ -1510,7 +1500,8 @@ void RenderModel(SModel *pModel) {
 
     SetFarColor(FarColor.vx, FarColor.vy, FarColor.vz);
 
-    if (M3d_WireframeMode) {
+    if (M3d_WireframeMode)
+    {
         Wireframe_ProcessPolys(pFace, Num, 0x80);
         if (M3d_WireframeMode && M3d_WireframeMode != 3) return;
     }
@@ -1532,11 +1523,11 @@ void RenderModel(SModel *pModel) {
  * @param pPosnRelCam  PosnRelCam to operate on.
  */
 
-void RenderModelFast(SModel *pModel, VECTOR *pPosnRelCam) {
+void RenderModelFast(SModel *pModel, VECTOR *pPosnRelCam)
+{
     SVECTOR *pGeom = pModel->Vertices;
     unsigned int NumVerts = pModel->NumVertices;
-    unsigned int Outcode = M3dAsm_TransformAndOutcodeVerticesFast(
-        pGeom, NumVerts, pPosnRelCam);
+    unsigned int Outcode = M3dAsm_TransformAndOutcodeVerticesFast(pGeom, NumVerts, pPosnRelCam);
 
     SVECTOR *pVertices = pGeom;
     pGeom += NumVerts;
@@ -1548,9 +1539,9 @@ void RenderModelFast(SModel *pModel, VECTOR *pPosnRelCam) {
 
     SetFarColor(FarColor.vx, FarColor.vy, FarColor.vz);
 
-    if (M3d_WireframeMode) {
-        M3dAsm_TransformAndOutcodeBlockVertices(
-            pVertices, NumVerts, pPosnRelCam);
+    if (M3d_WireframeMode)
+    {
+        M3dAsm_TransformAndOutcodeBlockVertices(pVertices, NumVerts, pPosnRelCam);
         Wireframe_ProcessPolys(pFace, Num, 0x8000);
         if (M3d_WireframeMode && M3d_WireframeMode != 3) return;
     }
@@ -1570,12 +1561,12 @@ void RenderModelFast(SModel *pModel, VECTOR *pPosnRelCam) {
  * @param pModel  Model data being processed.
  */
 
-void RenderBackgroundModel(SModel *pModel) {
+void RenderBackgroundModel(SModel *pModel)
+{
     SVECTOR *pGeom = pModel->Vertices;
     unsigned int Num = pModel->NumVertices;
 
-    unsigned int Outcode =
-        M3dAsm_TransformAndOutcodeBackgroundVertices(pGeom, Num);
+    unsigned int Outcode = M3dAsm_TransformAndOutcodeBackgroundVertices(pGeom, Num);
 
     pGeom += Num;
 
@@ -1584,7 +1575,8 @@ void RenderBackgroundModel(SModel *pModel) {
     Num = pModel->NumFaces;
     u32 *pFace = (u32 *)(pGeom + pModel->NumNormals);
 
-    if (M3d_WireframeMode) {
+    if (M3d_WireframeMode)
+    {
         Wireframe_ProcessPolys(pFace, Num, 0x8000);
         if (M3d_WireframeMode && M3d_WireframeMode != 3) return;
     }
@@ -1606,18 +1598,23 @@ void RenderBackgroundModel(SModel *pModel) {
  * @param pModel  Model data being processed.
  */
 
-void RenderModelInSuper(SModel *pModel) {
+void RenderModelInSuper(SModel *pModel)
+{
     SVECTOR *pGeom = pModel->Vertices;
     unsigned int Num = pModel->NumVertices;
     unsigned int Outcode;
 
-    if (Dewibble) {
+    if (Dewibble)
+    {
         Outcode = M3dAsm_TransformAndOutcodeSuperVerticesDewibbled(pGeom, Num);
-    } else {
+    }
+    else
+    {
         Outcode = M3dAsm_TransformAndOutcodeSuperVertices(pGeom, Num);
     }
 
-    if (TestTheWater) {
+    if (TestTheWater)
+    {
         M3dAsm_OutcodeVerticesInWater(Num, WaterClipValue);
     }
 
@@ -1630,7 +1627,8 @@ void RenderModelInSuper(SModel *pModel) {
     Num = pModel->NumFaces;
     u32 *pFace = (u32 *)(pGeom + pModel->NumNormals);
 
-    if (M3d_WireframeMode) {
+    if (M3d_WireframeMode)
+    {
         Wireframe_ProcessPolys(pFace, Num, 0x800080);
         if (M3d_WireframeMode && M3d_WireframeMode != 3) return;
     }
@@ -1652,15 +1650,18 @@ void RenderModelInSuper(SModel *pModel) {
  * @param pModel  Model data being processed.
  */
 
-void RenderModelInSuperFast(SModel *pModel) {
+void RenderModelInSuperFast(SModel *pModel)
+{
     SVECTOR *pGeom = pModel->Vertices;
     unsigned int Num = pModel->NumVertices;
     unsigned int Outcode;
 
-    if (Dewibble) {
-        Outcode = M3dAsm_TransformAndOutcodeSuperVerticesFastDewibbled(
-            pGeom, Num);
-    } else {
+    if (Dewibble)
+    {
+        Outcode = M3dAsm_TransformAndOutcodeSuperVerticesFastDewibbled(pGeom, Num);
+    }
+    else
+    {
         Outcode = M3dAsm_TransformAndOutcodeSuperVerticesFast(pGeom, Num);
     }
 
@@ -1691,15 +1692,16 @@ void RenderModelInSuperFast(SModel *pModel) {
  * @param pPosnRelCam  PosnRelCam to operate on.
  */
 
-void RenderModelNonRotated(SModel *pModel, VECTOR *pPosnRelCam) {
+void RenderModelNonRotated(SModel *pModel, VECTOR *pPosnRelCam)
+{
     SVECTOR *pGeom = pModel->Vertices;
     unsigned int Num = pModel->NumVertices;
     unsigned int Outcode;
 
-    Outcode = M3dAsm_TransformAndOutcodeBlockVertices(
-        pGeom, Num, pPosnRelCam);
+    Outcode = M3dAsm_TransformAndOutcodeBlockVertices(pGeom, Num, pPosnRelCam);
 
-    if (TestTheWater) {
+    if (TestTheWater)
+    {
         M3dAsm_OutcodeVerticesInWater(Num, WaterClipValue);
     }
 
@@ -1712,7 +1714,8 @@ void RenderModelNonRotated(SModel *pModel, VECTOR *pPosnRelCam) {
 
     SetFarColor(FarColor.vx, FarColor.vy, FarColor.vz);
 
-    if (M3d_WireframeMode) {
+    if (M3d_WireframeMode)
+    {
         Wireframe_ProcessPolys(pFace, Num, 0x8080);
         if (M3d_WireframeMode && M3d_WireframeMode != 3) return;
     }
@@ -1731,12 +1734,12 @@ void RenderModelNonRotated(SModel *pModel, VECTOR *pPosnRelCam) {
  * @param pModel  Model data being processed.
  */
 
-void RenderBackgroundModelNonRotated(SModel *pModel) {
+void RenderBackgroundModelNonRotated(SModel *pModel)
+{
     SVECTOR *pGeom = pModel->Vertices;
     unsigned int Num = pModel->NumVertices;
 
-    unsigned int Outcode =
-        M3dAsm_TransformAndOutcodeBackgroundVertices(pGeom, Num);
+    unsigned int Outcode = M3dAsm_TransformAndOutcodeBackgroundVertices(pGeom, Num);
 
     pGeom += Num;
 
@@ -1745,7 +1748,8 @@ void RenderBackgroundModelNonRotated(SModel *pModel) {
     Num = pModel->NumFaces;
     u32 *pFace = (u32 *)(pGeom + pModel->NumNormals);
 
-    if (M3d_WireframeMode) {
+    if (M3d_WireframeMode)
+    {
         Wireframe_ProcessPolys(pFace, Num, 0x202060);
         if (M3d_WireframeMode && M3d_WireframeMode != 3) return;
     }
@@ -1778,27 +1782,29 @@ void RenderBackgroundModelNonRotated(SModel *pModel) {
  * @param pSuper  Super to operate on.
  */
 
-void M3d_BuildTransform(CSuper *pSuper) {
-    if ((M3d_GetTransformLayout(pSuper)->mExtraFlags & 1) != 0) {
-        M3dMaths_CopyMat(
-            (u16 *)&M3d_GetTransformLayout(pSuper)->mRotationMatrix,
-            (u16 *)&M3d_GetTransformLayout(pSuper)->mTransform);
+void M3d_BuildTransform(CSuper *pSuper)
+{
+    if ((M3d_GetTransformLayout(pSuper)->mExtraFlags & 1) != 0)
+    {
+        M3dMaths_CopyMat((u16 *)&M3d_GetTransformLayout(pSuper)->mRotationMatrix,
+                         (u16 *)&M3d_GetTransformLayout(pSuper)->mTransform);
         M3d_GetTransformLayout(pSuper)->mTransform.m[0][1] =
             -M3d_GetTransformLayout(pSuper)->mTransform.m[0][1];
         M3d_GetTransformLayout(pSuper)->mTransform.m[1][1] =
             -M3d_GetTransformLayout(pSuper)->mTransform.m[1][1];
         M3d_GetTransformLayout(pSuper)->mTransform.m[2][1] =
             -M3d_GetTransformLayout(pSuper)->mTransform.m[2][1];
-    } else {
-        M3dMaths_RotMatrixYXZ(
-            (SVECTOR *)&M3d_GetTransformLayout(pSuper)->ItemBase.Angles,
-            &M3d_GetTransformLayout(pSuper)->mTransform);
+    }
+    else
+    {
+        M3dMaths_RotMatrixYXZ((SVECTOR *)&M3d_GetTransformLayout(pSuper)->ItemBase.Angles,
+                              &M3d_GetTransformLayout(pSuper)->mTransform);
     }
 
-    if ((M3d_GetTransformLayout(pSuper)->ItemBase.Flags & 0x200) != 0) {
-        M3dMaths_ScaleMatrix(
-            &M3d_GetTransformLayout(pSuper)->ItemBase,
-            &M3d_GetTransformLayout(pSuper)->mTransform);
+    if ((M3d_GetTransformLayout(pSuper)->ItemBase.Flags & 0x200) != 0)
+    {
+        M3dMaths_ScaleMatrix(&M3d_GetTransformLayout(pSuper)->ItemBase,
+                             &M3d_GetTransformLayout(pSuper)->mTransform);
     }
 
     M3d_GetTransformLayout(pSuper)->mTransform.t[0] =
@@ -1822,11 +1828,13 @@ void M3d_BuildTransform(CSuper *pSuper) {
  * @param pTexWibVertInfo  TexWibVertInfo to operate on.
  * @return Signed U-coordinate offset from the selected wibble table.
  */
-int uWibble(STexWibVertInfo * pTexWibVertInfo) {
+int uWibble(STexWibVertInfo *pTexWibVertInfo)
+{
     u32 Amplitude = pTexWibVertInfo->uAmpPhase >> 4;
     int Phase = pTexWibVertInfo->uAmpPhase & 0xF;
 
-    if (Amplitude != 0) {
+    if (Amplitude != 0)
+    {
         int Index = (BasePhase + Phase * 4) & 0x3F;
         s16 *pWibbleTable = WibbleTables + Amplitude * 64;
         return pWibbleTable[Index];
@@ -1848,11 +1856,13 @@ int uWibble(STexWibVertInfo * pTexWibVertInfo) {
  * @param pTexWibVertInfo  TexWibVertInfo to operate on.
  * @return Signed V-coordinate offset from the selected wibble table.
  */
-int vWibble(STexWibVertInfo * pTexWibVertInfo) {
+int vWibble(STexWibVertInfo *pTexWibVertInfo)
+{
     u32 Amplitude = pTexWibVertInfo->vAmpPhase >> 4;
     int Phase = pTexWibVertInfo->vAmpPhase & 0xF;
 
-    if (Amplitude != 0) {
+    if (Amplitude != 0)
+    {
         int Index = (BasePhase + Phase * 4) & 0x3F;
         s16 *pWibbleTable = WibbleTables + Amplitude * 64;
         return pWibbleTable[Index];
@@ -1870,7 +1880,8 @@ int vWibble(STexWibVertInfo * pTexWibVertInfo) {
  *
  * @param Region  PSX region index.
  */
-void M3d_PreprocessWibblyTextures(int Region) {
+void M3d_PreprocessWibblyTextures(int Region)
+{
     u32 *pData;
     u32 *pPSX;
     u32 *pFace;
@@ -1896,42 +1907,43 @@ void M3d_PreprocessWibblyTextures(int Region) {
     s32 Or;
     int Count;
 
-    if (Region == -1) {
+    if (Region == -1)
+    {
         return;
     }
 
     pData = PSXRegion[Region].pTexWibData;
-    if (pData == 0) {
+    if (pData == 0)
+    {
         return;
     }
 
     pPSX = PSXRegion[Region].pPSX;
-    while (*pData != 0) {
+    while (*pData != 0)
+    {
         pTexWibItemInfo = (STexWibItemInfo *)pData;
         pItem = (Item *)((u8 *)pPSX + pTexWibItemInfo->ItemOffset);
         pTexWibFaceInfo = (STexWibFaceInfo *)(pTexWibItemInfo + 1);
         NumFaces = pTexWibItemInfo->NumFaces;
 
-        if ((pItem->Flags & 0x8000) != 0) {
+        if ((pItem->Flags & 0x8000) != 0)
+        {
             pData = (u32 *)(pTexWibFaceInfo + NumFaces);
             continue;
         }
 
         pModel = PSXRegion[pItem->Region].ppModels[pItem->Model];
-        pFace = (u32 *)(pModel->Vertices + pModel->NumVertices +
-                       pModel->NumNormals);
+        pFace = (u32 *)(pModel->Vertices + pModel->NumVertices + pModel->NumNormals);
 
         uScroll = (s32)(XblanksNow * pTexWibItemInfo->uVel) >> 4;
         vScroll = (s32)(XblanksNow * pTexWibItemInfo->vVel) >> 4;
-        BasePhase =
-            (s32)(XblanksNow * pTexWibItemInfo->Frequency) >> 10;
+        BasePhase = (s32)(XblanksNow * pTexWibItemInfo->Frequency) >> 10;
         int ZeroUAmplitudes = pTexWibItemInfo->ZeroUAmplitudes;
         int ZeroVAmplitudes = pTexWibItemInfo->ZeroVAmplitudes;
 
         for (i = 0; i < NumFaces;
-             i++,
-             pFace += (*(u16 *)((u8 *)pFace + 2) & 0xFFFC) >> 2,
-             pTexWibFaceInfo++) {
+             i++, pFace += (*(u16 *)((u8 *)pFace + 2) & 0xFFFC) >> 2, pTexWibFaceInfo++)
+        {
             TileWidth = ((-(pFace[7] & 0x001F) << 3) & 0xFF) << 8;
             TileHeight = ((-(pFace[7] & 0x03E0) >> 2) & 0xFF) << 8;
 
@@ -1944,28 +1956,32 @@ void M3d_PreprocessWibblyTextures(int Region) {
             u3 = pTexWibFaceInfo->p3.u << 8;
             v3 = pTexWibFaceInfo->p3.v << 8;
 
-            if (uScroll != 0) {
+            if (uScroll != 0)
+            {
                 u0 += uScroll;
                 u1 += uScroll;
                 u2 += uScroll;
                 u3 += uScroll;
             }
 
-            if (vScroll != 0) {
+            if (vScroll != 0)
+            {
                 v0 += vScroll;
                 v1 += vScroll;
                 v2 += vScroll;
                 v3 += vScroll;
             }
 
-            if (ZeroUAmplitudes == 0) {
+            if (ZeroUAmplitudes == 0)
+            {
                 u0 += uWibble(&pTexWibFaceInfo->p0);
                 u1 += uWibble(&pTexWibFaceInfo->p1);
                 u2 += uWibble(&pTexWibFaceInfo->p2);
                 u3 += uWibble(&pTexWibFaceInfo->p3);
             }
 
-            if (ZeroVAmplitudes == 0) {
+            if (ZeroVAmplitudes == 0)
+            {
                 v0 += vWibble(&pTexWibFaceInfo->p0);
                 v1 += vWibble(&pTexWibFaceInfo->p1);
                 v2 += vWibble(&pTexWibFaceInfo->p2);
@@ -1975,7 +1991,8 @@ void M3d_PreprocessWibblyTextures(int Region) {
             And = u0 & u1 & u2 & u3;
             Or = u0 | u1 | u2 | u3;
             Count = 0;
-            while (((And ^ Or) & 0x10000) != 0 && Count < 16) {
+            while (((And ^ Or) & 0x10000) != 0 && Count < 16)
+            {
                 u0 += TileWidth;
                 u1 += TileWidth;
                 u2 += TileWidth;
@@ -1988,7 +2005,8 @@ void M3d_PreprocessWibblyTextures(int Region) {
             And = v0 & v1 & v2 & v3;
             Or = v0 | v1 | v2 | v3;
             Count = 0;
-            while (((And ^ Or) & 0x10000) != 0 && Count < 16) {
+            while (((And ^ Or) & 0x10000) != 0 && Count < 16)
+            {
                 v0 += TileHeight;
                 v1 += TileHeight;
                 v2 += TileHeight;
@@ -2010,7 +2028,6 @@ void M3d_PreprocessWibblyTextures(int Region) {
             *(u16 *)&pFace[4] = u0 | (v0 << 8);
             *(u16 *)&pFace[5] = u1 | (v1 << 8);
             pFace[6] = u2 | (v2 << 8) | (u3 << 16) | (v3 << 24);
-
         }
 
         pData = (u32 *)pTexWibFaceInfo;
@@ -2027,7 +2044,8 @@ void M3d_PreprocessWibblyTextures(int Region) {
  *
  * @param Region  PSX region index.
  */
-struct SColourPulseInfo {
+struct SColourPulseInfo
+{
     u8 VertexColourIndex;
     u8 ListLen;
     u8 ListPos;
@@ -2035,7 +2053,8 @@ struct SColourPulseInfo {
     SRGBI RGBs[1];
 };
 
-void M3d_PreprocessPulsingColours(int Region) {
+void M3d_PreprocessPulsingColours(int Region)
+{
     u32 *pData;
     u32 *pEnd;
     u32 dt;
@@ -2048,24 +2067,30 @@ void M3d_PreprocessPulsingColours(int Region) {
     SRGBI *RGBs;
     SColourPulseInfo *pColourPulseInfo;
 
-    if (Region == -1) {
+    if (Region == -1)
+    {
         return;
     }
 
     pData = PSXRegion[Region].pColourPulseData;
-    if (pData == 0) {
+    if (pData == 0)
+    {
         return;
     }
 
     pEnd = (u32 *)((u8 *)pData + pData[-1]);
     pColourTable = PSXRegion[Region].pColourTable;
-    if ((u32)XblanksNow < (u32)XblanksThen) {
+    if ((u32)XblanksNow < (u32)XblanksThen)
+    {
         dt = 1;
-    } else {
+    }
+    else
+    {
         dt = (u32)XblanksNow - (u32)XblanksThen;
     }
 
-    while (pData < pEnd) {
+    while (pData < pEnd)
+    {
         pColourPulseInfo = (SColourPulseInfo *)pData;
         RGBs = pColourPulseInfo->RGBs;
         ListLen = pColourPulseInfo->ListLen;
@@ -2073,10 +2098,12 @@ void M3d_PreprocessPulsingColours(int Region) {
         t = pColourPulseInfo->t;
 
         t += dt;
-        while (t >= RGBs[ListPos].Interval) {
+        while (t >= RGBs[ListPos].Interval)
+        {
             t -= RGBs[ListPos].Interval;
             ListPos++;
-            if (ListPos == ListLen) {
+            if (ListPos == ListLen)
+            {
                 ListPos = 0;
             }
         }
@@ -2090,7 +2117,8 @@ void M3d_PreprocessPulsingColours(int Region) {
 
         OldListPos = ListPos;
         ListPos++;
-        if (ListPos == ListLen) {
+        if (ListPos == ListLen)
+        {
             ListPos = 0;
         }
 

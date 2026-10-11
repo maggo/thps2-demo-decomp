@@ -16,7 +16,8 @@ struct TextMenuWrapper;
 struct WheelElementList;
 
 /** Main-menu screen and its owned UI resources. */
-struct MainMenuScreen : ScreenElementList {
+struct MainMenuScreen : ScreenElementList
+{
     FrontPreLoader mFrontPreLoader;
     void *FinishUp;
     Font TheFont;
@@ -40,13 +41,15 @@ struct MainMenuScreen : ScreenElementList {
 };
 
 /** Rotating menu-wheel element and selection state. */
-struct WheelElementList : ScreenElementList {
+struct WheelElementList : ScreenElementList
+{
     RotateSprite *Wheel;
     int CurrentRot;
     int TargetRot;
     int NumSlots;
     /** Full runtime slot plus the persisted low-byte view used by the dtor. */
-    union {
+    union
+    {
         int Slot;
         unsigned char SlotByte;
     };
@@ -59,12 +62,9 @@ struct WheelElementList : ScreenElementList {
     void draw(int x, int y);
 };
 
-typedef char mainmenu_wheel_size_must_be_124[
-    (sizeof(WheelElementList) == 124) ? 1 : -1];
-typedef char mainmenu_screen_size_must_be_332[
-    (sizeof(MainMenuScreen) == 332) ? 1 : -1];
-typedef char mainmenu_prompt_size_must_be_104[
-    (sizeof(PromptScreenElement) == 104) ? 1 : -1];
+typedef char mainmenu_wheel_size_must_be_124[(sizeof(WheelElementList) == 124) ? 1 : -1];
+typedef char mainmenu_screen_size_must_be_332[(sizeof(MainMenuScreen) == 332) ? 1 : -1];
+typedef char mainmenu_prompt_size_must_be_104[(sizeof(PromptScreenElement) == 104) ? 1 : -1];
 
 #include "SFX.h"
 #include "MAIN.h"
@@ -80,39 +80,22 @@ typedef char mainmenu_prompt_size_must_be_104[
 #include "FRONTEND2.h"
 
 /** MAINMENU's initialized small-data contribution in original order. */
-u8 MainMenu_LastSelection
-    __attribute__((section(".sdata"), aligned(4))) = 2;
-static char EndProcess_str[]
-    __attribute__((section(".sdata"), aligned(4))) = "loading";
-static char MainMenuBmpName[]
-    __attribute__((section(".sdata"), aligned(4))) = "s2bgd2.bmp";
-static char MainMenuFont1[]
-    __attribute__((section(".sdata"), aligned(4))) = "mainf.fnt";
-static char MainMenuFont2[]
-    __attribute__((section(".sdata"), aligned(4))) = "s2font2.fnt";
-static char MainMenuItemNames[]
-    __attribute__((section(".sdata"), aligned(4))) = "s2prmpt4.bmp";
-static char MainMenuItemNames2[]
-    __attribute__((section(".sdata"), aligned(4))) = "select";
-static char MainMenuBmpName2[]
-    __attribute__((section(".sdata"), aligned(4))) = "s2prmpt1.bmp";
-static char MainMenuBmpName3[]
-    __attribute__((section(".sdata"), aligned(4))) = "accept";
-static char WheelBmpName[]
-    __attribute__((section(".sdata"), aligned(4))) = "s2wheel.bmp";
-static char WheelItemNames[]
-    __attribute__((section(".sdata"), aligned(4))) = "s2arrow3.bmp";
+u8 MainMenu_LastSelection __attribute__((section(".sdata"), aligned(4))) = 2;
+static char EndProcess_str[] __attribute__((section(".sdata"), aligned(4))) = "loading";
+static char MainMenuBmpName[] __attribute__((section(".sdata"), aligned(4))) = "s2bgd2.bmp";
+static char MainMenuFont1[] __attribute__((section(".sdata"), aligned(4))) = "mainf.fnt";
+static char MainMenuFont2[] __attribute__((section(".sdata"), aligned(4))) = "s2font2.fnt";
+static char MainMenuItemNames[] __attribute__((section(".sdata"), aligned(4))) = "s2prmpt4.bmp";
+static char MainMenuItemNames2[] __attribute__((section(".sdata"), aligned(4))) = "select";
+static char MainMenuBmpName2[] __attribute__((section(".sdata"), aligned(4))) = "s2prmpt1.bmp";
+static char MainMenuBmpName3[] __attribute__((section(".sdata"), aligned(4))) = "accept";
+static char WheelBmpName[] __attribute__((section(".sdata"), aligned(4))) = "s2wheel.bmp";
+static char WheelItemNames[] __attribute__((section(".sdata"), aligned(4))) = "s2arrow3.bmp";
 
 /** Menu-wheel angle and result mapping at its target `.data` address. */
-int RotMap[7][2]
-    __attribute__((section(".data"), aligned(4))) = {
-        {0x0000, 0x27},
-        {0x0D6D, -1},
-        {0x0B56, 0x28},
-        {0x0934, -1},
-        {0x06EF, -1},
-        {0x04E4, 0x22},
-        {0x02AB, -1},
+int RotMap[7][2] __attribute__((section(".data"), aligned(4))) = {
+    { 0x0000, 0x27 }, { 0x0D6D, -1 },   { 0x0B56, 0x28 }, { 0x0934, -1 },
+    { 0x06EF, -1 },   { 0x04E4, 0x22 }, { 0x02AB, -1 },
 };
 
 // === Function implementations (address order) ===
@@ -173,8 +156,7 @@ int MainMenu_Main(void)
         Pause(1);
 
         // Wait for two vertical blanks before presenting the next frame.
-        while ((unsigned int)Vblanks <
-               (unsigned int)(GStartTime + 2))
+        while ((unsigned int)Vblanks < (unsigned int)(GStartTime + 2))
         {
         }
 
@@ -267,13 +249,13 @@ MainMenuScreen::MainMenuScreen() : ScreenElementList(0, 0, -1, -1)
     mFont1.SpaceY = 0;
     mFont1.Scale = 0x1000;
 
-    PromptScreenElement *pPromptElement = new PromptScreenElement(
-        MainMenuItemNames, MainMenuItemNames2, &mFont1, 159, 220, -1, 260);
+    PromptScreenElement *pPromptElement =
+        new PromptScreenElement(MainMenuItemNames, MainMenuItemNames2, &mFont1, 159, 220, -1, 260);
     addItem(pPromptElement);
 
     // Create the accept prompt.
-    pPromptElement = new PromptScreenElement(
-        MainMenuBmpName2, MainMenuBmpName3, &mFont1, 272, 220, -1, 260);
+    pPromptElement =
+        new PromptScreenElement(MainMenuBmpName2, MainMenuBmpName3, &mFont1, 272, 220, -1, 260);
     addItem(pPromptElement);
 }
 
@@ -361,8 +343,7 @@ int MainMenuScreen::isDone(int *return_value)
  * @param screenY  Screen-space Y coordinate.
  * @return The constructed wheel element list.
  */
-WheelElementList::WheelElementList(int homeX, int homeY, int screenX,
-                                   int screenY)
+WheelElementList::WheelElementList(int homeX, int homeY, int screenX, int screenY)
     : ScreenElementList(homeX, homeY, screenX, screenY)
 {
     // Create the rotating wheel sprite.

@@ -35,7 +35,8 @@
 #include "MAIN.h"
 #include "RFRONT.h"
 
-enum {
+enum
+{
     HiresOrderingTableDrawOffset = 4096,
     HiresCachedAddressMask = 0x7FFFFFFF,
 };
@@ -46,8 +47,7 @@ SViewport HiResViewport __attribute__((section(".data"))) = {
 };
 
 /** Skater-region table retained by the high-resolution shell. */
-int SkaterRegion[HiresSkaterRegionCount]
-    __attribute__((section(".data"))) = {};
+int SkaterRegion[HiresSkaterRegionCount] __attribute__((section(".data"))) = {};
 
 /** Default VAB loaded while the high-resolution title screen is active. */
 static char SFXDataPath[] __attribute__((section(".sdata"))) = "shell.vab";
@@ -66,8 +66,7 @@ void HiRes_Init(bool clear_screen)
  */
 void HiRes_ClearOTag(void)
 {
-    ClearOTagR(reinterpret_cast<unsigned long *>(pDoubleBuffer->PanelOT),
-              Db_OTSize());
+    ClearOTagR(reinterpret_cast<unsigned long *>(pDoubleBuffer->PanelOT), Db_OTSize());
 }
 
 /**
@@ -79,8 +78,8 @@ void HiRes_DrawOTag(void)
     FlickerSync();
     ResetGraph(1);
     SDoubleBuffer *currentBuffer = pDoubleBuffer;
-    DrawOTag(reinterpret_cast<unsigned long *>(
-        currentBuffer->OrderingTable + HiresOrderingTableDrawOffset));
+    DrawOTag(reinterpret_cast<unsigned long *>(currentBuffer->OrderingTable +
+                                               HiresOrderingTableDrawOffset));
 
     SDoubleBuffer *newBuffer = DoubleBuffer;
     currentBuffer = pDoubleBuffer;
@@ -88,9 +87,8 @@ void HiRes_DrawOTag(void)
     {
         newBuffer++;
     }
-    pPoly = reinterpret_cast<unsigned int *>(
-        reinterpret_cast<unsigned int>(newBuffer->Polys) &
-        HiresCachedAddressMask);
+    pPoly = reinterpret_cast<unsigned int *>(reinterpret_cast<unsigned int>(newBuffer->Polys) &
+                                             HiresCachedAddressMask);
     pDoubleBuffer = newBuffer;
     PollHost();
 }
@@ -121,8 +119,7 @@ void kickIt(int Selected, int guy)
     SelectedSkater = guy;
 
     GLevel = Selected;
-    Utils_CopyString(
-        Levels[Selected].pTRGName, StartupGameState.State.TrigFileName);
+    Utils_CopyString(Levels[Selected].pTRGName, StartupGameState.State.TrigFileName);
     StartupGameState.State.RestartName[0] = '\0';
     LaunchGame();
 }

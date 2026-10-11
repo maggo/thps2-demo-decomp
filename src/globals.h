@@ -20,16 +20,17 @@
 
 #ifndef SRC_PSYQ_TYPES_DEFINED
 #define SRC_PSYQ_TYPES_DEFINED
-typedef unsigned char  u8;
+typedef unsigned char u8;
 typedef unsigned short u16;
-typedef unsigned int   u32;
-typedef signed char    s8;
-typedef signed short   s16;
-typedef signed int     s32;
+typedef unsigned int u32;
+typedef signed char s8;
+typedef signed short s16;
+typedef signed int s32;
 #endif
 
 // CClass — base class, single vtable pointer.
-struct CClass {
+struct CClass
+{
 #ifdef __cplusplus
     /** Allocate zeroed object storage through the shared CClass arena. */
     static void *operator new(unsigned int size);
@@ -43,7 +44,8 @@ struct CFriction;
 
 // 3D vectors in game-space (note `vx/vy/vz` field naming, distinct from
 // PSY-Q SDK's SVECTOR — same letters but different layouts).
-struct CVector  {
+struct CVector
+{
     int vx, vy, vz;
 #ifdef __cplusplus
     /** Return this vector's fixed-point magnitude. */
@@ -59,7 +61,12 @@ struct CVector  {
 #ifdef CVECTOR_COMPONENT_CTORS
     /** Component constructor (used by OB.cpp's zero vectors). */
     CVector() {}
-    CVector(int x, int y, int z) { vx = x; vy = y; vz = z; }
+    CVector(int x, int y, int z)
+    {
+        vx = x;
+        vy = y;
+        vz = z;
+    }
 #endif
     CVector &operator+=(const CVector &vector);
     CVector &operator-=(const CVector &vector);
@@ -70,7 +77,8 @@ struct CVector  {
     CVector &operator%=(const CFriction &friction);
 #endif
 };
-struct CSVector {
+struct CSVector
+{
     short vx, vy, vz;
 #ifdef __cplusplus
     /** Wrap every component into the signed twelve-bit angle range. */
@@ -82,7 +90,12 @@ struct CSVector {
     CSVector &operator%=(const CFriction &friction);
 #ifdef CVECTOR_COMPONENT_CTORS
     CSVector() {}
-    CSVector(short x, short y, short z) { vx = x; vy = y; vz = z; }
+    CSVector(short x, short y, short z)
+    {
+        vx = x;
+        vy = y;
+        vz = z;
+    }
 #endif
 #endif
 };
@@ -90,13 +103,13 @@ struct CSVector {
 
 #endif // SRC_GLOBALS_CORE_EMISSION
 
-#if (defined(SRC_GLOBALS_CORE_EMISSION) || \
-     defined(SRC_GLOBALS_SCENE_EMISSION)) && \
+#if (defined(SRC_GLOBALS_CORE_EMISSION) || defined(SRC_GLOBALS_SCENE_EMISSION)) && \
     !defined(SRC_GLOBALS_SCENE_VALUES_DEFINED)
 #define SRC_GLOBALS_SCENE_VALUES_DEFINED
 
 /** Plain 32-bit scene vector, distinct from the CVector class identity. */
-struct Vector {
+struct Vector
+{
     int vx;
     int vy;
     int vz;
@@ -113,14 +126,16 @@ struct Vector {
 };
 
 /** Plain 16-bit scene vector, distinct from CSVector and SDK SVECTOR. */
-struct SVector {
+struct SVector
+{
     short vx;
     short vy;
     short vz;
 };
 
 /** Environment item record shared by scene, collision, and spool code. */
-struct Item {
+struct Item
+{
     unsigned short Flags;
     unsigned short Inquiry;
     Vector Position;
@@ -135,7 +150,8 @@ struct Item {
 };
 
 /** Compact per-part hook offset stored in region data. */
-struct SHook {
+struct SHook
+{
     SVector Offset;
     unsigned short Part;
 };
@@ -151,14 +167,17 @@ typedef char SVector_vz_offset_must_be_4[((unsigned long)&(((SVector *)0)->vz) =
 typedef char Item_size_must_be_36[(sizeof(Item) == 36) ? 1 : -1];
 typedef char Item_Flags_offset_must_be_0[((unsigned long)&(((Item *)0)->Flags) == 0) ? 1 : -1];
 typedef char Item_Inquiry_offset_must_be_2[((unsigned long)&(((Item *)0)->Inquiry) == 2) ? 1 : -1];
-typedef char Item_Position_offset_must_be_4[((unsigned long)&(((Item *)0)->Position) == 4) ? 1 : -1];
+typedef char
+    Item_Position_offset_must_be_4[((unsigned long)&(((Item *)0)->Position) == 4) ? 1 : -1];
 typedef char Item_Angles_offset_must_be_16[((unsigned long)&(((Item *)0)->Angles) == 16) ? 1 : -1];
 typedef char Item_Model_offset_must_be_22[((unsigned long)&(((Item *)0)->Model) == 22) ? 1 : -1];
 typedef char Item_Frame_offset_must_be_24[((unsigned long)&(((Item *)0)->Frame) == 24) ? 1 : -1];
-typedef char Item_TintIndex_offset_must_be_25[((unsigned long)&(((Item *)0)->TintIndex) == 25) ? 1 : -1];
+typedef char
+    Item_TintIndex_offset_must_be_25[((unsigned long)&(((Item *)0)->TintIndex) == 25) ? 1 : -1];
 typedef char Item_Anim_offset_must_be_26[((unsigned long)&(((Item *)0)->Anim) == 26) ? 1 : -1];
 typedef char Item_Region_offset_must_be_27[((unsigned long)&(((Item *)0)->Region) == 27) ? 1 : -1];
-typedef char Item_NextItem_offset_must_be_28[((unsigned long)&(((Item *)0)->NextItem) == 28) ? 1 : -1];
+typedef char
+    Item_NextItem_offset_must_be_28[((unsigned long)&(((Item *)0)->NextItem) == 28) ? 1 : -1];
 typedef char Item_RGB_offset_must_be_32[((unsigned long)&(((Item *)0)->RGB) == 32) ? 1 : -1];
 typedef char SHook_size_must_be_8[(sizeof(SHook) == 8) ? 1 : -1];
 typedef char SHook_Offset_offset_must_be_0[((unsigned long)&(((SHook *)0)->Offset) == 0) ? 1 : -1];
@@ -169,13 +188,13 @@ typedef char SHook_Part_offset_must_be_6[((unsigned long)&(((SHook *)0)->Part) =
 #ifdef SRC_GLOBALS_CORE_EMISSION
 
 /** Packed per-part animation transform with a 16-bit translation. */
-struct SMatrix {
+struct SMatrix
+{
     short m[3][3];
     short t[3];
 };
 
-typedef char SMatrix_size_must_be_24[
-    (sizeof(SMatrix) == 24) ? 1 : -1];
+typedef char SMatrix_size_must_be_24[(sizeof(SMatrix) == 24) ? 1 : -1];
 
 #endif // SRC_GLOBALS_CORE_EMISSION
 

@@ -2,8 +2,7 @@
  * PAL physically owns the palette-allocation counter as a four-byte common.
  * Cross-owner consumers address that word absolutely.
  */
-#if defined(TOTALPALETTEUSAGE_OWNER_DECLARATION) && \
-    defined(TOTALPALETTEUSAGE_ABSOLUTE_DECLARATION)
+#if defined(TOTALPALETTEUSAGE_OWNER_DECLARATION) && defined(TOTALPALETTEUSAGE_ABSOLUTE_DECLARATION)
 #error "Select only one TotalPaletteUsage declaration view"
 #elif defined(TOTALPALETTEUSAGE_OWNER_DECLARATION)
 #define TOTALPALETTEUSAGE_DECL_ATTR

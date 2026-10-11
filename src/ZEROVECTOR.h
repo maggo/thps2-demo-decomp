@@ -9,7 +9,8 @@ struct CVector;
  */
 #if defined(ZEROVECTOR_EIGHT_BYTE_DECLARATION)
 /** Eight-byte address view used to keep ZeroVector at the -G8 boundary. */
-struct ZeroVectorDecl {
+struct ZeroVectorDecl
+{
     int lo;
     int hi;
 };

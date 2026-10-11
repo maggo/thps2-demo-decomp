@@ -30,7 +30,8 @@ typedef unsigned char undefined3[3];
 struct CBruce;
 struct SVideoInfo;
 
-struct SRainEntry {
+struct SRainEntry
+{
     struct CVector vel;
     struct CGPolyLine *p_line;
 };
@@ -82,7 +83,8 @@ struct CSmokeJet;
 struct SRainEntry;
 #ifdef BADDY_OWNER_DECLARATIONS
 /** Script-only actor extension that owns weather and smoke effects. */
-struct CScriptOnlyBaddy : CBaddy {
+struct CScriptOnlyBaddy : CBaddy
+{
     unsigned short mWeatherData;
     unsigned short _padToWeather;
     struct SRainEntry *mpWeather;
@@ -99,8 +101,7 @@ struct CScriptOnlyBaddy : CBaddy {
     virtual void SetVariable(unsigned short variable);
 };
 
-typedef char CScriptOnlyBaddy_size_check[
-    (sizeof(struct CScriptOnlyBaddy) == 556) ? 1 : -1];
+typedef char CScriptOnlyBaddy_size_check[(sizeof(struct CScriptOnlyBaddy) == 556) ? 1 : -1];
 #endif
 #endif // CCLASS_POLY_BADDY_FAMILY
 

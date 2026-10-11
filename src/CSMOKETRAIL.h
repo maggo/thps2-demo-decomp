@@ -3,7 +3,8 @@
 #define CSMOKETRAIL_INC_H
 
 /** Ribbon whose segments fade away before the effect dies. */
-struct CSmokeTrail : CRibbon {
+struct CSmokeTrail : CRibbon
+{
     int mFadeAway;
 
     /** Build a smoke trail and tint its ribbon segments. */

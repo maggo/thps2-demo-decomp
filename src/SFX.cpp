@@ -20,22 +20,18 @@
 #include "FILEIO.h"
 // === Source-owned sound tables ===
 /** Global and level-local sound definitions populated from VAB files. */
-u32 SFXArray[192] __attribute__((section(".data"))) = {0};
-u16 SFXAliasArray[64] __attribute__((section(".data"))) = {0};
-u32 SFXLevelSpecificArray[192]
-    __attribute__((section(".data"))) = {0};
-u16 SFXLevelSpecificAliasArray[64]
-    __attribute__((section(".data"))) = {0};
-SFXVoiceSpatialData SFXFalloffArray[SFX_VOICE_COUNT]
-    __attribute__((section(".data"))) = {0};
+u32 SFXArray[192] __attribute__((section(".data"))) = { 0 };
+u16 SFXAliasArray[64] __attribute__((section(".data"))) = { 0 };
+u32 SFXLevelSpecificArray[192] __attribute__((section(".data"))) = { 0 };
+u16 SFXLevelSpecificAliasArray[64] __attribute__((section(".data"))) = { 0 };
+SFXVoiceSpatialData SFXFalloffArray[SFX_VOICE_COUNT] __attribute__((section(".data"))) = { 0 };
 
 /**
  * Source-owned sound-RAM management workspace.
  *
  * The original initialized-data image stores all 136 bytes as zero.
  */
-char SoundRamMemoryManagementTable[136]
-    __attribute__((section(".data"))) = {0};
+char SoundRamMemoryManagementTable[136] __attribute__((section(".data"))) = { 0 };
 
 /**
  * Complete SFX small-data state in target order.
@@ -73,27 +69,24 @@ int SFX_v = 0;
  *
  * These arrays are zero-initialized in the original SFX BSS contribution.
  */
-static u16 voicePitch[SFX_VOICE_COUNT]
-    __attribute__((section(".bss")));
-static u16 voiceVolume[SFX_VOICE_COUNT]
-    __attribute__((section(".bss")));
-static soundRAMentry soundRAMSlots[4]
-    __attribute__((section(".bss")));
-static u16 pitchPriorToPause[SFX_VOICE_COUNT]
-    __attribute__((section(".bss")));
+static u16 voicePitch[SFX_VOICE_COUNT] __attribute__((section(".bss")));
+static u16 voiceVolume[SFX_VOICE_COUNT] __attribute__((section(".bss")));
+static soundRAMentry soundRAMSlots[4] __attribute__((section(".bss")));
+static u16 pitchPriorToPause[SFX_VOICE_COUNT] __attribute__((section(".bss")));
 
 // === $gp-relative globals ===
 // nko_flag, keyon_queue, reverb_queue, keyoff_queue, voiceon_flag, exp_flag,
 // loop_flag, voicefree_flag, and reverb_changed are declared in SFX.h and
 // owned by the complete small-data block above.
-static unsigned int playSFX(unsigned int sfx, unsigned char pitch, short vl, short vr, int pitch_offset, unsigned short volMod);
+static unsigned int playSFX(unsigned int sfx, unsigned char pitch, short vl, short vr,
+                            int pitch_offset, unsigned short volMod);
 static int allocateVoice(void);
 static unsigned int translateLevelSpecificAliasToIndex(unsigned short alias);
 static unsigned int translateGlobalAliasToIndex(unsigned short alias);
 static unsigned int sfxMalloc(unsigned int size);
 int SFX_OpenVABFile(char *filename, void **soundBuffer);
-void SFX_ParseSFXFile(char *name, unsigned int *entries,
-                      unsigned short *aliases, int maxEntries, int mask);
+void SFX_ParseSFXFile(char *name, unsigned int *entries, unsigned short *aliases, int maxEntries,
+                      int mask);
 
 // === Function implementations (address order) ===
 
@@ -104,7 +97,8 @@ void SFX_ParseSFXFile(char *name, unsigned int *entries,
  * Mangled:   SFX_InitAtStart__Fv
  * Demangled: SFX_InitAtStart(void)
  */
-void SFX_InitAtStart(void) {
+void SFX_InitAtStart(void)
+{
     SpuCommonAttr attr;
 
     SpuInit();
@@ -116,15 +110,15 @@ void SFX_InitAtStart(void) {
     soundRAMSlots[0].size = maxSize;
     soundRAMSlots[0].occupied = 0;
 
-    do {
+    do
+    {
         soundRAMSlots[i].size = 0;
         soundRAMSlots[i].start = 0;
         soundRAMSlots[i].occupied = 0;
         i++;
     } while (i < 4);
 
-    attr.mask = SPU_COMMON_MVOLL | SPU_COMMON_MVOLR |
-                SPU_COMMON_CDVOLL | SPU_COMMON_CDVOLR |
+    attr.mask = SPU_COMMON_MVOLL | SPU_COMMON_MVOLR | SPU_COMMON_CDVOLL | SPU_COMMON_CDVOLR |
                 SPU_COMMON_CDREV | SPU_COMMON_CDMIX;
     attr.mvol.left = 0x3FFF;
     attr.mvol.right = 0x3FFF;
@@ -145,12 +139,14 @@ void SFX_InitAtStart(void) {
  *
  * @param filename  Filename string.
  */
-void SFX_Init(char * filename) {
+void SFX_Init(char *filename)
+{
     SFX_SetReverbType(0);
     SFXVABId = SFX_OpenVABFile(filename, &pSFXVABHeader);
     SFX_ParseSFXFile(filename, SFXArray, SFXAliasArray, 64, 0);
     int i = 0;
-    do {
+    do
+    {
         i++;
     } while (i < 64);
     i--;
@@ -169,7 +165,8 @@ void SFX_Init(char * filename) {
  *
  * @param p_name Level name without an extension.
  */
-void SFX_SpoolInLevelSFX(const char * p_name) {
+void SFX_SpoolInLevelSFX(const char *p_name)
+{
     char filename[20];
     int i = 0;
     char *out = filename;
@@ -178,7 +175,8 @@ void SFX_SpoolInLevelSFX(const char * p_name) {
 copy_next:
     i++;
 copy_test:
-    if (*p_name == '\0') {
+    if (*p_name == '\0')
+    {
         goto copy_done;
     }
     out[i] = *p_name;
@@ -193,11 +191,8 @@ copy_done:
 
     // FIXME(match): asm barrier — keeps the filename stores ahead of the call arg setup (without it a0/a1 setup is hoisted over the stores and i/out regs shift); tried: comma-expression args, i/out/filename declaration order: score 21.
     asm volatile("");
-    LevelSpecificSFXVABId = SFX_OpenVABFile(filename,
-                                            &pLevelSpecificSFXVABHeader);
-    SFX_ParseSFXFile(filename, SFXLevelSpecificArray,
-                     SFXLevelSpecificAliasArray, 64,
-                     0x40000000);
+    LevelSpecificSFXVABId = SFX_OpenVABFile(filename, &pLevelSpecificSFXVABHeader);
+    SFX_ParseSFXFile(filename, SFXLevelSpecificArray, SFXLevelSpecificAliasArray, 64, 0x40000000);
 }
 
 
@@ -211,7 +206,8 @@ copy_done:
  *
  * @param p_name  MIDI asset name; retained for the no-op prototype implementation.
  */
-void SFX_SpoolInMIDI(const char * p_name) {
+void SFX_SpoolInMIDI(const char *p_name)
+{
 }
 
 
@@ -223,7 +219,8 @@ void SFX_SpoolInMIDI(const char * p_name) {
  * Demangled: SFX_SpoolOutMIDI(void)
  *            jr $ra; nop — empty void function
  */
-void SFX_SpoolOutMIDI(void) {
+void SFX_SpoolOutMIDI(void)
+{
 }
 
 
@@ -238,10 +235,10 @@ void SFX_SpoolOutMIDI(void) {
  * @param p_soundbuffer  Receives the retained VAB header and tone table.
  * @return 1 after the VAB image has been loaded and transferred.
  */
-int SFX_OpenVABFile(char * filename, void ** p_soundbuffer) {
+int SFX_OpenVABFile(char *filename, void **p_soundbuffer)
+{
     int vab_size = FileIO_Open(filename);
-    unsigned char *p_buffer =
-        (unsigned char *)Mem_New(vab_size + 0x40, 1, 1);
+    unsigned char *p_buffer = (unsigned char *)Mem_New(vab_size + 0x40, 1, 1);
     FileIO_Load(p_buffer);
     FileIO_Sync();
 
@@ -261,11 +258,11 @@ int SFX_OpenVABFile(char * filename, void ** p_soundbuffer) {
 
     unsigned short *p_offset =
         (unsigned short *)(p_buffer + SFX_VAB_TONE_TABLE_OFFSET +
-                           header->ps * SFX_VAB_TONES_PER_PROGRAM *
-                           sizeof(VagAtr));
+                           header->ps * SFX_VAB_TONES_PER_PROGRAM * sizeof(VagAtr));
     unsigned int address = transfer_address;
     int w = 0;
-    do {
+    do
+    {
         int size = *p_offset;
         *p_offset = (unsigned short)(address >> 3);
         p_offset++;
@@ -296,7 +293,8 @@ int SFX_OpenVABFile(char * filename, void ** p_soundbuffer) {
  * @param pitch_offset  Signed pitch adjustment added to the table pitch.
  * @return Bit field of allocated SPU voices, or 0 when playback fails.
  */
-unsigned int SFX_PlayX(unsigned int sound, short vol, int pitch_offset) {
+unsigned int SFX_PlayX(unsigned int sound, short vol, int pitch_offset)
+{
     unsigned int no_reverb;
     unsigned short soundIdx;
     unsigned int global_index;
@@ -308,7 +306,8 @@ unsigned int SFX_PlayX(unsigned int sound, short vol, int pitch_offset) {
     unsigned int packed;
     const unsigned int invalidSound = 0xFFFFFFFFU;
 
-    if (sound == invalidSound) {
+    if (sound == invalidSound)
+    {
         return 0;
     }
 
@@ -319,22 +318,28 @@ unsigned int SFX_PlayX(unsigned int sound, short vol, int pitch_offset) {
     sound = translateGlobalAliasToIndex((unsigned short)soundIdx);
     level_specific = false;
     global_index = sound;
-    if (sound == invalidSound) {
+    if (sound == invalidSound)
+    {
         level_specific = true;
         sound = translateLevelSpecificAliasToIndex((unsigned short)soundIdx);
-        if (sound == global_index) {
+        if (sound == global_index)
+        {
             return 0;
         }
     }
 
     sound = sound * 3;
-    if (level_specific) {
+    if (level_specific)
+    {
         p_array = &SFXLevelSpecificArray[sound];
-    } else {
+    }
+    else
+    {
         p_array = &SFXArray[sound];
     }
 
-    if ((int)p_array[0] >= 0) {
+    if ((int)p_array[0] >= 0)
+    {
         Video_SFXPlay(sound, vol, pitch_offset);
     }
     sfx = p_array[0];
@@ -343,11 +348,11 @@ unsigned int SFX_PlayX(unsigned int sound, short vol, int pitch_offset) {
     vol = (short)(((int)vol * (int)vol_mod * 0x10) >> 16);
     vol = (short)(((int)vol * SFXLEVEL * 4) >> 16);
     pitch = (unsigned short)packed;
-    if (no_reverb) {
+    if (no_reverb)
+    {
         sfx |= 0x4000;
     }
-    return playSFX(sfx, (unsigned char)pitch, vol, vol, pitch_offset,
-                   (unsigned short)vol_mod);
+    return playSFX(sfx, (unsigned char)pitch, vol, vol, pitch_offset, (unsigned short)vol_mod);
 }
 
 
@@ -365,7 +370,8 @@ unsigned int SFX_PlayX(unsigned int sound, short vol, int pitch_offset) {
  * @param pitch_offset  Signed pitch adjustment added to the table pitch.
  * @return Bit field of allocated SPU voices, or 0 when playback fails.
  */
-unsigned int SFX_PlayLR(unsigned int sound, short vl, short vr, int pitch_offset) {
+unsigned int SFX_PlayLR(unsigned int sound, short vl, short vr, int pitch_offset)
+{
     unsigned int no_reverb;
     unsigned short soundIdx;
     unsigned int global_index;
@@ -377,7 +383,8 @@ unsigned int SFX_PlayLR(unsigned int sound, short vl, short vr, int pitch_offset
     unsigned int packed;
     const unsigned int invalidSound = 0xFFFFFFFFU;
 
-    if (sound == invalidSound) {
+    if (sound == invalidSound)
+    {
         return 0;
     }
 
@@ -388,18 +395,23 @@ unsigned int SFX_PlayLR(unsigned int sound, short vl, short vr, int pitch_offset
     sound = translateGlobalAliasToIndex((unsigned short)soundIdx);
     level_specific = false;
     global_index = sound;
-    if (sound == invalidSound) {
+    if (sound == invalidSound)
+    {
         level_specific = true;
         sound = translateLevelSpecificAliasToIndex((unsigned short)soundIdx);
-        if (sound == global_index) {
+        if (sound == global_index)
+        {
             return 0;
         }
     }
 
     sound = sound * 3;
-    if (level_specific) {
+    if (level_specific)
+    {
         p_array = &SFXLevelSpecificArray[sound];
-    } else {
+    }
+    else
+    {
         p_array = &SFXArray[sound];
     }
 
@@ -412,12 +424,12 @@ unsigned int SFX_PlayLR(unsigned int sound, short vl, short vr, int pitch_offset
     vr = (short)(((int)vr * SFXLEVEL * 4) >> 16);
 
     sfx = p_array[0];
-    if (no_reverb) {
+    if (no_reverb)
+    {
         sfx |= 0x4000;
     }
 
-    return playSFX(sfx, (unsigned char)pitch, vl, vr, pitch_offset,
-                   (unsigned short)vol_mod);
+    return playSFX(sfx, (unsigned char)pitch, vl, vr, pitch_offset, (unsigned short)vol_mod);
 }
 
 
@@ -434,7 +446,8 @@ unsigned int SFX_PlayLR(unsigned int sound, short vl, short vr, int pitch_offset
  * @param pitch_offset  Pitch adjustment passed to the voice allocator.
  * @return Voice bitfield, or zero when the alias cannot be resolved.
  */
-unsigned int SFX_PlayPos(unsigned int sound, const CVector & pos, int pitch_offset) {
+unsigned int SFX_PlayPos(unsigned int sound, const CVector &pos, int pitch_offset)
+{
     unsigned int no_reverb;
     unsigned int soundIdx;
     unsigned int global_index;
@@ -453,7 +466,8 @@ unsigned int SFX_PlayPos(unsigned int sound, const CVector & pos, int pitch_offs
     unsigned int packed;
     const unsigned int invalidSound = 0xFFFFFFFFU;
 
-    if (sound == invalidSound) {
+    if (sound == invalidSound)
+    {
         return 0;
     }
 
@@ -464,17 +478,22 @@ unsigned int SFX_PlayPos(unsigned int sound, const CVector & pos, int pitch_offs
     sound = translateGlobalAliasToIndex((unsigned short)soundIdx);
     level_specific = false;
     global_index = sound;
-    if (sound == invalidSound) {
+    if (sound == invalidSound)
+    {
         level_specific = true;
         sound = translateLevelSpecificAliasToIndex((unsigned short)soundIdx);
-        if (sound == global_index) {
+        if (sound == global_index)
+        {
             return 0;
         }
     }
     sound = sound * 3;
-    if (level_specific) {
+    if (level_specific)
+    {
         p_array = &SFXLevelSpecificArray[sound];
-    } else {
+    }
+    else
+    {
         p_array = &SFXArray[sound];
     }
 
@@ -488,23 +507,27 @@ unsigned int SFX_PlayPos(unsigned int sound, const CVector & pos, int pitch_offs
     vr_normalised = (vr_normalised * vol_mod) >> 12;
     vl = (vl_normalised * SFXLEVEL) >> 14;
     vr = (vr_normalised * SFXLEVEL) >> 14;
-    if ((int)vol < 0) {
+    if ((int)vol < 0)
+    {
         vl = -vl;
     }
 
     pitch = (unsigned short)packed;
     sfx = p_array[0];
-    if (no_reverb) {
+    if (no_reverb)
+    {
         sfx |= 0x4000;
     }
 
-    rv = playSFX(sfx, (unsigned char)pitch, (short)vl, (short)vr,
-                 pitch_offset, (unsigned short)vol_mod);
+    rv = playSFX(sfx, (unsigned char)pitch, (short)vl, (short)vr, pitch_offset,
+                 (unsigned short)vol_mod);
 
     {
         int i;
-        for (i = 0; i < SFX_VOICE_COUNT; i++) {
-            if (rv & (1 << i)) {
+        for (i = 0; i < SFX_VOICE_COUNT; i++)
+        {
+            if (rv & (1 << i))
+            {
                 SFXFalloffArray[i].packed = falloff | (vol_mod << 16);
                 return rv;
             }
@@ -544,15 +567,20 @@ unsigned int SFX_PlayPos(unsigned int sound, const CVector & pos, int pitch_offs
  * @param voice_bf  Bit field selecting the voice whose attributes are queried.
  * @return Current SPU pitch, or 1000 while sound effects are paused.
  */
-unsigned short SFX_GetVoicePitch(unsigned int voice_bf) {
+unsigned short SFX_GetVoicePitch(unsigned int voice_bf)
+{
     SpuVoiceAttr attr;
 
-    if (SFXPaused) {
+    if (SFXPaused)
+    {
         return 1000;
     }
-    if (voice_bf == 0) {
+    if (voice_bf == 0)
+    {
         // fall through, return whatever is in $v0
-    } else {
+    }
+    else
+    {
         attr.voice = voice_bf;
         SpuGetVoiceAttr(&attr);
         return attr.pitch;
@@ -570,15 +598,18 @@ unsigned short SFX_GetVoicePitch(unsigned int voice_bf) {
  * @param voice_bf Bit field selecting the voices to update.
  * @param pitch New SPU pitch value for every selected voice.
  */
-void SFX_SetVoicePitch(unsigned int voice_bf, unsigned short pitch) {
+void SFX_SetVoicePitch(unsigned int voice_bf, unsigned short pitch)
+{
     struct SpuVoiceAttr attr;
 
     if (SFXPaused) return;
     if (voice_bf == 0) return;
 
     int v;
-    for (v = 0; v < SFX_VOICE_COUNT; v++) {
-        if (voice_bf & (1 << v)) {
+    for (v = 0; v < SFX_VOICE_COUNT; v++)
+    {
+        if (voice_bf & (1 << v))
+        {
             attr.mask = SPU_VOICE_PITCH;
             attr.pitch = pitch;
             SpuNSetVoiceAttr(v, &attr);
@@ -601,7 +632,8 @@ void SFX_SetVoicePitch(unsigned int voice_bf, unsigned short pitch) {
  * @param pos World-space sound position.
  * @param delta_dist Change in listener distance used for the pitch adjustment.
  */
-void SFX_ModifyPos(unsigned int voice_id, const CVector & pos, int delta_dist) {
+void SFX_ModifyPos(unsigned int voice_id, const CVector &pos, int delta_dist)
+{
     struct SpuVoiceAttr attr;
 
     if (voice_id == 0) return;
@@ -610,8 +642,10 @@ void SFX_ModifyPos(unsigned int voice_id, const CVector & pos, int delta_dist) {
     u16 *spatialData = voicePitch;
     SFXVoiceSpatialData *extraData = SFXFalloffArray;
 
-    do {
-        if (voice_id & (1 << v)) {
+    do
+    {
+        if (voice_id & (1 << v))
+        {
             u16 rawSpatial = extraData->fields.falloff;
             unsigned int vol = Utils_CalculateSpatialAttenuation(pos, rawSpatial >> 3, rawSpatial);
 
@@ -630,27 +664,29 @@ void SFX_ModifyPos(unsigned int voice_id, const CVector & pos, int delta_dist) {
             if (vr_normalised < -0x3FFF) vr_normalised = -0x3FFF;
             if (vr_normalised >= 0x4000) vr_normalised = 0x3FFF;
 
-            attr.volume.right =
-                (short)((vr_normalised * SFXLEVEL) >> 14);
-            if ((int)vol < 0) {
+            attr.volume.right = (short)((vr_normalised * SFXLEVEL) >> 14);
+            if ((int)vol < 0)
+            {
                 attr.volume.left = -(short)scaledLeft;
             }
 
             attr.voice = v;
             attr.mask = SPU_VOICE_VOLL | SPU_VOICE_VOLR;
 
-            if (delta_dist != 0) {
+            if (delta_dist != 0)
+            {
                 u16 pitchData = *spatialData;
                 int adjusted = pitchData * delta_dist;
-                attr.mask = SPU_VOICE_VOLL | SPU_VOICE_VOLR |
-                            SPU_VOICE_PITCH;
+                attr.mask = SPU_VOICE_VOLL | SPU_VOICE_VOLR | SPU_VOICE_PITCH;
                 if (adjusted < 0) adjusted += 0x1FFF;
                 int pitchAdjustment = adjusted >> 13;
                 int new_pitch = pitchData - pitchAdjustment;
-                if ((int)pitchData < new_pitch) {
+                if ((int)pitchData < new_pitch)
+                {
                     int delta2 = new_pitch - pitchData;
                     int limit = pitchData + (pitchData >> 1);
-                    if (limit < delta2) {
+                    if (limit < delta2)
+                    {
                         new_pitch = limit;
                     }
                 }
@@ -677,7 +713,8 @@ void SFX_ModifyPos(unsigned int voice_id, const CVector & pos, int delta_dist) {
  * @param vl  Requested left-channel volume.
  * @param vr  Requested right-channel volume.
  */
-void SFX_ModifyVol(unsigned int voice_id, int vl, int vr) {
+void SFX_ModifyVol(unsigned int voice_id, int vl, int vr)
+{
     SpuVoiceAttr attr;
 
     if (voice_id == 0) return;
@@ -690,8 +727,10 @@ void SFX_ModifyVol(unsigned int voice_id, int vl, int vr) {
 
     int v = 0;
 
-    do {
-        if (voice_id & (1 << v)) {
+    do
+    {
+        if (voice_id & (1 << v))
+        {
             vl = (vl * voiceVolume[v]) >> 12;
             vr = (vr * voiceVolume[v]) >> 12;
             attr.voice = v;
@@ -717,7 +756,8 @@ void SFX_ModifyVol(unsigned int voice_id, int vl, int vr) {
  * Demangled: SFX_ResetMIDIPausedPriorToPause(void)
  *            jr $ra; nop — empty void function
  */
-void SFX_ResetMIDIPausedPriorToPause(void) {
+void SFX_ResetMIDIPausedPriorToPause(void)
+{
 }
 
 
@@ -729,7 +769,8 @@ void SFX_ResetMIDIPausedPriorToPause(void) {
  * Demangled: SFX_LevelStart(void)
  *            sw $zero,0x2700($gp); jr $ra; nop
  */
-void SFX_LevelStart(void) {
+void SFX_LevelStart(void)
+{
     SFXPaused = 0;
 }
 
@@ -742,7 +783,8 @@ void SFX_LevelStart(void) {
  * Demangled: SFX_Pause(void)
  *            Pause active SFX voices by saving their pitch and forcing pitch to zero.
  */
-void SFX_Pause(void) {
+void SFX_Pause(void)
+{
     SpuVoiceAttr attr;
 
     if (SFXPaused) return;
@@ -753,7 +795,8 @@ void SFX_Pause(void) {
     attr.mask = SPU_VOICE_PITCH;
     attr.pitch = 0;
 
-    do {
+    do
+    {
         SpuGetVoicePitch(v, &pitchPriorToPause[v]);
         SpuNSetVoiceAttr(v, &attr);
         v++;
@@ -771,7 +814,8 @@ void SFX_Pause(void) {
  * Demangled: SFX_Unpause(void)
  *            Restore saved voice pitches and resume XA after an SFX pause.
  */
-void SFX_Unpause(void) {
+void SFX_Unpause(void)
+{
     SpuVoiceAttr attr;
 
     if (!SFXPaused) return;
@@ -781,7 +825,8 @@ void SFX_Unpause(void) {
     SFXPaused = 0;
     attr.mask = SPU_VOICE_PITCH;
 
-    do {
+    do
+    {
         attr.pitch = pitchPriorToPause[v];
         SpuNSetVoiceAttr(v, &attr);
         v++;
@@ -804,9 +849,11 @@ void SFX_Unpause(void) {
  * Mangled:   SFX_StopAll__Fv
  * Demangled: SFX_StopAll(void)
  */
-void SFX_StopAll(void) {
+void SFX_StopAll(void)
+{
     int i;
-    for (i = 0; i < SFX_VOICE_COUNT; i++) {
+    for (i = 0; i < SFX_VOICE_COUNT; i++)
+    {
         SFX_Stop(1 << i);
     }
 }
@@ -835,7 +882,8 @@ void SFX_StopAll(void) {
  *
  * @param voice_id  Bit field selecting the voices to stop.
  */
-void SFX_Stop(unsigned int voice_id) {
+void SFX_Stop(unsigned int voice_id)
+{
     nko_flag &= ~voice_id;
     loop_flag &= ~voice_id;
     voiceon_flag &= ~voice_id;
@@ -853,21 +901,28 @@ void SFX_Stop(unsigned int voice_id) {
  *
  * @param reverb_type  SPU reverb mode index.
  */
-void SFX_SetReverbType(unsigned char reverb_type) {
+void SFX_SetReverbType(unsigned char reverb_type)
+{
     SpuReverbAttr attr;
     attr.mask = SPU_REV_MODE;
     attr.mode = reverb_type;
     int ret = SpuSetReverbModeParam(&attr);
     if (ret == -1) return;
 
-    if (reverb_type == 0) {
+    if (reverb_type == 0)
+    {
         SFX_ReverbDepthSetTimer = 0;
         SpuSetReverbVoice(SPU_OFF, SPU_ALLCH);
-    } else {
-        if (SpuSetReverb(SPU_ON)) {
+    }
+    else
+    {
+        if (SpuSetReverb(SPU_ON))
+        {
             SFX_ReverbDepthSetTimer = 0xF0;
             SpuSetReverbVoice(SPU_ON, SPU_ALLCH);
-        } else {
+        }
+        else
+        {
             SpuSetReverbVoice(SPU_OFF, SPU_ALLCH);
         }
     }
@@ -885,7 +940,8 @@ void SFX_SetReverbType(unsigned char reverb_type) {
  * Mangled:   SFX_ReverbOff__Fv
  * Demangled: SFX_ReverbOff(void)
  */
-void SFX_ReverbOff(void) {
+void SFX_ReverbOff(void)
+{
     SFX_SetReverbType(0);
 }
 
@@ -908,7 +964,8 @@ void SFX_ReverbOff(void) {
  * @param ld  Left-channel reverb depth.
  * @param rd  Right-channel reverb depth.
  */
-void SFX_SetReverbDepth(unsigned char ld, unsigned char rd) {
+void SFX_SetReverbDepth(unsigned char ld, unsigned char rd)
+{
     SpuReverbAttr attr;
     attr.mask = SPU_REV_DEPTHL | SPU_REV_DEPTHR;
     attr.depth.left = (short)(ld << 8);
@@ -927,7 +984,8 @@ void SFX_SetReverbDepth(unsigned char ld, unsigned char rd) {
  *
  * @param ticks  Requested fade duration in ticks.
  */
-void SFX_MIDIFadeOut(int ticks) {
+void SFX_MIDIFadeOut(int ticks)
+{
 }
 
 
@@ -939,7 +997,8 @@ void SFX_MIDIFadeOut(int ticks) {
  * Demangled: SFX_MIDIStop(void)
  *            jr $ra; nop — empty void function
  */
-void SFX_MIDIStop(void) {
+void SFX_MIDIStop(void)
+{
 }
 
 
@@ -953,7 +1012,8 @@ void SFX_MIDIStop(void) {
  *
  * @param ticks  Requested fade duration in ticks.
  */
-void SFX_MIDIFadeIn(int ticks) {
+void SFX_MIDIFadeIn(int ticks)
+{
 }
 
 
@@ -967,7 +1027,8 @@ void SFX_MIDIFadeIn(int ticks) {
  *
  * @param mute  Channel-mute mask retained for the no-op prototype implementation.
  */
-void SFX_MIDIChannelMute(unsigned short mute) {
+void SFX_MIDIChannelMute(unsigned short mute)
+{
 }
 
 
@@ -986,7 +1047,9 @@ void SFX_MIDIChannelMute(unsigned short mute) {
  * @param volMod  Per-sound volume modifier.
  * Allocates SPU voices for the selected VAB tones and queues them to start.
  */
-static unsigned int playSFX(unsigned int sfx, unsigned char pitch, short vl, short vr, int pitch_offset, unsigned short volMod) {
+static unsigned int playSFX(unsigned int sfx, unsigned char pitch, short vl, short vr,
+                            int pitch_offset, unsigned short volMod)
+{
     unsigned int looping;
     unsigned short prog;
     unsigned short tones;
@@ -997,66 +1060,83 @@ static unsigned int playSFX(unsigned int sfx, unsigned char pitch, short vl, sho
     looping = sfx >> 31;
     tones = sfx & 0xffff;
 
-    if (pitch_offset) {
+    if (pitch_offset)
+    {
         pitch = (pitch + pitch_offset) & 0xff;
     }
 
-    if (tones < 2) {
+    if (tones < 2)
+    {
         voices = 1;
-    } else {
+    }
+    else
+    {
         voices = 0;
-        for (int t = 0; t < 16; t++) {
-            if ((tones >> t) & 1) {
+        for (int t = 0; t < 16; t++)
+        {
+            if ((tones >> t) & 1)
+            {
                 voices++;
             }
         }
     }
 
     voice_bf = 0;
-    for (int i = 0; i < voices; i++) {
+    for (int i = 0; i < voices; i++)
+    {
         int free = allocateVoice();
-        if (free == -1) {
+        if (free == -1)
+        {
             voice_bf = 0;
             break;
         }
         voice_bf |= 1 << free;
     }
 
-    if (voice_bf > 0) {
+    if (voice_bf > 0)
+    {
         unsigned int lzc;
         SFXVabImage *p_vab_hdr;
         int tone_start;
         SpuVoiceAttr attr;
 
         gte_ldlzc(voice_bf);
-        if ((sfx & 0x40000000) == 0) {
+        if ((sfx & 0x40000000) == 0)
+        {
             p_vab_hdr = (SFXVabImage *)pSFXVABHeader;
-        } else {
+        }
+        else
+        {
             p_vab_hdr = (SFXVabImage *)pLevelSpecificSFXVABHeader;
         }
         gte_stlzc(&lzc);
 
         lzc = 32 - lzc;
         tone_start = 0;
-        attr.mask = SPU_VOICE_VOLL | SPU_VOICE_VOLR | SPU_VOICE_PITCH |
-                    SPU_VOICE_WDSA | SPU_VOICE_ADSR_ADSR1 |
-                    SPU_VOICE_ADSR_ADSR2;
+        attr.mask = SPU_VOICE_VOLL | SPU_VOICE_VOLR | SPU_VOICE_PITCH | SPU_VOICE_WDSA |
+                    SPU_VOICE_ADSR_ADSR1 | SPU_VOICE_ADSR_ADSR2;
 
         int v = 0;
-        if (v < lzc) {
+        if (v < lzc)
+        {
             unsigned short *p_volume = voiceVolume;
-            for (; v < lzc; v++, p_volume++) {
+            for (; v < lzc; v++, p_volume++)
+            {
                 bool no_reverb;
-                if (tones == 0) {
+                if (tones == 0)
+                {
                     break;
-                } else {
+                }
+                else
+                {
                     no_reverb = false;
                 }
-                if ((voice_bf >> v) & 1) {
+                if ((voice_bf >> v) & 1)
+                {
                     int t = tone_start;
-                    if (t < 16) {
-                        VagAtr *p_offset =
-                            &p_vab_hdr->tones[prog * SFX_VAB_TONES_PER_PROGRAM];
+                    if (t < 16)
+                    {
+                        VagAtr *p_offset = &p_vab_hdr->tones[prog * SFX_VAB_TONES_PER_PROGRAM];
                         // This source local is present in MAIN.SYM and affects
                         // the old compiler's register interference graph.
                         int pitch_byte_off = v * 2;
@@ -1067,8 +1147,10 @@ static unsigned int playSFX(unsigned int sfx, unsigned char pitch, short vl, sho
                         int voice_bit = 1 << v;
                         // FIXME(match): asm barrier — see the FIXME above (tones/p_pitch tie); tried: same levers, score 14 without it.
                         asm volatile("");
-                        for (; t < 16; t++) {
-                            if ((tones >> t) & 1) {
+                        for (; t < 16; t++)
+                        {
+                            if ((tones >> t) & 1)
+                            {
                                 VagAtr *p_vagatr = p_offset + t;
                                 tone_start = t + 1;
 
@@ -1083,33 +1165,37 @@ static unsigned int playSFX(unsigned int sfx, unsigned char pitch, short vl, sho
                                 attr.volume.left = vl;
                                 attr.volume.right = vr;
 
-                                attr.pitch = SsPitchFromNote(
-                                    pitch, 0, p_vagatr->center,
-                                    p_vagatr->shift);
+                                attr.pitch =
+                                    SsPitchFromNote(pitch, 0, p_vagatr->center, p_vagatr->shift);
                                 *p_pitch = attr.pitch;
 
                                 unsigned short *p_vagtbl =
-                                    (unsigned short *)&p_vab_hdr->tones[
-                                        p_vab_hdr->header.ps *
-                                        SFX_VAB_TONES_PER_PROGRAM];
+                                    (unsigned short *)&p_vab_hdr
+                                        ->tones[p_vab_hdr->header.ps * SFX_VAB_TONES_PER_PROGRAM];
                                 attr.addr = p_vagtbl[p_vagatr->vag] << 3;
                                 attr.adsr1 = p_vagatr->adsr1;
                                 attr.adsr2 = p_vagatr->adsr2;
 
                                 SpuNSetVoiceAttr(v, &attr);
 
-                                if (no_reverb) {
-                                    if (reverb_queue & reverb_voice) {
+                                if (no_reverb)
+                                {
+                                    if (reverb_queue & reverb_voice)
+                                    {
                                         reverb_changed = 1;
                                         reverb_queue &= ~reverb_voice;
                                     }
-                                } else {
-                                    if ((reverb_queue & reverb_voice) == 0) {
+                                }
+                                else
+                                {
+                                    if ((reverb_queue & reverb_voice) == 0)
+                                    {
                                         reverb_changed = 1;
                                         reverb_queue |= reverb_voice;
                                     }
                                 }
-                                if (looping) {
+                                if (looping)
+                                {
                                     loop_flag |= voice_bit;
                                 }
 
@@ -1142,11 +1228,14 @@ static unsigned int playSFX(unsigned int sfx, unsigned char pitch, short vl, sho
  *
  * @return Index of a free voice, or -1 when every voice is occupied.
  */
-static int allocateVoice(void) {
+static int allocateVoice(void)
+{
     int i;
-    for (i = 0; i < SFX_VOICE_COUNT; i++) {
+    for (i = 0; i < SFX_VOICE_COUNT; i++)
+    {
         int mask = 1 << i;
-        if (voicefree_flag & mask) {
+        if (voicefree_flag & mask)
+        {
             return i;
         }
     }
@@ -1161,31 +1250,36 @@ static int allocateVoice(void) {
  * Mangled:   SFX_ProcessingPerFrame__Fv
  * Demangled: SFX_ProcessingPerFrame(void)
  */
-void SFX_ProcessingPerFrame(void) {
+void SFX_ProcessingPerFrame(void)
+{
     short env;
 
     voicefree_flag = 0;
 
     // Process keyon_queue
-    if (keyon_queue) {
+    if (keyon_queue)
+    {
         SpuSetKey(SPU_ON, keyon_queue);
         keyon_queue = 0;
     }
 
     // Process keyoff_queue
-    if (keyoff_queue) {
+    if (keyoff_queue)
+    {
         SpuSetKey(SPU_OFF, keyoff_queue);
         keyoff_queue = 0;
     }
 
     // Process reverb_changed
-    if (reverb_changed) {
+    if (reverb_changed)
+    {
         SpuSetReverbVoice(SPU_BIT, reverb_queue);
         reverb_changed = 0;
     }
 
     int i = 0;
-    do {
+    do
+    {
         int mask = 1 << i;
 
         if (nko_flag & mask) goto next;
@@ -1193,14 +1287,18 @@ void SFX_ProcessingPerFrame(void) {
 
         SpuGetVoiceEnvelope(i, &env);
 
-        if (voiceon_flag & mask) {
+        if (voiceon_flag & mask)
+        {
             if (env != 0) goto next;
 
-            if (exp_flag & mask) {
+            if (exp_flag & mask)
+            {
                 voiceon_flag &= ~mask;
                 i++;
                 continue;
-            } else {
+            }
+            else
+            {
                 exp_flag |= mask;
                 i++;
                 continue;
@@ -1233,7 +1331,9 @@ void SFX_ProcessingPerFrame(void) {
  * @param maxEntries  Capacity of the alias table.
  * @param mask  Flag bits ORed into every unpacked sound record.
  */
-void SFX_ParseSFXFile(char * p_name, unsigned int * array, unsigned short * aliasArray, int maxEntries, int mask) {
+void SFX_ParseSFXFile(char *p_name, unsigned int *array, unsigned short *aliasArray, int maxEntries,
+                      int mask)
+{
     char filename[20];
     unsigned char *p_block;
     int alias_index;
@@ -1273,16 +1373,21 @@ copy_done:
     unsigned int *p_parse = (unsigned int *)p_block;
     unsigned int val = *p_parse;
     p_parse++;
-    if (val != 0xFFFFFFFF) {
+    if (val != 0xFFFFFFFF)
+    {
         unsigned int fe = 0xFE;
         unsigned int loopMask = mask | 0x80000000;
         unsigned short *p_alias = aliasArray;
         p_array = array;
 
-        do {
-            if ((val & 0xFF) == fe) {
+        do
+        {
+            if ((val & 0xFF) == fe)
+            {
                 p_array[0] = loopMask;
-            } else {
+            }
+            else
+            {
                 p_array[0] = mask;
             }
 
@@ -1307,7 +1412,8 @@ copy_done:
         } while (val != 0xFFFFFFFF);
     }
 
-    if (alias_index < maxEntries) {
+    if (alias_index < maxEntries)
+    {
         aliasArray[alias_index] = 0xFFFF;
     }
     Mem_Delete(p_block);
@@ -1323,10 +1429,12 @@ copy_done:
  * @param alias  Level-specific alias to resolve.
  * @return Matching table index, or `UINT_MAX` when not found.
  */
-static unsigned int translateLevelSpecificAliasToIndex(unsigned short alias) {
+static unsigned int translateLevelSpecificAliasToIndex(unsigned short alias)
+{
     int i = 0;
     unsigned short e;
-    for (; i < 64; i++) {
+    for (; i < 64; i++)
+    {
         e = SFXLevelSpecificAliasArray[i];
         if (e == 0xFFFF) return -1;
         if (alias == e) return i;
@@ -1344,10 +1452,12 @@ static unsigned int translateLevelSpecificAliasToIndex(unsigned short alias) {
  * @param alias  Global alias to resolve.
  * @return Matching table index, or `UINT_MAX` when not found.
  */
-static unsigned int translateGlobalAliasToIndex(unsigned short alias) {
+static unsigned int translateGlobalAliasToIndex(unsigned short alias)
+{
     int i = 0;
     unsigned short e;
-    for (; i < 64; i++) {
+    for (; i < 64; i++)
+    {
         e = SFXAliasArray[i];
         if (e == 0xFFFF) return -1;
         if (alias == e) return i;
@@ -1367,14 +1477,20 @@ static unsigned int translateGlobalAliasToIndex(unsigned short alias) {
  * @param size  Buffer size in bytes.
  * @return Start address of the allocated SPU RAM block, or zero when full.
  */
-static unsigned int sfxMalloc(unsigned int size) {
+static unsigned int sfxMalloc(unsigned int size)
+{
     int i = 0;
-    do {
-        if (soundRAMSlots[i].occupied == 0) {
-            if (soundRAMSlots[i].start != 0) {
-                if (soundRAMSlots[i].size >= size) {
+    do
+    {
+        if (soundRAMSlots[i].occupied == 0)
+        {
+            if (soundRAMSlots[i].start != 0)
+            {
+                if (soundRAMSlots[i].size >= size)
+                {
                     soundRAMSlots[i].occupied = (void *)1;
-                    if (size < soundRAMSlots[i].size) {
+                    if (size < soundRAMSlots[i].size)
+                    {
                         soundRAMSlots[i + 1].start = soundRAMSlots[i].start + size;
                         soundRAMSlots[i + 1].size = soundRAMSlots[i].size - size;
                         soundRAMSlots[i].size = size;

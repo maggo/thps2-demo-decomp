@@ -33,14 +33,18 @@ typedef unsigned char undefined3[3];
 #include "SMODEL.h"
 
 /** Return caller-owned storage for an ordinary placement construction. */
-inline void *operator new(unsigned int, void *storage) { return storage; }
+inline void *operator new(unsigned int, void *storage)
+{
+    return storage;
+}
 
 struct tag_S_Pal;
 
 #include "TEXTURE.h"
 
 /** Mesh header. */
-typedef struct MeshHeader {
+typedef struct MeshHeader
+{
     u16 meshFlags;
     u16 vertexCount;
     u16 normalCount;
@@ -75,34 +79,40 @@ struct SDoubleBuffer;
 #undef CREATE_TEX_SPEC_LAYOUT_ONLY
 #undef CREATE_TEX_SPEC_LAYOUT
 
-struct _StitchEntry {
+struct _StitchEntry
+{
     short initialSourceStitch;
     short initialBuildStitch;
     short buildIndex;
 };
 
-struct _SpoolerEntry {
+struct _SpoolerEntry
+{
     unsigned int checksum;
     char filename[32];
     int spoolID;
     int texPart;
 };
 
-struct SPart {
+struct SPart
+{
     char *pName;
     char GroupName[16];
 };
 
-struct SGroup {
+struct SGroup
+{
     unsigned char Num;
     char *pSearch;
 };
 
-struct SManualStitchPart {
+struct SManualStitchPart
+{
     char *pName;
 };
 
-struct MySkaterTextureInfo : CClass {
+struct MySkaterTextureInfo : CClass
+{
     MySkaterTextureInfo(unsigned int checksum);
     virtual ~MySkaterTextureInfo() {}
     unsigned int mChecksum;
@@ -132,8 +142,7 @@ struct MySkaterTextureInfo : CClass {
 
 #include "SLIGHT.h"
 
-typedef char Create_SLight_size_must_be_52[
-    (sizeof(SLight) == 52) ? 1 : -1];
+typedef char Create_SLight_size_must_be_52[(sizeof(SLight) == 52) ? 1 : -1];
 
 #include "OB.h"
 #include "CBODY.h"
@@ -181,25 +190,10 @@ extern SGroup Group[4];
  * consumers use that canonical identity directly.
  */
 char *BodyPart[19] __attribute__((section(".data"))) = {
-    "_pelvis",
-    "_right_thigh",
-    "_right_shoe",
-    "_right_shin",
-    "_left_thigh",
-    "_left_shoe",
-    "_left_shin",
-    "_stomach",
-    "_chest",
-    "_left_hand",
-    "_left_forearm",
-    "_left_bicep",
-    "_right_hand",
-    "_right_forearm",
-    "_right_bicep",
-    "_head",
-    "_board",
-    "_front_wheel",
-    "_back_wheel",
+    "_pelvis",       "_right_thigh", "_right_shoe",  "_right_shin",    "_left_thigh",
+    "_left_shoe",    "_left_shin",   "_stomach",     "_chest",         "_left_hand",
+    "_left_forearm", "_left_bicep",  "_right_hand",  "_right_forearm", "_right_bicep",
+    "_head",         "_board",       "_front_wheel", "_back_wheel",
 };
 
 /**
@@ -209,14 +203,10 @@ char *BodyPart[19] __attribute__((section(".data"))) = {
  * four-byte source object preserves GCC's target gp-relative address load;
  * the three owner-private tail pointers remain physically contiguous.
  */
-char *ManualStitchPart =
-    "_pelvis";
-static char *Create_ManualStitchSecond =
-    "_stomach";
-static char *Create_ManualStitchThird =
-    "_chest";
-static char *Create_ManualStitchFourth =
-    "_head";
+char *ManualStitchPart = "_pelvis";
+static char *Create_ManualStitchSecond = "_stomach";
+static char *Create_ManualStitchThird = "_chest";
+static char *Create_ManualStitchFourth = "_head";
 
 int PaletteSelected = -1;
 int GFirstTime = 1;
@@ -313,8 +303,7 @@ struct SDoubleBuffer
     unsigned char *Polys;
 };
 
-typedef char Create_SDoubleBuffer_size_must_be_0xAC[
-    (sizeof(SDoubleBuffer) == 0xAC) ? 1 : -1];
+typedef char Create_SDoubleBuffer_size_must_be_0xAC[(sizeof(SDoubleBuffer) == 0xAC) ? 1 : -1];
 
 /** Polymorphic prefix needed for original CClass assignment semantics. */
 struct CreateClassAssignmentBase
@@ -340,8 +329,8 @@ struct TextMenuProperties : public CreateClassAssignmentBase
     int GrayB;
 };
 
-typedef char Create_TextMenuProperties_size_must_be_0x80[
-    (sizeof(TextMenuProperties) == 0x80) ? 1 : -1];
+typedef char
+    Create_TextMenuProperties_size_must_be_0x80[(sizeof(TextMenuProperties) == 0x80) ? 1 : -1];
 
 /** Allocation extent of a character-editor text menu item. */
 struct CreateTextMenuItemStorage
@@ -386,8 +375,7 @@ struct VMenuItem
     int JustX;
 };
 
-typedef char Create_VMenuItem_size_must_be_0x2C[
-    (sizeof(VMenuItem) == 0x2C) ? 1 : -1];
+typedef char Create_VMenuItem_size_must_be_0x2C[(sizeof(VMenuItem) == 0x2C) ? 1 : -1];
 
 /** Proven virtual dispatch prefix for the vertical character menu. */
 struct CreateVerticalMenuVtable
@@ -395,8 +383,7 @@ struct CreateVerticalMenuVtable
     void (*Reserved0)(VerticalMenu2 *menu);
     void (*Reserved1)(VerticalMenu2 *menu);
     void (*destroy)(VerticalMenu2 *menu, int flags);
-    void (*setArrows)(VerticalMenu2 *menu, void *left, void *right,
-                      int spacing);
+    void (*setArrows)(VerticalMenu2 *menu, void *left, void *right, int spacing);
     void (*activate)(VerticalMenu2 *menu);
     void (*draw)(VerticalMenu2 *menu);
     void (*update)(VerticalMenu2 *menu);
@@ -430,23 +417,20 @@ public:
     int Spacing;
 };
 
-typedef char Create_VerticalMenu2_size_must_be_0x74[
-    (sizeof(VerticalMenu2) == 0x74) ? 1 : -1];
+typedef char Create_VerticalMenu2_size_must_be_0x74[(sizeof(VerticalMenu2) == 0x74) ? 1 : -1];
 
 
 /** Prompt row containing an icon and its explanatory text. */
 struct PromptScreenElement : ScreenElementList
 {
 
-    static void *operator new(unsigned int size) throw() {
-        return ::CClass::operator new(size);
-    }
-    PromptScreenElement(char *imageName, char *prompt, Font *font,
-                        int homeX, int homeY, int screenX, int screenY);
+    static void *operator new(unsigned int size) throw() { return ::CClass::operator new(size); }
+    PromptScreenElement(char *imageName, char *prompt, Font *font, int homeX, int homeY,
+                        int screenX, int screenY);
 };
 
-typedef char Create_PromptScreenElement_size_must_be_0x68[
-    (sizeof(PromptScreenElement) == 0x68) ? 1 : -1];
+typedef char
+    Create_PromptScreenElement_size_must_be_0x68[(sizeof(PromptScreenElement) == 0x68) ? 1 : -1];
 
 /** Fixed prefix shared by the variable-sized face packets in a model. */
 struct CreateFacePacket
@@ -462,11 +446,9 @@ struct CreateFacePacket
     unsigned int TextureWindow;
 };
 
-typedef char Create_FacePacket_prefix_size_must_be_32[
-    (sizeof(CreateFacePacket) == 32) ? 1 : -1];
+typedef char Create_FacePacket_prefix_size_must_be_32[(sizeof(CreateFacePacket) == 32) ? 1 : -1];
 
-typedef char Create_SMatrix_size_must_be_24[
-    (sizeof(SMatrix) == 24) ? 1 : -1];
+typedef char Create_SMatrix_size_must_be_24[(sizeof(SMatrix) == 24) ? 1 : -1];
 
 #include "SCAMERA.h"
 
@@ -487,8 +469,7 @@ struct CreateCSuperView
     unsigned char PadToEnd[0x190 - 0x130];
 };
 
-typedef char Create_CSuper_size_must_be_0x190[
-    (sizeof(CreateCSuperView) == 0x190) ? 1 : -1];
+typedef char Create_CSuper_size_must_be_0x190[(sizeof(CreateCSuperView) == 0x190) ? 1 : -1];
 
 /** Narrow stats-table slice retaining the original 344-byte stride. */
 struct CreateStatsEntry
@@ -506,8 +487,7 @@ struct CreateStatsEntry
     unsigned char PadToEnd[0x158 - 0x30];
 };
 
-typedef char Create_StatsEntry_size_must_be_0x158[
-    (sizeof(CreateStatsEntry) == 0x158) ? 1 : -1];
+typedef char Create_StatsEntry_size_must_be_0x158[(sizeof(CreateStatsEntry) == 0x158) ? 1 : -1];
 
 // === Class declarations ===
 class MySkater : public CClass
@@ -555,8 +535,7 @@ public:
     void Rebuild(CSuper *pSourceSkater, CSuper *pBuildSkater, int spoolTextures);
     int TextureIsInBodyPart(unsigned int checksum, char *part);
     unsigned int FindUniqueTextureBySize(char *inPart, int findLarger);
-    unsigned int FindUniqueTexture(char *inPart, char *notInPart,
-                                   char *notInPart2);
+    unsigned int FindUniqueTexture(char *inPart, char *notInPart, char *notInPart2);
     int FindBuildIndex(char *name);
     unsigned int GetChecksumToReplace(int texPart);
     char *GetSkinToneFileName(char *filename);
@@ -567,8 +546,8 @@ public:
     void ProcessSpoolerEntry(void);
     void Free2(void);
     void Free(void);
-    _SCreateTexList *GetFirstTexture(CCreateTexSpec *pCurrSpec, int bodyGroup,
-                                     int index, int lastTexture);
+    _SCreateTexList *GetFirstTexture(CCreateTexSpec *pCurrSpec, int bodyGroup, int index,
+                                     int lastTexture);
     void UpdateGeometry(int bodyGroup);
     void UpdateDefaultHue(int bodyGroup);
     void NextGeometry(int bodyGroup, int forwards);
@@ -583,7 +562,8 @@ public:
     int GetSourceIndex(int buildIndex);
     void GetInternalStitches(void);
     void PatchInternalStitches(void);
-    int InsertStitch(SVECTOR *pNewStitchVertex, SVECTOR *pNewGhostVertex, SVECTOR *pNewStitchNormal, SVECTOR *pNewGhostNormal);
+    int InsertStitch(SVECTOR *pNewStitchVertex, SVECTOR *pNewGhostVertex, SVECTOR *pNewStitchNormal,
+                     SVECTOR *pNewGhostNormal);
     void CreateManualStitches(CSuper *mySuper, int partIndexA, int partIndexB);
     void DecrementBuildTextures(void);
     void IncrementTextureUsage(void);
@@ -621,15 +601,17 @@ public:
     virtual void draw(int x, int y);
 };
 
-typedef char Create_CharacterEditor_size_must_be_0x1A0[
-    (sizeof(CharacterEditor) == 0x1A0) ? 1 : -1];
+typedef char Create_CharacterEditor_size_must_be_0x1A0[(sizeof(CharacterEditor) == 0x1A0) ? 1 : -1];
 
 /** CREATE-owned storage for the original file-local MySkater singleton. */
 
 
-extern "C" { static MySkater sMySkater; }
-typedef char Create_MySkater_size_must_be_0x734[
-    (sizeof(MySkater) == 0x734 && sizeof(sMySkater) == 0x734) ? 1 : -1];
+extern "C"
+{
+static MySkater sMySkater;
+}
+typedef char Create_MySkater_size_must_be_0x734
+    [(sizeof(MySkater) == 0x734 && sizeof(sMySkater) == 0x734) ? 1 : -1];
 
 
 // === Free function declarations ===
@@ -902,8 +884,7 @@ char *MySkater::Create_GetGroupName(char *p, int Number)
                 n++;
             }
             i++;
-            if (n == Number)
-                return nameField;
+            if (n == Number) return nameField;
             nameField += sizeof(SPart);
             entries = (char **)((u8 *)entries + sizeof(SPart));
         } while (i < (int)NumParts);
@@ -930,8 +911,7 @@ int Create_GetModelSize(SModel *pModel)
     u16 faceCount = pModel->NumFaces;
 
     SVECTOR *Normals = pModel->Vertices + vertexCount;
-    unsigned int *pFaceX =
-        (unsigned int *)((u8 *)Normals + normalCount * sizeof(SVECTOR));
+    unsigned int *pFaceX = (unsigned int *)((u8 *)Normals + normalCount * sizeof(SVECTOR));
 
     if (faceCount != 0)
     {
@@ -966,9 +946,7 @@ int Create_CountString(char *p, int sourceRegion)
 {
     int i = 0;
     int n = 0;
-    SPSXRegion *pRegion =
-        (SPSXRegion *)((u8 *)PSXRegion +
-                       sourceRegion * sizeof(SPSXRegion));
+    SPSXRegion *pRegion = (SPSXRegion *)((u8 *)PSXRegion + sourceRegion * sizeof(SPSXRegion));
     u16 NumParts = pRegion->NumParts;
 
     if (NumParts != 0)
@@ -1218,8 +1196,7 @@ void MySkater::SaveTextures(void)
     unsigned int *pTextureInfo = pStuff;
     unsigned int NumTextures = *pTextureInfo++;
     mppTextures =
-        (MySkaterTextureInfo **)Mem_New(
-        NumTextures * sizeof(MySkaterTextureInfo *), 0, 1);
+        (MySkaterTextureInfo **)Mem_New(NumTextures * sizeof(MySkaterTextureInfo *), 0, 1);
     mNumTextures = NumTextures;
 
     int i = 0;
@@ -1227,21 +1204,17 @@ void MySkater::SaveTextures(void)
     {
         do
         {
-            unsigned int *pTexture = (unsigned int *)(
-                (unsigned char *)pPSX + *pTextureInfo++);
+            unsigned int *pTexture = (unsigned int *)((unsigned char *)pPSX + *pTextureInfo++);
             unsigned int TextureIndex = pTexture[3];
             int textureSlotOffset = i * sizeof(*mppTextures);
             // Natural `&mppTextures[i]` commutes the target's `addu` operands.
             MySkaterTextureInfo **storePtr =
-                (MySkaterTextureInfo **)(textureSlotOffset +
-                                          (int)mppTextures);
+                (MySkaterTextureInfo **)(textureSlotOffset + (int)mppTextures);
             MySkaterTextureInfo *result =
-                (MySkaterTextureInfo *)CClass::operator new(
-                    sizeof(MySkaterTextureInfo));
+                (MySkaterTextureInfo *)CClass::operator new(sizeof(MySkaterTextureInfo));
             if (result != 0)
             {
-                result = ::new (result) MySkaterTextureInfo(
-                    TextureLookup[TextureIndex]->Checksum);
+                result = ::new (result) MySkaterTextureInfo(TextureLookup[TextureIndex]->Checksum);
             }
             i++;
             *storePtr = result;
@@ -1332,8 +1305,7 @@ MySkaterTextureInfo *MySkater::FindTextureInfo(unsigned int checksum)
  * @param pChecksumList Destination list of unique texture checksums.
  * @param pChecksumCount Current destination count, updated for new entries.
  */
-void MySkater::BuildChecksumList(SModel *pModel, unsigned int *pChecksumList,
-                                 int *pChecksumCount)
+void MySkater::BuildChecksumList(SModel *pModel, unsigned int *pChecksumList, int *pChecksumCount)
 {
     unsigned int NumModels;
     unsigned int *ChecksumTable;
@@ -1375,8 +1347,7 @@ void MySkater::BuildChecksumList(SModel *pModel, unsigned int *pChecksumList,
                     match = 0;
                     if (tpage == ((Texture **)ChecksumTable)[i]->tpage)
                     {
-                        match = (((Texture **)ChecksumTable)[i]->TexWin ==
-                                 packet->TextureWindow);
+                        match = (((Texture **)ChecksumTable)[i]->TexWin == packet->TextureWindow);
                     }
                 }
                 else
@@ -1389,9 +1360,8 @@ void MySkater::BuildChecksumList(SModel *pModel, unsigned int *pChecksumList,
                     unsigned short maxV = pTexture->v3;
 
                     match = 0;
-                    if (tpage == textureTPage &&
-                        minU <= u0 && u0 <= maxU &&
-                        minV <= v0 && v0 <= maxV)
+                    if (tpage == textureTPage && minU <= u0 && u0 <= maxU && minV <= v0 &&
+                        v0 <= maxV)
                     {
                         match = 1;
                     }
@@ -1402,8 +1372,7 @@ void MySkater::BuildChecksumList(SModel *pModel, unsigned int *pChecksumList,
                     int foundInChecksums = 0;
                     for (int j = 0; j < *pChecksumCount; j++)
                     {
-                        if (pChecksumList[j] ==
-                            ((Texture **)ChecksumTable)[i]->Checksum)
+                        if (pChecksumList[j] == ((Texture **)ChecksumTable)[i]->Checksum)
                         {
                             foundInChecksums = 1;
                         }
@@ -1411,8 +1380,7 @@ void MySkater::BuildChecksumList(SModel *pModel, unsigned int *pChecksumList,
 
                     if (foundInChecksums == 0)
                     {
-                        pChecksumList[*pChecksumCount] =
-                            ((Texture **)ChecksumTable)[i]->Checksum;
+                        pChecksumList[*pChecksumCount] = ((Texture **)ChecksumTable)[i]->Checksum;
                         (*pChecksumCount)++;
                         NumFaces = pModel->NumFaces;
                         face = *pFace;
@@ -1439,8 +1407,7 @@ void MySkater::BuildChecksumList(SModel *pModel, unsigned int *pChecksumList,
  */
 void MySkater::Init(char *pAnimFile)
 {
-    SModel **modelPointers = (SModel **)Mem_New(
-        20 * sizeof(SModel *), 1, 1);
+    SModel **modelPointers = (SModel **)Mem_New(20 * sizeof(SModel *), 1, 1);
     Create_IsBuildRegion = 1;
     mBuildRegion = Spool_PSX(pAnimFile, 0, 0, 1);
     Spool_Sync();
@@ -1458,27 +1425,23 @@ void MySkater::Init(char *pAnimFile)
     // The target forms each ppModels slot from this shared interior base.
     char *psxModels = (char *)&PSXRegion[0].ppModels;
     int buildReg = mBuildRegion;
-    SModel ***modelsSlot =
-        (SModel ***)(psxModels + (buildReg << 6));
+    SModel ***modelsSlot = (SModel ***)(psxModels + (buildReg << 6));
     *modelsSlot = modelPointers;
     {
-        int slotAddr2 =
-            (int)(psxModels + (mBuildRegion << 6));
+        int slotAddr2 = (int)(psxModels + (mBuildRegion << 6));
         SModel **ppBuildModels = *(SModel ***)slotAddr2;
         ppBuildModels++;
         *(SModel ***)slotAddr2 = ppBuildModels;
     }
     {
-        int slotAddr3 =
-            (int)(psxModels + (mBuildRegion << 6));
+        int slotAddr3 = (int)(psxModels + (mBuildRegion << 6));
         // Either unpin changes two of the function's 84 words.
         int *models3 = (int *)*(SModel ***)slotAddr3;
         int count = 19;
         models3[-1] = count;
     }
     int buildReg4 = mBuildRegion;
-    SModel ***modelsSlot4 =
-        (SModel ***)(psxModels + (buildReg4 << 6));
+    SModel ***modelsSlot4 = (SModel ***)(psxModels + (buildReg4 << 6));
     SModel **dst = *modelsSlot4;
     int i = 0;
     do
@@ -1503,14 +1466,12 @@ void MySkater::Init(char *pAnimFile)
  */
 void MySkater::UpdateStats(char *partName, int modelIndex)
 {
-    if (strstr(partName, (char *)"_board") != 0)
-        ((CreateStatsEntry *)Stats)[13].Board = modelIndex;
+    if (strstr(partName, (char *)"_board") != 0) ((CreateStatsEntry *)Stats)[13].Board = modelIndex;
     if (strstr(partName, (char *)"_front_wheel") != 0)
         ((CreateStatsEntry *)Stats)[13].Wheel1 = modelIndex;
     if (strstr(partName, (char *)"_back_wheel") != 0)
         ((CreateStatsEntry *)Stats)[13].Wheel2 = modelIndex;
-    if (strstr(partName, (char *)"_head") != 0)
-        ((CreateStatsEntry *)Stats)[13].Head = modelIndex;
+    if (strstr(partName, (char *)"_head") != 0) ((CreateStatsEntry *)Stats)[13].Head = modelIndex;
 }
 
 /**
@@ -1526,39 +1487,33 @@ void MySkater::UpdateStats(char *partName, int modelIndex)
  * @param pBuildSkater Destination skater used by the stitch passes.
  * @param spoolTextures Select texture spooling instead of in-place replacement.
  */
-void MySkater::Rebuild(CSuper *pSourceSkater, CSuper *pBuildSkater,
-                       int spoolTextures)
+void MySkater::Rebuild(CSuper *pSourceSkater, CSuper *pBuildSkater, int spoolTextures)
 {
     SModel **ppSourceModels;
     SModel **ppBuildModels;
 
-    if (mRebuild == 0)
-        goto done;
+    if (mRebuild == 0) goto done;
 
     Create_Off();
 
     // Head
     {
-        char *name = Create_GetGroupName(
-            Group[0].pSearch, mSelectedPart[0]);
+        char *name = Create_GetGroupName(Group[0].pSearch, mSelectedPart[0]);
         Create_OnHead(name);
     }
     // Torso
     {
-        char *name = Create_GetGroupName(
-            Group[1].pSearch, mSelectedPart[1]);
+        char *name = Create_GetGroupName(Group[1].pSearch, mSelectedPart[1]);
         Create_OnTorso(name);
     }
     // Legs
     {
-        char *name = Create_GetGroupName(
-            Group[2].pSearch, mSelectedPart[2]);
+        char *name = Create_GetGroupName(Group[2].pSearch, mSelectedPart[2]);
         Create_OnLegs(name);
     }
     // Board
     {
-        char *name = Create_GetGroupName(
-            Group[3].pSearch, mSelectedPart[3]);
+        char *name = Create_GetGroupName(Group[3].pSearch, mSelectedPart[3]);
         Create_OnBoard(name);
     }
 
@@ -1579,8 +1534,7 @@ void MySkater::Rebuild(CSuper *pSourceSkater, CSuper *pBuildSkater,
         {
             SModel *pModel = *ppSourceModels++;
             // Check if entry is hidden (flag 0x20)
-            if (pModel->Flags & 0x20)
-                goto skipEntry;
+            if (pModel->Flags & 0x20) goto skipEntry;
 
             {
                 int animIndex = Create_GetAnimIndex(i);
@@ -1600,10 +1554,8 @@ void MySkater::Rebuild(CSuper *pSourceSkater, CSuper *pBuildSkater,
                     }
                     // Get model size and allocate copy
                     int modelSize = Create_GetModelSize(pModel);
-                    ppBuildModels[modelIndex] =
-                        (SModel *)Mem_New(modelSize, 0, 1);
-                    Mem_Copy(ppBuildModels[modelIndex], pModel,
-                                    modelSize);
+                    ppBuildModels[modelIndex] = (SModel *)Mem_New(modelSize, 0, 1);
+                    Mem_Copy(ppBuildModels[modelIndex], pModel, modelSize);
 
                     // Increment build region entry count
                     PSXRegion[mBuildRegion].NumParts++;
@@ -1690,9 +1642,7 @@ unsigned int MySkater::FindUniqueTextureBySize(char *inPart, int findLarger)
 
     for (int j = 0; j < mNumTextures; j++)
     {
-        if (TextureIsInBodyPart(
-                mppTextures[j]->mChecksum,
-                Part[sourceIndex].pName) != 0)
+        if (TextureIsInBodyPart(mppTextures[j]->mChecksum, Part[sourceIndex].pName) != 0)
         {
             checksum = mppTextures[j]->mChecksum;
             MySkaterTextureInfo *myTexInfo = FindTextureInfo(checksum);
@@ -1711,10 +1661,8 @@ unsigned int MySkater::FindUniqueTextureBySize(char *inPart, int findLarger)
         }
     }
 
-    if (numFound == 1)
-        return checksum;
-    if (findLarger != 0)
-        return largestChecksum;
+    if (numFound == 1) return checksum;
+    if (findLarger != 0) return largestChecksum;
     return smallestChecksum;
 }
 
@@ -1735,8 +1683,7 @@ unsigned int MySkater::FindUniqueTextureBySize(char *inPart, int findLarger)
  *         candidate considered if no pass is unique.
  */
 /** Address view of CREATE's unique-texture diagnostic format. */
-unsigned int MySkater::FindUniqueTexture(char *inPart, char *notInPart,
-                                         char *notInPart2)
+unsigned int MySkater::FindUniqueTexture(char *inPart, char *notInPart, char *notInPart2)
 {
     int numFound = 0;
     unsigned int checksum = 0;
@@ -1746,8 +1693,7 @@ unsigned int MySkater::FindUniqueTexture(char *inPart, char *notInPart,
     {
         for (int j = 0; j < mNumTextures; j++)
         {
-            if (TextureIsInBodyPart(mppTextures[j]->mChecksum,
-                                    Part[sourceIndex].pName) != 0)
+            if (TextureIsInBodyPart(mppTextures[j]->mChecksum, Part[sourceIndex].pName) != 0)
             {
                 numFound++;
                 checksum = mppTextures[j]->mChecksum;
@@ -1765,11 +1711,9 @@ unsigned int MySkater::FindUniqueTexture(char *inPart, char *notInPart,
         numFound = 0;
         for (int j = 0; j < mNumTextures; j++)
         {
-            if (TextureIsInBodyPart(mppTextures[j]->mChecksum,
-                                    Part[sourceIndex].pName) != 0)
+            if (TextureIsInBodyPart(mppTextures[j]->mChecksum, Part[sourceIndex].pName) != 0)
             {
-                if (TextureIsInBodyPart(mppTextures[j]->mChecksum,
-                                        Part[sourceIndex2].pName) == 0)
+                if (TextureIsInBodyPart(mppTextures[j]->mChecksum, Part[sourceIndex2].pName) == 0)
                 {
                     numFound++;
                     checksum = mppTextures[j]->mChecksum;
@@ -1790,15 +1734,13 @@ unsigned int MySkater::FindUniqueTexture(char *inPart, char *notInPart,
             numFound = 0;
             for (int j = 0; j < mNumTextures; j++)
             {
-                if (TextureIsInBodyPart(mppTextures[j]->mChecksum,
-                                        Part[sourceIndex].pName) != 0)
+                if (TextureIsInBodyPart(mppTextures[j]->mChecksum, Part[sourceIndex].pName) != 0)
                 {
-                    if (TextureIsInBodyPart(mppTextures[j]->mChecksum,
-                                            Part[sourceIndex2].pName) == 0)
+                    if (TextureIsInBodyPart(mppTextures[j]->mChecksum, Part[sourceIndex2].pName) ==
+                        0)
                     {
-                        if (TextureIsInBodyPart(
-                                mppTextures[j]->mChecksum,
-                                Part[sourceIndex3].pName) == 0)
+                        if (TextureIsInBodyPart(mppTextures[j]->mChecksum,
+                                                Part[sourceIndex3].pName) == 0)
                         {
                             numFound++;
                             checksum = mppTextures[j]->mChecksum;
@@ -1821,12 +1763,10 @@ unsigned int MySkater::FindUniqueTexture(char *inPart, char *notInPart,
             numFound = 0;
             for (int j = 0; j < mNumTextures; j++)
             {
-                if (TextureIsInBodyPart(mppTextures[j]->mChecksum,
-                                        Part[sourceIndex].pName) != 0)
+                if (TextureIsInBodyPart(mppTextures[j]->mChecksum, Part[sourceIndex].pName) != 0)
                 {
-                    if (TextureIsInBodyPart(
-                            mppTextures[j]->mChecksum,
-                            Part[sourceIndex3].pName) == 0)
+                    if (TextureIsInBodyPart(mppTextures[j]->mChecksum, Part[sourceIndex3].pName) ==
+                        0)
                     {
                         numFound++;
                         checksum = mppTextures[j]->mChecksum;
@@ -1900,38 +1840,30 @@ unsigned int MySkater::GetChecksumToReplace(int texPart)
     {
         switch (texPart)
         {
-        case 0:
-            return FindUniqueTextureBySize("_head", 1);
-        case 1:
-            return FindUniqueTextureBySize("_head", 0);
-        case 2:
-            return FindUniqueTexture("_chest", "_bicep", 0);
-        case 3:
-        {
-            char *bodyPart = "_bicep";
-            char *excludedPart = "_chest";
-            _SCreateTexList *texEntry = mpTexList[4];
-            char *optionalPart;
-            if (texEntry != 0)
+            case 0: return FindUniqueTextureBySize("_head", 1);
+            case 1: return FindUniqueTextureBySize("_head", 0);
+            case 2: return FindUniqueTexture("_chest", "_bicep", 0);
+            case 3:
             {
-                optionalPart = "_forearm";
+                char *bodyPart = "_bicep";
+                char *excludedPart = "_chest";
+                _SCreateTexList *texEntry = mpTexList[4];
+                char *optionalPart;
+                if (texEntry != 0)
+                {
+                    optionalPart = "_forearm";
+                }
+                else
+                {
+                    optionalPart = 0;
+                }
+                return FindUniqueTexture(bodyPart, excludedPart, optionalPart);
             }
-            else
-            {
-                optionalPart = 0;
-            }
-            return FindUniqueTexture(bodyPart, excludedPart, optionalPart);
-        }
-        case 4:
-            return FindUniqueTexture("_forearm", "_hand", 0);
-        case 5:
-            return FindUniqueTexture("_hand", "_forearm", 0);
-        case 6:
-            return FindUniqueTexture("_thigh", "_pelvis", 0);
-        case 7:
-            return FindUniqueTexture("_shin", "_thigh", 0);
-        case 8:
-            return FindUniqueTexture("_shoe", "_shin", 0);
+            case 4: return FindUniqueTexture("_forearm", "_hand", 0);
+            case 5: return FindUniqueTexture("_hand", "_forearm", 0);
+            case 6: return FindUniqueTexture("_thigh", "_pelvis", 0);
+            case 7: return FindUniqueTexture("_shin", "_thigh", 0);
+            case 8: return FindUniqueTexture("_shoe", "_shin", 0);
         }
     }
 }
@@ -1984,10 +1916,8 @@ void MySkater::SpoolTextures(void)
     do
     {
         _SCreateTexList *texEntry = *texList;
-        if (texEntry == 0)
-            goto skipslot;
-        if (i == 8)
-            goto skipslot;
+        if (texEntry == 0) goto skipslot;
+        if (i == 8) goto skipslot;
         {
             sprintf(FileNameWithExt, "%s.bmp", texEntry->TextureName);
             int checksum = GetChecksumToReplace(i);
@@ -2004,14 +1934,14 @@ void MySkater::SpoolTextures(void)
             }
         }
     skipslot:
-    {
-        HSV_VALUE **modelBuf = paletteSlot;
-        HSV_VALUE *oldBuf = *modelBuf;
-        if (oldBuf != 0)
         {
-            Mem_Delete(oldBuf);
+            HSV_VALUE **modelBuf = paletteSlot;
+            HSV_VALUE *oldBuf = *modelBuf;
+            if (oldBuf != 0)
+            {
+                Mem_Delete(oldBuf);
+            }
         }
-    }
         *paletteSlot = 0;
         paletteSlot++;
         i++;
@@ -2045,21 +1975,17 @@ void MySkater::ReplaceTextures(void)
     {
         _SCreateTexList *texEntry = *texList;
         int texOff = i << 2;
-        if (texEntry == 0)
-            goto skipslot;
-        if (i == 8)
-            goto skipslot;
+        if (texEntry == 0) goto skipslot;
+        if (i == 8) goto skipslot;
         {
             char *oldListBase = (char *)mpOldList;
-            _SCreateTexList **oldList =
-                (_SCreateTexList **)(oldListBase + texOff);
+            _SCreateTexList **oldList = (_SCreateTexList **)(oldListBase + texOff);
             _SCreateTexList *oldTex = *oldList;
             if (oldTex == texEntry)
             {
                 // Same texture - check if skin changed
                 int skinChanged = mSkinToneChanged;
-                if (skinChanged == 0)
-                    goto skipslot;
+                if (skinChanged == 0) goto skipslot;
             }
             // Load and replace
             sprintf(FileNameWithExt, "%s.bmp", texEntry->TextureName);
@@ -2106,8 +2032,7 @@ void MySkater::ReplaceTextures(void)
             }
             {
                 char *paletteBase = (char *)mpPaletteBuffer;
-                HSV_VALUE **modelSlot =
-                    (HSV_VALUE **)(paletteBase + texOff);
+                HSV_VALUE **modelSlot = (HSV_VALUE **)(paletteBase + texOff);
                 HSV_VALUE *oldModel = *modelSlot;
                 if (oldModel != 0)
                 {
@@ -2211,11 +2136,9 @@ void MySkater::AddSpoolerEntries(void)
  */
 void MySkater::ProcessSpoolerEntry(void)
 {
-    if (mSpoolSetDone != 0)
-        return;
+    if (mSpoolSetDone != 0) return;
     int count = mSpoolerEntryCount;
-    if (count <= 0)
-        goto alldone;
+    if (count <= 0) goto alldone;
     {
         int i = 0;
         unsigned int *checksumPtr = &mSpoolerEntryList[0].checksum;
@@ -2224,11 +2147,9 @@ void MySkater::ProcessSpoolerEntry(void)
         do
         {
             int loaded = Spooler::SpoolMgr->IsFileLoaded(*handlePtr);
-            if (loaded == 0)
-                goto next;
+            if (loaded == 0) goto next;
             {
-                char *theData =
-                    (char *)Spooler::SpoolMgr->GetFile(*handlePtr);
+                char *theData = (char *)Spooler::SpoolMgr->GetFile(*handlePtr);
                 int checksum = *checksumPtr;
                 RefreshTexture(checksum, theData);
                 Mem_Delete(theData);
@@ -2249,8 +2170,7 @@ void MySkater::ProcessSpoolerEntry(void)
                 }
             }
         next:
-            checksumPtr = (unsigned int *)((char *)checksumPtr +
-                                           sizeof(_SpoolerEntry));
+            checksumPtr = (unsigned int *)((char *)checksumPtr + sizeof(_SpoolerEntry));
             texPartPtr = (int *)((char *)texPartPtr + sizeof(_SpoolerEntry));
             count = mSpoolerEntryCount;
             i++;
@@ -2326,8 +2246,7 @@ void MySkater::Free(void)
     int buildSlot2;
     {
         int buildSlot = mBuildRegion;
-        if (PSXRegion[buildSlot].Usable != 2)
-            DecrementTextureUsage(buildSlot);
+        if (PSXRegion[buildSlot].Usable != 2) DecrementTextureUsage(buildSlot);
     }
     buildSlot2 = mBuildRegion;
     Mem_Delete(PSXRegion[buildSlot2].pPSX);
@@ -2352,39 +2271,34 @@ void MySkater::Free(void)
  * @param lastTexture Nonzero to return the final entry in the list.
  * @return First or final matching texture entry.
  */
-_SCreateTexList *MySkater::GetFirstTexture(
-    CCreateTexSpec *pCurrSpec, int bodyGroup, int index, int lastTexture)
+_SCreateTexList *MySkater::GetFirstTexture(CCreateTexSpec *pCurrSpec, int bodyGroup, int index,
+                                           int lastTexture)
 {
-    _SCreateTexList *pTexList =
-        pCurrSpec->GetTextureList(index);
+    _SCreateTexList *pTexList = pCurrSpec->GetTextureList(index);
     goto check;
 body:
-{
-    char *geoName = pCurrSpec->GetGeometryName();
-    char *groupName = GetGroupName(bodyGroup);
-    if (strcmp(geoName, groupName) != 0)
-        goto nomatch;
-    pTexList = pCurrSpec->GetTextureList(index);
-    if (pTexList == 0)
-        return 0;
-    if (lastTexture != 0)
     {
-        _SCreateTexList *pNextList;
-        goto walkcheck;
-    walkloop:
-        pTexList = pNextList;
-    walkcheck:
-        pNextList = pTexList + 1;
-        if (pNextList->TextureName != 0)
-            goto walkloop;
+        char *geoName = pCurrSpec->GetGeometryName();
+        char *groupName = GetGroupName(bodyGroup);
+        if (strcmp(geoName, groupName) != 0) goto nomatch;
+        pTexList = pCurrSpec->GetTextureList(index);
+        if (pTexList == 0) return 0;
+        if (lastTexture != 0)
+        {
+            _SCreateTexList *pNextList;
+            goto walkcheck;
+        walkloop:
+            pTexList = pNextList;
+        walkcheck:
+            pNextList = pTexList + 1;
+            if (pNextList->TextureName != 0) goto walkloop;
+        }
+        return pTexList;
     }
-    return pTexList;
-}
 nomatch:
     pCurrSpec++;
 check:
-    if (*pCurrSpec->GetGeometryName() != 0)
-        goto body;
+    if (*pCurrSpec->GetGeometryName() != 0) goto body;
     {
         char *groupName2 = GetGroupName(bodyGroup);
         printf("No geometry defined for %s\n", groupName2);
@@ -2438,51 +2352,51 @@ void MySkater::UpdateDefaultHue(int bodyGroup)
     CCreateTexSpec *pCurrSpec;
     switch (bodyGroup)
     {
-    case 0:
-        pCurrSpec = HeadSpec;
-        while (*pCurrSpec->GetGeometryName() != 0)
-        {
-            char *geoName = pCurrSpec->GetGeometryName();
-            char *groupName = GetGroupName(bodyGroup);
-            if (strcmp(geoName, groupName) == 0)
+        case 0:
+            pCurrSpec = HeadSpec;
+            while (*pCurrSpec->GetGeometryName() != 0)
             {
-                mDesiredHSV[0].h = pCurrSpec->GetDefaultHue();
-                mDesiredHSV[1].h = pCurrSpec->GetDefaultHue();
+                char *geoName = pCurrSpec->GetGeometryName();
+                char *groupName = GetGroupName(bodyGroup);
+                if (strcmp(geoName, groupName) == 0)
+                {
+                    mDesiredHSV[0].h = pCurrSpec->GetDefaultHue();
+                    mDesiredHSV[1].h = pCurrSpec->GetDefaultHue();
+                }
+                pCurrSpec++;
             }
-            pCurrSpec++;
-        }
-        break;
-    case 1:
-        pCurrSpec = UpperBodySpec;
-        while (*pCurrSpec->GetGeometryName() != 0)
-        {
-            char *geoName = pCurrSpec->GetGeometryName();
-            char *groupName = GetGroupName(bodyGroup);
-            if (strcmp(geoName, groupName) == 0)
+            break;
+        case 1:
+            pCurrSpec = UpperBodySpec;
+            while (*pCurrSpec->GetGeometryName() != 0)
             {
-                mDesiredHSV[2].h = pCurrSpec->GetDefaultHue();
-                mDesiredHSV[3].h = pCurrSpec->GetDefaultHue();
-                mDesiredHSV[4].h = pCurrSpec->GetDefaultHue();
-                mDesiredHSV[5].h = pCurrSpec->GetDefaultHue();
+                char *geoName = pCurrSpec->GetGeometryName();
+                char *groupName = GetGroupName(bodyGroup);
+                if (strcmp(geoName, groupName) == 0)
+                {
+                    mDesiredHSV[2].h = pCurrSpec->GetDefaultHue();
+                    mDesiredHSV[3].h = pCurrSpec->GetDefaultHue();
+                    mDesiredHSV[4].h = pCurrSpec->GetDefaultHue();
+                    mDesiredHSV[5].h = pCurrSpec->GetDefaultHue();
+                }
+                pCurrSpec++;
             }
-            pCurrSpec++;
-        }
-        break;
-    case 2:
-        pCurrSpec = LowerBodySpec;
-        while (*pCurrSpec->GetGeometryName() != 0)
-        {
-            char *geoName = pCurrSpec->GetGeometryName();
-            char *groupName = GetGroupName(bodyGroup);
-            if (strcmp(geoName, groupName) == 0)
+            break;
+        case 2:
+            pCurrSpec = LowerBodySpec;
+            while (*pCurrSpec->GetGeometryName() != 0)
             {
-                mDesiredHSV[6].h = pCurrSpec->GetDefaultHue();
-                mDesiredHSV[7].h = pCurrSpec->GetDefaultHue();
-                mDesiredHSV[8].h = pCurrSpec->GetDefaultHue();
+                char *geoName = pCurrSpec->GetGeometryName();
+                char *groupName = GetGroupName(bodyGroup);
+                if (strcmp(geoName, groupName) == 0)
+                {
+                    mDesiredHSV[6].h = pCurrSpec->GetDefaultHue();
+                    mDesiredHSV[7].h = pCurrSpec->GetDefaultHue();
+                    mDesiredHSV[8].h = pCurrSpec->GetDefaultHue();
+                }
+                pCurrSpec++;
             }
-            pCurrSpec++;
-        }
-        break;
+            break;
     }
 }
 
@@ -2567,46 +2481,46 @@ void MySkater::NextTexture(int texPart, int forwards)
 
     switch (texPart)
     {
-    case 0:
-        pSpec = HeadSpec;
-        bodyGroup = 0;
-        index = 0;
-        break;
-    case 1:
-        pSpec = HeadSpec;
-        bodyGroup = 0;
-        index = 1;
-        break;
-    case 2:
-        pSpec = UpperBodySpec;
-        bodyGroup = 1;
-        index = 0;
-        break;
-    case 3:
-        pSpec = UpperBodySpec;
-        bodyGroup = 1;
-        index = 1;
-        break;
-    case 4:
-        pSpec = UpperBodySpec;
-        bodyGroup = 1;
-        index = 2;
-        break;
-    case 6:
-        pSpec = LowerBodySpec;
-        bodyGroup = 2;
-        index = 0;
-        break;
-    case 7:
-        pSpec = LowerBodySpec;
-        bodyGroup = 2;
-        index = 1;
-        break;
-    case 8:
-        pSpec = LowerBodySpec;
-        bodyGroup = 2;
-        index = 2;
-        break;
+        case 0:
+            pSpec = HeadSpec;
+            bodyGroup = 0;
+            index = 0;
+            break;
+        case 1:
+            pSpec = HeadSpec;
+            bodyGroup = 0;
+            index = 1;
+            break;
+        case 2:
+            pSpec = UpperBodySpec;
+            bodyGroup = 1;
+            index = 0;
+            break;
+        case 3:
+            pSpec = UpperBodySpec;
+            bodyGroup = 1;
+            index = 1;
+            break;
+        case 4:
+            pSpec = UpperBodySpec;
+            bodyGroup = 1;
+            index = 2;
+            break;
+        case 6:
+            pSpec = LowerBodySpec;
+            bodyGroup = 2;
+            index = 0;
+            break;
+        case 7:
+            pSpec = LowerBodySpec;
+            bodyGroup = 2;
+            index = 1;
+            break;
+        case 8:
+            pSpec = LowerBodySpec;
+            bodyGroup = 2;
+            index = 2;
+            break;
     }
 
     if (forwards != 0)
@@ -2620,8 +2534,7 @@ void MySkater::NextTexture(int texPart, int forwards)
             mpTexList[texPart]++;
             if (mpTexList[texPart]->TextureName == 0)
             {
-                mpTexList[texPart] = GetFirstTexture(
-                    pSpec, bodyGroup, index, 0);
+                mpTexList[texPart] = GetFirstTexture(pSpec, bodyGroup, index, 0);
             }
         }
     }
@@ -2631,11 +2544,9 @@ void MySkater::NextTexture(int texPart, int forwards)
     }
     else
     {
-        if (mpTexList[texPart] == GetFirstTexture(
-                pSpec, bodyGroup, index, 0))
+        if (mpTexList[texPart] == GetFirstTexture(pSpec, bodyGroup, index, 0))
         {
-            mpTexList[texPart] = GetFirstTexture(
-                pSpec, bodyGroup, index, 1);
+            mpTexList[texPart] = GetFirstTexture(pSpec, bodyGroup, index, 1);
         }
         else
         {
@@ -2686,23 +2597,17 @@ void MySkater::NextFace(CCreateTexSpec *pSpec, int forwards)
                     mpTexList[textureIndex]++;
                     if (mpTexList[textureIndex]->TextureName == 0)
                     {
-                        mpTexList[textureIndex] =
-                            GetFirstTexture(
-                                pSpec, 0, 0, 0);
+                        mpTexList[textureIndex] = GetFirstTexture(pSpec, 0, 0, 0);
                     }
-                    mSelectedSkinTone = (unsigned char)
-                        mpTexList[textureIndex]->TextureName[7] - '1';
+                    mSelectedSkinTone =
+                        (unsigned char)mpTexList[textureIndex]->TextureName[7] - '1';
                     break;
                 }
                 else
                 {
-                    if (mpTexList[textureIndex] ==
-                        GetFirstTexture(
-                            pSpec, 0, 0, 0))
+                    if (mpTexList[textureIndex] == GetFirstTexture(pSpec, 0, 0, 0))
                     {
-                        mpTexList[textureIndex] =
-                            GetFirstTexture(
-                                pSpec, 0, 0, 1);
+                        mpTexList[textureIndex] = GetFirstTexture(pSpec, 0, 0, 1);
                     }
                     else
                     {
@@ -2715,8 +2620,7 @@ void MySkater::NextFace(CCreateTexSpec *pSpec, int forwards)
             {
                 {
                     char textureName[32];
-                    sprintf(textureName, "%s.bmp",
-                            mpTexList[textureIndex]->TextureName);
+                    sprintf(textureName, "%s.bmp", mpTexList[textureIndex]->TextureName);
                     textureName[7] = (char)mSelectedSkinTone + '1';
                     if (FileIO_Exists(textureName) != 0)
                     {
@@ -2781,8 +2685,7 @@ void MySkater::Create_On(char *p1, char *p2)
     u16 Parts = pRegion->NumParts;
     sprintf(buf, "%s_", p1);
     int i = 0;
-    if (Parts == 0)
-        return;
+    if (Parts == 0) return;
     SPart *group = Part;
     do
     {
@@ -2944,10 +2847,8 @@ void MySkater::PatchInternalStitches(void)
         while (i < (int)PSXRegion[mBuildRegion].NumParts)
         {
             int sourceIndex = GetSourceIndex(i);
-            SModel *pModel =
-                PSXRegion[mSourceRegion].ppModels[sourceIndex];
-            mStitchDatabase[sourceIndex].initialBuildStitch =
-                (short)stitchCount;
+            SModel *pModel = PSXRegion[mSourceRegion].ppModels[sourceIndex];
+            mStitchDatabase[sourceIndex].initialBuildStitch = (short)stitchCount;
             stitchCount += Create_CountStitches(pModel);
             i++;
         }
@@ -2961,8 +2862,7 @@ void MySkater::PatchInternalStitches(void)
             int sourceIndex = GetSourceIndex(i);
             if (mStitchDatabase[sourceIndex].buildIndex != -1)
             {
-                SModel *pModel =
-                    PSXRegion[mBuildRegion].ppModels[i];
+                SModel *pModel = PSXRegion[mBuildRegion].ppModels[i];
                 SVECTOR *pVertex = pModel->Vertices;
                 SVECTOR *pNormal = pVertex + pModel->NumVertices;
                 int j = 0;
@@ -2973,16 +2873,14 @@ void MySkater::PatchInternalStitches(void)
                     {
                         if ((pVertex->pad & 2) != 0)
                         {
-                            int stitchedVertexIndex =
-                                (int)(short)*(unsigned short *)pVertex >> 3;
+                            int stitchedVertexIndex = (int)(short)*(unsigned short *)pVertex >> 3;
                             int stitchedPartIndex = 0;
                             int k = 0;
 
                             while (k < (int)PSXRegion[mSourceRegion].NumParts)
                             {
                                 if (mStitchDatabase[stitchedPartIndex].buildIndex != -1 &&
-                                    stitchedVertexIndex <
-                                        mStitchDatabase[k].initialSourceStitch)
+                                    stitchedVertexIndex < mStitchDatabase[k].initialSourceStitch)
                                 {
                                     break;
                                 }
@@ -2990,13 +2888,11 @@ void MySkater::PatchInternalStitches(void)
                                 k = stitchedPartIndex + 1;
                             }
 
-                            offset =
-                                (mStitchDatabase[stitchedPartIndex].initialBuildStitch -
-                                 mStitchDatabase[stitchedPartIndex].initialSourceStitch) * 8;
-                            *(unsigned short *)pVertex =
-                                *(unsigned short *)pVertex + offset;
-                            *(unsigned short *)pNormal =
-                                *(unsigned short *)pNormal + offset;
+                            offset = (mStitchDatabase[stitchedPartIndex].initialBuildStitch -
+                                      mStitchDatabase[stitchedPartIndex].initialSourceStitch) *
+                                     8;
+                            *(unsigned short *)pVertex = *(unsigned short *)pVertex + offset;
+                            *(unsigned short *)pNormal = *(unsigned short *)pNormal + offset;
                         }
                         pVertex++;
                         j++;
@@ -3041,8 +2937,7 @@ int MySkater::InsertStitch(SVECTOR *pNewStitchVertex, SVECTOR *pNewGhostVertex,
         SVECTOR *pVertex = pModel->Vertices;
         int vertsEnd = vertCount * 8;
         SVECTOR *pNormal = (SVECTOR *)((u8 *)pVertex + vertsEnd);
-        if (vertCount == 0)
-            goto nextModel;
+        if (vertCount == 0) goto nextModel;
         do
         {
             if (pVertex == pNewStitchVertex)
@@ -3053,8 +2948,7 @@ int MySkater::InsertStitch(SVECTOR *pNewStitchVertex, SVECTOR *pNewGhostVertex,
             if (pad & 1)
             {
                 // Type 1 (attachable)
-                if (found != 0)
-                    goto patchDone;
+                if (found != 0) goto patchDone;
                 stitchIndex++;
             }
             else if (pad & 2)
@@ -3067,8 +2961,7 @@ int MySkater::InsertStitch(SVECTOR *pNewStitchVertex, SVECTOR *pNewGhostVertex,
                     // Preserve the target's explicit bit toggle before testing.
                     u16 p1pad = pNewStitchVertex->pad;
                     unsigned xored = (unsigned)p1pad ^ 1;
-                    if ((xored & 1) == 0)
-                        goto patchDone;
+                    if ((xored & 1) == 0) goto patchDone;
                     // Patch: add 8 to vertex index and normal end
                     u16 newVert = (u16)(vertData + 8);
                     *(u16 *)pVertex = newVert;
@@ -3124,26 +3017,19 @@ int MySkater::InsertStitch(SVECTOR *pNewStitchVertex, SVECTOR *pNewGhostVertex,
  */
 SMatrix *Decomp_GetAnimTransform(CSuper *);
 #include <ABS.H>
-void MySkater::CreateManualStitches(CSuper *mySuper, int partIndexA,
-                                    int partIndexB)
+void MySkater::CreateManualStitches(CSuper *mySuper, int partIndexA, int partIndexB)
 {
-    SMatrix *pTestTransform =
-        Decomp_GetAnimTransform(mySuper);
+    SMatrix *pTestTransform = Decomp_GetAnimTransform(mySuper);
 
-    SModel *pBuildModelJ =
-        PSXRegion[mBuildRegion].ppModels[partIndexA];
-    SModel *pBuildModelK =
-        PSXRegion[mBuildRegion].ppModels[partIndexB];
+    SModel *pBuildModelJ = PSXRegion[mBuildRegion].ppModels[partIndexA];
+    SModel *pBuildModelK = PSXRegion[mBuildRegion].ppModels[partIndexB];
 
-    SModel *pCreateModelJ = PSXRegion[mSourceRegion].ppModels[
-        GetSourceIndex(partIndexA)];
+    SModel *pCreateModelJ = PSXRegion[mSourceRegion].ppModels[GetSourceIndex(partIndexA)];
     SVECTOR *pVertexBuildJ = pBuildModelJ->Vertices;
 
-    SModel *pCreateModelK = PSXRegion[mSourceRegion].ppModels[
-        GetSourceIndex(partIndexB)];
+    SModel *pCreateModelK = PSXRegion[mSourceRegion].ppModels[GetSourceIndex(partIndexB)];
     SVECTOR *pVertexCreateJ = pCreateModelJ->Vertices;
-    SVECTOR *pVertexNormalBuildJ =
-        pVertexBuildJ + pBuildModelJ->NumVertices;
+    SVECTOR *pVertexNormalBuildJ = pVertexBuildJ + pBuildModelJ->NumVertices;
     int j = 0;
 
     if (pCreateModelJ->NumVertices == 0)
@@ -3156,8 +3042,7 @@ void MySkater::CreateManualStitches(CSuper *mySuper, int partIndexA,
         SVECTOR *pVertexCreateK = pCreateModelK->Vertices;
         int k = 0;
         SVECTOR *pVertexBuildK = pBuildModelK->Vertices;
-        SVECTOR *pVertexNormalBuildK =
-            pVertexBuildK + pBuildModelK->NumVertices;
+        SVECTOR *pVertexNormalBuildK = pVertexBuildK + pBuildModelK->NumVertices;
 
         if (pCreateModelK->NumVertices != 0)
         {
@@ -3167,12 +3052,10 @@ void MySkater::CreateManualStitches(CSuper *mySuper, int partIndexA,
                 VECTOR xformedVertJ;
                 VECTOR xformedVertK;
 
-                M3dAsm_NewSetRotTransMatrix(
-                    &pTestTransform[GetSourceIndex(partIndexA)]);
+                M3dAsm_NewSetRotTransMatrix(&pTestTransform[GetSourceIndex(partIndexA)]);
                 RotTrans(pVertexCreateJ, &xformedVertJ, &flag);
 
-                M3dAsm_NewSetRotTransMatrix(
-                    &pTestTransform[GetSourceIndex(partIndexB)]);
+                M3dAsm_NewSetRotTransMatrix(&pTestTransform[GetSourceIndex(partIndexB)]);
                 RotTrans(pVertexCreateK, &xformedVertK, &flag);
 
                 if (abs(xformedVertJ.vx - xformedVertK.vx) < 10)
@@ -3181,8 +3064,7 @@ void MySkater::CreateManualStitches(CSuper *mySuper, int partIndexA,
                     {
                         if (abs(xformedVertJ.vz - xformedVertK.vz) < 10)
                         {
-                            InsertStitch(pVertexBuildJ, pVertexBuildK,
-                                         pVertexNormalBuildJ,
+                            InsertStitch(pVertexBuildJ, pVertexBuildK, pVertexNormalBuildJ,
                                          pVertexNormalBuildK);
                         }
                     }
@@ -3254,20 +3136,14 @@ void MySkater::IncrementTextureUsage(void)
     for (int i = 0; i < 19; i++)
     {
         SModel *pModel = *ppModels++;
-        BuildChecksumList(
-            pModel,
-            mChecksumList,
-            &mChecksumCount);
+        BuildChecksumList(pModel, mChecksumList, &mChecksumCount);
     }
 
-    for (int i = 0;
-         i < mChecksumCount;
-         i++)
+    for (int i = 0; i < mChecksumCount; i++)
     {
         for (int j = 0; (unsigned int)j < NumChecksums; j++)
         {
-            if (mChecksumList[i] ==
-                ((Texture **)ChecksumTable)[j]->Checksum)
+            if (mChecksumList[i] == ((Texture **)ChecksumTable)[j]->Checksum)
             {
                 mpChecksumTexture[i] = ((Texture **)ChecksumTable)[j];
                 ((Texture **)ChecksumTable)[j]->Usage++;
@@ -3308,8 +3184,7 @@ void MySkater::RememberPalette(int texPart, unsigned int checksum)
             MySkaterTextureInfo **arr = mppTextures;
             MySkaterTextureInfo *entry = arr[j];
             int entryChecksum = entry->mChecksum;
-            if (textureChecksum != (unsigned int)entryChecksum)
-                goto next;
+            if (textureChecksum != (unsigned int)entryChecksum) goto next;
             {
                 Texture *tex = Spool_FindTextureEntry(textureChecksum);
                 tag_S_Pal *pPalette = tex->pPalette;
@@ -3323,19 +3198,16 @@ void MySkater::RememberPalette(int texPart, unsigned int checksum)
     tag_S_Pal *palEntry = Pal_FindPaletteEntry(paletteChecksum);
     int texOff = texPart << 2;
     char *paletteEntryBase = (char *)mpPal;
-    tag_S_Pal **paletteEntrySlot =
-        (tag_S_Pal **)(paletteEntryBase + texOff);
+    tag_S_Pal **paletteEntrySlot = (tag_S_Pal **)(paletteEntryBase + texOff);
     char *paletteBufferBase = (char *)mpPaletteBuffer;
-    HSV_VALUE **paletteBufferSlot =
-        (HSV_VALUE **)(paletteBufferBase + texOff);
+    HSV_VALUE **paletteBufferSlot = (HSV_VALUE **)(paletteBufferBase + texOff);
     *paletteEntrySlot = palEntry;
     HSV_VALUE *oldModel = *paletteBufferSlot;
     if (oldModel != 0)
     {
         Mem_Delete(oldModel);
     }
-    HSV_VALUE *newBuf =
-        (HSV_VALUE *)Mem_New(256 * sizeof(HSV_VALUE), 0, 1);
+    HSV_VALUE *newBuf = (HSV_VALUE *)Mem_New(256 * sizeof(HSV_VALUE), 0, 1);
     *paletteBufferSlot = newBuf;
     Create_RememberPalette(*paletteEntrySlot, newBuf);
     UpdatePalette(texPart);
@@ -3429,11 +3301,8 @@ void MySkater::UpdatePalette(int texPart)
     }
 
     pPaletteBuffer = mpPaletteBuffer[texPart];
-    Create_UpdatePalette(
-        mpPal[texPart], pPaletteBuffer,
-        mDesiredHSV[texPart].h,
-        mDesiredHSV[texPart].s,
-        mDesiredHSV[texPart].v);
+    Create_UpdatePalette(mpPal[texPart], pPaletteBuffer, mDesiredHSV[texPart].h,
+                         mDesiredHSV[texPart].s, mDesiredHSV[texPart].v);
 
     if (texPart == 2)
     {
@@ -3443,11 +3312,8 @@ void MySkater::UpdatePalette(int texPart)
         pPaletteBuffer = mpPaletteBuffer[8];
         if (pPaletteBuffer != 0)
         {
-            Create_UpdatePalette(
-                mpPal[8], pPaletteBuffer,
-                mDesiredHSV[8].h,
-                mDesiredHSV[8].s,
-                mDesiredHSV[8].v);
+            Create_UpdatePalette(mpPal[8], pPaletteBuffer, mDesiredHSV[8].h, mDesiredHSV[8].s,
+                                 mDesiredHSV[8].v);
         }
 
         if (mInheritBicep != 0)
@@ -3456,11 +3322,8 @@ void MySkater::UpdatePalette(int texPart)
             pPaletteBuffer = mpPaletteBuffer[3];
             if (pPaletteBuffer != 0)
             {
-                Create_UpdatePalette(
-                    mpPal[3], pPaletteBuffer,
-                    mDesiredHSV[3].h,
-                    mDesiredHSV[3].s,
-                    mDesiredHSV[3].v);
+                Create_UpdatePalette(mpPal[3], pPaletteBuffer, mDesiredHSV[3].h, mDesiredHSV[3].s,
+                                     mDesiredHSV[3].v);
             }
         }
 
@@ -3470,11 +3333,8 @@ void MySkater::UpdatePalette(int texPart)
             pPaletteBuffer = mpPaletteBuffer[4];
             if (pPaletteBuffer != 0)
             {
-                Create_UpdatePalette(
-                    mpPal[4], pPaletteBuffer,
-                    mDesiredHSV[4].h,
-                    mDesiredHSV[4].s,
-                    mDesiredHSV[4].v);
+                Create_UpdatePalette(mpPal[4], pPaletteBuffer, mDesiredHSV[4].h, mDesiredHSV[4].s,
+                                     mDesiredHSV[4].v);
             }
         }
     }
@@ -3488,11 +3348,8 @@ void MySkater::UpdatePalette(int texPart)
             pPaletteBuffer = mpPaletteBuffer[4];
             if (pPaletteBuffer != 0)
             {
-                Create_UpdatePalette(
-                    mpPal[4], pPaletteBuffer,
-                    mDesiredHSV[4].h,
-                    mDesiredHSV[4].s,
-                    mDesiredHSV[4].v);
+                Create_UpdatePalette(mpPal[4], pPaletteBuffer, mDesiredHSV[4].h, mDesiredHSV[4].s,
+                                     mDesiredHSV[4].v);
             }
         }
     }
@@ -3528,12 +3385,9 @@ void MySkater::PatchAnimationOrder(CSuper *pBuildSkater)
 #define M3DMATHS_TYPED_API
 #include "M3DMATHS.h"
 #undef M3DMATHS_TYPED_API
-#define TextMenuProperties_ctor \
-    TextMenuPropertiesConstructorABI::__18TextMenuProperties
-#define TextMenuItem_ctor \
-    TextMenuItemConstructorABI::__12TextMenuItemiPCcR18TextMenuProperties
-#define VerticalMenu2_ctor \
-    VerticalMenu2ConstructorABI::__13VerticalMenu2iiiiiii
+#define TextMenuProperties_ctor TextMenuPropertiesConstructorABI::__18TextMenuProperties
+#define TextMenuItem_ctor TextMenuItemConstructorABI::__12TextMenuItemiPCcR18TextMenuProperties
+#define VerticalMenu2_ctor VerticalMenu2ConstructorABI::__13VerticalMenu2iiiiiii
 #include "SCREENTOOLS.h"
 /** Resource and label strings used by CharacterEditor's constructor. */
 
@@ -3560,12 +3414,12 @@ CharacterEditor::CharacterEditor() : ScreenElementList(0, 0, -1, -1)
     editor->mpSkater = &sMySkater;
 
     {
-        CreateCSuperView *skater = static_cast<CreateCSuperView *>(
-            ::CItem::operator new(sizeof(CreateCSuperView)));
+        CreateCSuperView *skater =
+            static_cast<CreateCSuperView *>(::CItem::operator new(sizeof(CreateCSuperView)));
         if (skater != 0)
         {
-            skater = reinterpret_cast<CreateCSuperView *>(
-                ::new (reinterpret_cast<CSuper *>(skater)) CSuper());
+            skater = reinterpret_cast<CreateCSuperView *>(::new (reinterpret_cast<CSuper *>(skater))
+                                                              CSuper());
         }
         editor->mpBuildSkater = (CSuper *)skater;
     }
@@ -3574,20 +3428,19 @@ CharacterEditor::CharacterEditor() : ScreenElementList(0, 0, -1, -1)
     ((CreateCSuperView *)editor->mpBuildSkater)->Position.vx = 0x96000;
 
     {
-        CreateCSuperView *skater = static_cast<CreateCSuperView *>(
-            ::CItem::operator new(sizeof(CreateCSuperView)));
+        CreateCSuperView *skater =
+            static_cast<CreateCSuperView *>(::CItem::operator new(sizeof(CreateCSuperView)));
         if (skater != 0)
         {
-            skater = reinterpret_cast<CreateCSuperView *>(
-                ::new (reinterpret_cast<CSuper *>(skater)) CSuper());
+            skater = reinterpret_cast<CreateCSuperView *>(::new (reinterpret_cast<CSuper *>(skater))
+                                                              CSuper());
         }
         editor->mpSourceSkater = (CSuper *)skater;
     }
     ((CreateCSuperView *)editor->mpSourceSkater)->mpLight =
         reinterpret_cast<SLight *>(&AnimGroupData8[12]);
     {
-        CreateCSuperView *sourceSkater =
-            (CreateCSuperView *)editor->mpSourceSkater;
+        CreateCSuperView *sourceSkater = (CreateCSuperView *)editor->mpSourceSkater;
         sourceSkater->Position.vx = 0;
     }
 
@@ -3595,8 +3448,7 @@ CharacterEditor::CharacterEditor() : ScreenElementList(0, 0, -1, -1)
     sprintf(editor->mpSkater->mAnimName, "anims_cs");
 
     {
-        Sprite2 *background = new Sprite2(
-            "s2bgd4.bmp", 1, 0x40, 0x40);
+        Sprite2 *background = new Sprite2("s2bgd4.bmp", 1, 0x40, 0x40);
         editor->mBackground = background;
     }
 
@@ -3613,13 +3465,11 @@ CharacterEditor::CharacterEditor() : ScreenElementList(0, 0, -1, -1)
     editor->mpSkater->mInheritBicep = 1;
     editor->mpSkater->mInheritForearm = 1;
 
-    reinterpret_cast<CItem *>(editor->mpBuildSkater)->InitItem(
-        editor->mpSkater->mAnimName);
+    reinterpret_cast<CItem *>(editor->mpBuildSkater)->InitItem(editor->mpSkater->mAnimName);
     reinterpret_cast<CItem *>(editor->mpSourceSkater)->InitItem("sk2def");
     ((CreateCSuperView *)editor->mpBuildSkater)->mAnimSpeed = 0x10000;
     {
-        CreateCSuperView *cycleSkater =
-            (CreateCSuperView *)editor->mpBuildSkater;
+        CreateCSuperView *cycleSkater = (CreateCSuperView *)editor->mpBuildSkater;
         TimeScale = 0x100;
         reinterpret_cast<CSuper *>(cycleSkater)->CycleAnim(0, 1);
     }
@@ -3628,8 +3478,8 @@ CharacterEditor::CharacterEditor() : ScreenElementList(0, 0, -1, -1)
         i = 0;
         do
         {
-            Group[i].Num = (unsigned char)Create_CountString(
-                Group[i].pSearch, editor->mpSkater->mSourceRegion);
+            Group[i].Num = (unsigned char)Create_CountString(Group[i].pSearch,
+                                                             editor->mpSkater->mSourceRegion);
             i++;
         } while (i < 4);
     }
@@ -3674,20 +3524,17 @@ CharacterEditor::CharacterEditor() : ScreenElementList(0, 0, -1, -1)
     editor->mFont3.SpaceX = 0;
 
     {
-        VerticalMenu2 *menu =
-            (VerticalMenu2 *)CClass::operator new(sizeof(VerticalMenu2));
+        VerticalMenu2 *menu = (VerticalMenu2 *)CClass::operator new(sizeof(VerticalMenu2));
         if (menu != 0)
         {
-            menu = VerticalMenu2_ctor(
-                menu, 0x3C, 0x2F, 0x60, 0x90, 0, 0, 3);
+            menu = VerticalMenu2_ctor(menu, 0x3C, 0x2F, 0x60, 0x90, 0, 0, 3);
         }
         editor->mMenu = menu;
     }
 
     {
         TextMenuProperties *properties =
-            (TextMenuProperties *)CClass::operator new(
-                sizeof(TextMenuProperties));
+            (TextMenuProperties *)CClass::operator new(sizeof(TextMenuProperties));
         if (properties != 0)
         {
             properties = TextMenuProperties_ctor(properties);
@@ -3708,28 +3555,24 @@ CharacterEditor::CharacterEditor() : ScreenElementList(0, 0, -1, -1)
         TextMenuProperties *np = editor->mProps;
         np->NormalScale = 0x1000;
         {
-            VMenuItem *item = (VMenuItem *)CClass::operator new(
-                sizeof(CreateTextMenuItemStorage));
+            VMenuItem *item = (VMenuItem *)CClass::operator new(sizeof(CreateTextMenuItemStorage));
             if (item != 0)
             {
-                item = TextMenuItem_ctor(
-                    item, 0, "Head", editor->mProps);
+                item = TextMenuItem_ctor(item, 0, "Head", editor->mProps);
             }
             editor->mItem[0] = item;
         }
     }
 
-#define CREATE_TEXT_MENU_ITEM(slot, id, text)                              \
-    do                                                                     \
-    {                                                                      \
-        VMenuItem *item = (VMenuItem *)CClass::operator new(            \
-            sizeof(CreateTextMenuItemStorage));                          \
-        if (item != 0)                                                     \
-        {                                                                  \
-            item = TextMenuItem_ctor(                                    \
-                item, id, text, editor->mProps);                           \
-        }                                                                  \
-        editor->mItem[slot] = item;                                       \
+#define CREATE_TEXT_MENU_ITEM(slot, id, text) \
+    do \
+    { \
+        VMenuItem *item = (VMenuItem *)CClass::operator new(sizeof(CreateTextMenuItemStorage)); \
+        if (item != 0) \
+        { \
+            item = TextMenuItem_ctor(item, id, text, editor->mProps); \
+        } \
+        editor->mItem[slot] = item; \
     } while (0)
 
     CREATE_TEXT_MENU_ITEM(1, 1, " face");
@@ -3749,8 +3592,7 @@ CharacterEditor::CharacterEditor() : ScreenElementList(0, 0, -1, -1)
         int i = 0;
         do
         {
-            editor->mMenu->vtable->addItem(
-                editor->mMenu, editor->mItem[i]);
+            editor->mMenu->vtable->addItem(editor->mMenu, editor->mItem[i]);
             i++;
         } while (i < 11);
     }
@@ -3763,44 +3605,38 @@ CharacterEditor::CharacterEditor() : ScreenElementList(0, 0, -1, -1)
         y = 0x2F;
         do
         {
-            editor->mItem[i]->vtable->setXY(
-                editor->mItem[i], editor->mItem[i]->X, y);
+            editor->mItem[i]->vtable->setXY(editor->mItem[i], editor->mItem[i]->X, y);
             y += 0x0D;
             i++;
         } while (i < 11);
     }
 
     {
-        pElement = (ScreenElement *)CClass::operator new(
-            sizeof(CreateTextScreenElementStorage));
+        pElement = (ScreenElement *)CClass::operator new(sizeof(CreateTextScreenElementStorage));
         if (pElement != 0)
         {
-            pElement = ::new (pElement) TextScreenElement(
-                    ((CreateStatsEntry *)Stats)[13].Name,
-                    &editor->mFont1, 0x42, 0x21, -1, -1);
+            pElement = ::new (pElement) TextScreenElement(((CreateStatsEntry *)Stats)[13].Name,
+                                                          &editor->mFont1, 0x42, 0x21, -1, -1);
         }
     }
     addItem(pElement);
 
     {
-        pElement = (ScreenElement *)CClass::operator new(
-            sizeof(CreateSpriteScreenElementStorage));
+        pElement = (ScreenElement *)CClass::operator new(sizeof(CreateSpriteScreenElementStorage));
         if (pElement != 0)
         {
-            pElement = ::new (pElement) SpriteScreenElement(
-                    "s2crskw1.bmp", 0x32, 0x11, -0x100, -1, 0, 0);
+            pElement =
+                ::new (pElement) SpriteScreenElement("s2crskw1.bmp", 0x32, 0x11, -0x100, -1, 0, 0);
         }
     }
     addItem(pElement);
 
-#define CREATE_PROMPT(image, text, x)                                      \
-    do                                                                     \
-    {                                                                      \
-        pElement = reinterpret_cast<ScreenElement *>(                      \
-            new PromptScreenElement(                                      \
-                image, text, &editor->mFont3,            \
-                x, 0xDC, -1, 0x104));                                     \
-        addItem(pElement);                                          \
+#define CREATE_PROMPT(image, text, x) \
+    do \
+    { \
+        pElement = reinterpret_cast<ScreenElement *>( \
+            new PromptScreenElement(image, text, &editor->mFont3, x, 0xDC, -1, 0x104)); \
+        addItem(pElement); \
     } while (0)
 
     CREATE_PROMPT("s2prmpt4.bmp", "select", 0x3F);
@@ -3809,7 +3645,6 @@ CharacterEditor::CharacterEditor() : ScreenElementList(0, 0, -1, -1)
     CREATE_PROMPT("s2prmpt2.bmp", "back", 0x17E);
 
 #undef CREATE_PROMPT
-
 }
 
 /**
@@ -3882,7 +3717,6 @@ CharacterEditor::~CharacterEditor()
         i++;
         item++;
     } while (i < 11);
-
 }
 
 /**
@@ -3935,89 +3769,61 @@ void CharacterEditor::update(void)
     {
         switch (mMenu->getHighlighted())
         {
-        case 0:
-            mpSkater->NextGeometry(0, next);
-            break;
-        case 1:
-            mpSkater->NextTexture(0, next);
-            break;
-        case 2:
-            if (mpSkater->mpTexList[1] != 0)
-            {
-                mpSkater->NextTexture(1, next);
-            }
-            break;
-        case 3:
-            mpSkater->NextGeometry(1, next);
-            break;
-        case 4:
-            mpSkater->NextTexture(2, next);
-            break;
-        case 5:
-            mpSkater->NextTexture(3, next);
-            break;
-        case 6:
-            if (mpSkater->mpTexList[4] != 0)
-            {
-                mpSkater->NextTexture(4, next);
-            }
-            break;
-        case 7:
-            mpSkater->NextGeometry(2, next);
-            break;
-        case 8:
-            mpSkater->NextTexture(6, next);
-            break;
-        case 9:
-            if (mpSkater->mpTexList[7] != 0)
-            {
-                mpSkater->NextTexture(7, next);
-            }
-            break;
-        case 10:
-            mpSkater->NextTexture(8, next);
-            break;
-        default:
-            break;
+            case 0: mpSkater->NextGeometry(0, next); break;
+            case 1: mpSkater->NextTexture(0, next); break;
+            case 2:
+                if (mpSkater->mpTexList[1] != 0)
+                {
+                    mpSkater->NextTexture(1, next);
+                }
+                break;
+            case 3: mpSkater->NextGeometry(1, next); break;
+            case 4: mpSkater->NextTexture(2, next); break;
+            case 5: mpSkater->NextTexture(3, next); break;
+            case 6:
+                if (mpSkater->mpTexList[4] != 0)
+                {
+                    mpSkater->NextTexture(4, next);
+                }
+                break;
+            case 7: mpSkater->NextGeometry(2, next); break;
+            case 8: mpSkater->NextTexture(6, next); break;
+            case 9:
+                if (mpSkater->mpTexList[7] != 0)
+                {
+                    mpSkater->NextTexture(7, next);
+                }
+                break;
+            case 10: mpSkater->NextTexture(8, next); break;
+            default: break;
         }
     }
 
     PaletteSelected = -1;
     switch (mMenu->getHighlighted())
     {
-    case 0:
-    case 1:
-        PaletteSelected = 0;
-        break;
-    case 2:
-        PaletteSelected = 1;
-        break;
-    case 3:
-    case 4:
-        PaletteSelected = 2;
-        break;
-    case 5:
-        PaletteSelected = 3;
-        break;
-    case 6:
-        if (mpSkater->mpTexList[4] != 0)
-        {
-            PaletteSelected = 4;
-        }
-        break;
-    case 7:
-    case 8:
-        PaletteSelected = 6;
-        break;
-    case 9:
-        if (mpSkater->mpTexList[7] != 0)
-        {
-            PaletteSelected = 7;
-        }
-        break;
-    case 10:
-    default:
-        break;
+        case 0:
+        case 1: PaletteSelected = 0; break;
+        case 2: PaletteSelected = 1; break;
+        case 3:
+        case 4: PaletteSelected = 2; break;
+        case 5: PaletteSelected = 3; break;
+        case 6:
+            if (mpSkater->mpTexList[4] != 0)
+            {
+                PaletteSelected = 4;
+            }
+            break;
+        case 7:
+        case 8: PaletteSelected = 6; break;
+        case 9:
+            if (mpSkater->mpTexList[7] != 0)
+            {
+                PaletteSelected = 7;
+            }
+            break;
+        case 10:
+        default: break;
     }
     if (mpSkater->mpPaletteBuffer[PaletteSelected] != 0)
     {
@@ -4040,39 +3846,28 @@ void CharacterEditor::update(void)
 
 void CharacterEditor::draw(int x, int y)
 {
-    mFont2.draw(
-        140, 55, mpSkater->GetFrontEndName(0, HeadSpec), 0);
-    mFont2.draw(
-        140, 68, mpSkater->mpTexList[0]->FrontEndName, 0);
+    mFont2.draw(140, 55, mpSkater->GetFrontEndName(0, HeadSpec), 0);
+    mFont2.draw(140, 68, mpSkater->mpTexList[0]->FrontEndName, 0);
     if (mpSkater->mpTexList[1] != 0)
     {
-        mFont2.draw(
-            140, 81, mpSkater->mpTexList[1]->FrontEndName, 0);
+        mFont2.draw(140, 81, mpSkater->mpTexList[1]->FrontEndName, 0);
     }
 
-    mFont2.draw(
-        140, 94, mpSkater->GetFrontEndName(1, UpperBodySpec), 0);
-    mFont2.draw(
-        140, 107, mpSkater->mpTexList[2]->FrontEndName, 0);
-    mFont2.draw(
-        140, 120, mpSkater->mpTexList[3]->FrontEndName, 0);
+    mFont2.draw(140, 94, mpSkater->GetFrontEndName(1, UpperBodySpec), 0);
+    mFont2.draw(140, 107, mpSkater->mpTexList[2]->FrontEndName, 0);
+    mFont2.draw(140, 120, mpSkater->mpTexList[3]->FrontEndName, 0);
     if (mpSkater->mpTexList[4] != 0)
     {
-        mFont2.draw(
-            140, 133, mpSkater->mpTexList[4]->FrontEndName, 0);
+        mFont2.draw(140, 133, mpSkater->mpTexList[4]->FrontEndName, 0);
     }
 
-    mFont2.draw(
-        140, 146, mpSkater->GetFrontEndName(2, LowerBodySpec), 0);
-    mFont2.draw(
-        140, 159, mpSkater->mpTexList[6]->FrontEndName, 0);
+    mFont2.draw(140, 146, mpSkater->GetFrontEndName(2, LowerBodySpec), 0);
+    mFont2.draw(140, 159, mpSkater->mpTexList[6]->FrontEndName, 0);
     if (mpSkater->mpTexList[7] != 0)
     {
-        mFont2.draw(
-            140, 172, mpSkater->mpTexList[7]->FrontEndName, 0);
+        mFont2.draw(140, 172, mpSkater->mpTexList[7]->FrontEndName, 0);
     }
-    mFont2.draw(
-        140, 185, mpSkater->mpTexList[8]->FrontEndName, 0);
+    mFont2.draw(140, 185, mpSkater->mpTexList[8]->FrontEndName, 0);
 
     // MAIN.SYM records this original local as `OldJust`; the source reapplies
     // the current font alignment before handing control to the menu renderer.
@@ -4085,8 +3880,7 @@ void CharacterEditor::draw(int x, int y)
 
     mMenu->vtable->update(mMenu);
 
-    M3d_RenderSetup(
-        MikeCamera, pViewport, pDoubleBuffer->OrderingTable);
+    M3d_RenderSetup(MikeCamera, pViewport, pDoubleBuffer->OrderingTable);
     M3d_BuildTransform(mpBuildSkater);
     M3d_Render(mpBuildSkater);
     M3d_RenderCleanup();
@@ -4146,16 +3940,15 @@ void Create_InitSkater(int forGame)
     Pal_RemoveUnusedPalettes();
     Pack_DefragmentFully();
 
-    CreateCSuperView *pSourceSkater = static_cast<CreateCSuperView *>(
-        ::CItem::operator new(sizeof(CreateCSuperView)));
+    CreateCSuperView *pSourceSkater =
+        static_cast<CreateCSuperView *>(::CItem::operator new(sizeof(CreateCSuperView)));
     if (pSourceSkater != 0)
     {
         pSourceSkater = reinterpret_cast<CreateCSuperView *>(
             ::new (reinterpret_cast<CSuper *>(pSourceSkater)) CSuper());
     }
 
-    pSourceSkater->mpLight =
-        reinterpret_cast<SLight *>(&AnimGroupData8[12]);
+    pSourceSkater->mpLight = reinterpret_cast<SLight *>(&AnimGroupData8[12]);
     pSourceSkater->Position.vx = 100 * 4096;
 
     MySkater *pMySkater = &sMySkater;
@@ -4196,8 +3989,7 @@ void Create_InitSkater(int forGame)
     }
 
     // Rebuild
-    pMySkater->Rebuild(
-        (CSuper *)pSourceSkater, 0, (forGame == 0) ? 1 : 0);
+    pMySkater->Rebuild((CSuper *)pSourceSkater, 0, (forGame == 0) ? 1 : 0);
 
     // Strip anim
     Spool_StripAnim(pMySkater->mSourceRegion);
@@ -4261,8 +4053,8 @@ void Create_InitSkaterFrontEnd(void)
 
     int forGame = 0;
 
-    CreateCSuperView *pSourceSkater = static_cast<CreateCSuperView *>(
-        ::CItem::operator new(sizeof(CreateCSuperView)));
+    CreateCSuperView *pSourceSkater =
+        static_cast<CreateCSuperView *>(::CItem::operator new(sizeof(CreateCSuperView)));
     if (pSourceSkater != 0)
     {
         pSourceSkater = reinterpret_cast<CreateCSuperView *>(
@@ -4272,8 +4064,7 @@ void Create_InitSkaterFrontEnd(void)
     MySkater *pMySkater = &sMySkater;
     char *animName = pMySkater->mAnimName;
 
-    pSourceSkater->mpLight =
-        reinterpret_cast<SLight *>(&AnimGroupData8[12]);
+    pSourceSkater->mpLight = reinterpret_cast<SLight *>(&AnimGroupData8[12]);
     pSourceSkater->Position.vx = 100 * 4096;
 
     sprintf(animName, "anims_cs");
@@ -4399,8 +4190,7 @@ void Create_FreeSkater(void)
     MySkater *pMySkater = &sMySkater;
     if (pMySkater->mFree == 0)
     {
-        SModel **entries =
-            PSXRegion[pMySkater->mBuildRegion].ppModels;
+        SModel **entries = PSXRegion[pMySkater->mBuildRegion].ppModels;
         int i = 0;
         SModel **ppModels = entries - 1;
         SModel **ppBuildModels = entries;
@@ -4519,8 +4309,7 @@ int Create_Main(void)
     FontManager::LoadFont("s2skata2.fnt");
 
     CharacterEditor *pEditor =
-        static_cast<CharacterEditor *>(
-            CClass::operator new(sizeof(CharacterEditor)));
+        static_cast<CharacterEditor *>(CClass::operator new(sizeof(CharacterEditor)));
     if (pEditor != 0)
     {
         pEditor = ::new (pEditor) CharacterEditor();
@@ -4543,10 +4332,8 @@ mainloop:
     Pad_Update();
 
     press = pEditor->handlePress();
-    if (press == 1)
-        goto exitloop;
-    if (press == 2)
-        goto exitloop;
+    if (press == 1) goto exitloop;
+    if (press == 2) goto exitloop;
 
     // update (vtable + 0xC)
     {
@@ -4594,8 +4381,7 @@ exitloop:
     FontManager::UnloadFont("s2menu1.fnt");
     FontManager::UnloadFont("s2skata2.fnt");
 
-    if (press == 2)
-        return -1;
+    if (press == 2) return -1;
     return 0;
 }
 
@@ -4643,8 +4429,7 @@ void Create_InitSystem(void)
         Mem_Delete(models - 1);
         int buildReg2 = mpSkater->mBuildRegion;
         int a0val = buildReg2;
-        SModel ***modelsSlot =
-            (SModel ***)(psxBase + (buildReg2 << 6));
+        SModel ***modelsSlot = (SModel ***)(psxBase + (buildReg2 << 6));
         *modelsSlot = 0;
         ClearRegion(a0val, 1, 0);
         int negOne = -1;
@@ -4701,27 +4486,24 @@ void Create_BeginSpooling(void)
 
 /** Body-part group prefixes selected by the character editor. */
 SGroup Group[4] __attribute__((section(".data"))) = {
-    {0, "_head"},
-    {0, "_chest"},
-    {0, "_left_shin"},
-    {0, "_board"},
+    { 0, "_head" },
+    { 0, "_chest" },
+    { 0, "_left_shin" },
+    { 0, "_board" },
 };
 
 /** Projection bounds used by the character-editor skater preview. */
 SViewport CreateViewport __attribute__((section(".data"))) = {
-    0x200, 0xF0, 0, 0,
-    10, 30000, 0xD55, 0,
-    0, 0,
+    0x200, 0xF0, 0, 0, 10, 30000, 0xD55, 0, 0, 0,
 };
 
 /** Lighting used by the character-editor source and build skaters. */
-static SLight Skater_CreateLight
-    __attribute__((section(".data"))) = {
-    {{0, 4096, 0}, {0, -4096, 0}, {0, 0, 4096}},
+static SLight Skater_CreateLight __attribute__((section(".data"))) = {
+    { { 0, 4096, 0 }, { 0, -4096, 0 }, { 0, 0, 4096 } },
     0,
-    {{640, 2944, 320}, {640, 2944, 320}, {640, 2944, 320}},
+    { { 640, 2944, 320 }, { 640, 2944, 320 }, { 640, 2944, 320 } },
     0,
-    {2176, 2176, 2176},
+    { 2176, 2176, 2176 },
 };
 
 /**
@@ -4738,9 +4520,8 @@ namespace CreateAnimationOwners
 extern "C"
 {
 /** Default animation range copied into a newly created skater. */
-static CreateAnimHdr8 sDefaultAnimHdrs[1]
-    __attribute__((section(".sdata"), aligned(2))) = {
-        {{0, -1, -1, 9999}},
+static CreateAnimHdr8 sDefaultAnimHdrs[1] __attribute__((section(".sdata"), aligned(2))) = {
+    { { 0, -1, -1, 9999 } },
 };
 }
 }

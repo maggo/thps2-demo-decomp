@@ -28,14 +28,12 @@ void TrickOb_Update(void);
 #endif // TRICKOB_INC_H
 #endif // TRICKOB_LAYOUT_ONLY
 
-#if defined(TRICKOB_OWNER_DECLARATIONS) && \
-    !defined(TRICKOB_OWNER_DECLARATIONS_HEAD_EMITTED) && \
+#if defined(TRICKOB_OWNER_DECLARATIONS) && !defined(TRICKOB_OWNER_DECLARATIONS_HEAD_EMITTED) && \
     defined(TRICKOB_LAYOUT_EMITTED)
 #error "TRICKOB owner declarations must precede a focused layout encounter"
 #endif
 
-#if defined(TRICKOB_OWNER_DECLARATIONS) && \
-    !defined(TRICKOB_OWNER_DECLARATIONS_HEAD_EMITTED)
+#if defined(TRICKOB_OWNER_DECLARATIONS) && !defined(TRICKOB_OWNER_DECLARATIONS_HEAD_EMITTED)
 #define TRICKOB_OWNER_DECLARATIONS_HEAD_EMITTED
 #define TRICKOB_OWNER_DECLARATIONS_ACTIVE
 
@@ -43,8 +41,7 @@ void TrickOb_Update(void);
 
 #endif // TRICKOB_OWNER_DECLARATIONS_HEAD_EMITTED
 
-#if defined(TRICKOB_OWNER_DECLARATIONS_ACTIVE) && \
-    !defined(TRICKOB_LAYOUT)
+#if defined(TRICKOB_OWNER_DECLARATIONS_ACTIVE) && !defined(TRICKOB_LAYOUT)
 #define TRICKOB_LAYOUT
 #define TRICKOB_LAYOUT_WAS_IMPLIED
 #endif
@@ -82,9 +79,7 @@ struct CTrickOb
     /** Unlinks this trigger from the active trick-object list. */
     ~CTrickOb();
     /** Releases trigger storage through the owning CClass allocator. */
-    static void operator delete(void *p) {
-        ::CClass::operator delete(p);
-    }
+    static void operator delete(void *p) { ::CClass::operator delete(p); }
 #endif
 };
 
@@ -95,8 +90,7 @@ struct CTrickOb
 #undef TRICKOB_LAYOUT_WAS_IMPLIED
 #endif
 
-#if defined(TRICKOB_OWNER_DECLARATIONS_ACTIVE) && \
-    !defined(TRICKOB_OWNER_DECLARATIONS_TAIL_EMITTED)
+#if defined(TRICKOB_OWNER_DECLARATIONS_ACTIVE) && !defined(TRICKOB_OWNER_DECLARATIONS_TAIL_EMITTED)
 #define TRICKOB_OWNER_DECLARATIONS_TAIL_EMITTED
 
 // === Variables (gp-relative in this TU) ===
@@ -104,7 +98,7 @@ struct CTrickOb
 #include "TRICKOBLIST.h"
 #define TRICKPLAYER_OWNER_DECLARATION
 #include "TRICKPLAYER.h"
-extern "C" int TrickScore;       // 0x800DA520
+extern "C" int TrickScore; // 0x800DA520
 
 // === Variables (absolute in this TU) ===
 #define TRIGSTATE_ABSOLUTE_DECLARATION

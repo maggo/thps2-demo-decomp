@@ -19,7 +19,8 @@ typedef signed short s16;
 #include "CFRICTION.h"
 
 /** Compact three-component vector used for angles and directions. */
-struct CSVector {
+struct CSVector
+{
     s16 vx, vy, vz;
 
     void Mask();
@@ -30,7 +31,8 @@ struct CSVector {
 };
 
 /** Three-component fixed-point vector. */
-struct CVector {
+struct CVector
+{
     int vx, vy, vz;
 
     CVector() {}
@@ -65,7 +67,8 @@ struct CVector {
  * @return Magnitude of the vector after converting components from 12-bit
  *         fixed point for the GTE square operation.
  */
-int CVector::Length() const {
+int CVector::Length() const
+{
     CVector u;
     u.vx = vx >> 12;
     u.vy = vy >> 12;
@@ -81,7 +84,8 @@ int CVector::Length() const {
  * Scales the X and Y components by the vector length, then applies the same
  * scale once more to the normalized Y value for Z, matching the prototype.
  */
-void CVector::Normalize() {
+void CVector::Normalize()
+{
     int length = Length();
     int normalizedY = vy / length;
     int normalizedX = vx / length;
@@ -95,7 +99,8 @@ void CVector::Normalize() {
 /**
  * Clears components whose magnitude is at most one half-unit in 12-bit fixed point.
  */
-void CVector::KillSmall() {
+void CVector::KillSmall()
+{
     if ((unsigned)(vx + 0x800) < 0x1001u) vx = 0;
     if ((unsigned)(vy + 0x800) < 0x1001u) vy = 0;
     if ((unsigned)(vz + 0x800) < 0x1001u) vz = 0;
@@ -108,7 +113,8 @@ void CVector::KillSmall() {
  * @param a Vector to add.
  * @return This vector after addition.
  */
-CVector &CVector::operator+=(const CVector &a) {
+CVector &CVector::operator+=(const CVector &a)
+{
     vx += a.vx;
     vy += a.vy;
     vz += a.vz;
@@ -122,7 +128,8 @@ CVector &CVector::operator+=(const CVector &a) {
  * @param a Vector to subtract.
  * @return This vector after subtraction.
  */
-CVector &CVector::operator-=(const CVector &a) {
+CVector &CVector::operator-=(const CVector &a)
+{
     vx -= a.vx;
     vy -= a.vy;
     vz -= a.vz;
@@ -136,7 +143,8 @@ CVector &CVector::operator-=(const CVector &a) {
  * @param a Scalar multiplier.
  * @return This vector after multiplication.
  */
-CVector &CVector::operator*=(const int &a) {
+CVector &CVector::operator*=(const int &a)
+{
     vx *= a;
     vy *= a;
     vz *= a;
@@ -150,7 +158,8 @@ CVector &CVector::operator*=(const int &a) {
  * @param a Divisor applied to all components.
  * @return This vector after division.
  */
-CVector &CVector::operator/=(const int &a) {
+CVector &CVector::operator/=(const int &a)
+{
     vx /= a;
     vy /= a;
     vz /= a;
@@ -164,7 +173,8 @@ CVector &CVector::operator/=(const int &a) {
  * @param a Number of bits to shift.
  * @return This vector after shifting.
  */
-CVector &CVector::operator>>=(const int &a) {
+CVector &CVector::operator>>=(const int &a)
+{
     vx >>= a;
     vy >>= a;
     vz >>= a;
@@ -178,7 +188,8 @@ CVector &CVector::operator>>=(const int &a) {
  * @param a Number of bits to shift.
  * @return This vector after shifting.
  */
-CVector &CVector::operator<<=(const int &a) {
+CVector &CVector::operator<<=(const int &a)
+{
     vx <<= a;
     vy <<= a;
     vz <<= a;
@@ -192,7 +203,8 @@ CVector &CVector::operator<<=(const int &a) {
  * @param f Per-axis friction shifts.
  * @return This vector after friction is applied.
  */
-CVector &CVector::operator%=(const CFriction &f) {
+CVector &CVector::operator%=(const CFriction &f)
+{
     vx -= vx >> f.vx;
     vy -= vy >> f.vy;
     vz -= vz >> f.vz;
@@ -201,19 +213,22 @@ CVector &CVector::operator%=(const CFriction &f) {
 
 
 /** Returns whether every component equals the corresponding component of v. */
-int CVector::operator==(const CVector &v) {
+int CVector::operator==(const CVector &v)
+{
     return (vx == v.vx && vy == v.vy && vz == v.vz);
 }
 
 
 /** Returns whether any component differs from the corresponding component of v. */
-int CVector::operator!=(const CVector &v) {
+int CVector::operator!=(const CVector &v)
+{
     return (vx != v.vx || vy != v.vy || vz != v.vz);
 }
 
 
 /** Returns the component-wise sum of two vectors. */
-CVector operator+(const CVector &a, const CVector &b) {
+CVector operator+(const CVector &a, const CVector &b)
+{
     CVector ans;
     ans.vx = a.vx + b.vx;
     ans.vy = a.vy + b.vy;
@@ -223,7 +238,8 @@ CVector operator+(const CVector &a, const CVector &b) {
 
 
 /** Returns the component-wise difference of two vectors. */
-CVector operator-(const CVector &a, const CVector &b) {
+CVector operator-(const CVector &a, const CVector &b)
+{
     CVector ans;
     ans.vx = a.vx - b.vx;
     ans.vy = a.vy - b.vy;
@@ -233,7 +249,8 @@ CVector operator-(const CVector &a, const CVector &b) {
 
 
 /** Returns a vector with every component multiplied by scalar. */
-CVector operator*(const CVector &a, const int &scalar) {
+CVector operator*(const CVector &a, const int &scalar)
+{
     CVector ans;
     ans.vx = a.vx * scalar;
     ans.vy = a.vy * scalar;
@@ -243,7 +260,8 @@ CVector operator*(const CVector &a, const int &scalar) {
 
 
 /** Returns a vector with every component multiplied by scalar. */
-CVector operator*(const int &scalar, const CVector &a) {
+CVector operator*(const int &scalar, const CVector &a)
+{
     CVector ans;
     ans.vx = a.vx * scalar;
     ans.vy = a.vy * scalar;
@@ -253,7 +271,8 @@ CVector operator*(const int &scalar, const CVector &a) {
 
 
 /** Returns a vector with every component divided by scalar. */
-CVector operator/(const CVector &a, const int &scalar) {
+CVector operator/(const CVector &a, const int &scalar)
+{
     CVector ans;
     ans.vx = a.vx / scalar;
     ans.vy = a.vy / scalar;
@@ -263,7 +282,8 @@ CVector operator/(const CVector &a, const int &scalar) {
 
 
 /** Returns a vector with every component shifted right by scalar bits. */
-CVector operator>>(const CVector &a, const int &scalar) {
+CVector operator>>(const CVector &a, const int &scalar)
+{
     CVector ans;
     ans.vx = a.vx >> scalar;
     ans.vy = a.vy >> scalar;
@@ -273,7 +293,8 @@ CVector operator>>(const CVector &a, const int &scalar) {
 
 
 /** Returns a vector with every component shifted left by scalar bits. */
-CVector operator<<(const CVector &a, const int &scalar) {
+CVector operator<<(const CVector &a, const int &scalar)
+{
     CVector ans;
     ans.vx = a.vx << scalar;
     ans.vy = a.vy << scalar;
@@ -287,7 +308,8 @@ CVector operator<<(const CVector &a, const int &scalar) {
  *
  * @return A vector with every component negated.
  */
-CVector CVector::operator-() const {
+CVector CVector::operator-() const
+{
     return CVector(-vx, -vy, -vz);
 }
 
@@ -295,7 +317,8 @@ CVector CVector::operator-() const {
 /**
  * Restricts each angle component to its low 12 bits.
  */
-void CSVector::Mask() {
+void CSVector::Mask()
+{
     unsigned short x = vx;
     unsigned short y = vy;
     unsigned short z = vz;
@@ -308,7 +331,8 @@ void CSVector::Mask() {
 /**
  * Clears components in the inclusive range [-1, 1].
  */
-void CSVector::KillSmall() {
+void CSVector::KillSmall()
+{
     if ((u16)(vx + 1) < 3u) vx = 0;
     if ((u16)(vy + 1) < 3u) vy = 0;
     if ((u16)(vz + 1) < 3u) vz = 0;
@@ -321,7 +345,8 @@ void CSVector::KillSmall() {
  * @param a Vector to add.
  * @return This vector after addition.
  */
-CSVector &CSVector::operator+=(const CSVector &a) {
+CSVector &CSVector::operator+=(const CSVector &a)
+{
     vx += a.vx;
     vy += a.vy;
     vz += a.vz;
@@ -335,7 +360,8 @@ CSVector &CSVector::operator+=(const CSVector &a) {
  * @param a Divisor applied to all components.
  * @return This vector after division.
  */
-CSVector &CSVector::operator/=(const int &a) {
+CSVector &CSVector::operator/=(const int &a)
+{
     vx /= a;
     vy /= a;
     vz /= a;
@@ -349,7 +375,8 @@ CSVector &CSVector::operator/=(const int &a) {
  * @param f Per-axis friction shifts.
  * @return This vector after friction is applied.
  */
-CSVector &CSVector::operator%=(const CFriction &f) {
+CSVector &CSVector::operator%=(const CFriction &f)
+{
     vx -= vx >> f.vx;
     vy -= vy >> f.vy;
     vz -= vz >> f.vz;
@@ -358,7 +385,8 @@ CSVector &CSVector::operator%=(const CFriction &f) {
 
 
 /** Returns the component-wise difference of two compact vectors. */
-CSVector operator-(const CSVector &a, const CSVector &b) {
+CSVector operator-(const CSVector &a, const CSVector &b)
+{
     CSVector ans;
     ans.vx = a.vx - b.vx;
     ans.vy = a.vy - b.vy;
@@ -368,7 +396,8 @@ CSVector operator-(const CSVector &a, const CSVector &b) {
 
 
 /** Returns a compact vector with every component multiplied by scalar. */
-CSVector operator*(const int &scalar, const CSVector &a) {
+CSVector operator*(const int &scalar, const CSVector &a)
+{
     CSVector ans;
     ans.vx = a.vx * scalar;
     ans.vy = a.vy * scalar;
@@ -378,7 +407,8 @@ CSVector operator*(const int &scalar, const CSVector &a) {
 
 
 /** Returns a compact vector with every component shifted right by scalar bits. */
-CSVector operator>>(const CSVector &a, const int &scalar) {
+CSVector operator>>(const CSVector &a, const int &scalar)
+{
     CSVector ans;
     ans.vx = a.vx >> scalar;
     ans.vy = a.vy >> scalar;

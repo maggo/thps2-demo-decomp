@@ -26,7 +26,7 @@ extern char FileSubDirName;
 
 // Source-owned WAD directory and absolute-addressed views
 /** In-memory copy of the WAD directory, populated during FileIO_Init. */
-char Directory[22528] = {0};
+char Directory[22528] = { 0 };
 #include "PREMGR.h"
 #define REDBOOKSTATE_DECLARE_VSYNC_SECTOR_CHECK
 #define REDBOOKSTATE_DECLARE_XA_MODE_SET
@@ -49,8 +49,7 @@ static char FilePathPattern[28] __attribute__((section(".rdata"))) =
     "c:\\psx\\sk2demo\\????????.???";
 
 /** Heap diagnostic format used while starting an asynchronous load. */
-static char FileIO_LoadDbgStr[36]
-    __attribute__((section(".rdata"))) =
+static char FileIO_LoadDbgStr[36] __attribute__((section(".rdata"))) =
     " Heaps: Small(0) %d, Large(1) %d";
 
 /** Complete initialized FILEIO small-data contribution in target order. */
@@ -66,24 +65,18 @@ int LoadFromPRE = 0;
 char *ThePREFile = 0;
 int ThePREFileSize = 0;
 
-static char FileIO_InitErrStr[16]
-    __attribute__((section(".sdata"))) = "Retry CdInit\n";
-static char FileIO_WadName[12]
-    __attribute__((section(".sdata"))) = "\\CD.HED;1";
-static char FileIO_WadName2[12]
-    __attribute__((section(".sdata"))) = "\\CD.WAD;1";
-static char FileIO_DebugFmt[12]
-    __attribute__((section(".sdata"))) = "fileio.cpp";
+static char FileIO_InitErrStr[16] __attribute__((section(".sdata"))) = "Retry CdInit\n";
+static char FileIO_WadName[12] __attribute__((section(".sdata"))) = "\\CD.HED;1";
+static char FileIO_WadName2[12] __attribute__((section(".sdata"))) = "\\CD.WAD;1";
+static char FileIO_DebugFmt[12] __attribute__((section(".sdata"))) = "fileio.cpp";
 namespace FileIOAddressViewOwners
 {
 extern "C"
 {
-static RECT FileIO_CdModeRect[1]
-    __attribute__((section(".sdata"))) = {
-        {485, 18, 10, 10},
-    };
-static char FileIO_OpenDbgStr[8]
-    __attribute__((section(".sdata"))) = "(%d) ";
+static RECT FileIO_CdModeRect[1] __attribute__((section(".sdata"))) = {
+    { 485, 18, 10, 10 },
+};
+static char FileIO_OpenDbgStr[8] __attribute__((section(".sdata"))) = "(%d) ";
 }
 }
 
@@ -102,28 +95,18 @@ namespace FileIOAddressViewOwners
 {
 extern "C"
 {
-static char FileSubDirName[16]
-    __attribute__((section(".sbss")));
+static char FileSubDirName[16] __attribute__((section(".sbss")));
 }
 }
-static int FirstChar
-    __attribute__((section(".sbss")));
-static unsigned int FileID
-    __attribute__((section(".sbss")));
-static int FileSize
-    __attribute__((section(".sbss")));
-static int Remainder
-    __attribute__((section(".sbss")));
-static int NewLoad
-    __attribute__((section(".sbss")));
-static int WadStart
-    __attribute__((section(".sbss")));
-static CdlLOC FileStart
-    __attribute__((section(".sbss")));
-static unsigned long *Dest
-    __attribute__((section(".sbss")));
-static int NumSectors
-    __attribute__((section(".sbss")));
+static int FirstChar __attribute__((section(".sbss")));
+static unsigned int FileID __attribute__((section(".sbss")));
+static int FileSize __attribute__((section(".sbss")));
+static int Remainder __attribute__((section(".sbss")));
+static int NewLoad __attribute__((section(".sbss")));
+static int WadStart __attribute__((section(".sbss")));
+static CdlLOC FileStart __attribute__((section(".sbss")));
+static unsigned long *Dest __attribute__((section(".sbss")));
+static int NumSectors __attribute__((section(".sbss")));
 static int Start;
 
 // Public owner interface. Keep this encounter point aligned with the
@@ -142,17 +125,15 @@ static int Start;
  * @param pName  Asset / object name string.
  * @return Newly allocated buffer containing the complete file.
  */
-char *FileIO_OpenLoad(char *pName) {
+char *FileIO_OpenLoad(char *pName)
+{
     int size = FileIO_Open(pName);
-    char *pMemory = reinterpret_cast<char *>(
-        Mem_New((unsigned int)size, 1, 1));
+    char *pMemory = reinterpret_cast<char *>(Mem_New((unsigned int)size, 1, 1));
     FileIO_Load(pMemory);
     FileIO_Sync();
     unsigned int mask = 0x00FFFFFC;
     int fileSize = FileIO_Size;
-    Mem_Shrink(
-        pMemory,
-        (unsigned int)((fileSize + 3) & mask));
+    Mem_Shrink(pMemory, (unsigned int)((fileSize + 3) & mask));
     return pMemory;
 }
 
@@ -166,7 +147,8 @@ char *FileIO_OpenLoad(char *pName) {
  * @param filename  Filename string.
  * @return 1 if the file is present, 0 at the directory sentinel.
  */
-int CD_There(char *filename) {
+int CD_There(char *filename)
+{
     unsigned char *table = (unsigned char *)Directory;
     unsigned char *name = (unsigned char *)filename;
     unsigned char c1, c2;
@@ -183,14 +165,17 @@ outer:
 compare:
     c1 = *name++;
     c2 = *table++;
-    if ((unsigned int)(c1 - 0x41) < 0x1a) {
+    if ((unsigned int)(c1 - 0x41) < 0x1a)
+    {
         c1 = (c1 + 0x20) & 0xFF;
     }
-    if ((unsigned int)(c2 - 0x41) < 0x1a) {
+    if ((unsigned int)(c2 - 0x41) < 0x1a)
+    {
         c2 = (c2 + 0x20) & 0xFF;
     }
 
-    if (c2 != c1) {
+    if (c2 != c1)
+    {
         name = (unsigned char *)filename;
     skip_str:
         aligned = *table++;
@@ -231,7 +216,8 @@ done:
  *
  * @param n  Count.
  */
-void FileIO_SetSectorsPerFrame(int sectors) {
+void FileIO_SetSectorsPerFrame(int sectors)
+{
     SectorsPerFrame = sectors;
 }
 
@@ -243,7 +229,8 @@ void FileIO_SetSectorsPerFrame(int sectors) {
  * Address: 0x8004DDCC
  * Mangled: FileIO_Init__Fv
  */
-void FileIO_Init(void) {
+void FileIO_Init(void)
+{
     CdlFILE fp;
     int nsector;
     int i;
@@ -251,25 +238,31 @@ void FileIO_Init(void) {
     Loading = 0;
     CdSetDebug(0);
 
-    while (CdInit() == 0) {
+    while (CdInit() == 0)
+    {
         printf(FileIO_InitErrStr);
         i = 0;
-        do {
+        do
+        {
             VSync(0);
             i++;
         } while (i < 100);
     }
 
-    while (CdSearchFile(&fp, FileIO_WadName) == 0) {
-        while (CdInit() == 0) {
+    while (CdSearchFile(&fp, FileIO_WadName) == 0)
+    {
+        while (CdInit() == 0)
+        {
             i = 0;
-            do {
+            do
+            {
                 VSync(0);
                 i++;
             } while (i < 100);
         }
         i = 0;
-        do {
+        do
+        {
             VSync(0);
             i++;
         } while (i < 100);
@@ -279,13 +272,16 @@ void FileIO_Init(void) {
     CdControl(2, reinterpret_cast<u_char *>(&fp.pos), 0);
     CdRead(nsector, reinterpret_cast<u_long *>(Directory), 0x80);
 
-    while (CdReadSync(1, 0) > 0) {
+    while (CdReadSync(1, 0) > 0)
+    {
         VSync(0);
     }
 
-    while (CdSearchFile(&fp, FileIO_WadName2) == 0) {
+    while (CdSearchFile(&fp, FileIO_WadName2) == 0)
+    {
         i = 0;
-        do {
+        do
+        {
             VSync(0);
             i++;
         } while (i < 100);
@@ -305,7 +301,8 @@ void FileIO_Init(void) {
  * @param filename  Filename string.
  * @return Exact PRE size, or the sector-rounded CD transfer size.
  */
-int FileIO_Open(const char *filename) {
+int FileIO_Open(const char *filename)
+{
     char *header;
     char *scan;
     int len;
@@ -316,9 +313,11 @@ int FileIO_Open(const char *filename) {
 
     // Check PRE file first
     LoadFromPRE = 0;
-    if (PREMgr != 0) {
+    if (PREMgr != 0)
+    {
         ThePREFile = PREMgr->getFile((char *)filename, &ThePREFileSize);
-        if (ThePREFile != 0) {
+        if (ThePREFile != 0)
+        {
             LoadFromPRE = 1;
             FileOpen = 1;
             FileIO_Size = ThePREFileSize;
@@ -334,45 +333,56 @@ int FileIO_Open(const char *filename) {
         Opening = (char *)filename;
         first = *(unsigned char *)filename;
         scan = (char *)filename;
-        if (first != 0) {
+        if (first != 0)
+        {
         next_character:
-            do {
+            do
+            {
                 char letter = *scan++;
-            char checkletter = *header++;
+                char checkletter = *header++;
 
-            if (letter >= 'A' && letter <= 'Z') letter += 'a' - 'A';
-            if (checkletter >= 'A' && checkletter <= 'Z') checkletter += 'a' - 'A';
+                if (letter >= 'A' && letter <= 'Z') letter += 'a' - 'A';
+                if (checkletter >= 'A' && checkletter <= 'Z') checkletter += 'a' - 'A';
 
-            if (checkletter != letter) {
-                scan = (char *)filename;
-                while (*header++) {
-                }
-                header = (char *)(((int)header + 3) & 0xfffffffc) + 8;
-
-                if ((unsigned char)*header == 255) {
-                    RECT rect = FileIO_CdModeRect[0];
-                    ClearImage(&rect, 0, 0, 255);
-                    rect.y += 256;
-                    ClearImage(&rect, 0, 0, 255);
-                }
-            } else {
-                if (*scan != 0) {
-                    goto next_character;
-                }
-                if (*header != 0) {
+                if (checkletter != letter)
+                {
                     scan = (char *)filename;
-                    while (*header++) {
+                    while (*header++)
+                    {
                     }
                     header = (char *)(((int)header + 3) & 0xfffffffc) + 8;
 
-                    if ((unsigned char)*header == 255) {
+                    if ((unsigned char)*header == 255)
+                    {
                         RECT rect = FileIO_CdModeRect[0];
                         ClearImage(&rect, 0, 0, 255);
                         rect.y += 256;
                         ClearImage(&rect, 0, 0, 255);
                     }
                 }
-            }
+                else
+                {
+                    if (*scan != 0)
+                    {
+                        goto next_character;
+                    }
+                    if (*header != 0)
+                    {
+                        scan = (char *)filename;
+                        while (*header++)
+                        {
+                        }
+                        header = (char *)(((int)header + 3) & 0xfffffffc) + 8;
+
+                        if ((unsigned char)*header == 255)
+                        {
+                            RECT rect = FileIO_CdModeRect[0];
+                            ClearImage(&rect, 0, 0, 255);
+                            rect.y += 256;
+                            ClearImage(&rect, 0, 0, 255);
+                        }
+                    }
+                }
             } while (*scan);
         }
     }
@@ -385,7 +395,8 @@ int FileIO_Open(const char *filename) {
     NumSectors = (len + 2048 - 1) / 2048;
     FileSize = NumSectors * 2048;
     FileOpen = 1;
-    if (Pad[0].LeftTwo.Pressed != 0) {
+    if (Pad[0].LeftTwo.Pressed != 0)
+    {
         printf((const char *)FileIO_OpenDbgStr, FileSize);
     }
 
@@ -404,9 +415,12 @@ int FileIO_Open(const char *filename) {
  *
  * @param where  Destination buffer for the open file.
  */
-void FileIO_Load(void *where) {
-    if (PREMgr != 0) {
-        if (LoadFromPRE) {
+void FileIO_Load(void *where)
+{
+    if (PREMgr != 0)
+    {
+        if (LoadFromPRE)
+        {
             Mem_Copy(where, ThePREFile, ThePREFileSize);
             FileOpen = 0;
             return;
@@ -418,7 +432,8 @@ void FileIO_Load(void *where) {
         int Free0 = MemTop - MemBottom - MemUsed;
         int Free1 = (&MemTop)[2] - (&MemBottom)[2] - (&MemUsed)[1];
 
-        if (Pad[0].LeftTwo.Pressed != 0) {
+        if (Pad[0].LeftTwo.Pressed != 0)
+        {
             printf((const char *)FileIO_LoadDbgStr, Free0, Free1);
         }
     }
@@ -428,7 +443,8 @@ void FileIO_Load(void *where) {
     Dest = (unsigned long *)where;
     {
         int startPos = Start;
-        if (startPos < 0) {
+        if (startPos < 0)
+        {
             startPos += 0x7FF;
         }
         CdIntToPos((startPos >> 11) + WadStart, &FileStart);
@@ -450,7 +466,8 @@ void FileIO_Load(void *where) {
  * @param filename  Filename string.
  * @return Nonzero when the file exists on the active medium.
  */
-int FileIO_Exists(char *filename) {
+int FileIO_Exists(char *filename)
+{
     return CD_There(filename);
 }
 
@@ -462,13 +479,15 @@ int FileIO_Exists(char *filename) {
  * Address: 0x8004E2C8
  * Mangled: FileIO_Continue__Fv
  */
-void FileIO_Continue(void) {
+void FileIO_Continue(void)
+{
     int ReadError;
     unsigned char result[100];
     int status;
     RECT rect;
 
-    if (LoadFromPRE) {
+    if (LoadFromPRE)
+    {
         Loading = 0;
         return;
     }
@@ -483,13 +502,15 @@ void FileIO_Continue(void) {
 
 case1:
     CurrentPos = 0;
-    if (CdControl(2, reinterpret_cast<u_char *>(&FileStart), 0) == 0) {
+    if (CdControl(2, reinterpret_cast<u_char *>(&FileStart), 0) == 0)
+    {
         ReadError = 1;
         goto do_retry;
     }
     Loading = 2;
 case2:
-    if (CdRead(NumSectors, Dest, 0x180) == 0) {
+    if (CdRead(NumSectors, Dest, 0x180) == 0)
+    {
         ReadError = 1;
         Loading = 1;
         goto do_retry;
@@ -498,24 +519,34 @@ case2:
 
 case3:
     // case 3 body
-    if (CurrentPos == FileSize) {
+    if (CurrentPos == FileSize)
+    {
         Loading = 0;
         FileOpen = 0;
-    } else {
+    }
+    else
+    {
         Pad_Update();
         {
             status = CdReadSync(1, result);
-            if (status > 0) {
+            if (status > 0)
+            {
                 ReadSyncFailures = 0;
-            } else {
-                if (status < 0) {
+            }
+            else
+            {
+                if (status < 0)
+                {
                     ReadSyncFailures++;
-                    if (ReadSyncFailures >= 5) {
+                    if (ReadSyncFailures >= 5)
+                    {
                         ReadSyncFailures = 0;
                         Loading = 1;
                     }
                     ReadError = 1;
-                } else {
+                }
+                else
+                {
                     // result == 0: read complete
                     CurrentPos = FileSize;
                 }
@@ -524,7 +555,8 @@ case3:
     }
 
 do_retry:
-    if (ReadError) {
+    if (ReadError)
+    {
         rect = FileIO_CdModeRect[0];
         ClearImage(&rect, 0xFF, 0, 0);
         rect.y += 0x100;
@@ -540,11 +572,15 @@ do_retry:
  * Mangled: FileIO_Sync__Fv
  *
  */
-void FileIO_Sync(void) {
-    if (LoadFromPRE) {
+void FileIO_Sync(void)
+{
+    if (LoadFromPRE)
+    {
         Loading = 0;
         LoadFromPRE = 0;
-    } else {
+    }
+    else
+    {
         goto loop_check;
     loop_body:
         FileIO_Continue();
@@ -562,7 +598,8 @@ void FileIO_Sync(void) {
  * Mangled: FileIO_GetSubDir__Fv
  *
  */
-char *FileIO_GetSubDir(void) {
+char *FileIO_GetSubDir(void)
+{
     return &FileSubDirName;
 }
 
@@ -574,6 +611,7 @@ char *FileIO_GetSubDir(void) {
  *
  * @param subDir  Subdirectory prefix used for subsequent file operations.
  */
-void FileIO_SetSubDir(char *subDir) {
+void FileIO_SetSubDir(char *subDir)
+{
     strcpy(&FileSubDirName, subDir);
 }

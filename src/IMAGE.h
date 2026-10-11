@@ -29,7 +29,9 @@ void SetClippingBox2(int x, int y, int width, int height);
 #endif
 
 #ifdef IMAGE_POLYMORPHIC_LAYOUT_IMPLEMENT
-#define IMAGE_EMPTY_VIRTUAL {}
+#define IMAGE_EMPTY_VIRTUAL \
+    { \
+    }
 #else
 #define IMAGE_EMPTY_VIRTUAL ;
 #endif
@@ -37,7 +39,8 @@ void SetClippingBox2(int x, int y, int width, int height);
 struct Slice;
 
 /** Common render state shared by the textured image classes. */
-struct Image : CClass {
+struct Image : CClass
+{
     void *Transparent;
     void *Shaded;
     int TransType;
@@ -50,12 +53,13 @@ struct Image : CClass {
 
     Image();
     virtual ~Image() IMAGE_EMPTY_VIRTUAL
-    /** Draw the image at the requested screen position (empty in Image). */
-    virtual void draw(int x, int y) IMAGE_EMPTY_VIRTUAL
+        /** Draw the image at the requested screen position (empty in Image). */
+        virtual void draw(int x, int y) IMAGE_EMPTY_VIRTUAL
 };
 
 /** Image split into independently allocated pixel and VRAM slices. */
-struct SlicedImage2 : Image {
+struct SlicedImage2 : Image
+{
     Slice *SliceTab;
     short W;
     short H;
@@ -71,13 +75,12 @@ struct SlicedImage2 : Image {
     unsigned short Clut;
 
     SlicedImage2();
-    SlicedImage2(void *data, int tileW, int tileH, int maxW, int maxH,
-                 unsigned char bpp, unsigned short clut);
+    SlicedImage2(void *data, int tileW, int tileH, int maxW, int maxH, unsigned char bpp,
+                 unsigned short clut);
     virtual ~SlicedImage2();
     /** Initialize slice dimensions, packing mode, and source data. */
-    void newSlicedImage2(void *data, int width, int height, int sliceWidth,
-                         int sliceHeight, unsigned char bpp,
-                         unsigned short clut);
+    void newSlicedImage2(void *data, int width, int height, int sliceWidth, int sliceHeight,
+                         unsigned char bpp, unsigned short clut);
     /** Replace the copied pixel data for every image slice. */
     virtual void setData(void *data);
     /** Draw every image slice at the requested screen position. */
@@ -91,7 +94,8 @@ struct SlicedImage2 : Image {
 };
 
 /** BMP-backed sliced image with no additional storage. */
-struct Sprite2 : SlicedImage2 {
+struct Sprite2 : SlicedImage2
+{
     Sprite2(char *filename, int pack, int sliceWidth, int sliceHeight);
     Sprite2(unsigned char *buffer, int pack, int sliceWidth, int sliceHeight);
     virtual ~Sprite2();
@@ -99,19 +103,17 @@ struct Sprite2 : SlicedImage2 {
 };
 
 /** Rotatable sprite (64 bytes). */
-struct RotateSprite : Sprite2 {
+struct RotateSprite : Sprite2
+{
     unsigned char AspectType;
 
     RotateSprite(char *filename, int pack, int slice_w, int slice_h);
-    virtual ~RotateSprite() IMAGE_EMPTY_VIRTUAL
-    void draw(int x, int y, int rot);
+    virtual ~RotateSprite() IMAGE_EMPTY_VIRTUAL void draw(int x, int y, int rot);
 };
 
 typedef char image_poly_Image_size_must_be_28[(sizeof(Image) == 28) ? 1 : -1];
-typedef char image_poly_SlicedImage2_size_must_be_60[
-    (sizeof(SlicedImage2) == 60) ? 1 : -1];
+typedef char image_poly_SlicedImage2_size_must_be_60[(sizeof(SlicedImage2) == 60) ? 1 : -1];
 typedef char image_poly_Sprite2_size_must_be_60[(sizeof(Sprite2) == 60) ? 1 : -1];
-typedef char image_poly_RotateSprite_size_must_be_64[
-    (sizeof(RotateSprite) == 64) ? 1 : -1];
+typedef char image_poly_RotateSprite_size_must_be_64[(sizeof(RotateSprite) == 64) ? 1 : -1];
 
 #endif // IMAGE_POLYMORPHIC_LAYOUT

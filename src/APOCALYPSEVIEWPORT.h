@@ -4,7 +4,8 @@
 struct SViewport;
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 /** Full-screen viewport owned by MAIN and shared with initialization. */

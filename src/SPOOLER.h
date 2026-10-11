@@ -18,7 +18,8 @@ extern char s_Ext_PSX[];
 #include "globals.h"
 
 /** One entry in the asynchronous file spooler's fixed request table. */
-struct SpoolItem {
+struct SpoolItem
+{
     void *isAvailable;
     char name[16];
     int type;
@@ -55,7 +56,7 @@ struct Spooler
 #ifdef SPOOLER_POLYMORPHIC_LAYOUT
     virtual
 #endif
-    ~Spooler();
+        ~Spooler();
     /** Add one file request to the queue. */
     int AddFile(char *, int);
     /** Start the request selected by the current queue index. */
@@ -84,9 +85,7 @@ struct Spooler
 
 #undef SPOOLER_MANAGER_DECL_ATTR
 
-typedef char SpoolItem_size_must_be_32[
-    (sizeof(SpoolItem) == 32) ? 1 : -1];
-typedef char Spooler_size_must_be_2064[
-    (sizeof(Spooler) == 2064) ? 1 : -1];
+typedef char SpoolItem_size_must_be_32[(sizeof(SpoolItem) == 32) ? 1 : -1];
+typedef char Spooler_size_must_be_2064[(sizeof(Spooler) == 2064) ? 1 : -1];
 
 #endif // SPOOLER_INC_H

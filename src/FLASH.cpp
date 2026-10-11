@@ -23,7 +23,8 @@
 #include "PDOUBLEBUFFER.h"
 
 /** Fixed-point color scale and target display dimensions. */
-enum FlashConstants {
+enum FlashConstants
+{
     FlashFractionBits = 16,
     FlashMaximumImportance = 255,
     FlashFullIntensity = FlashMaximumImportance << FlashFractionBits,
@@ -86,18 +87,14 @@ int Flash_FadeFinished(void)
  * @param Importance  Priority used to arbitrate overlapping flashes.
  * @param Sort  Panel ordering-table slot used to draw the flash.
  */
-void Flash_Screen(
-    unsigned char StartR, unsigned char StartG, unsigned char StartB,
-    int Frames, unsigned char Importance, int Sort)
+void Flash_Screen(unsigned char StartR, unsigned char StartG, unsigned char StartB, int Frames,
+                  unsigned char Importance, int Sort)
 {
     if (Importance >= CurrentImportance && Frames != 0)
     {
-        dR = (static_cast<unsigned int>(StartR) << FlashFractionBits)
-            / Frames;
-        dG = (static_cast<unsigned int>(StartG) << FlashFractionBits)
-            / Frames;
-        dB = (static_cast<unsigned int>(StartB) << FlashFractionBits)
-            / Frames;
+        dR = (static_cast<unsigned int>(StartR) << FlashFractionBits) / Frames;
+        dG = (static_cast<unsigned int>(StartG) << FlashFractionBits) / Frames;
+        dB = (static_cast<unsigned int>(StartB) << FlashFractionBits) / Frames;
         CurrentB = StartB << FlashFractionBits;
         CurrentR = StartR << FlashFractionBits;
         CurrentG = StartG << FlashFractionBits;
@@ -186,8 +183,7 @@ void Flash_Display(void)
     {
         aPoly = reinterpret_cast<POLY_F4 *>(pPoly);
         OTPos = &pDoubleBuffer->PanelOT[FlashSort];
-        newppoly = reinterpret_cast<unsigned char *>(aPoly + 1)
-            + sizeof(DR_TPAGE);
+        newppoly = reinterpret_cast<unsigned char *>(aPoly + 1) + sizeof(DR_TPAGE);
         ptpage = reinterpret_cast<DR_TPAGE *>(aPoly + 1);
 
         if (newppoly <= PolyBufferEnd)
@@ -196,13 +192,14 @@ void Flash_Display(void)
 
             setPolyF4(aPoly);
             setSemiTrans(aPoly, 1);
-            setRGB0(aPoly,
-                    CurrentR >> FlashFractionBits,
-                    CurrentG >> FlashFractionBits,
+            setRGB0(aPoly, CurrentR >> FlashFractionBits, CurrentG >> FlashFractionBits,
                     CurrentB >> FlashFractionBits);
-            aPoly->x0 = 0;   aPoly->x1 = FlashScreenWidth;
-            aPoly->y0 = 0;   aPoly->y1 = 0;
-            aPoly->x2 = 0;   aPoly->x3 = FlashScreenWidth;
+            aPoly->x0 = 0;
+            aPoly->x1 = FlashScreenWidth;
+            aPoly->y0 = 0;
+            aPoly->y1 = 0;
+            aPoly->x2 = 0;
+            aPoly->x3 = FlashScreenWidth;
             aPoly->y2 = FlashScreenHeight;
             aPoly->y3 = FlashScreenHeight;
             addPrim(OTPos, aPoly);

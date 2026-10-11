@@ -5,8 +5,7 @@
  * MEM physically owns the allocator pressure flag in initialized small data.
  * SHATTER retains its target-proven absolute-address import view.
  */
-#if defined(LOWMEMORY_OWNER_DECLARATION) && \
-    defined(LOWMEMORY_ABSOLUTE_DECLARATION)
+#if defined(LOWMEMORY_OWNER_DECLARATION) && defined(LOWMEMORY_ABSOLUTE_DECLARATION)
 #error "Select only one LowMemory declaration view"
 #elif defined(LOWMEMORY_OWNER_DECLARATION)
 #define LOWMEMORY_DECL_ATTR

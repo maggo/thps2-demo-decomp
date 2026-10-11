@@ -17,7 +17,8 @@
 #undef CClass
 
 /** Polymorphic base shared by every game object (shared CClass arena). */
-struct CClass {
+struct CClass
+{
     static void *operator new(unsigned int size);
     static void operator delete(void *storage);
     virtual ~CClass() {}
@@ -51,38 +52,41 @@ struct CClass {
    inline bodies (GCC emits them after the TU's static-init function, where the
    target has them); every other TU only declares them. */
 #ifdef CCLASS_POLY_ITEM_FAMILY_IMPLEMENT
-#define CCLASS_POLY_EMPTY_VIRTUAL {}
+#define CCLASS_POLY_EMPTY_VIRTUAL \
+    { \
+    }
 #else
 #define CCLASS_POLY_EMPTY_VIRTUAL ;
 #endif
 
 struct SLight;
 
-struct CItem {
-    unsigned short mFlags;          // 0x00
-    unsigned short mInquiry;        // 0x02
-    CVector mPos;                   // 0x04
-    CSVector mAngles;               // 0x10
-    unsigned short mModel;          // 0x16
-    char mDummyFrame;               // 0x18
-    unsigned char mTintIndex;       // 0x19
-    unsigned char mDummyAnim;       // 0x1a
-    unsigned char mRegion;          // 0x1b
-    CItem *mNextItem;               // 0x1c
-    unsigned int mRGB;              // 0x20
-    CSVector mScale;                // 0x24
-    unsigned short _padScale;       // 0x2a
-    unsigned int mTRN;              // 0x2c
-    CItem *mPreviousItem;           // 0x30
-    unsigned int mStoredRGB;        // 0x34
+struct CItem
+{
+    unsigned short mFlags; // 0x00
+    unsigned short mInquiry; // 0x02
+    CVector mPos; // 0x04
+    CSVector mAngles; // 0x10
+    unsigned short mModel; // 0x16
+    char mDummyFrame; // 0x18
+    unsigned char mTintIndex; // 0x19
+    unsigned char mDummyAnim; // 0x1a
+    unsigned char mRegion; // 0x1b
+    CItem *mNextItem; // 0x1c
+    unsigned int mRGB; // 0x20
+    CSVector mScale; // 0x24
+    unsigned short _padScale; // 0x2a
+    unsigned int mTRN; // 0x2c
+    CItem *mPreviousItem; // 0x30
+    unsigned int mStoredRGB; // 0x34
     unsigned char mPredatorEffectType; // 0x38
     unsigned char mPredatorEffectFade; // 0x39
-    unsigned short mType;           // 0x3a
-    SLight *mpLight;                // 0x3c
-    unsigned short mFlashTimer;     // 0x40
-    short mFlash_dR;                // 0x42
-    short mFlash_dG;                // 0x44
-    short mFlash_dB;                // 0x46
+    unsigned short mType; // 0x3a
+    SLight *mpLight; // 0x3c
+    unsigned short mFlashTimer; // 0x40
+    short mFlash_dR; // 0x42
+    short mFlash_dG; // 0x44
+    short mFlash_dB; // 0x46
     /* vtable pointer                  0x48 */
 
     CItem();
@@ -94,53 +98,52 @@ struct CItem {
     static void operator delete(void *storage);
 };
 
-struct CBody : CItem {
-    CBody **mppOriginalList;        // 0x4c
-    unsigned short mInputFlags;     // 0x50
-    unsigned short mCBodyFlags;     // 0x52
-    CVector mVel;                   // 0x54
-    CVector mAcc;                   // 0x60
-    CFriction mFric;                // 0x6c
-    CSVector mAngVel;               // 0x70
-    CSVector mAngAcc;               // 0x76
-    CFriction mAngFric;             // 0x7c
-    CSVector mNormal;               // 0x80
-    unsigned char mEventFlags;      // 0x86
-    unsigned int mEllipsoidRGB;     // 0x88
+struct CBody : CItem
+{
+    CBody **mppOriginalList; // 0x4c
+    unsigned short mInputFlags; // 0x50
+    unsigned short mCBodyFlags; // 0x52
+    CVector mVel; // 0x54
+    CVector mAcc; // 0x60
+    CFriction mFric; // 0x6c
+    CSVector mAngVel; // 0x70
+    CSVector mAngAcc; // 0x76
+    CFriction mAngFric; // 0x7c
+    CSVector mNormal; // 0x80
+    unsigned char mEventFlags; // 0x86
+    unsigned int mEllipsoidRGB; // 0x88
     unsigned short mEllipsoidScale; // 0x8c
-    short mEllipsoidOTPushback;     // 0x8e
-    CVector mShadowPos;             // 0x90
-    CSVector mShadowNormal;         // 0x9c
-    void *mpShadow;                 // 0xa4
-    unsigned short mShadowScale;    // 0xa8
-    short mShadowDist;              // 0xaa
-    short mShadowThreshold;         // 0xac
-    int mPushVal;                   // 0xb0
-    unsigned short mRMinor;         // 0xb4
-    unsigned short mNode;           // 0xb6
-    unsigned short mCollision;      // 0xb8
-    short mHealth;                  // 0xba
-    unsigned int mPlayerDist;       // 0xbc
-    unsigned char mAIFrequency;     // 0xc0
-    unsigned char mAICount;         // 0xc1
-    CVector mOldPos;                // 0xc4
-    CVector mTweenPos;              // 0xd0
-    CVector mNewPos;                // 0xdc
-    CVector mDPos;                  // 0xe8
-    CSVector mOldAngles;            // 0xf4
-    CSVector mNewAngles;            // 0xfa
-    CSVector mDAngles;              // 0x100
+    short mEllipsoidOTPushback; // 0x8e
+    CVector mShadowPos; // 0x90
+    CSVector mShadowNormal; // 0x9c
+    void *mpShadow; // 0xa4
+    unsigned short mShadowScale; // 0xa8
+    short mShadowDist; // 0xaa
+    short mShadowThreshold; // 0xac
+    int mPushVal; // 0xb0
+    unsigned short mRMinor; // 0xb4
+    unsigned short mNode; // 0xb6
+    unsigned short mCollision; // 0xb8
+    short mHealth; // 0xba
+    unsigned int mPlayerDist; // 0xbc
+    unsigned char mAIFrequency; // 0xc0
+    unsigned char mAICount; // 0xc1
+    CVector mOldPos; // 0xc4
+    CVector mTweenPos; // 0xd0
+    CVector mNewPos; // 0xdc
+    CVector mDPos; // 0xe8
+    CSVector mOldAngles; // 0xf4
+    CSVector mNewAngles; // 0xfa
+    CSVector mDAngles; // 0x100
     /* sizeof 0x108 */
 
     CBody();
     virtual ~CBody();
     virtual void Die();
-    virtual void AI() CCLASS_POLY_EMPTY_VIRTUAL
-    virtual void EveryFrame() CCLASS_POLY_EMPTY_VIRTUAL
-    virtual void DoLightingSetup() CCLASS_POLY_EMPTY_VIRTUAL
-    virtual int Hit(int damage, const CVector &knock, int whatHit);
-    virtual void DeleteStuff() CCLASS_POLY_EMPTY_VIRTUAL
-    void InterleaveAI();
+    virtual void AI() CCLASS_POLY_EMPTY_VIRTUAL virtual void EveryFrame() CCLASS_POLY_EMPTY_VIRTUAL
+        virtual void DoLightingSetup() CCLASS_POLY_EMPTY_VIRTUAL
+        virtual int Hit(int damage, const CVector &knock, int whatHit);
+    virtual void DeleteStuff() CCLASS_POLY_EMPTY_VIRTUAL void InterleaveAI();
     void AttachTo(CBody **list);
     void DeleteFrom(CBody **list);
     short *SquirtPos(short *info);
@@ -153,42 +156,43 @@ struct CBody : CItem {
     int IsDead() const;
 };
 
-struct CSuper : CBody {
-    unsigned int mExtraFlags;       // 0x108
+struct CSuper : CBody
+{
+    unsigned int mExtraFlags; // 0x108
     unsigned short *mpCalculationOrder; // 0x10c
-    void *mpDecompressedFrame;      // 0x110
-    unsigned short mRoot;           // 0x114
+    void *mpDecompressedFrame; // 0x110
+    unsigned short mRoot; // 0x114
     unsigned char mDecompressedAnim; // 0x116
     signed char mDecompressedFrame; // 0x117
-    short mFrame;                   // 0x118
-    unsigned short mAnim;           // 0x11a
-    unsigned char mAnimMode;        // 0x11c
-    short mPingPongStart;           // 0x11e
-    short mPingPongEnd;             // 0x120
-    short mPingPongFrame;           // 0x122
-    signed char mAnimDir;           // 0x124
-    signed char mTargetFrame;       // 0x125
-    signed char mTargetFrame2;      // 0x126
-    unsigned short mFrameFrac;      // 0x128
-    unsigned char mNumFrames;       // 0x12a
-    unsigned char mAnimFinished;    // 0x12b
-    int mAnimSpeed;                 // 0x12c
-    short mOldFrame;                // 0x130
-    short mNewFrame;                // 0x132
-    unsigned char mOldAnim;         // 0x134
-    signed char mOldAnimDir;        // 0x135
-    short mStartFrame;              // 0x136
-    unsigned char mShadowLights;    // 0x138
-    SVECTOR *mpShadowSource;        // 0x13c
-    CVECTOR *mpShadowRGB;           // 0x140
-    MATRIX mTransform;              // 0x144
-    void *mpPoseBuffer;             // 0x164
-    void *mpJoints;                 // 0x168
-    void *mpLinks;                  // 0x16c
-    short *mpHierarchy;             // 0x170
+    short mFrame; // 0x118
+    unsigned short mAnim; // 0x11a
+    unsigned char mAnimMode; // 0x11c
+    short mPingPongStart; // 0x11e
+    short mPingPongEnd; // 0x120
+    short mPingPongFrame; // 0x122
+    signed char mAnimDir; // 0x124
+    signed char mTargetFrame; // 0x125
+    signed char mTargetFrame2; // 0x126
+    unsigned short mFrameFrac; // 0x128
+    unsigned char mNumFrames; // 0x12a
+    unsigned char mAnimFinished; // 0x12b
+    int mAnimSpeed; // 0x12c
+    short mOldFrame; // 0x130
+    short mNewFrame; // 0x132
+    unsigned char mOldAnim; // 0x134
+    signed char mOldAnimDir; // 0x135
+    short mStartFrame; // 0x136
+    unsigned char mShadowLights; // 0x138
+    SVECTOR *mpShadowSource; // 0x13c
+    CVECTOR *mpShadowRGB; // 0x140
+    MATRIX mTransform; // 0x144
+    void *mpPoseBuffer; // 0x164
+    void *mpJoints; // 0x168
+    void *mpLinks; // 0x16c
+    short *mpHierarchy; // 0x170
     unsigned int mSubObjectDisplayMask; // 0x174
-    unsigned int mUseAnimOrder;     // 0x178
-    unsigned char mAnimOrder[19];   // 0x17c
+    unsigned int mUseAnimOrder; // 0x178
+    unsigned char mAnimOrder[19]; // 0x17c
     /* sizeof 0x190 */
 
     CSuper();
@@ -197,8 +201,8 @@ struct CSuper : CBody {
     void RunAnim(int anim, int from, int to, int to2);
     void CycleAnim(int animation, signed char direction);
     void SetAnimOrder(unsigned char modelId, unsigned char animOrder);
-    void CalculateAnimOrder(char **animHierarchy, int animPartCount,
-                            char **modelHierarchy, int modelPartCount);
+    void CalculateAnimOrder(char **animHierarchy, int animPartCount, char **modelHierarchy,
+                            int modelPartCount);
 };
 
 #ifdef CCLASS_POLY_BADDY_FAMILY
@@ -207,8 +211,9 @@ struct CBruce;
 /** Scripted environmental actor (BADDY.cpp is the owner).  Slots: [1] Die
     (overrides CBody::Die) and [7] ExecuteCommand [8] SetVariable [9]
     GetVariable.  Derived owners: CScriptOnlyBaddy (BADDY), CCar, CPlatform. */
-struct CBaddy : CSuper {
-    unsigned int mMode;                 // 0x190
+struct CBaddy : CSuper
+{
+    unsigned int mMode; // 0x190
     unsigned char mDoScript;
     unsigned char mReadHooks;
     unsigned char mApplyGravity;
@@ -279,20 +284,21 @@ typedef char CSuper_poly_size_must_be_400[(sizeof(CSuper) == 400) ? 1 : -1];
 #define CCLASS_POLY_BIT_FAMILY_DEFINED
 #define CBIT_VIRTUAL virtual
 
-struct CBit {
-    CBit *mPrevious;                // 0x00
-    CBit *mNext;                    // 0x04
-    short mAge;                     // 0x08
-    unsigned short mLifetime;       // 0x0a
-    CVector mTweenPos;              // 0x0c
-    CVector mPos;                   // 0x18
-    CVector mVel;                   // 0x24
-    CVector mAcc;                   // 0x30
-    CFriction mFric;                // 0x3c
-    unsigned char mDead;            // 0x3f
-    unsigned short mFrigDeltaZ;     // 0x40
-    unsigned char mProtected;       // 0x42
-    unsigned char mType;            // 0x43
+struct CBit
+{
+    CBit *mPrevious; // 0x00
+    CBit *mNext; // 0x04
+    short mAge; // 0x08
+    unsigned short mLifetime; // 0x0a
+    CVector mTweenPos; // 0x0c
+    CVector mPos; // 0x18
+    CVector mVel; // 0x24
+    CVector mAcc; // 0x30
+    CFriction mFric; // 0x3c
+    unsigned char mDead; // 0x3f
+    unsigned short mFrigDeltaZ; // 0x40
+    unsigned char mProtected; // 0x42
+    unsigned char mType; // 0x43
     /* vtable pointer                  0x44 */
 
     CBit();

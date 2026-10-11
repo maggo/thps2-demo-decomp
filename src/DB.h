@@ -16,7 +16,8 @@
 /**
  * Owns one display environment, its ordering tables, and polygon buffer.
  */
-struct SDoubleBuffer {
+struct SDoubleBuffer
+{
     DRAWENV Draw;
     DISPENV Disp;
     int Visible;
@@ -33,8 +34,7 @@ struct SDoubleBuffer {
     unsigned char *Polys;
 };
 
-typedef char SDoubleBuffer_size_must_be_0xAC[
-    (sizeof(SDoubleBuffer) == 0xAC) ? 1 : -1];
+typedef char SDoubleBuffer_size_must_be_0xAC[(sizeof(SDoubleBuffer) == 0xAC) ? 1 : -1];
 
 #endif // DB_BUFFER_LAYOUT
 

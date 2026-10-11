@@ -10,8 +10,7 @@ struct CTape;
 #endif
 
 /** Tape-object slots populated by the front end for the active level. */
-GTAPE_DECL_LINKAGE CTape *GTape[5]
-    __attribute__((section(".data")));
+GTAPE_DECL_LINKAGE CTape *GTape[5] __attribute__((section(".data")));
 
 #undef GTAPE_DECL_LINKAGE
 #undef GTAPE_WITHIN_C_LINKAGE

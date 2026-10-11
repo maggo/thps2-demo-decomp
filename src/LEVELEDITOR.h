@@ -8,7 +8,8 @@
 #include "FONTTOOLS.h"
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 // Primitive types
@@ -42,7 +43,8 @@ struct SViewport;
  * Keep the recovered C++ owner types outside the C-linkage declaration block.
  * GCC 2.91 uses this context when selecting its deleting-destructor ABI.
  */
-struct SelectManager : CClass {
+struct SelectManager : CClass
+{
 #ifdef __cplusplus
     /** Constructs the editor's piece-selection menu. */
     SelectManager();
@@ -77,17 +79,17 @@ struct SelectManager : CClass {
     int PieceStringY[4];
     int OldPiecesRemaining;
     int Blink;
-    void * NotInDemo;
+    void *NotInDemo;
     struct Sprite2 *LeftButton;
     int LeftX;
     struct Sprite2 *RightButton;
     int RightX;
-    struct ScreenElement (*PromptItem[4]);
+    struct ScreenElement(*PromptItem[4]);
     int Theme;
     int Category;
     int Piece;
     struct Sprite2 *GridSprt;
-    struct Sprite2 (*IconSprt[256]);
+    struct Sprite2(*IconSprt[256]);
     int NumPieces;
     int NumCategories;
     int FirstPieceInCategory;
@@ -98,7 +100,8 @@ struct SelectManager : CClass {
     FontStorage PromptFont;
 };
 
-struct CursorModel {
+struct CursorModel
+{
     struct Item item;
     int index;
     int rot;
@@ -120,7 +123,8 @@ struct CursorModel {
 };
 
 /** States in the level editor's pause/menu workflow. */
-enum EnumMenuState {
+enum EnumMenuState
+{
     NOTHING = 0,
     MAIN = 1,
     SAVE = 2,
@@ -130,7 +134,8 @@ enum EnumMenuState {
     VERIFY_CHOICE = 6,
 };
 
-struct LevelEditor {
+struct LevelEditor
+{
 #ifdef __cplusplus
     /** Constructs a level-editor session and its owned subsystems. */
     LevelEditor();
@@ -154,7 +159,7 @@ struct LevelEditor {
     enum EnumMenuState MenuState;
     enum EnumMenuState LastMenuState;
     char SaveName[14];
-    void * DidLoad;
+    void *DidLoad;
     struct SelectManager *PieceManager;
     struct LevelGenerator *Gen;
     struct Item *pItemList;
@@ -166,7 +171,8 @@ struct LevelEditor {
     int mPadWait;
 };
 
-struct EditorCamera_alt_definition_0001 {
+struct EditorCamera_alt_definition_0001
+{
     struct CClass CClass;
     int Type;
     int Rot;
@@ -178,7 +184,8 @@ struct EditorCamera_alt_definition_0001 {
     struct CBody *Target;
 };
 
-struct EditorCamera_alt_definition_0002 {
+struct EditorCamera_alt_definition_0002
+{
     struct CClass CClass;
     int Type;
     int Rot;
@@ -190,7 +197,8 @@ struct EditorCamera_alt_definition_0002 {
     struct CBody *Target;
 };
 
-struct EditorCamera : CClass {
+struct EditorCamera : CClass
+{
 #ifdef __cplusplus
     /** Constructs the editor camera and its owned runtime bodies. */
     EditorCamera();
@@ -218,8 +226,7 @@ struct EditorCamera : CClass {
     struct CBody *Target;
 };
 
-typedef char level_editor_Font_size_must_be_80[
-    (sizeof(FontStorage) == 80) ? 1 : -1];
+typedef char level_editor_Font_size_must_be_80[(sizeof(FontStorage) == 80) ? 1 : -1];
 typedef char level_editor_SelectManager_size_must_be_1576[(sizeof(SelectManager) == 1576) ? 1 : -1];
 typedef char level_editor_CursorModel_size_must_be_104[(sizeof(CursorModel) == 104) ? 1 : -1];
 typedef char level_editor_LevelEditor_size_must_be_92[(sizeof(LevelEditor) == 92) ? 1 : -1];
@@ -231,7 +238,7 @@ typedef char level_editor_EditorCamera_size_must_be_44[(sizeof(EditorCamera) == 
 #include "GENERATELEVEL.h"
 #undef GENERATELEVEL_OWNER_DECLARATIONS
 #endif
-extern "C" int PiecesRemaining;       // 0x800DC180
+extern "C" int PiecesRemaining; // 0x800DC180
 
 // === Variables (absolute in this TU) ===
 #include "PDOUBLEBUFFER.h"

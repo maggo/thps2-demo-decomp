@@ -8,7 +8,8 @@
 #include "CCLASS_POLY.h"
 
 /** One linked text window and its line-rendering storage. */
-struct CTextWindow : CClass {
+struct CTextWindow : CClass
+{
     char mPoly[24];
     int mX;
     int mY;
@@ -42,17 +43,20 @@ static CTextWindow *WinList = 0;
  * Demangled: CTextWindow::~CTextWindow()
  *
  */
-CTextWindow::~CTextWindow() {
-    if (mpNext != 0) {
+CTextWindow::~CTextWindow()
+{
+    if (mpNext != 0)
+    {
         mpNext->mpPrevious = mpPrevious;
     }
-    if (mpPrevious != 0) {
+    if (mpPrevious != 0)
+    {
         mpPrevious->mpNext = mpNext;
     }
-    if (WinList == this) {
+    if (WinList == this)
+    {
         WinList = mpNext;
     }
     Mem_Delete(mpLineData);
     Mem_Delete(mpLineFlags);
 }
-

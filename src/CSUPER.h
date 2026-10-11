@@ -5,7 +5,8 @@
  * Pointer-only natural interface for ordinary animation services owned by
  * OB.cpp. Concrete CSuper storage remains in each owner's proven layout.
  */
-struct CSuper {
+struct CSuper
+{
     /** Initialize the body base and animation defaults. */
     CSuper();
     /** Start a bounded animation sequence. */
@@ -15,8 +16,8 @@ struct CSuper {
     /** Assign one model hierarchy slot to an animation hierarchy slot. */
     void SetAnimOrder(unsigned char modelId, unsigned char animOrder);
     /** Build the animation-order table by matching hierarchy names. */
-    void CalculateAnimOrder(char **animHierarchy, int animPartCount,
-                            char **modelHierarchy, int modelPartCount);
+    void CalculateAnimOrder(char **animHierarchy, int animPartCount, char **modelHierarchy,
+                            int modelPartCount);
 };
 
 #endif // THPS2_CSUPER_H

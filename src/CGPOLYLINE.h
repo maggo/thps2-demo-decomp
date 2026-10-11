@@ -5,7 +5,8 @@
 // (CCLASS_POLY.h in BIT2/SMOKE, CNONRENDEREDBIT.h/CSPECIALDISPLAY.h/CPOLYLINE.h elsewhere).
 
 /** Gouraud-colour line segments carried by the transient-bit system. */
-struct CGPolyLine : CBit {
+struct CGPolyLine : CBit
+{
     int mNumSegs;
     SLineSeg *mSegs;
     CVector mStart;

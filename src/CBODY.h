@@ -7,7 +7,8 @@
  */
 struct CVector;
 
-struct CBody {
+struct CBody
+{
     /** Initialize a body with the target's default item and physics state. */
     CBody();
     /** Mark this body dead. */

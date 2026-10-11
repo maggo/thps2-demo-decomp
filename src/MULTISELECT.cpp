@@ -6,7 +6,6 @@
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 
-
 #define SCREENTOOLS_POLYMORPHIC_LAYOUT
 #include "SCREENTOOLS.h"
 #include "MENU.h"
@@ -24,7 +23,8 @@
 #include "FRONTEND2.h"
 
 /** Multiplayer-mode selection screen and its owned menu resources. */
-struct MultiSelectScreen : ScreenElementList {
+struct MultiSelectScreen : ScreenElementList
+{
     Sprite2 *mBackground;
     Font mFont1;
     Font mFont2;
@@ -52,8 +52,7 @@ struct MultiSelectScreen : ScreenElementList {
     int EndProcess();
 };
 
-typedef char multiselect_screen_size_must_be_360[
-    (sizeof(MultiSelectScreen) == 360) ? 1 : -1];
+typedef char multiselect_screen_size_must_be_360[(sizeof(MultiSelectScreen) == 360) ? 1 : -1];
 
 /**
  * MULTISELECT's target-owned menu text and resource names in object order.
@@ -61,71 +60,61 @@ typedef char multiselect_screen_size_must_be_360[
  * The six small owners use namespace-scoped C linkage so they remain
  * lexically distinct from the incomplete address views required below.
  */
-static char s_SplitscreenModes[20]
-    __attribute__((section(".rdata"), aligned(4))) = "splitscreen modes";
-static char s_MultiplayerModes[20]
-    __attribute__((section(".rdata"), aligned(4))) = "multiplayer modes";
-static char s_S2bgd4Bmp[12]
-    __attribute__((section(".sdata"), aligned(4))) = "s2bgd4.bmp";
-static char s_MainfFnt_MultiSelect[12]
-    __attribute__((section(".sdata"), aligned(4))) = "mainf.fnt";
-static char s_S2font2Fnt_MultiSelect[12]
-    __attribute__((section(".sdata"), aligned(4))) = "s2font2.fnt";
-static char s_TrickAttack[16]
-    __attribute__((section(".sdata"), aligned(4))) = "trick attack";
-static char s_Graffiti[12]
-    __attribute__((section(".sdata"), aligned(4))) = "graffiti";
+static char s_SplitscreenModes[20] __attribute__((section(".rdata"), aligned(4))) =
+    "splitscreen modes";
+static char s_MultiplayerModes[20] __attribute__((section(".rdata"), aligned(4))) =
+    "multiplayer modes";
+static char s_S2bgd4Bmp[12] __attribute__((section(".sdata"), aligned(4))) = "s2bgd4.bmp";
+static char s_MainfFnt_MultiSelect[12] __attribute__((section(".sdata"), aligned(4))) = "mainf.fnt";
+static char s_S2font2Fnt_MultiSelect[12] __attribute__((section(".sdata"), aligned(4))) =
+    "s2font2.fnt";
+static char s_TrickAttack[16] __attribute__((section(".sdata"), aligned(4))) = "trick attack";
+static char s_Graffiti[12] __attribute__((section(".sdata"), aligned(4))) = "graffiti";
 
 namespace MultiSelectAddressViewOwners
 {
 extern "C"
 {
-static char s_Tag[4]
-    __attribute__((section(".sdata"), aligned(4))) = "tag";
-static char s_Contest[8]
-    __attribute__((section(".sdata"), aligned(4))) = "contest";
-static char s_Horse[8]
-    __attribute__((section(".sdata"), aligned(4))) = "horse";
+static char s_Tag[4] __attribute__((section(".sdata"), aligned(4))) = "tag";
+static char s_Contest[8] __attribute__((section(".sdata"), aligned(4))) = "contest";
+static char s_Horse[8] __attribute__((section(".sdata"), aligned(4))) = "horse";
 }
 }
 
-static char s_S2arrow2Bmp_MultiSelect[16]
-    __attribute__((section(".sdata"), aligned(4))) = "s2arrow2.bmp";
-static char s_S2arrow1Bmp_MultiSelect[16]
-    __attribute__((section(".sdata"), aligned(4))) = "s2arrow1.bmp";
-static char s_S2prmpt4Bmp_MultiSelect[16]
-    __attribute__((section(".sdata"), aligned(4))) = "s2prmpt4.bmp";
+static char s_S2arrow2Bmp_MultiSelect[16] __attribute__((section(".sdata"), aligned(4))) =
+    "s2arrow2.bmp";
+static char s_S2arrow1Bmp_MultiSelect[16] __attribute__((section(".sdata"), aligned(4))) =
+    "s2arrow1.bmp";
+static char s_S2prmpt4Bmp_MultiSelect[16] __attribute__((section(".sdata"), aligned(4))) =
+    "s2prmpt4.bmp";
 
 namespace MultiSelectAddressViewOwners
 {
 extern "C"
 {
-static char s_Select_MultiSelect[8]
-    __attribute__((section(".sdata"), aligned(4))) = "select";
+static char s_Select_MultiSelect[8] __attribute__((section(".sdata"), aligned(4))) = "select";
 }
 }
 
-static char s_S2prmpt1Bmp_MultiSelect[16]
-    __attribute__((section(".sdata"), aligned(4))) = "s2prmpt1.bmp";
-
-namespace MultiSelectAddressViewOwners
-{
-extern "C"
-{
-static char s_Accept_MultiSelect[8]
-    __attribute__((section(".sdata"), aligned(4))) = "accept";
-}
-}
-
-static char s_S2prmpt2Bmp_MultiSelect[16]
-    __attribute__((section(".sdata"), aligned(4))) = "s2prmpt2.bmp";
+static char s_S2prmpt1Bmp_MultiSelect[16] __attribute__((section(".sdata"), aligned(4))) =
+    "s2prmpt1.bmp";
 
 namespace MultiSelectAddressViewOwners
 {
 extern "C"
 {
-static char s_Back_MultiSelect[8]
-    __attribute__((section(".sdata"), aligned(4))) = "back";
+static char s_Accept_MultiSelect[8] __attribute__((section(".sdata"), aligned(4))) = "accept";
+}
+}
+
+static char s_S2prmpt2Bmp_MultiSelect[16] __attribute__((section(".sdata"), aligned(4))) =
+    "s2prmpt2.bmp";
+
+namespace MultiSelectAddressViewOwners
+{
+extern "C"
+{
+static char s_Back_MultiSelect[8] __attribute__((section(".sdata"), aligned(4))) = "back";
 }
 }
 
@@ -153,7 +142,8 @@ extern char s_Back_MultiSelect[];
  * Constructs the multiplayer mode selector, its fonts, menu items, arrows,
  * prompts, and preload state.
  */
-MultiSelectScreen::MultiSelectScreen() : ScreenElementList(0, 0, -1, -1) {
+MultiSelectScreen::MultiSelectScreen() : ScreenElementList(0, 0, -1, -1)
+{
     mBackground = new Sprite2(s_S2bgd4Bmp, 1, 0x40, 0x40);
 
     mFinishUp = 0;
@@ -185,19 +175,18 @@ MultiSelectScreen::MultiSelectScreen() : ScreenElementList(0, 0, -1, -1) {
     {
         int i = 0;
         ScreenElement **itemSlot = item;
-        do {
+        do
+        {
             *itemSlot = 0;
             i++;
             itemSlot++;
         } while (i < 16);
     }
 
-    item[0] = new TextScreenElement(s_SplitscreenModes, &mFont1,
-                                    0x100, 0x3A, -0x40, 0x3A);
+    item[0] = new TextScreenElement(s_SplitscreenModes, &mFont1, 0x100, 0x3A, -0x40, 0x3A);
     addItem(item[0]);
 
-    item[1] = new TextScreenElement(s_MultiplayerModes, &mFont1,
-                                    0x100, 0x97, 0x240, 0x97);
+    item[1] = new TextScreenElement(s_MultiplayerModes, &mFont1, 0x100, 0x97, 0x240, 0x97);
     addItem(item[1]);
 
     mMenu = new VerticalMenu2(0, 0x14, 0x200, 0xDC, 1, 0, 3);
@@ -227,7 +216,8 @@ MultiSelectScreen::MultiSelectScreen() : ScreenElementList(0, 0, -1, -1) {
     {
         int idx = 0;
         VMenuItem **items = mItem;
-        do {
+        do
+        {
             mMenu->addItem(*items);
             items++;
             idx++;
@@ -246,15 +236,12 @@ MultiSelectScreen::MultiSelectScreen() : ScreenElementList(0, 0, -1, -1) {
     mItem[3]->setXY(mItem[3]->X, 0xA1);
     mItem[4]->setXY(mItem[4]->X, 0xB8);
 
-    addItem(new PromptScreenElement(s_S2prmpt4Bmp_MultiSelect,
-                                    s_Select_MultiSelect,
-                                    &mFont2, 0x73, 0xDC, -1, 0x104));
-    addItem(new PromptScreenElement(s_S2prmpt1Bmp_MultiSelect,
-                                    s_Accept_MultiSelect,
-                                    &mFont2, 0xE4, 0xDC, -1, 0x104));
-    addItem(new PromptScreenElement(s_S2prmpt2Bmp_MultiSelect,
-                                    s_Back_MultiSelect,
-                                    &mFont2, 0x14D, 0xDC, -1, 0x104));
+    addItem(new PromptScreenElement(s_S2prmpt4Bmp_MultiSelect, s_Select_MultiSelect, &mFont2, 0x73,
+                                    0xDC, -1, 0x104));
+    addItem(new PromptScreenElement(s_S2prmpt1Bmp_MultiSelect, s_Accept_MultiSelect, &mFont2, 0xE4,
+                                    0xDC, -1, 0x104));
+    addItem(new PromptScreenElement(s_S2prmpt2Bmp_MultiSelect, s_Back_MultiSelect, &mFont2, 0x14D,
+                                    0xDC, -1, 0x104));
 }
 
 
@@ -265,7 +252,8 @@ MultiSelectScreen::MultiSelectScreen() : ScreenElementList(0, 0, -1, -1) {
  * Mangled:   _._17MultiSelectScreen
  * Demangled: MultiSelectScreen::~MultiSelectScreen()
  */
-MultiSelectScreen::~MultiSelectScreen() {
+MultiSelectScreen::~MultiSelectScreen()
+{
     delete mBackground;
     delete mMenu;
     delete mProps;
@@ -274,7 +262,8 @@ MultiSelectScreen::~MultiSelectScreen() {
     {
         int i = 0;
         VMenuItem **ptr = mItem;
-        do {
+        do
+        {
             delete *ptr;
             i++;
             ptr++;
@@ -293,7 +282,8 @@ MultiSelectScreen::~MultiSelectScreen() {
  * @param x  X coordinate.
  * @param y  Y coordinate.
  */
-void MultiSelectScreen::draw(int x, int y) {
+void MultiSelectScreen::draw(int x, int y)
+{
     ScreenElementList::draw(x, y);
     mBackground->draw(0, 0, 1);
 }
@@ -308,7 +298,8 @@ void MultiSelectScreen::draw(int x, int y) {
  *            Calls menu->update(), Menu_GetPress(), menu->processPress(press), menu->draw(), then ScreenElementList update
  *
  */
-void MultiSelectScreen::update() {
+void MultiSelectScreen::update()
+{
     mMenu->draw();
     int press = Menu_GetPress();
     mMenu->processPress(press);
@@ -326,16 +317,20 @@ void MultiSelectScreen::update() {
  *
  * @return 1 when X confirms, 2 when Triangle cancels, or 0 otherwise.
  */
-int MultiSelectScreen::handlePress() {
-    if (Pad[0].Up.Triggered != 0 || Pad[0].Down.Triggered != 0) {
+int MultiSelectScreen::handlePress()
+{
+    if (Pad[0].Up.Triggered != 0 || Pad[0].Down.Triggered != 0)
+    {
         SFX_PlayX(0x92, 0x2000, 0);
     }
-    if (Pad[0].X.Triggered != 0) {
+    if (Pad[0].X.Triggered != 0)
+    {
         SFX_PlayX(0x91, 0x2000, 0);
         Pad[0].X.Triggered = 0;
         return 1;
     }
-    if (Pad[0].Triangle.Triggered != 0) {
+    if (Pad[0].Triangle.Triggered != 0)
+    {
         SFX_PlayX(0x93, 0x2000, 0);
         Pad[0].Triangle.Triggered = 0;
         return 2;
@@ -353,7 +348,8 @@ int MultiSelectScreen::handlePress() {
  *
  * @return Identifier of the currently highlighted game mode.
  */
-int MultiSelectScreen::GetGameMode() {
+int MultiSelectScreen::GetGameMode()
+{
     return mMenu->getHighlighted();
 }
 
@@ -368,9 +364,11 @@ int MultiSelectScreen::GetGameMode() {
  *
  * @param press  Button press code.
  */
-void MultiSelectScreen::InitEndProcess(int press) {
+void MultiSelectScreen::InitEndProcess(int press)
+{
     int one = 1;
-    if (press == one) {
+    if (press == one)
+    {
         mFrontPreLoader.BeginLoad(1);
     }
     mFinishUp = one;
@@ -387,7 +385,8 @@ void MultiSelectScreen::InitEndProcess(int press) {
  *
  * @return 0 until mFinishUp is set, then the preloader's DoneLoading result.
  */
-int MultiSelectScreen::EndProcess() {
+int MultiSelectScreen::EndProcess()
+{
     if (mFinishUp == 0) return 0;
     return mFrontPreLoader.DoneLoading();
 }
@@ -403,7 +402,8 @@ int MultiSelectScreen::EndProcess() {
  * @param pGameMode  Receives the selected game mode.
  * @return `-1` when the player backs out; otherwise `0`.
  */
-int MultiSelect_Main(int *pGameMode) {
+int MultiSelect_Main(int *pGameMode)
+{
     unsigned int oldSkyColor;
     MultiSelectScreen *pMultiSelectScreen;
     int press;
@@ -415,10 +415,8 @@ int MultiSelect_Main(int *pGameMode) {
     Db_UpdateSky();
 
     // Load the two selector fonts (%hi addresses are CSE'd into saved regs).
-    FontManager::LoadFont(
-        s_MainfFnt_MultiSelect);
-    FontManager::LoadFont(
-        s_S2font2Fnt_MultiSelect);
+    FontManager::LoadFont(s_MainfFnt_MultiSelect);
+    FontManager::LoadFont(s_S2font2Fnt_MultiSelect);
 
     // Allocate and construct MultiSelectScreen
     pMultiSelectScreen = new MultiSelectScreen;
@@ -427,7 +425,8 @@ int MultiSelect_Main(int *pGameMode) {
     Pad_ClearTriggers(Pad + 1);
 
     // Main loop
-    while (1) {
+    while (1)
+    {
         FrontEnd2_UpdateMusicLoop();
 
         // Save current Vblanks to GStartTime
@@ -439,12 +438,15 @@ int MultiSelect_Main(int *pGameMode) {
         // Call handlePress(screen)
         {
             press = pMultiSelectScreen->handlePress();
-            if (press == 1) {
+            if (press == 1)
+            {
                 // Start pressed - get game mode and begin end process
                 *pGameMode = pMultiSelectScreen->GetGameMode();
                 pMultiSelectScreen->InitEndProcess(1);
                 exitPress = 1;
-            } else if (press == 2) {
+            }
+            else if (press == 2)
+            {
                 // Back pressed
                 *pGameMode = press;
                 pMultiSelectScreen->InitEndProcess(2);
@@ -453,7 +455,8 @@ int MultiSelect_Main(int *pGameMode) {
         }
 
         // Call EndProcess, if done then break
-        if (pMultiSelectScreen->EndProcess() != 0) {
+        if (pMultiSelectScreen->EndProcess() != 0)
+        {
             break;
         }
 
@@ -468,7 +471,8 @@ int MultiSelect_Main(int *pGameMode) {
         // Wait for vblanks: while (Vblanks < GStartTime + 2)
         {
             int target = GStartTime + 2;
-            while ((unsigned)Vblanks < (unsigned)target) {
+            while ((unsigned)Vblanks < (unsigned)target)
+            {
                 // spin
             }
         }
@@ -484,10 +488,8 @@ int MultiSelect_Main(int *pGameMode) {
     delete pMultiSelectScreen;
 
     // Unload fonts
-    FontManager::UnloadFont(
-        s_MainfFnt_MultiSelect);
-    FontManager::UnloadFont(
-        s_S2font2Fnt_MultiSelect);
+    FontManager::UnloadFont(s_MainfFnt_MultiSelect);
+    FontManager::UnloadFont(s_S2font2Fnt_MultiSelect);
 
     // Return -1 if the player backed out, else 0.
     if (exitPress == 2) return -1;

@@ -3,7 +3,8 @@
 #define M3DUTILS_INC_H
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 // Primitive types
@@ -41,16 +42,15 @@ void M3dUtils_ReadHooksPacket(CSuper *pSuper, void *pPacket);
 /** Resolve a numbered model hook into world space. */
 void M3dUtils_GetHookPosition(VECTOR *pResult, CSuper *pSuper, int Hook);
 /** Resolve an explicit model hook into world space. */
-void M3dUtils_GetDynamicHookPosition(
-    VECTOR *pResult, CSuper *pSuper, SHook *pHook);
+void M3dUtils_GetDynamicHookPosition(VECTOR *pResult, CSuper *pSuper, SHook *pHook);
 /** Build the current interpolated model pose. */
 void M3dUtils_InBetween(CSuper *pSuper);
 /** Convert a rotation matrix to Euler angles. */
 void M3dUtils_AnglesFromMatrix(SVECTOR *pAngles, MATRIX *pMatrix);
 /** Find the closest points on two fixed-point line segments. */
-int M3dUtils_LineLineClosestPoints(CVector *L1Start, CVector *L1End,
-    CVector *L2Start, CVector *L2End, CVector *PointL1, int *t1,
-    CVector *PointL2, int *t2);
+int M3dUtils_LineLineClosestPoints(CVector *L1Start, CVector *L1End, CVector *L2Start,
+                                   CVector *L2End, CVector *PointL1, int *t1, CVector *PointL2,
+                                   int *t2);
 /** Normalize a fixed-point vector in place. */
 void M3dUtils_NormaliseVector(CVector *pV);
 #endif

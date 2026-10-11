@@ -48,7 +48,8 @@ typedef signed short s16;
 #define M3DINIT_ITEM_OPAQUE 0x1000
 
 /** Absolute display globals emitted without cross-object relocations. */
-enum M3dInitDisplayAddress {
+enum M3dInitDisplayAddress
+{
     M3dInit_XresAddress = 0x800DC5FCu,
     M3dInit_YresAddress = 0x800DC600u,
     M3dInit_PixelAspectXAddress = 0x800DC604u,
@@ -86,20 +87,17 @@ static inline int *M3dInit_GetPixelAspectYStorage()
 #define M3DINIT_U_AMPLITUDE_PHASE(cursor) ((cursor)[-1])
 #define M3DINIT_V_AMPLITUDE_PHASE(cursor) ((cursor)[0])
 
-static inline STexWibVertInfo *M3dInit_GetFirstWibVertex(
-    STexWibItemInfo *pTexWibItemInfo)
+static inline STexWibVertInfo *M3dInit_GetFirstWibVertex(STexWibItemInfo *pTexWibItemInfo)
 {
     return reinterpret_cast<STexWibVertInfo *>(pTexWibItemInfo + 1);
 }
 
-static inline u8 *M3dInit_GetAmplitudeCursor(
-    STexWibItemInfo *pTexWibItemInfo)
+static inline u8 *M3dInit_GetAmplitudeCursor(STexWibItemInfo *pTexWibItemInfo)
 {
     return &M3dInit_GetFirstWibVertex(pTexWibItemInfo)->vAmpPhase;
 }
 
-static inline STexWibItemInfo *M3dInit_GetNextWibItem(
-    STexWibVertInfo *pTexWibVertInfo)
+static inline STexWibItemInfo *M3dInit_GetNextWibItem(STexWibVertInfo *pTexWibVertInfo)
 {
     return reinterpret_cast<STexWibItemInfo *>(pTexWibVertInfo);
 }
@@ -148,25 +146,31 @@ struct tag_S_Pal;
 #include "TEXTURE.h"
 
 /** Minimum common layout of a variable-length model face (32 bytes). */
-struct M3dInitFace {
+struct M3dInitFace
+{
     u32 Flags;
     u8 VertexIndex[4];
     u32 Colour;
     u16 PackedUV;
     u16 FunctionFlags;
-    union {
+    union
+    {
         Texture *pTexture;
         u32 ClutAndUV0;
     };
-    union {
-        struct {
+    union
+    {
+        struct
+        {
             u16 UV0;
             u16 UV1;
         } UV01;
         u32 TPageAndUV1;
     };
-    union {
-        struct {
+    union
+    {
+        struct
+        {
             u16 UV2;
             u16 UV3;
         } UV23;
@@ -206,10 +210,8 @@ static inline int M3dInit_GetModelCount(SModel **ppModels)
 }
 
 typedef char M3dInit_Texture_size_must_be_40[(sizeof(Texture) == 40) ? 1 : -1];
-typedef char M3dInit_Face_size_must_be_32[
-    (sizeof(M3dInitFace) == 32) ? 1 : -1];
-typedef char M3dInit_VertexBufferEntry_size_must_be_8[
-    (sizeof(SVertex) == 8) ? 1 : -1];
+typedef char M3dInit_Face_size_must_be_32[(sizeof(M3dInitFace) == 32) ? 1 : -1];
+typedef char M3dInit_VertexBufferEntry_size_must_be_8[(sizeof(SVertex) == 8) ? 1 : -1];
 
 /** Previous fog maximum retained while camera interpolation is active. */
 int LastDpqMax __attribute__((section(".sdata"))) = 0;
@@ -229,7 +231,8 @@ int LastDpqShift __attribute__((section(".sdata"))) = 0;
  * The shared vertex buffer is split into 400 projected and 400 rotated entries.
  * WibbleTables receives 16 amplitude rows of 64 sine samples each.
  */
-void M3dInit_InitAtStart(void) {
+void M3dInit_InitAtStart(void)
+{
     ProjectedVertices = reinterpret_cast<SProjectedVertex *>(&Vertices[0]);
     RotatedVertices = reinterpret_cast<SRotatedVertex *>(&Vertices[400]);
     M3dInit_SetResolution(512, 240);
@@ -238,10 +241,12 @@ void M3dInit_InitAtStart(void) {
     {
         int Amp = 0;
         s16 *pHalfword = WibbleTables;
-        do {
+        do
+        {
             int Angle = 0;
             s16 *sinPtr = reinterpret_cast<s16 *>(&rcossin_tbl);
-            do {
+            do
+            {
                 *pHalfword = static_cast<s16>((*sinPtr * Amp) >> 4);
                 sinPtr += 128;
                 Angle += 64;
@@ -260,7 +265,8 @@ void M3dInit_InitAtStart(void) {
  * @param X Display width in pixels.
  * @param Y Display height in pixels.
  */
-void M3dInit_SetResolution(u32 X, u32 Y) {
+void M3dInit_SetResolution(u32 X, u32 Y)
+{
     u32 widthTimes3 = (X << 1) + X;
     u32 heightTimes4 = Y << 2;
     u32 *xres = M3dInit_GetXresStorage();
@@ -270,10 +276,13 @@ void M3dInit_SetResolution(u32 X, u32 Y) {
 
     *xres = X;
     *yres = Y;
-    if (heightTimes4 < widthTimes3) {
+    if (heightTimes4 < widthTimes3)
+    {
         *px = 4096;
         *py = (widthTimes3 << 12) / heightTimes4;
-    } else {
+    }
+    else
+    {
         *py = 4096;
         *px = (Y << 14) / widthTimes3;
     }
@@ -287,20 +296,24 @@ void M3dInit_SetResolution(u32 X, u32 Y) {
  * @param Min Fog minimum distance.
  * @param Range Fog distance range.
  */
-void M3dInit_SetFoggingParams(int Dummy, int Min, unsigned int Range) {
+void M3dInit_SetFoggingParams(int Dummy, int Min, unsigned int Range)
+{
     DpqMin = Min;
     Min += Range;
     DpqMax = Min;
     DpqShift = 0;
 
-    if (Range < 4096) {
-        do {
+    if (Range < 4096)
+    {
+        do
+        {
             Range <<= 1;
             DpqShift = DpqShift + 1;
         } while (Range < 4096);
     }
 
-    while (Range > 4096) {
+    while (Range > 4096)
+    {
         Range >>= 1;
         DpqShift = DpqShift - 1;
     }
@@ -348,7 +361,8 @@ void M3dInit_SetFoggingParams(int Dummy, int Min, unsigned int Range) {
  *     mesh 0x20 (fully opaque) → item 0x1000
  * @param Region  PSX region index.
  */
-void M3dInit_ParsePSX(int Region) {
+void M3dInit_ParsePSX(int Region)
+{
     Item *pItem;
     int NumItems;
     int NumNormals; // Mesh normal count
@@ -356,7 +370,7 @@ void M3dInit_ParsePSX(int Region) {
     SVECTOR *pVertex;
     int NumVertices; // Mesh vertex count
     int j;
-    int NumFaces;  // Mesh face count
+    int NumFaces; // Mesh face count
     Texture *pTex;
     u16 clut;
     u16 tpage;
@@ -368,12 +382,16 @@ void M3dInit_ParsePSX(int Region) {
     unsigned int AndOfFUFlags;
 
     // Select the part indices used by the loaded model version.
-    if (GHeadPart != -1) {
-        if (GHeadPart == 18) {
+    if (GHeadPart != -1)
+    {
+        if (GHeadPart == 18)
+        {
             GBoardPart = 0;
             GWheel1Part = 1;
             GWheel2Part = 2;
-        } else {
+        }
+        else
+        {
             GBoardPart = 16;
             GWheel1Part = 17;
             GWheel2Part = 18;
@@ -388,60 +406,70 @@ void M3dInit_ParsePSX(int Region) {
     register int i = 0;
     SModel *pModel = PSXRegion[Region].ppModels[0];
 
-    if (0 < NumModels) {
-        do {
+    if (0 < NumModels)
+    {
+        do
+        {
             OrOfFlags = 0;
             AndOfFUFlags = -1;
             NumVertices = pModel->NumVertices;
             NumNormals = pModel->NumNormals;
             NumFaces = pModel->NumFaces;
 
-            if (pModel->NextLOD == 0xffff) {
+            if (pModel->NextLOD == 0xffff)
+            {
                 NumParts = NumParts + 1;
             }
             j = 0;
             // A zMax of -1 requests the default LOD distance.
-            if (pModel->zMax == AndOfFUFlags) {
+            if (pModel->zMax == AndOfFUFlags)
+            {
                 pModel->zMax = M3d_DefaultLODDistance;
             }
             pVertex = pModel->Vertices;
 
             // VERTEX LOOP
-            if (NumVertices != 0) {
+            if (NumVertices != 0)
+            {
                 int headUp = GHeadUp;
-                do {
+                do
+                {
                     // Head-part enlargement for character-select screen.
                     if ((i == GHeadPart) &&
-                        ((static_cast<u16>(pVertex->pad) & (M3DINIT_VERTEX_STITCHED |
-                            M3DINIT_VERTEX_SPRITE)) == 0)) {
+                        ((static_cast<u16>(pVertex->pad) &
+                          (M3DINIT_VERTEX_STITCHED | M3DINIT_VERTEX_SPRITE)) == 0))
+                    {
                         pVertex->vx = pVertex->vx * 3;
                         {
                             int y2 = pVertex->vy * 2;
                             int z3 = pVertex->vz * 3;
-                            pVertex->vy = y2;                               // y = y*2
+                            pVertex->vy = y2; // y = y*2
                             y2 = y2 + headUp * 16;
-                            pVertex->vz = z3;                             // z = z*3
-                            pVertex->vy = y2;                               // y = y*2 + headUp*16
-                            if (headUp < 0) {
+                            pVertex->vz = z3; // z = z*3
+                            pVertex->vy = y2; // y = y*2 + headUp*16
+                            if (headUp < 0)
+                            {
                                 pVertex->vz = z3 - 240;
                             }
                         }
                     }
 
                     // Type bit1 (0x02): stitched — X = Y<<3 (byte offset), Y = 0.
-                    if ((pVertex->pad & M3DINIT_VERTEX_STITCHED) != 0) {
+                    if ((pVertex->pad & M3DINIT_VERTEX_STITCHED) != 0)
+                    {
                         pVertex->vx = pVertex->vy << 3;
                         pVertex->vy = 0;
                     }
 
                     // Type bit4 (0x10): sprite — flag the mesh.
-                    if ((pVertex->pad & M3DINIT_VERTEX_SPRITE) != 0) {
-                        pModel->Flags =
-                            pModel->Flags | M3DINIT_MODEL_HAS_SPRITES;
+                    if ((pVertex->pad & M3DINIT_VERTEX_SPRITE) != 0)
+                    {
+                        pModel->Flags = pModel->Flags | M3DINIT_MODEL_HAS_SPRITES;
                     }
 
                     // Type bit0 (0x01): stitch source — count for fast-path threshold.
-                    if ((pVertex->pad & M3DINIT_VERTEX_STITCH_SOURCE) != 0) {
+                    if ((pVertex->pad & M3DINIT_VERTEX_STITCH_SOURCE) != 0)
+                    {
                         NumStitchVertices = NumStitchVertices + 1;
                     }
 
@@ -450,28 +478,34 @@ void M3dInit_ParsePSX(int Region) {
                 } while (j < NumVertices);
             }
 
-            if (100 < NumVertices + NumStitchVertices) {
+            if (100 < NumVertices + NumStitchVertices)
+            {
                 Fastable = 0;
             }
 
             // NORMAL STITCH PROPAGATION when normals cover vertices and faces.
-            if (NumNormals == NumFaces + NumVertices) {
+            if (NumNormals == NumFaces + NumVertices)
+            {
                 // Rewind to the vertex start, then finish at the face-data boundary.
                 SVECTOR *pNormal = pVertex;
                 pVertex = pVertex - NumVertices;
                 j = 0;
-                if (NumVertices != 0) {
+                if (NumVertices != 0)
+                {
                     u16 *vT = M3dInit_GetVertexType(pVertex);
                     s16 *nY = &pNormal->vy;
                     u16 *nT = M3dInit_GetVertexType(pNormal);
-                    do {
-                        if ((*vT & M3DINIT_VERTEX_STITCH_SOURCE) != 0) {
+                    do
+                    {
+                        if ((*vT & M3DINIT_VERTEX_STITCH_SOURCE) != 0)
+                        {
                             *nT = *nT | M3DINIT_VERTEX_STITCH_SOURCE;
                         }
-                        if ((*vT & M3DINIT_VERTEX_STITCHED) != 0) {
+                        if ((*vT & M3DINIT_VERTEX_STITCHED) != 0)
+                        {
                             *nT = *nT | M3DINIT_VERTEX_STITCHED;
                             pNormal->vx = pVertex->vx;
-                            *nY = 0;               // zero normal Y
+                            *nY = 0; // zero normal Y
                         }
                         j = j + 1;
                         nT = nT + 4;
@@ -486,29 +520,31 @@ void M3dInit_ParsePSX(int Region) {
             // FACE LOOP
             pFace = M3dInit_GetFirstFace(pVertex, NumNormals);
             j = 0;
-            if (NumFaces != 0) {
-                do {
+            if (NumFaces != 0)
+            {
+                do
+                {
                     M3dInitFace *pCurrentFace = M3dInit_GetFace(pFace);
                     u32 faceWord = pCurrentFace->Flags;
 
-                    pCurrentFace->PackedUV =
-                        static_cast<u16>(pCurrentFace->PackedUV << 3);
+                    pCurrentFace->PackedUV = static_cast<u16>(pCurrentFace->PackedUV << 3);
 
                     // Toggle the STP bit on opaque faces.
-                    if ((faceWord & M3DINIT_FACE_SEMITRANSPARENT) == 0) {
+                    if ((faceWord & M3DINIT_FACE_SEMITRANSPARENT) == 0)
+                    {
                         pCurrentFace->Flags = faceWord ^ M3DINIT_FACE_STP;
                         faceWord = pCurrentFace->Flags;
                     }
 
-                    if ((faceWord & M3DINIT_FACE_GOURAUD) == 0) {
-                        pCurrentFace->Colour =
-                            pCurrentFace->Colour & M3DINIT_RGB_MASK;
+                    if ((faceWord & M3DINIT_FACE_GOURAUD) == 0)
+                    {
+                        pCurrentFace->Colour = pCurrentFace->Colour & M3DINIT_RGB_MASK;
                         faceWord = pCurrentFace->Flags;
                     }
 
                     // Textured face (bits 0 and 1).
-                    if ((faceWord & M3DINIT_FACE_TEXTURED) ==
-                        M3DINIT_FACE_TEXTURED) {
+                    if ((faceWord & M3DINIT_FACE_TEXTURED) == M3DINIT_FACE_TEXTURED)
+                    {
                         u0v0 = pCurrentFace->UV01.UV0;
                         u1v1 = pCurrentFace->UV01.UV1;
                         u2v2 = pCurrentFace->UV23.UV2;
@@ -517,32 +553,30 @@ void M3dInit_ParsePSX(int Region) {
                         clut = pTex->clut;
                         tpage = pTex->tpage;
 
-                        if ((faceWord & M3DINIT_FACE_ANIMATED_TEXTURE) != 0) {
+                        if ((faceWord & M3DINIT_FACE_ANIMATED_TEXTURE) != 0)
+                        {
                             pCurrentFace->TextureWindow = pTex->TexWin;
-                        } else {
-                            u16 baseUV =
-                                *reinterpret_cast<u16 *>(&pTex->u0);
+                        }
+                        else
+                        {
+                            u16 baseUV = *reinterpret_cast<u16 *>(&pTex->u0);
                             u0v0 = u0v0 + baseUV;
                             u1v1 = u1v1 + baseUV;
                             u2v2 = u2v2 + baseUV;
                             u3v3 = u3v3 + baseUV;
                         }
-                        pCurrentFace->ClutAndUV0 =
-                            u0v0 | static_cast<u32>(clut) << 16;
+                        pCurrentFace->ClutAndUV0 = u0v0 | static_cast<u32>(clut) << 16;
                         faceWord = pCurrentFace->Flags;
-                        pCurrentFace->TPageAndUV1 =
-                            u1v1 | static_cast<u32>(tpage) << 16;
-                        pCurrentFace->UV2AndUV3 =
-                            u2v2 | static_cast<u32>(u3v3) << 16;
+                        pCurrentFace->TPageAndUV1 = u1v1 | static_cast<u32>(tpage) << 16;
+                        pCurrentFace->UV2AndUV3 = u2v2 | static_cast<u32>(u3v3) << 16;
                     }
 
                     OrOfFlags = OrOfFlags | faceWord;
-                    AndOfFUFlags =
-                        AndOfFUFlags & pCurrentFace->FunctionFlags;
+                    AndOfFUFlags = AndOfFUFlags & pCurrentFace->FunctionFlags;
 
-                    if ((faceWord & M3DINIT_FACE_TRIANGLE) != 0) {
-                        pCurrentFace->VertexIndex[3] =
-                            pCurrentFace->VertexIndex[2];
+                    if ((faceWord & M3DINIT_FACE_TRIANGLE) != 0)
+                    {
+                        pCurrentFace->VertexIndex[3] = pCurrentFace->VertexIndex[2];
                         faceWord = pCurrentFace->Flags;
                     }
 
@@ -552,17 +586,20 @@ void M3dInit_ParsePSX(int Region) {
             }
 
             // SET MESH FLAGS from accumulated face info.
-            if ((AndOfFUFlags & 1) != 0) {
+            if ((AndOfFUFlags & 1) != 0)
+            {
                 pModel->Flags = pModel->Flags | M3DINIT_MODEL_ALL_TEXTURED;
             }
-            if ((OrOfFlags & M3DINIT_FACE_TRANSPARENCY_MASK) == 0) {
+            if ((OrOfFlags & M3DINIT_FACE_TRANSPARENCY_MASK) == 0)
+            {
                 pModel->Flags = pModel->Flags | M3DINIT_MODEL_OPAQUE;
             }
-            if ((OrOfFlags & M3DINIT_FACE_ENVIRONMENT_MAPPED) != 0) {
-                pModel->Flags =
-                    pModel->Flags | M3DINIT_MODEL_ENVIRONMENT_MAPPED;
+            if ((OrOfFlags & M3DINIT_FACE_ENVIRONMENT_MAPPED) != 0)
+            {
+                pModel->Flags = pModel->Flags | M3DINIT_MODEL_ENVIRONMENT_MAPPED;
             }
-            if ((OrOfFlags & M3DINIT_FACE_HAS_UVS) != 0) {
+            if ((OrOfFlags & M3DINIT_FACE_HAS_UVS) != 0)
+            {
                 pModel->Flags = pModel->Flags | M3DINIT_MODEL_HAS_UVS;
             }
             i = i + 1;
@@ -577,20 +614,27 @@ void M3dInit_ParsePSX(int Region) {
     i = 0;
     NumItems = M3dInit_GetItemCount(PSXRegion[Region].pPSX);
     pItem = M3dInit_GetFirstItem(PSXRegion[Region].pPSX);
-    if (0 < NumItems) {
-        do {
-            if (i < NumItems - 1) {
+    if (0 < NumItems)
+    {
+        do
+        {
+            if (i < NumItems - 1)
+            {
                 pItem->NextItem = pItem + 1;
-            } else {
+            }
+            else
+            {
                 pItem->NextItem = 0;
             }
             pItem->Region = static_cast<u8>(Region);
             if ((PSXRegion[pItem->Region].ppModels[pItem->Model]->Flags &
-                    M3DINIT_MODEL_ALL_TEXTURED) != 0) {
+                 M3DINIT_MODEL_ALL_TEXTURED) != 0)
+            {
                 pItem->Flags |= M3DINIT_ITEM_ALL_TEXTURED;
             }
-            if ((PSXRegion[pItem->Region].ppModels[pItem->Model]->Flags &
-                    M3DINIT_MODEL_OPAQUE) != 0) {
+            if ((PSXRegion[pItem->Region].ppModels[pItem->Model]->Flags & M3DINIT_MODEL_OPAQUE) !=
+                0)
+            {
                 pItem->Flags |= M3DINIT_ITEM_OPAQUE;
             }
             i++;
@@ -608,24 +652,27 @@ void M3dInit_ParsePSX(int Region) {
  *
  * @param pTexWibItemInfo  TexWibItemInfo to operate on.
  */
-void M3dInit_FlagZeroWibbles(STexWibItemInfo *pTexWibItemInfo) {
-    for (;;) {
-        if (pTexWibItemInfo->ItemOffset == 0) {
+void M3dInit_FlagZeroWibbles(STexWibItemInfo *pTexWibItemInfo)
+{
+    for (;;)
+    {
+        if (pTexWibItemInfo->ItemOffset == 0)
+        {
             return;
         }
 
         {
-            STexWibVertInfo *pTexWibVertInfo =
-                M3dInit_GetFirstWibVertex(pTexWibItemInfo);
+            STexWibVertInfo *pTexWibVertInfo = M3dInit_GetFirstWibVertex(pTexWibItemInfo);
             int NumFaces = pTexWibItemInfo->NumFaces;
             int i = 0;
             pTexWibItemInfo->ZeroUAmplitudes = 1;
 
             pTexWibItemInfo->ZeroVAmplitudes = 1;
-            if (NumFaces != 0) {
-                u8 *pAmplitudePhase =
-                    M3dInit_GetAmplitudeCursor(pTexWibItemInfo);
-                do {
+            if (NumFaces != 0)
+            {
+                u8 *pAmplitudePhase = M3dInit_GetAmplitudeCursor(pTexWibItemInfo);
+                do
+                {
                     if ((M3DINIT_U_AMPLITUDE_PHASE(pAmplitudePhase) >> 4) >= 6)
                         pTexWibItemInfo->ZeroUAmplitudes = 0;
                     if ((M3DINIT_V_AMPLITUDE_PHASE(pAmplitudePhase) >> 4) >= 6)

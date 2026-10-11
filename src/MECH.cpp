@@ -84,10 +84,12 @@ struct SHook;
 #undef M3DCOLIJ_LINE_INFO_LAYOUT
 
 /** Face-packet prefix consumed by dynamic-lighting colour sampling. */
-struct SFaceLightingMech {
+struct SFaceLightingMech
+{
     u16 Flags;
     u8 _padToColour[6];
-    union {
+    union
+    {
         u32 RGB;
         u8 ColourIndices[4];
     } Colour;
@@ -105,29 +107,32 @@ struct SFaceLightingMech {
 #undef BIT_DUST_MANAGER_LAYOUT
 
 struct CBruce;
-struct CPanelData {
+struct CPanelData
+{
     /** Construct the panel state (owned by PANEL.cpp). */
     CPanelData(CBruce *player);
 
     u8 _padToTimerFont[356];
-    Font mTimerFont;                                  // 0x164
-    Font mTrickFont;                                  // 0x1b4
-    Font mScoreFont;                                  // 0x204
-    FallingTextEffect mFallingTextEffect;             // 0x254
-    TrickTextEffect mTrickTextEffect;                 // 0x374 (TrickTextEffect)
-    TextEffect *mpTextEffect;                         // 0x38c
-    FallingTextEffect mOutOfBoundsText;               // 0x390
+    Font mTimerFont; // 0x164
+    Font mTrickFont; // 0x1b4
+    Font mScoreFont; // 0x204
+    FallingTextEffect mFallingTextEffect; // 0x254
+    TrickTextEffect mTrickTextEffect; // 0x374 (TrickTextEffect)
+    TextEffect *mpTextEffect; // 0x38c
+    FallingTextEffect mOutOfBoundsText; // 0x390
     u8 _opaqueTail[2276 - 1200];
 };
 
 /** Constructor-local form of the inline three-component game vector. */
-struct CVectorMechCtor {
+struct CVectorMechCtor
+{
     int vx;
     int vy;
     int vz;
 
     /** Assign all three game-space components. */
-    void Set(int x, int y, int z) {
+    void Set(int x, int y, int z)
+    {
         vx = x;
         vy = y;
         vz = z;
@@ -143,120 +148,121 @@ struct CVectorMechCtor {
  * overrides follow the CBody table: Die, AI, DoLightingSetup, Hit and
  * DeleteStuff; EveryFrame is inherited.
  */
-struct CBruce : CSuper {
-    CPanelData mPanelData;  // 0x190
-    void *mpCamera;  // 0xa74
-    struct BoardStats *mpBoardStats;  // 0xa78
+struct CBruce : CSuper
+{
+    CPanelData mPanelData; // 0x190
+    void *mpCamera; // 0xa74
+    struct BoardStats *mpBoardStats; // 0xa78
     u8 _pada7c[40];
-    s16 mTrickGravity;  // 0xaa4
+    s16 mTrickGravity; // 0xaa4
     u8 _padaa6[522];
-    Dust mDust;  // 0xcb0
-    Blood mBlood;  // 0xcf0
-    s16 mFrozen;  // 0xd4c
+    Dust mDust; // 0xcb0
+    Blood mBlood; // 0xcf0
+    s16 mFrozen; // 0xd4c
     u8 _padd4e[2];
-    int mDoingATrick;  // 0xd50
-    int mCanStartNextTrick;  // 0xd54
+    int mDoingATrick; // 0xd50
+    int mCanStartNextTrick; // 0xd54
     u8 _padd58[80];
-    int mSkaterType;  // 0xda8
-    int mIndex;  // 0xdac
-    int mPlayTime;  // 0xdb0
-    struct SControl *mPad;  // 0xdb4
+    int mSkaterType; // 0xda8
+    int mIndex; // 0xdac
+    int mPlayTime; // 0xdb0
+    struct SControl *mPad; // 0xdb4
     u8 _paddb8[56];
-    int mIsOnTaggedPoly;  // 0xdf0
-    int mStickToInvisible;  // 0xdf4
-    CVector mLastVel;  // 0xdf8
-    int mMaxKickSpeed;  // 0xe04
-    int mSpeedBoost;  // 0xe08
-    int mCess;  // 0xe0c
-    int mManual;  // 0xe10
-    int mManIsCrouched;  // 0xe14
-    int mManIsJumping;  // 0xe18
-    int mJumpPending;  // 0xe1c
-    int mAirTime;  // 0xe20
-    int mJumpStrength;  // 0xe24
-    int mLastJumpStrength;  // 0xe28
-    int mApplyJumpForce;  // 0xe2c
+    int mIsOnTaggedPoly; // 0xdf0
+    int mStickToInvisible; // 0xdf4
+    CVector mLastVel; // 0xdf8
+    int mMaxKickSpeed; // 0xe04
+    int mSpeedBoost; // 0xe08
+    int mCess; // 0xe0c
+    int mManual; // 0xe10
+    int mManIsCrouched; // 0xe14
+    int mManIsJumping; // 0xe18
+    int mJumpPending; // 0xe1c
+    int mAirTime; // 0xe20
+    int mJumpStrength; // 0xe24
+    int mLastJumpStrength; // 0xe28
+    int mApplyJumpForce; // 0xe2c
     u8 _pade30[56];
-    int mRecentEvent1;  // 0xe68
-    int mRecentEvent2;  // 0xe6c
-    MATRIX mOldRotationMatrix;  // 0xe70
-    MATRIX mRotationMatrix;  // 0xe90
-    int mDoingSharpTurn;  // 0xeb0
-    int mTurning;  // 0xeb4
-    int mTapTurn;  // 0xeb8
-    int mPitchAngle;  // 0xebc
-    int mNumGrinds;  // 0xec0
-    int mRailType;  // 0xec4
-    int mOnRail;  // 0xec8
-    int mStickToRail;  // 0xecc
+    int mRecentEvent1; // 0xe68
+    int mRecentEvent2; // 0xe6c
+    MATRIX mOldRotationMatrix; // 0xe70
+    MATRIX mRotationMatrix; // 0xe90
+    int mDoingSharpTurn; // 0xeb0
+    int mTurning; // 0xeb4
+    int mTapTurn; // 0xeb8
+    int mPitchAngle; // 0xebc
+    int mNumGrinds; // 0xec0
+    int mRailType; // 0xec4
+    int mOnRail; // 0xec8
+    int mStickToRail; // 0xecc
     u8 _paded0[12];
-    int mResponseTimer;  // 0xedc
+    int mResponseTimer; // 0xedc
     u8 _padee0[24];
-    int mDontStickTimer;  // 0xef8
-    int mSameRailTimer;  // 0xefc
-    int mDontStickRail;  // 0xf00
+    int mDontStickTimer; // 0xef8
+    int mSameRailTimer; // 0xefc
+    int mDontStickRail; // 0xf00
     u8 _padf04[92];
-    int mKickLockout;  // 0xf60
-    int mJumpSpeed;  // 0xf64
-    int mJumpFrame;  // 0xf68
-    int mWallrideTime;  // 0xf6c
-    int mHandPlantTweaked;  // 0xf70
-    int mBailState;  // 0xf74
-    int mLimitBailVel;  // 0xf78
-    int mInBail;  // 0xf7c
-    int mHeadHit;  // 0xf80
-    int mMagicPoints;  // 0xf84
-    int mMagicTime;  // 0xf88
+    int mKickLockout; // 0xf60
+    int mJumpSpeed; // 0xf64
+    int mJumpFrame; // 0xf68
+    int mWallrideTime; // 0xf6c
+    int mHandPlantTweaked; // 0xf70
+    int mBailState; // 0xf74
+    int mLimitBailVel; // 0xf78
+    int mInBail; // 0xf7c
+    int mHeadHit; // 0xf80
+    int mMagicPoints; // 0xf84
+    int mMagicTime; // 0xf88
     u8 _padf8c[136];
-    u8 mInputDelay;  // 0x1014
+    u8 mInputDelay; // 0x1014
     u8 _pad1015[19];
-    int mComboCounter;  // 0x1028
+    int mComboCounter; // 0x1028
     u8 _pad102c[8];
-    int mShadowY;  // 0x1034
+    int mShadowY; // 0x1034
     u8 _pad1038[12];
-    u32 mSFXGrind;  // 0x1044
-    u32 mSFXGround;  // 0x1048
-    u32 mSFXAir;  // 0x104c
-    u32 mSFXPitch;  // 0x1050
-    u32 mSFXVol;  // 0x1054
-    int mTruckSqueak;  // 0x1058
-    int mFootSound;  // 0x105c
-    int mFootSFX;  // 0x1060
-    int mTerrain;  // 0x1064
-    int mTerrainSFX;  // 0x1068
-    int mPhysicsState;  // 0x106c
-    int mOldPhysicsState;  // 0x1070
-    MATRIX mTempRotationMatrix;  // 0x1074
-    CVector mTempPos;  // 0x1094
-    CVector mFront;  // 0x10a0
-    CVector mRight;  // 0x10ac
-    CVector mUp;  // 0x10b8
-    CVectorMechCtor mLastFallLine;  // 0x10c4
-    int mFallLineAdjustment;  // 0x10d0
-    SVECTOR mLastPolyNormal;  // 0x10d4
-    int mSameNormal;  // 0x10dc
-    VECTOR mOldNormal;  // 0x10e0
-    int mLeanAngle;  // 0x10f0
-    int mAnimLeanAngle;  // 0x10f4
+    u32 mSFXGrind; // 0x1044
+    u32 mSFXGround; // 0x1048
+    u32 mSFXAir; // 0x104c
+    u32 mSFXPitch; // 0x1050
+    u32 mSFXVol; // 0x1054
+    int mTruckSqueak; // 0x1058
+    int mFootSound; // 0x105c
+    int mFootSFX; // 0x1060
+    int mTerrain; // 0x1064
+    int mTerrainSFX; // 0x1068
+    int mPhysicsState; // 0x106c
+    int mOldPhysicsState; // 0x1070
+    MATRIX mTempRotationMatrix; // 0x1074
+    CVector mTempPos; // 0x1094
+    CVector mFront; // 0x10a0
+    CVector mRight; // 0x10ac
+    CVector mUp; // 0x10b8
+    CVectorMechCtor mLastFallLine; // 0x10c4
+    int mFallLineAdjustment; // 0x10d0
+    SVECTOR mLastPolyNormal; // 0x10d4
+    int mSameNormal; // 0x10dc
+    VECTOR mOldNormal; // 0x10e0
+    int mLeanAngle; // 0x10f0
+    int mAnimLeanAngle; // 0x10f4
     u8 _pad10f8[36];
-    u8 mGlowR;  // 0x111c
-    u8 mGlowG;  // 0x111d
-    u8 mGlowB;  // 0x111e
-    u8 mTargetGlowR;  // 0x111f
-    u8 mTargetGlowG;  // 0x1120
-    u8 mTargetGlowB;  // 0x1121
-    u8 mGlowSpeed;  // 0x1122
-    u8 mGlowDownSpeed;  // 0x1123
-    int mBrightness;  // 0x1124
+    u8 mGlowR; // 0x111c
+    u8 mGlowG; // 0x111d
+    u8 mGlowB; // 0x111e
+    u8 mTargetGlowR; // 0x111f
+    u8 mTargetGlowG; // 0x1120
+    u8 mTargetGlowB; // 0x1121
+    u8 mGlowSpeed; // 0x1122
+    u8 mGlowDownSpeed; // 0x1123
+    int mBrightness; // 0x1124
     u8 _pad1128[12];
-    u8 mAnalogue;  // 0x1134
-    char mAX;  // 0x1135
-    char mAY;  // 0x1136
+    u8 mAnalogue; // 0x1134
+    char mAX; // 0x1135
+    char mAY; // 0x1136
     u8 _pad1137[13];
-    u16 mGroundCounter;  // 0x1144
+    u16 mGroundCounter; // 0x1144
     u8 _pad1146[2];
-    int mHistoryPos;  // 0x1148
-    struct SHistory mHistory[100];  // 0x114c
+    int mHistoryPos; // 0x1148
+    struct SHistory mHistory[100]; // 0x114c
 
     CBruce();
     virtual ~CBruce();
@@ -292,41 +298,43 @@ struct CBruce : CSuper {
  * plane.  sizeof(CSpark) == 0x5C is the allocation size passed to
  * CBit's operator new by BloodSplat.
  */
-struct CSpark {
+struct CSpark
+{
     /** Construct one transient spark. */
     CSpark(CVector &position, int velocity, int gravity, int life);
 
     u8 _padToVel[36];
-    CVector mVel;                                     // 0x24 (CBit.mVel)
+    CVector mVel; // 0x24 (CBit.mVel)
     u8 _padToFloorY[88 - 48];
-    int mFloorY;                                      // 0x58
+    int mFloorY; // 0x58
 };
 
 #include "SCHARACTERPROGRESS.h"
 
 /** SCareer prefix through the character-progress table used by MECH (MAIN.h only forward-declares it). */
-struct SCareer {
+struct SCareer
+{
     int Version;
     int MaxTapes;
     SCharacterProgress CharacterProgress[14];
 };
 
 /** Video recorder state needed to choose live, record, or playback input. */
-struct SVideoInfo {
+struct SVideoInfo
+{
     int VideoMode;
     u8 _opaque[188];
 };
 
 /** Camera field selected for the player camera during skater construction. */
-struct CCamera {
+struct CCamera
+{
     u8 _padToCameraMode[1368];
     int mCameraMode;
     u8 _opaqueTail[1668 - 1372];
 
     /** Select the active gameplay camera mode. */
-    void SetMode(int mode) {
-        mCameraMode = mode;
-    }
+    void SetMode(int mode) { mCameraMode = mode; }
 
     /** Return whether the competition-intro camera mode is active. */
     int InCompetitionIntro();
@@ -340,11 +348,17 @@ typedef char CBruce_mech_size_check[(sizeof(struct CBruce) == 5228) ? 1 : -1];
 typedef char CSpark_size_check[(sizeof(struct CSpark) == 0x5C) ? 1 : -1];
 typedef char Mech_SCharacterProgress_size_check[(sizeof(struct SCharacterProgress) == 32) ? 1 : -1];
 typedef char SVideoInfo_size_check[(sizeof(struct SVideoInfo) == 192) ? 1 : -1];
-typedef char CBruce_rotation_matrix_offset_check[((unsigned long)&(((CBruce *)0)->mRotationMatrix) == 0xE90) ? 1 : -1];
-typedef char CBruce_old_rotation_matrix_offset_check[((unsigned long)&(((CBruce *)0)->mOldRotationMatrix) == 0xE70) ? 1 : -1];
-typedef char CBruce_temp_rotation_matrix_offset_check[((unsigned long)&(((CBruce *)0)->mTempRotationMatrix) == 0x1074) ? 1 : -1];
-typedef char CBruce_history_pos_offset_check[((unsigned long)&(((CBruce *)0)->mHistoryPos) == 0x1148) ? 1 : -1];
-typedef char CBruce_history_offset_check[((unsigned long)&(((CBruce *)0)->mHistory) == 0x114C) ? 1 : -1];
+typedef char CBruce_rotation_matrix_offset_check
+    [((unsigned long)&(((CBruce *)0)->mRotationMatrix) == 0xE90) ? 1 : -1];
+typedef char CBruce_old_rotation_matrix_offset_check
+    [((unsigned long)&(((CBruce *)0)->mOldRotationMatrix) == 0xE70) ? 1 : -1];
+typedef char CBruce_temp_rotation_matrix_offset_check
+    [((unsigned long)&(((CBruce *)0)->mTempRotationMatrix) == 0x1074) ? 1 : -1];
+typedef char
+    CBruce_history_pos_offset_check[((unsigned long)&(((CBruce *)0)->mHistoryPos) == 0x1148) ? 1
+                                                                                             : -1];
+typedef char
+    CBruce_history_offset_check[((unsigned long)&(((CBruce *)0)->mHistory) == 0x114C) ? 1 : -1];
 typedef char SDK_MATRIX_mech_size_check[(sizeof(MATRIX) == 32) ? 1 : -1];
 typedef char SDK_VECTOR_mech_size_check[(sizeof(VECTOR) == 16) ? 1 : -1];
 typedef char CVectorMechCtor_size_check[(sizeof(struct CVectorMechCtor) == 12) ? 1 : -1];
@@ -356,8 +370,7 @@ typedef char Mech_SLight_size_check[(sizeof(SLight) == 52) ? 1 : -1];
 #include "FONT.h"
 #include "UTILS.h"
 #include "CFLATRIPPLE.h"
-typedef char CFlatRipple_size_check[
-    (sizeof(CFlatRipple) == 0x74) ? 1 : -1];
+typedef char CFlatRipple_size_check[(sizeof(CFlatRipple) == 0x74) ? 1 : -1];
 
 // === External function declarations ===
 #include "VIDEO.h"
@@ -372,8 +385,7 @@ typedef char CFlatRipple_size_check[
 /**
  * Compact diagnostic format retained in the original small-data section.
  */
-static char Mech_StatsFormat[12]
-    __attribute__((section(".sdata"), aligned(4))) = "%d %d %d %d";
+static char Mech_StatsFormat[12] __attribute__((section(".sdata"), aligned(4))) = "%d %d %d %d";
 
 /** Active skater used by script and collision systems. */
 CBruce *pCurrentPlayer __attribute__((section(".sbss")));
@@ -381,50 +393,50 @@ CBruce *pCurrentPlayer __attribute__((section(".sbss")));
 /** Default skater light used by ordinary levels. */
 SLight Skater_DefaultLight __attribute__((section(".data"))) = {
     {
-        {0, 0x1000, 0},
-        {0, -0x1000, 0},
-        {-3857, 0, 1380},
+        { 0, 0x1000, 0 },
+        { 0, -0x1000, 0 },
+        { -3857, 0, 1380 },
     },
     0,
     {
-        {640, 2944, 320},
-        {640, 2944, 320},
-        {640, 2944, 320},
+        { 640, 2944, 320 },
+        { 640, 2944, 320 },
+        { 640, 2944, 320 },
     },
     0,
-    {2176, 2176, 2176},
+    { 2176, 2176, 2176 },
 };
 
 /** Warmer skater light selected by the generated Mars level. */
 SLight Skater_MarsLight __attribute__((section(".data"))) = {
     {
-        {0, 0x1000, 0},
-        {0, -0x1000, 0},
-        {-3857, 0, 1380},
+        { 0, 0x1000, 0 },
+        { 0, -0x1000, 0 },
+        { -3857, 0, 1380 },
     },
     0,
     {
-        {192, 786, 3072},
-        {192, 705, 2628},
-        {192, 1088, 1992},
+        { 192, 786, 3072 },
+        { 192, 705, 2628 },
+        { 192, 1088, 1992 },
     },
     0,
-    {1664, 1664, 1664},
+    { 1664, 1664, 1664 },
 };
 
 /** Per-skater hook indices loaded after the skater model is initialized. */
 s16 SkaterHooks[14][10] __attribute__((section(".data"))) = {
-    {0, 1, 0, 0, 0, 18, 0, 0, 0, 3},
-    {0, 1, 0, 0, 0, 12, 0, 0, 0, 0},
-    {0, 1, 0, 0, 0, 12, 0, 0, 0, 0},
-    {0, 1, 0, 0, 0, 12, 0, 0, 0, 0},
-    {0, 1, 0, 0, 0, 12, 0, 0, 0, 0},
-    {0, 1, 0, 0, 0, 12, 0, 0, 0, 0},
-    {0, 1, 0, 0, 0, 12, 0, 0, 0, 0},
-    {0, 1, 0, 0, 0, 12, 0, 0, 0, 0},
-    {0, 1, 0, 0, 0, 12, 0, 0, 0, 0},
-    {0, 1, 0, 0, 0, 12, 0, 0, 0, 0},
-    {0, 1, 0, 0, 0, 12, 0, 0, 0, 0},
+    { 0, 1, 0, 0, 0, 18, 0, 0, 0, 3 },
+    { 0, 1, 0, 0, 0, 12, 0, 0, 0, 0 },
+    { 0, 1, 0, 0, 0, 12, 0, 0, 0, 0 },
+    { 0, 1, 0, 0, 0, 12, 0, 0, 0, 0 },
+    { 0, 1, 0, 0, 0, 12, 0, 0, 0, 0 },
+    { 0, 1, 0, 0, 0, 12, 0, 0, 0, 0 },
+    { 0, 1, 0, 0, 0, 12, 0, 0, 0, 0 },
+    { 0, 1, 0, 0, 0, 12, 0, 0, 0, 0 },
+    { 0, 1, 0, 0, 0, 12, 0, 0, 0, 0 },
+    { 0, 1, 0, 0, 0, 12, 0, 0, 0, 0 },
+    { 0, 1, 0, 0, 0, 12, 0, 0, 0, 0 },
     {},
     {},
     {},
@@ -471,7 +483,8 @@ static inline int MechAbs(int value)
  */
 void CBruce::BoardOff()
 {
-    mSubObjectDisplayMask |= (1 << Stats[mSkaterType].Board) | (1 << Stats[mSkaterType].Wheel1) | (1 << Stats[mSkaterType].Wheel2);
+    mSubObjectDisplayMask |= (1 << Stats[mSkaterType].Board) | (1 << Stats[mSkaterType].Wheel1) |
+                             (1 << Stats[mSkaterType].Wheel2);
 }
 
 /**
@@ -484,7 +497,8 @@ void CBruce::BoardOff()
  */
 void CBruce::BoardOn()
 {
-    mSubObjectDisplayMask &= ~((1 << Stats[mSkaterType].Board) | (1 << Stats[mSkaterType].Wheel1) | (1 << Stats[mSkaterType].Wheel2));
+    mSubObjectDisplayMask &= ~((1 << Stats[mSkaterType].Board) | (1 << Stats[mSkaterType].Wheel1) |
+                               (1 << Stats[mSkaterType].Wheel2));
 }
 
 /**
@@ -565,19 +579,16 @@ CBruce::CBruce() : mPanelData(this)
         int boardSpeed = mpBoardStats->speed;
         if (mMagicTime || Cheat_Fire)
         {
-            maxKickSpeed =
-                ((boardSpeed + statsSpeed + 20) << 12) * 45 / 28;
+            maxKickSpeed = ((boardSpeed + statsSpeed + 20) << 12) * 45 / 28;
         }
         else
         {
-            maxKickSpeed =
-                ((statsSpeed + boardSpeed + 17) << 12) * 45 / 28;
+            maxKickSpeed = ((statsSpeed + boardSpeed + 17) << 12) * 45 / 28;
         }
     }
     else
     {
-        maxKickSpeed =
-            ((statsOverride + 17) << 12) * 45 / 28;
+        maxKickSpeed = ((statsOverride + 17) << 12) * 45 / 28;
     }
     mMaxKickSpeed = maxKickSpeed;
 
@@ -641,8 +652,7 @@ CBruce::CBruce() : mPanelData(this)
     }
 
     AttachTo(reinterpret_cast<CBody **>(&MechList));
-    u16 bodyFlags =
-        mCBodyFlags & (u16)~2;
+    u16 bodyFlags = mCBodyFlags & (u16)~2;
     int numMechs = ++NumMechs;
     mCBodyFlags = bodyFlags;
     if (numMechs == 1)
@@ -654,10 +664,8 @@ CBruce::CBruce() : mPanelData(this)
     if (GNumberOfPlayers == 1)
     {
         mShadowLights = 1;
-        mpShadowSource =
-            static_cast<SVECTOR *>(Mem_New(32, 0, 1));
-        mpShadowRGB =
-            static_cast<CVECTOR *>(Mem_New(16, 0, 1));
+        mpShadowSource = static_cast<SVECTOR *>(Mem_New(32, 0, 1));
+        mpShadowRGB = static_cast<CVECTOR *>(Mem_New(16, 0, 1));
 
         mpShadowSource->vx = 0;
         mpShadowSource->vy = -0x1000;
@@ -673,15 +681,11 @@ CBruce::CBruce() : mPanelData(this)
     }
 
     SLight *defaultLight = &Skater_DefaultLight;
-    CCameraMechCtor *camera =
-        reinterpret_cast<CCameraMechCtor *>(CameraList);
+    CCameraMechCtor *camera = reinterpret_cast<CCameraMechCtor *>(CameraList);
     void *generateLevel = GenerateLevel;
     camera->SetMode(1);
     mpLight = defaultLight;
-    if (!generateLevel)
-        mpLight =
-            &Skater_MarsLight;
-
+    if (!generateLevel) mpLight = &Skater_MarsLight;
 }
 
 /**
@@ -719,8 +723,6 @@ CBruce::~CBruce()
     DeleteFrom(reinterpret_cast<CBody **>(&MechList));
     NumMechs = NumMechs - 1;
     DeleteStuff();
-
-
 }
 
 /**
@@ -802,8 +804,7 @@ void CBruce::History_Reset()
 int CBruce::History_Add(char *pName, int Spins)
 {
     int i = History_Find(pName, Spins);
-    if (i != -1)
-        goto done;
+    if (i != -1) goto done;
     {
         int count = mHistoryPos;
         if (count < 100)
@@ -822,12 +823,12 @@ int CBruce::History_Add(char *pName, int Spins)
         }
     }
 done:
-{
-    int hitCount = mHistory[i].Count;
-    hitCount++;
-    mHistory[i].Count = hitCount;
-    return mHistory[i].Count;
-}
+    {
+        int hitCount = mHistory[i].Count;
+        hitCount++;
+        mHistory[i].Count = hitCount;
+        return mHistory[i].Count;
+    }
 }
 
 /**
@@ -846,15 +847,13 @@ int GlowTowards(int A, int B, int Speed)
 {
     if (A < B)
     {
-        if (B < A + Speed)
-            return B;
+        if (B < A + Speed) return B;
         return A + Speed;
     }
     else
     {
         A = A - Speed;
-        if (A < B)
-            return B;
+        if (A < B) return B;
         return A;
     }
 }
@@ -878,8 +877,7 @@ void CBruce::GlowUpdate()
     mGlowB = glow;
     if (mGlowR == mTargetGlowR)
     {
-        if ((((*(const u32 *)&mGlowR) >> 8) & 0xFFFF) ==
-            (*(const u16 *)&mTargetGlowG))
+        if ((((*(const u32 *)&mGlowR) >> 8) & 0xFFFF) == (*(const u16 *)&mTargetGlowG))
         {
             u8 cycle = mGlowDownSpeed;
             if (cycle != 0)
@@ -932,11 +930,9 @@ void CBruce::DoLightingSetup()
  * and averages the RGB components. Otherwise averages the face's packed RGB.
  * The resulting brightness is scaled by three before the lighting callback.
  */
-void CBruce::CalculateDynamicLighting(
-    unsigned int *p_face, Item *p_item)
+void CBruce::CalculateDynamicLighting(unsigned int *p_face, Item *p_item)
 {
-    SFaceLightingMech *pFace =
-        (SFaceLightingMech *)p_face;
+    SFaceLightingMech *pFace = (SFaceLightingMech *)p_face;
     unsigned int flags = pFace->Flags;
 
     if ((flags & 0x800) != 0)
@@ -952,8 +948,7 @@ void CBruce::CalculateDynamicLighting(
         {
             int i = 0;
             unsigned int mask = 0xffffff;
-            unsigned char *bytePtr =
-                pFace->Colour.ColourIndices;
+            unsigned char *bytePtr = pFace->Colour.ColourIndices;
             do
             {
                 unsigned int idx = *bytePtr;
@@ -988,11 +983,9 @@ void CBruce::CalculateDynamicLighting(
  */
 void CBruce::ReadAnalogueInput()
 {
-    mAY =
-        *(u8 *)&mPad->AnalogueMoveForwardsBackwards;
+    mAY = *(u8 *)&mPad->AnalogueMoveForwardsBackwards;
     mAX = *(u8 *)&mPad->AnalogueMoveLeftRight;
-    if (Cheat_FlipScreen != 0)
-        mAX = -mAX;
+    if (Cheat_FlipScreen != 0) mAX = -mAX;
 }
 
 /**
@@ -1007,9 +1000,7 @@ void CBruce::ReadAnalogueInput()
  */
 void CBruce::GetHookPosition(CVector &pos, u8 hook)
 {
-    M3dUtils_GetHookPosition(
-        reinterpret_cast<VECTOR *>(&pos),
-        this, hook);
+    M3dUtils_GetHookPosition(reinterpret_cast<VECTOR *>(&pos), this, hook);
 }
 
 /**
@@ -1088,12 +1079,9 @@ void CBruce::DoShadowCheck()
 
     if (GNumberOfPlayers == 1)
     {
-        line_info.StartCoords.vx =
-            mPos.vx + mUp.vx * 50;
-        line_info.StartCoords.vy =
-            mPos.vy + mUp.vy * 50;
-        line_info.StartCoords.vz =
-            mPos.vz + mUp.vz * 50;
+        line_info.StartCoords.vx = mPos.vx + mUp.vx * 50;
+        line_info.StartCoords.vy = mPos.vy + mUp.vy * 50;
+        line_info.StartCoords.vz = mPos.vz + mUp.vz * 50;
     }
     else
     {
@@ -1108,10 +1096,7 @@ void CBruce::DoShadowCheck()
     M3dColij_InitLineInfo(&line_info);
     M3dZone_LineToItem(&line_info, 1);
 
-    if (line_info.pItem &&
-        line_info.Normal.vy < -1900 &&
-        mPhysicsState != 4 &&
-        mPhysicsState != 8)
+    if (line_info.pItem && line_info.Normal.vy < -1900 && mPhysicsState != 4 && mPhysicsState != 8)
     {
         {
             int _x = line_info.Position.vx;
@@ -1159,8 +1144,7 @@ void CBruce::InitItem(char *pName)
 {
     CItem::InitItem(pName);
     int idx = mSkaterType;
-    M3dUtils_ReadHooksPacket(
-        this, SkaterHooks[idx]);
+    M3dUtils_ReadHooksPacket(this, SkaterHooks[idx]);
 }
 
 /**
@@ -1174,13 +1158,10 @@ void CBruce::InitItem(char *pName)
  */
 int CBruce::FlipToVelocity()
 {
-    if (mAnim == 0x22)
-        return 0;
+    if (mAnim == 0x22) return 0;
 
-    if (Mips_CVecDotProd(
-            reinterpret_cast<CVector *>(&mFront),
-            reinterpret_cast<CVector *>(
-                &mVel)) > 0x5000)
+    if (Mips_CVecDotProd(reinterpret_cast<CVector *>(&mFront), reinterpret_cast<CVector *>(&mVel)) >
+        0x5000)
     {
         mRotationMatrix.m[0][2] = -mFront.vx;
         mFront.vx = mRotationMatrix.m[0][2];
@@ -1218,13 +1199,11 @@ void CBruce::BloodSplat(int BodyPart, int MaxBloodBits)
     CSVector Cone;
     SLineInfo BloodLine;
 
-    if (Cheat_Blood == 0)
-        return;
+    if (Cheat_Blood == 0) return;
 
     Video_BloodSplat(this, BodyPart, MaxBloodBits);
 
-    if (BitCount >= 200)
-        return;
+    if (BitCount >= 200) return;
 
     v.vx = -0x400;
     v.vy = 0;
@@ -1233,17 +1212,17 @@ void CBruce::BloodSplat(int BodyPart, int MaxBloodBits)
 
     switch (BodyPart)
     {
-    case 1:
-        Cone.vx = 0x640;
-        Cone.vy = 0x640;
-        Cone.vz = 0;
-        break;
-    case 0:
-    default:
-        Cone.vx = 0x4B0;
-        Cone.vy = 0x320;
-        Cone.vz = 0;
-        break;
+        case 1:
+            Cone.vx = 0x640;
+            Cone.vy = 0x640;
+            Cone.vz = 0;
+            break;
+        case 0:
+        default:
+            Cone.vx = 0x4B0;
+            Cone.vy = 0x320;
+            Cone.vz = 0;
+            break;
     }
     Bit_SetSparkTrajectoryCone(Cone);
     Bit_SetSparkRGB(0x48, 0, 0);
@@ -1254,8 +1233,7 @@ void CBruce::BloodSplat(int BodyPart, int MaxBloodBits)
     UseCacheForBits = 0;
 
     int Bits = 200 - BitCount;
-    if (MaxBloodBits < Bits)
-        Bits = MaxBloodBits;
+    if (MaxBloodBits < Bits) Bits = MaxBloodBits;
 
     BloodLine.StartCoords.vx = Pos.vx;
     BloodLine.StartCoords.vy = Pos.vy - 0x28000;
@@ -1281,17 +1259,12 @@ void CBruce::BloodSplat(int BodyPart, int MaxBloodBits)
         int gravity = 0x2800;
         do
         {
-            if (Mem_GetFree(1) < 10000)
-                return;
+            if (Mem_GetFree(1) < 10000) return;
             Bit_SetSparkSize((i & 1) + 1);
-            CSpark *pSpark = static_cast<CSpark *>(
-                CBit::operator new(sizeof(CSpark)));
+            CSpark *pSpark = static_cast<CSpark *>(CBit::operator new(sizeof(CSpark)));
             if (pSpark != 0)
-                pSpark = ::new (pSpark) CSpark(
-                    Pos, (i >> 2) + 0xE, gravity, (i & 7) + 0x32);
-            reinterpret_cast<CVector &>(pSpark->mVel) +=
-                reinterpret_cast<const CVector &>(
-                    mVel);
+                pSpark = ::new (pSpark) CSpark(Pos, (i >> 2) + 0xE, gravity, (i & 7) + 0x32);
+            reinterpret_cast<CVector &>(pSpark->mVel) += reinterpret_cast<const CVector &>(mVel);
             pSpark->mFloorY = FloorY;
             i++;
             gravity += 0x100;
@@ -1312,8 +1285,7 @@ void CBruce::BloodSplat(int BodyPart, int MaxBloodBits)
  */
 void CBruce::AI()
 {
-    if (GamePaused != 0)
-        return;
+    if (GamePaused != 0) return;
 
     if (((CCamera *)CameraList)->InCompetitionIntro() != 0)
     {
@@ -1321,13 +1293,11 @@ void CBruce::AI()
         return;
     }
 
-    if (mRecentEvent1 != 0 &&
-        XFrames - mRecentEvent1 > 10)
+    if (mRecentEvent1 != 0 && XFrames - mRecentEvent1 > 10)
     {
         mRecentEvent1 = 0;
     }
-    if (mRecentEvent2 != 0 &&
-        XFrames - mRecentEvent2 > 10)
+    if (mRecentEvent2 != 0 && XFrames - mRecentEvent2 > 10)
     {
         mRecentEvent2 = 0;
     }
@@ -1340,12 +1310,8 @@ void CBruce::AI()
 
     switch (VInfo->VideoMode)
     {
-    case 1:
-        Video_Record(this);
-        break;
-    case 2:
-        Video_Playback(this);
-        return;
+        case 1: Video_Record(this); break;
+        case 2: Video_Playback(this); return;
     }
 
     mResponseTimer = 100;
@@ -1359,26 +1325,16 @@ void CBruce::AI()
     else
         mGroundCounter = 0;
 
-    if (mInputDelay != 0)
-        --mInputDelay;
+    if (mInputDelay != 0) --mInputDelay;
 
     CVector nearest;
-    CBody *pOb = M3dColij_LineToSphere(
-        mOldPos,
-        mPos,
-        nearest, BaddyList, 0, 0x1000);
-    if (pOb != 0)
-        CollideWithObject(pOb);
+    CBody *pOb = M3dColij_LineToSphere(mOldPos, mPos, nearest, BaddyList, 0, 0x1000);
+    if (pOb != 0) CollideWithObject(pOb);
 
-    pOb = M3dColij_LineToSphere(
-        mOldPos,
-        mPos,
-        nearest, PowerUpList, 0, 0x1000);
-    if (pOb != 0)
-        reinterpret_cast<CPowerUp *>(pOb)->TakeEffect(this);
+    pOb = M3dColij_LineToSphere(mOldPos, mPos, nearest, PowerUpList, 0, 0x1000);
+    if (pOb != 0) reinterpret_cast<CPowerUp *>(pOb)->TakeEffect(this);
 
-    if (mPhysicsState != 0 ||
-        MechAbs(mPos.vy - mShadowY) >= 65)
+    if (mPhysicsState != 0 || MechAbs(mPos.vy - mShadowY) >= 65)
     {
         mShadowY = mPos.vy;
         DoShadowCheck();
@@ -1389,47 +1345,31 @@ void CBruce::AI()
         mShadowPos.vz = mPos.vz;
     }
 
-    if (mHealth < 0)
-        mHealth = 0;
+    if (mHealth < 0) mHealth = 0;
 
-    if ((Cheat_FPS != 0 || Cheat_StatsOverride != 0) &&
-        this == GSkater[0])
+    if ((Cheat_FPS != 0 || Cheat_StatsOverride != 0) && this == GSkater[0])
     {
         static char lm[30];
 
         sprintf(
-            lm,
-            Mech_StatsFormat,
+            lm, Mech_StatsFormat,
             Cheat_StatsOverride != 0
                 ? Cheat_StatsOverride
-                : (Stats[mSkaterType].Toughness +
-                       ((mMagicTime != 0 || Cheat_Fire != 0)
-                            ? 3
-                            : 0)) +
+                : (Stats[mSkaterType].Toughness + ((mMagicTime != 0 || Cheat_Fire != 0) ? 3 : 0)) +
                       mpBoardStats->ollie,
             Cheat_StatsOverride != 0
                 ? Cheat_StatsOverride
-                : (Stats[mSkaterType].Speed +
-                       ((mMagicTime != 0 || Cheat_Fire != 0)
-                            ? 3
-                            : 0)) +
+                : (Stats[mSkaterType].Speed + ((mMagicTime != 0 || Cheat_Fire != 0) ? 3 : 0)) +
                       mpBoardStats->speed,
             Cheat_StatsOverride != 0
                 ? Cheat_StatsOverride
-                : (Stats[mSkaterType].Air +
-                       ((mMagicTime != 0 || Cheat_Fire != 0)
-                            ? 3
-                            : 0)) +
+                : (Stats[mSkaterType].Air + ((mMagicTime != 0 || Cheat_Fire != 0) ? 3 : 0)) +
                       mpBoardStats->air,
             Cheat_StatsOverride != 0
                 ? Cheat_StatsOverride
-                : (Stats[mSkaterType].Balance +
-                       ((mMagicTime != 0 || Cheat_Fire != 0)
-                            ? 3
-                            : 0)) +
+                : (Stats[mSkaterType].Balance + ((mMagicTime != 0 || Cheat_Fire != 0) ? 3 : 0)) +
                       mpBoardStats->balance);
-        Font_String(
-            0x1A4, 200, lm, 0x5A, 0x5A, 0x64, 0);
+        Font_String(0x1A4, 200, lm, 0x5A, 0x5A, 0x64, 0);
     }
 }
 
@@ -1443,8 +1383,7 @@ void CBruce::AI()
  */
 void CBruce::HandleWater()
 {
-    if (GNumberOfPlayers == 2)
-        return;
+    if (GNumberOfPlayers == 2) return;
 
     int WaterLevel;
     if (this == (CBruce *)MechList)
@@ -1472,12 +1411,10 @@ void CBruce::HandleWater()
         int timer = TTime;
         timer &= 3;
         mFlags = flags;
-        if (timer != 0)
-            return;
+        if (timer != 0) return;
 
         CVector p;
-        p = reinterpret_cast<const CVector &>(
-            mPos);
+        p = reinterpret_cast<const CVector &>(mPos);
         p.vy = WaterLevel;
 
         int offset = Rnd(24) + 16;
@@ -1487,22 +1424,17 @@ void CBruce::HandleWater()
         p.vx += offset * base[0];
         p.vz += offset * base[1];
 
-        CFlatRipple *ripple =
-            static_cast<CFlatRipple *>(
-                CBit::operator new(sizeof(CFlatRipple)));
+        CFlatRipple *ripple = static_cast<CFlatRipple *>(CBit::operator new(sizeof(CFlatRipple)));
         if (ripple != 0)
         {
             int radius = Rnd(24) + 40;
             int segments = Rnd(3) + 4;
-            ::new (ripple) CFlatRipple(
-                p, radius,
-                0xDD, 0xEE, 0xFF, 12, segments);
+            ::new (ripple) CFlatRipple(p, radius, 0xDD, 0xEE, 0xFF, 12, segments);
         }
     }
     else
     {
-        mFlags =
-            mFlags & ~8;
+        mFlags = mFlags & ~8;
     }
 }
 

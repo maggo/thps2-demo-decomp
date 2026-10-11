@@ -5,8 +5,7 @@
  * SFX physically owns the sound-RAM allocation counter in initialized small
  * data. INIT retains its target-proven absolute-address import view.
  */
-#if defined(TOTALVABUSAGE_OWNER_DECLARATION) && \
-    defined(TOTALVABUSAGE_ABSOLUTE_DECLARATION)
+#if defined(TOTALVABUSAGE_OWNER_DECLARATION) && defined(TOTALVABUSAGE_ABSOLUTE_DECLARATION)
 #error "Select only one TotalVabUsage declaration view"
 #elif defined(TOTALVABUSAGE_OWNER_DECLARATION)
 #define TOTALVABUSAGE_DECL_ATTR

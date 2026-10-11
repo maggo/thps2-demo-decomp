@@ -3,11 +3,9 @@
  * M3D's same-sized declaration naturally retains the target's absolute
  * address formation.
  */
-#if defined(QUICKANIMLOOKUP_OWNER_DECLARATION) && \
-    defined(QUICKANIMLOOKUP_CONSUMER_DECLARATION)
+#if defined(QUICKANIMLOOKUP_OWNER_DECLARATION) && defined(QUICKANIMLOOKUP_CONSUMER_DECLARATION)
 #error "Select only one QuickAnimLookup declaration view"
-#elif !defined(QUICKANIMLOOKUP_OWNER_DECLARATION) && \
-      !defined(QUICKANIMLOOKUP_CONSUMER_DECLARATION)
+#elif !defined(QUICKANIMLOOKUP_OWNER_DECLARATION) && !defined(QUICKANIMLOOKUP_CONSUMER_DECLARATION)
 #error "Select the QuickAnimLookup owner or consumer declaration view"
 #endif
 

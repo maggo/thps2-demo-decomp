@@ -30,17 +30,24 @@ typedef char screentools_font_size_must_be_80[(sizeof(Font) == 80) ? 1 : -1];
  * @param screenY  Screen-space Y coordinate, or -1 to start at home.
  * @return `this` pointer (GCC 2.x ctor convention).
  */
-ScreenElement::ScreenElement(int homeX, int homeY, int screenX, int screenY) {
+ScreenElement::ScreenElement(int homeX, int homeY, int screenX, int screenY)
+{
     mHomeX = homeX;
     mHomeY = homeY;
-    if (screenX == -1) {
+    if (screenX == -1)
+    {
         mScreenX = homeX;
-    } else {
+    }
+    else
+    {
         mScreenX = screenX;
     }
-    if (screenY == -1) {
+    if (screenY == -1)
+    {
         mScreenY = mHomeY;
-    } else {
+    }
+    else
+    {
         mScreenY = screenY;
     }
     mDrawFirst = 0;
@@ -56,7 +63,8 @@ ScreenElement::ScreenElement(int homeX, int homeY, int screenX, int screenY) {
  * Mangled:   _._13ScreenElement
  *
  */
-ScreenElement::~ScreenElement() {
+ScreenElement::~ScreenElement()
+{
 }
 
 
@@ -69,7 +77,8 @@ ScreenElement::~ScreenElement() {
  *
  * @return -1 (pure-virtual-style placeholder width).
  */
-int ScreenElement::width() {
+int ScreenElement::width()
+{
     return -1;
 }
 
@@ -81,20 +90,28 @@ int ScreenElement::width() {
  * Mangled:   update__13ScreenElement
  *            Interpolates screenX/Y toward homeX/Y, sets arrived flag when done
  */
-void ScreenElement::update() {
+void ScreenElement::update()
+{
     int v = mDelay;
-    if (v > 0) {
+    if (v > 0)
+    {
         mDelay = v - 1;
-    } else {
+    }
+    else
+    {
         // Interpolate X
         int homeX = mHomeX;
         int screenX = mScreenX;
         int distX = homeX - screenX;
-        if ((unsigned int)(distX + 1) < 3) {
+        if ((unsigned int)(distX + 1) < 3)
+        {
             mScreenX = homeX;
-        } else {
+        }
+        else
+        {
             int add = distX >> 2;
-            if (add == 0) {
+            if (add == 0)
+            {
                 add = distX >> 1;
             }
             mScreenX = screenX + add;
@@ -104,26 +121,32 @@ void ScreenElement::update() {
         int homeY = mHomeY;
         int screenY = mScreenY;
         int distY = homeY - screenY;
-        if ((unsigned int)(distY + 1) < 3) {
+        if ((unsigned int)(distY + 1) < 3)
+        {
             mScreenY = homeY;
-        } else {
+        }
+        else
+        {
             int add = distY >> 2;
-            if (add == 0) {
+            if (add == 0)
+            {
                 add = distY >> 1;
             }
             mScreenY = screenY + add;
         }
 
         // Check if arrived
-        if (mScreenY != mHomeY) {
+        if (mScreenY != mHomeY)
+        {
             goto not_at_home;
         }
-        if (mScreenX != mHomeX) {
+        if (mScreenX != mHomeX)
+        {
             goto not_at_home;
         }
         mAtHome = 1;
         return;
-not_at_home:
+    not_at_home:
         mAtHome = 0;
     }
 }
@@ -136,7 +159,8 @@ not_at_home:
  * Mangled:   refresh__13ScreenElement
  *            ASM: jr $ra; nop (no .s file — 2 instr empty function)
  */
-void ScreenElement::refresh() {
+void ScreenElement::refresh()
+{
 }
 
 
@@ -147,7 +171,8 @@ void ScreenElement::refresh() {
  * Mangled:   SnapToHomeX__13ScreenElement
  *            ASM: lw $v0, 4($a0); jr $ra; sw $v0, 0x1c($a0)
  */
-void ScreenElement::SnapToHomeX() {
+void ScreenElement::SnapToHomeX()
+{
     mScreenX = mHomeX;
 }
 
@@ -161,7 +186,8 @@ void ScreenElement::SnapToHomeX() {
  *
  * @return Current screen-space X coordinate.
  */
-int ScreenElement::GetScreenX() {
+int ScreenElement::GetScreenX()
+{
     return mScreenX;
 }
 
@@ -175,7 +201,8 @@ int ScreenElement::GetScreenX() {
  *
  * @return Current screen-space Y coordinate.
  */
-int ScreenElement::GetScreenY() {
+int ScreenElement::GetScreenY()
+{
     return mScreenY;
 }
 
@@ -194,12 +221,13 @@ int ScreenElement::GetScreenY() {
  * @param screenY  Screen-space Y coordinate.
  * @return `this` pointer (GCC 2.x ctor convention).
  */
-ScreenElementList::ScreenElementList(int homeX, int homeY, int screenX,
-                                     int screenY)
-    : ScreenElement(homeX, homeY, screenX, screenY) {
+ScreenElementList::ScreenElementList(int homeX, int homeY, int screenX, int screenY)
+    : ScreenElement(homeX, homeY, screenX, screenY)
+{
     int i = 0;
     ScreenElement **ptr = mpItem;
-    do {
+    do
+    {
         *ptr = 0;
         i++;
         ptr++;
@@ -216,10 +244,12 @@ ScreenElementList::ScreenElementList(int homeX, int homeY, int screenX,
  *            Virtually destroys every remaining item (flags=3: dtor + free).
  *
  */
-ScreenElementList::~ScreenElementList() {
+ScreenElementList::~ScreenElementList()
+{
     int i = 0;
     ScreenElement **ptr = mpItem;
-    do {
+    do
+    {
         delete *ptr;
         i++;
         ptr++;
@@ -236,11 +266,14 @@ ScreenElementList::~ScreenElementList() {
  *
  * @param pScreenElement  ScreenElement to add to the list.
  */
-void ScreenElementList::addItem(ScreenElement *pScreenElement) {
+void ScreenElementList::addItem(ScreenElement *pScreenElement)
+{
     int i = 0;
     ScreenElement **ptr = mpItem;
-    do {
-        if (*ptr == 0) {
+    do
+    {
+        if (*ptr == 0)
+        {
             *ptr = pScreenElement;
             mCount = mCount + 1;
             return;
@@ -258,12 +291,15 @@ void ScreenElementList::addItem(ScreenElement *pScreenElement) {
  * Mangled:   update__17ScreenElementList
  *            Calls each item's virtual update, then updates itself as a ScreenElement
  */
-void ScreenElementList::update() {
+void ScreenElementList::update()
+{
     int count = mCount;
-    if (count > 0) {
+    if (count > 0)
+    {
         int i = 0;
         ScreenElement **ptr = mpItem;
-        do {
+        do
+        {
             (*ptr)->update();
             ptr++;
             count = mCount;
@@ -284,13 +320,15 @@ void ScreenElementList::update() {
  * @param x  X offset added to the list's screen position.
  * @param y  Y offset added to the list's screen position.
  */
-void ScreenElementList::draw(int x, int y) {
+void ScreenElementList::draw(int x, int y)
+{
     if (mHide != 0) return;
     int count = mCount;
     if (count <= 0) return;
     int i = 0;
     ScreenElement **ptr = mpItem;
-    do {
+    do
+    {
         ScreenElement *item = *ptr;
         ptr++;
         item->draw(mScreenX + x, mScreenY + y);
@@ -316,9 +354,10 @@ void ScreenElementList::draw(int x, int y) {
  * @param screenY  Screen-space Y coordinate.
  * @return `this` pointer (GCC 2.x ctor convention).
  */
-TextScreenElement::TextScreenElement(char *pString, Font *pFont, int homeX,
-                                     int homeY, int screenX, int screenY)
-    : ScreenElement(homeX, homeY, screenX, screenY) {
+TextScreenElement::TextScreenElement(char *pString, Font *pFont, int homeX, int homeY, int screenX,
+                                     int screenY)
+    : ScreenElement(homeX, homeY, screenX, screenY)
+{
     int len = strlen(pString);
     char *buf = (char *)Mem_New(len + 1, 0, 1);
     mpString = buf;
@@ -334,7 +373,8 @@ TextScreenElement::TextScreenElement(char *pString, Font *pFont, int homeX,
  * Mangled:   _._17TextScreenElement
  *
  */
-TextScreenElement::~TextScreenElement() {
+TextScreenElement::~TextScreenElement()
+{
     Mem_Delete(mpString);
 }
 
@@ -348,7 +388,8 @@ TextScreenElement::~TextScreenElement() {
  *
  * @param pString  Replacement text (copied into a fresh allocation).
  */
-void TextScreenElement::setString(char *pString) {
+void TextScreenElement::setString(char *pString)
+{
     Mem_Delete(mpString);
     int len = strlen(pString);
     char *buf = (char *)Mem_New(len + 1, 0, 1);
@@ -367,7 +408,8 @@ void TextScreenElement::setString(char *pString) {
  * @param x  X offset added to the element's screen position.
  * @param y  Y offset added to the element's screen position.
  */
-void TextScreenElement::draw(int x, int y) {
+void TextScreenElement::draw(int x, int y)
+{
     if (mDelay > 0) return;
     if (mHide != 0) return;
     mpFont->draw(mScreenX + x, mScreenY + y, mpString, mDrawFirst);
@@ -383,7 +425,8 @@ void TextScreenElement::draw(int x, int y) {
  *
  * @return Rendered width of the string in the element's font.
  */
-int TextScreenElement::width() {
+int TextScreenElement::width()
+{
     return mpFont->width(mpString);
 }
 
@@ -406,10 +449,10 @@ int TextScreenElement::width() {
  * @param justX  Horizontal justification byte for the sprite image.
  * @return `this` pointer (GCC 2.x ctor convention).
  */
-SpriteScreenElement::SpriteScreenElement(char *pFileName, int homeX, int homeY,
-                                         int screenX, int screenY, int justY,
-                                         int justX)
-    : ScreenElement(homeX, homeY, screenX, screenY) {
+SpriteScreenElement::SpriteScreenElement(char *pFileName, int homeX, int homeY, int screenX,
+                                         int screenY, int justY, int justX)
+    : ScreenElement(homeX, homeY, screenX, screenY)
+{
     mSprite = new Sprite2(pFileName, 1, 64, 64);
     mSprite->JustY = (char)justY;
     mSprite->JustX = (char)justX;
@@ -424,7 +467,8 @@ SpriteScreenElement::SpriteScreenElement(char *pFileName, int homeX, int homeY,
  *            Virtually destroys the owned sprite (flags=3: dtor + free).
  *
  */
-SpriteScreenElement::~SpriteScreenElement() {
+SpriteScreenElement::~SpriteScreenElement()
+{
     delete mSprite;
 }
 
@@ -439,7 +483,8 @@ SpriteScreenElement::~SpriteScreenElement() {
  * @param x  X offset added to the element's screen position.
  * @param y  Y offset added to the element's screen position.
  */
-void SpriteScreenElement::draw(int x, int y) {
+void SpriteScreenElement::draw(int x, int y)
+{
     if (mDelay > 0) return;
     if (mHide != 0) return;
     mSprite->draw(mScreenX + x, mScreenY + y, mDrawFirst);
@@ -456,6 +501,7 @@ void SpriteScreenElement::draw(int x, int y) {
  * @return On-screen width of the owned sprite.
  */
 // Shared SpriteScreenElement member function
-int SpriteScreenElement::width() {
+int SpriteScreenElement::width()
+{
     return mSprite->screenWidth();
 }

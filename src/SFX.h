@@ -12,16 +12,12 @@ void SFX_SpoolInLevelSFX(const char *name);
 void SFX_SpoolInMIDI(const char *name);
 void SFX_SpoolOutMIDI(void);
 /** Play a sound effect at equal left/right volume. */
-unsigned int SFX_PlayX(
-    unsigned int sound, short volume, int pitchOffset);
-unsigned int SFX_PlayLR(unsigned int sound, short left, short right,
-                        int pitchOffset);
-unsigned int SFX_PlayPos(unsigned int sound, const CVector &position,
-                         int pitchOffset);
+unsigned int SFX_PlayX(unsigned int sound, short volume, int pitchOffset);
+unsigned int SFX_PlayLR(unsigned int sound, short left, short right, int pitchOffset);
+unsigned int SFX_PlayPos(unsigned int sound, const CVector &position, int pitchOffset);
 unsigned short SFX_GetVoicePitch(unsigned int voiceBits);
 void SFX_SetVoicePitch(unsigned int voiceBits, unsigned short pitch);
-void SFX_ModifyPos(unsigned int voiceBits, const CVector &position,
-                   int deltaDistance);
+void SFX_ModifyPos(unsigned int voiceBits, const CVector &position, int deltaDistance);
 void SFX_ModifyVol(unsigned int voiceBits, int left, int right);
 void SFX_ResetMIDIPausedPriorToPause(void);
 void SFX_LevelStart(void);
@@ -72,19 +68,19 @@ struct CSVector
 /* PsyQ owns the exact VabHdr, ProgAtr, and VagAtr layouts used below. */
 #include <LIBSND.H>
 
-enum {
+enum
+{
     SFX_VOICE_COUNT = 24,
     SFX_VAB_PROGRAM_COUNT = 128,
     SFX_VAB_TONES_PER_PROGRAM = 16,
     SFX_VAB_OFFSET_COUNT = 256,
-    SFX_VAB_TONE_TABLE_OFFSET = sizeof(VabHdr) +
-                                sizeof(ProgAtr) * SFX_VAB_PROGRAM_COUNT,
-    SFX_VAB_OFFSET_TABLE_SIZE = sizeof(unsigned short) *
-                                SFX_VAB_OFFSET_COUNT
+    SFX_VAB_TONE_TABLE_OFFSET = sizeof(VabHdr) + sizeof(ProgAtr) * SFX_VAB_PROGRAM_COUNT,
+    SFX_VAB_OFFSET_TABLE_SIZE = sizeof(unsigned short) * SFX_VAB_OFFSET_COUNT
 };
 
 /** Typed view of the fixed VAB header and the variable tone table prefix. */
-struct SFXVabImage {
+struct SFXVabImage
+{
     VabHdr header;
     ProgAtr programs[SFX_VAB_PROGRAM_COUNT];
     VagAtr tones[1];
@@ -94,23 +90,25 @@ typedef char sfx_VabHdr_size_must_be_32[(sizeof(VabHdr) == 32) ? 1 : -1];
 typedef char sfx_ProgAtr_size_must_be_16[(sizeof(ProgAtr) == 16) ? 1 : -1];
 typedef char sfx_VagAtr_size_must_be_32[(sizeof(VagAtr) == 32) ? 1 : -1];
 
-struct soundRAMentry {
+struct soundRAMentry
+{
     unsigned int start;
     unsigned int size;
-    void * occupied;
+    void *occupied;
 };
 
 /** Per-voice spatial falloff and volume modifier, also written as one word. */
-union SFXVoiceSpatialData {
+union SFXVoiceSpatialData
+{
     unsigned int packed;
-    struct {
+    struct
+    {
         unsigned short falloff;
         unsigned short volumeModifier;
     } fields;
 };
 
-typedef char sfx_spatial_data_size_must_be_4[
-    (sizeof(SFXVoiceSpatialData) == 4) ? 1 : -1];
+typedef char sfx_spatial_data_size_must_be_4[(sizeof(SFXVoiceSpatialData) == 4) ? 1 : -1];
 
 // Canonical PsyQ SPU types and API declarations.
 #include <LIBSPU.H>

@@ -21,7 +21,8 @@
 #include "ENVIROLIST.h"
 
 /** Base particle state embedded in a polyline effect. */
-struct CBit {
+struct CBit
+{
     struct CBit *mPrevious;
     struct CBit *mNext;
     short mAge;
@@ -49,20 +50,21 @@ struct CBit {
 #include "RCOSSIN.h"
 
 /** One sine/cosine pair in the fixed PSX trigonometry table. */
-struct ExpTrigPair {
+struct ExpTrigPair
+{
     short sine;
     short cosine;
 };
 
-enum ExpRippleConstant {
+enum ExpRippleConstant
+{
     ExpModelDestructible = 2,
     ExpAngleMask = 0xFFF,
     ExpFullTurn = 0x1000,
     ExpForceDamage = 0xFFFF
 };
 
-typedef char Exp_SDK_SVECTOR_size_must_be_8[
-    (sizeof(SVECTOR) == 8) ? 1 : -1];
+typedef char Exp_SDK_SVECTOR_size_must_be_8[(sizeof(SVECTOR) == 8) ? 1 : -1];
 typedef char Exp_CBit_size_must_be_72[(sizeof(CBit) == 72) ? 1 : -1];
 typedef char Exp_SLineSeg_size_must_be_16[(sizeof(SLineSeg) == 16) ? 1 : -1];
 typedef char Exp_TrigPair_size_must_be_4[(sizeof(ExpTrigPair) == 4) ? 1 : -1];
@@ -135,10 +137,8 @@ found:
  * @param NumSegs  Number of ring segments.
  * @param GrowRate  Radius added on each update.
  */
-CFlatRipple::CFlatRipple(
-    const CVector &Pos, int MaxRadius,
-    unsigned char r, unsigned char g, unsigned char b,
-    int NumSegs, int GrowRate)
+CFlatRipple::CFlatRipple(const CVector &Pos, int MaxRadius, unsigned char r, unsigned char g,
+                         unsigned char b, int NumSegs, int GrowRate)
     : CPolyLine(NumSegs)
 {
     int i;
@@ -198,20 +198,14 @@ void CFlatRipple::Move()
     int trigTableAddress = reinterpret_cast<int>(&rcossin_tbl);
     int trigOffset = a & ExpAngleMask;
     trigOffset <<= 2;
-    ExpTrigPair *initialTrig = reinterpret_cast<ExpTrigPair *>(
-        trigOffset + trigTableAddress);
+    ExpTrigPair *initialTrig = reinterpret_cast<ExpTrigPair *>(trigOffset + trigTableAddress);
     int angleStep = ExpFullTurn / mNumSegs;
-    mStart.vx =
-        mPos.vx +
-        (((mRadius * initialTrig->cosine) / ExpFullTurn) << 12);
+    mStart.vx = mPos.vx + (((mRadius * initialTrig->cosine) / ExpFullTurn) << 12);
 
     int i = 0;
-    mStart.vz =
-        mPos.vz +
-        (((mRadius * initialTrig->sine) / ExpFullTurn) << 12);
+    mStart.vz = mPos.vz + (((mRadius * initialTrig->sine) / ExpFullTurn) << 12);
 
-    if (mNumSegs <= 0)
-        return;
+    if (mNumSegs <= 0) return;
 
     do
     {
@@ -227,20 +221,14 @@ void CFlatRipple::Move()
         }
         else
         {
-            ExpTrigPair *loopTrig = reinterpret_cast<ExpTrigPair *>(
-                ((a & ExpAngleMask) << 2) + trigTableAddress);
+            ExpTrigPair *loopTrig =
+                reinterpret_cast<ExpTrigPair *>(((a & ExpAngleMask) << 2) + trigTableAddress);
             // Direct typed indexing commutes the original's address operands.
-            SLineSeg *segment = reinterpret_cast<SLineSeg *>(
-                offset + reinterpret_cast<int>(mSegs));
-            segment->End.vx =
-                mPos.vx +
-                (((mRadius * loopTrig->cosine) / ExpFullTurn) << 12);
+            SLineSeg *segment = reinterpret_cast<SLineSeg *>(offset + reinterpret_cast<int>(mSegs));
+            segment->End.vx = mPos.vx + (((mRadius * loopTrig->cosine) / ExpFullTurn) << 12);
 
-            segment = reinterpret_cast<SLineSeg *>(
-                offset + reinterpret_cast<int>(mSegs));
-            segment->End.vz =
-                mPos.vz +
-                (((mRadius * loopTrig->sine) / ExpFullTurn) << 12);
+            segment = reinterpret_cast<SLineSeg *>(offset + reinterpret_cast<int>(mSegs));
+            segment->End.vz = mPos.vz + (((mRadius * loopTrig->sine) / ExpFullTurn) << 12);
         }
 
         i++;

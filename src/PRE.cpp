@@ -10,8 +10,7 @@
 #include "PREAPI.h"
 #include "MEM.h"
 
-typedef char pre_manager_size_must_be_324[
-    (sizeof(PREManager) == 324) ? 1 : -1];
+typedef char pre_manager_size_must_be_324[(sizeof(PREManager) == 324) ? 1 : -1];
 
 // String literals (absolute addresses in .rodata)
 static char PRE_full_msg[]; // 0x800B290C "PRE: All slots full\n" (approx)
@@ -23,8 +22,7 @@ static char PRE_open_err[]; // 0x800B2928 "PRE: could not open %s\n" (approx)
 #include "PREMGR.h"
 
 /** PRE archive manager singleton owned by this translation unit. */
-PREManager *PREMgr
-    __attribute__((section(".sdata"))) = 0;
+PREManager *PREMgr __attribute__((section(".sdata"))) = 0;
 
 // Small-data order in this owner is PREMgr, PRE_null_arr, PRE_fmt_s, then
 // both vtables, so the recovered definitions follow the string owners.
@@ -33,10 +31,8 @@ namespace PreAddressViewOwners
 extern "C"
 {
 /** Empty name and filename-copy format stored beside the singleton. */
-static char PRE_null_arr[4]
-    __attribute__((section(".sdata"))) = {0, 0, 0, 0};
-static char PRE_fmt_s[4]
-    __attribute__((section(".sdata"))) = "%s";
+static char PRE_null_arr[4] __attribute__((section(".sdata"))) = { 0, 0, 0, 0 };
+static char PRE_fmt_s[4] __attribute__((section(".sdata"))) = "%s";
 }
 }
 
@@ -64,7 +60,8 @@ void PRE_Cleanup(void)
 /** Initialize every archive slot and its corresponding filename. */
 PREManager::PREManager()
 {
-    for (int i = 0; i < PREManager::SlotCount; ++i) {
+    for (int i = 0; i < PREManager::SlotCount; ++i)
+    {
         mPre[i] = 0;
         mPreName[i][0] = PRE_null_arr[0];
     }
@@ -109,8 +106,7 @@ void PREManager::spoolPRE(char *pre_name)
 
     // Find empty slot
 loop:
-    if (*p == 0)
-        goto check;
+    if (*p == 0) goto check;
     slot++;
     if (slot < PREManager::SlotCount)
     {
@@ -156,8 +152,7 @@ void PREManager::spoolPREData(char *pDataBuffer, char *pre_name)
 
     // Find empty slot
 loop2:
-    if (*p == 0)
-        goto check2;
+    if (*p == 0) goto check2;
     slot++;
     if (slot < PREManager::SlotCount)
     {
@@ -291,16 +286,14 @@ int PREManager::inPRE(char *pre_name)
 
     do
     {
-        if (*slots == 0)
-            goto inpre_not_found;
+        if (*slots == 0) goto inpre_not_found;
 
         if (strcmp(pre_name, names) == 0)
         {
             return 1;
         }
 
-        if (*slots == 0)
-            goto inpre_not_found;
+        if (*slots == 0) goto inpre_not_found;
         slots++;
         slot++;
         names += PREManager::NameLength;
@@ -311,7 +304,5 @@ inpre_not_found:
 }
 
 /** Diagnostics emitted when no PRE slot or allocation is available. */
-static char PRE_full_msg[28]
-    __attribute__((section(".rdata"))) = "\nOut of PREManager slots";
-static char PRE_open_err[28]
-    __attribute__((section(".rdata"))) = "\nMemory error loading %s";
+static char PRE_full_msg[28] __attribute__((section(".rdata"))) = "\nOut of PREManager slots";
+static char PRE_open_err[28] __attribute__((section(".rdata"))) = "\nMemory error loading %s";

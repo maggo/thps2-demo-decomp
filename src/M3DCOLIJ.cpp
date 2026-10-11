@@ -21,8 +21,7 @@
 
 SHit NearestHit;
 
-typedef char M3dColij_NearestHit_size_must_be_36[
-    (sizeof(SHit) == 36) ? 1 : -1];
+typedef char M3dColij_NearestHit_size_must_be_36[(sizeof(SHit) == 36) ? 1 : -1];
 
 /** Collision-query state shared by the line and face cache paths. */
 u16 Inquiry __attribute__((section(".sdata"))) = 0xffff;
@@ -47,7 +46,7 @@ CBody *pBodyHit __attribute__((section(".sdata"))) = 0;
 int CollidedTriggerModel __attribute__((section(".sdata"))) = 0;
 
 /** Reusable line-query record that follows the nearest-hit owner in `.data`. */
-SLineInfo GColInfo __attribute__((section(".data"))) = {0};
+SLineInfo GColInfo __attribute__((section(".data"))) = { 0 };
 
 // === Free function declarations ===
 void NextInquiry(void);
@@ -64,9 +63,9 @@ void M3dColij_LineToThisItem(Item *pItem, SLineInfo *pInfo);
 #include "M3DCOLIJ.h"
 
 // === Source-owned collision transform and caches ===
-MATRIX Tfm __attribute__((section(".data"))) = {0};
-SColCache ItemCache[20] __attribute__((section(".data"))) = {{0}};
-SFaceCache FaceCache[500] __attribute__((section(".data"))) = {{0}};
+MATRIX Tfm __attribute__((section(".data"))) = { 0 };
+SColCache ItemCache[20] __attribute__((section(".data"))) = { { 0 } };
+SFaceCache FaceCache[500] __attribute__((section(".data"))) = { { 0 } };
 
 // === Function implementations (address order) ===
 
@@ -258,8 +257,7 @@ void M3dColij_LineToItem(Item *pItem, SLineInfo *pInfo)
     if (pItem && pInfo->Length)
     {
         gte_SetRotMatrix(&pInfo->WorldCst);
-        M3dAsm_LineColijPreprocessItems(
-            pItem, 0, pInfo, pInfo->Inquiry);
+        M3dAsm_LineColijPreprocessItems(pItem, 0, pInfo, pInfo->Inquiry);
 
         do
         {
@@ -286,8 +284,7 @@ void M3dColij_FlushCache(void)
     FaceCacheIndex = 0;
     FaceCacheStart = -1;
 
-    for (i = 0; i < 20; ++i)
-        ItemCache[i].pItem = 0;
+    for (i = 0; i < 20; ++i) ItemCache[i].pItem = 0;
 }
 
 /**
@@ -352,20 +349,14 @@ void M3dColij_LineToThisItemCached(Item *pItem, SLineInfo *pInfo, SColCache *pCo
     {
         // Dead test on the first cache entry: flow deletes the store and jump2 the
         // compare, but its $v0 temporary in the loop preheader keeps pFaceCache in $v1.
-        if (pFaceCache->XMin < 0)
-            pModel = 0;
+        if (pFaceCache->XMin < 0) pModel = 0;
 
         do
         {
-            if (pFaceCache->YMin <= YMax &&
-                pFaceCache->YMax >= YMin &&
-                pFaceCache->XMin <= XMax &&
-                pFaceCache->XMax >= XMin &&
-                pFaceCache->ZMin <= ZMax &&
-                pFaceCache->ZMax >= ZMin)
+            if (pFaceCache->YMin <= YMax && pFaceCache->YMax >= YMin && pFaceCache->XMin <= XMax &&
+                pFaceCache->XMax >= XMin && pFaceCache->ZMin <= ZMax && pFaceCache->ZMax >= ZMin)
             {
-                if (!(pFace[3] & M3dColij_OneMask) &&
-                    ~(pFace[3] | M3dColij_ZeroMask) == 0 &&
+                if (!(pFace[3] & M3dColij_OneMask) && ~(pFace[3] | M3dColij_ZeroMask) == 0 &&
                     (((pFace[3] >> 16) & 3) ^ 1) != 0)
                 {
                     u16 FaceFlags;
@@ -425,26 +416,16 @@ void M3dColij_LineToThisItemCached(Item *pItem, SLineInfo *pInfo, SColCache *pCo
                     y0 = pVerts[pVertexIndex[0]].vy;
                     z0 = pVerts[pVertexIndex[0]].vz;
 
-                    L0x = (pInfo->StartCoords.vx >> 12) -
-                          (pItem->Position.vx >> 12);
-                    L0y = (pInfo->StartCoords.vy >> 12) -
-                          (pItem->Position.vy >> 12);
-                    L0z = (pInfo->StartCoords.vz >> 12) -
-                          (pItem->Position.vz >> 12);
-                    L1x = (pInfo->EndCoords.vx >> 12) -
-                          (pItem->Position.vx >> 12);
-                    L1y = (pInfo->EndCoords.vy >> 12) -
-                          (pItem->Position.vy >> 12);
-                    L1z = (pInfo->EndCoords.vz >> 12) -
-                          (pItem->Position.vz >> 12);
+                    L0x = (pInfo->StartCoords.vx >> 12) - (pItem->Position.vx >> 12);
+                    L0y = (pInfo->StartCoords.vy >> 12) - (pItem->Position.vy >> 12);
+                    L0z = (pInfo->StartCoords.vz >> 12) - (pItem->Position.vz >> 12);
+                    L1x = (pInfo->EndCoords.vx >> 12) - (pItem->Position.vx >> 12);
+                    L1y = (pInfo->EndCoords.vy >> 12) - (pItem->Position.vy >> 12);
+                    L1z = (pInfo->EndCoords.vz >> 12) - (pItem->Position.vz >> 12);
 
                     LineLen = pInfo->Length;
-                    s0 = Nx * (L0x - x0) +
-                         Ny * (L0y - y0) +
-                         Nz * (L0z - z0);
-                    s1 = Nx * (L1x - x0) +
-                         Ny * (L1y - y0) +
-                         Nz * (L1z - z0);
+                    s0 = Nx * (L0x - x0) + Ny * (L0y - y0) + Nz * (L0z - z0);
+                    s1 = Nx * (L1x - x0) + Ny * (L1y - y0) + Nz * (L1z - z0);
 
                     if (s0 >= 0 && s1 <= 0 && (s0 || s1))
                     {
@@ -466,62 +447,37 @@ void M3dColij_LineToThisItemCached(Item *pItem, SLineInfo *pInfo, SColCache *pCo
                         Dy = L1y - L0y;
                         Dz = L1z - L0z;
 
-                        V0x = x0 - L0x,
-                        V0y = y0 - L0y,
-                        V0z = z0 - L0z;
-                        V1x = x1 - L0x,
-                        V1y = y1 - L0y,
-                        V1z = z1 - L0z;
-                        V2x = x2 - L0x,
-                        V2y = y2 - L0y,
-                        V2z = z2 - L0z;
+                        V0x = x0 - L0x, V0y = y0 - L0y, V0z = z0 - L0z;
+                        V1x = x1 - L0x, V1y = y1 - L0y, V1z = z1 - L0z;
+                        V2x = x2 - L0x, V2y = y2 - L0y, V2z = z2 - L0z;
 
-                        V3x = x3 - L0x,
-                        V3y = y3 - L0y,
-                        V3z = z3 - L0z;
+                        V3x = x3 - L0x, V3y = y3 - L0y, V3z = z3 - L0z;
 
                         contained = 0;
 
                         if (FaceFlags & 0x10)
                         {
-                            S0 =
-                                Dx * (V2y * V0z - V2z * V0y) +
-                                Dy * (V2z * V0x - V2x * V0z) +
-                                Dz * (V2x * V0y - V2y * V0x);
-                            S1 =
-                                Dx * (V0y * V1z - V0z * V1y) +
-                                Dy * (V0z * V1x - V0x * V1z) +
-                                Dz * (V0x * V1y - V0y * V1x);
-                            S2 =
-                                Dx * (V1y * V2z - V1z * V2y) +
-                                Dy * (V1z * V2x - V1x * V2z) +
-                                Dz * (V1x * V2y - V1y * V2x);
+                            S0 = Dx * (V2y * V0z - V2z * V0y) + Dy * (V2z * V0x - V2x * V0z) +
+                                 Dz * (V2x * V0y - V2y * V0x);
+                            S1 = Dx * (V0y * V1z - V0z * V1y) + Dy * (V0z * V1x - V0x * V1z) +
+                                 Dz * (V0x * V1y - V0y * V1x);
+                            S2 = Dx * (V1y * V2z - V1z * V2y) + Dy * (V1z * V2x - V1x * V2z) +
+                                 Dz * (V1x * V2y - V1y * V2x);
 
-                            if (S0 >= 0 && S1 >= 0 && S2 >= 0)
-                                contained = 1;
+                            if (S0 >= 0 && S1 >= 0 && S2 >= 0) contained = 1;
                         }
                         else
                         {
-                            S0 =
-                                Dx * (V2y * V0z - V2z * V0y) +
-                                Dy * (V2z * V0x - V2x * V0z) +
-                                Dz * (V2x * V0y - V2y * V0x);
-                            S1 =
-                                Dx * (V0y * V1z - V0z * V1y) +
-                                Dy * (V0z * V1x - V0x * V1z) +
-                                Dz * (V0x * V1y - V0y * V1x);
-                            S2 =
-                                Dx * (V1y * V3z - V1z * V3y) +
-                                Dy * (V1z * V3x - V1x * V3z) +
-                                Dz * (V1x * V3y - V1y * V3x);
-                            S3 =
-                                Dx * (V3y * V2z - V3z * V2y) +
-                                Dy * (V3z * V2x - V3x * V2z) +
-                                Dz * (V3x * V2y - V3y * V2x);
+                            S0 = Dx * (V2y * V0z - V2z * V0y) + Dy * (V2z * V0x - V2x * V0z) +
+                                 Dz * (V2x * V0y - V2y * V0x);
+                            S1 = Dx * (V0y * V1z - V0z * V1y) + Dy * (V0z * V1x - V0x * V1z) +
+                                 Dz * (V0x * V1y - V0y * V1x);
+                            S2 = Dx * (V1y * V3z - V1z * V3y) + Dy * (V1z * V3x - V1x * V3z) +
+                                 Dz * (V1x * V3y - V1y * V3x);
+                            S3 = Dx * (V3y * V2z - V3z * V2y) + Dy * (V3z * V2x - V3x * V2z) +
+                                 Dz * (V3x * V2y - V3y * V2x);
 
-                            if (S0 >= 0 && S1 >= 0 &&
-                                S2 >= 0 && S3 >= 0)
-                                contained = 1;
+                            if (S0 >= 0 && S1 >= 0 && S2 >= 0 && S3 >= 0) contained = 1;
                         }
 
                         if (contained)
@@ -549,19 +505,15 @@ void M3dColij_LineToThisItemCached(Item *pItem, SLineInfo *pInfo, SColCache *pCo
                             }
                             else
                             {
-                                t = M3dMaths_MulDiv64(
-                                    s0, 0x4000, s0 - s1);
+                                t = M3dMaths_MulDiv64(s0, 0x4000, s0 - s1);
 
                                 if (t < tNear)
                                 {
-                                    Qx = pInfo->EndCoords.vx -
-                                         pInfo->StartCoords.vx;
+                                    Qx = pInfo->EndCoords.vx - pInfo->StartCoords.vx;
                                     xd = Qx;
-                                    Qy = pInfo->EndCoords.vy -
-                                         pInfo->StartCoords.vy;
+                                    Qy = pInfo->EndCoords.vy - pInfo->StartCoords.vy;
                                     yd = Qy;
-                                    Qz = pInfo->EndCoords.vz -
-                                         pInfo->StartCoords.vz;
+                                    Qz = pInfo->EndCoords.vz - pInfo->StartCoords.vz;
                                     zd = Qz;
 
                                     sxd = xd < 0 ? -1 : 1;
@@ -573,30 +525,22 @@ void M3dColij_LineToThisItemCached(Item *pItem, SLineInfo *pInfo, SColCache *pCo
                                     szd = zd < 0 ? -1 : 1;
                                     zd = (zd ^ (zd >> 31)) - (zd >> 31);
 
-                                    xd1 = sxd *
-                                          M3dMaths_MulDiv64(xd, t, 0x4000);
-                                    yd1 = syd *
-                                          M3dMaths_MulDiv64(yd, t, 0x4000);
-                                    zd1 = szd *
-                                          M3dMaths_MulDiv64(zd, t, 0x4000);
+                                    xd1 = sxd * M3dMaths_MulDiv64(xd, t, 0x4000);
+                                    yd1 = syd * M3dMaths_MulDiv64(yd, t, 0x4000);
+                                    zd1 = szd * M3dMaths_MulDiv64(zd, t, 0x4000);
 
                                     tNear = t;
                                     pInfo->tNear = t;
-                                    pInfo->Position.vx =
-                                        pInfo->StartCoords.vx + xd1;
-                                    pInfo->Position.vy =
-                                        pInfo->StartCoords.vy + yd1;
-                                    pInfo->Position.vz =
-                                        pInfo->StartCoords.vz + zd1;
+                                    pInfo->Position.vx = pInfo->StartCoords.vx + xd1;
+                                    pInfo->Position.vy = pInfo->StartCoords.vy + yd1;
+                                    pInfo->Position.vz = pInfo->StartCoords.vz + zd1;
                                     pInfo->pItem = pItem;
                                     pInfo->pFace = pFace;
                                     pInfo->Model = pItem->Model;
-                                    pInfo->Distance =
-                                        Mips_FixMul(LineLen, t) >> 2;
+                                    pInfo->Distance = Mips_FixMul(LineLen, t) >> 2;
 
                                     *(SVECTOR **)&NearestHit.Normal =
-                                        (SVECTOR *)((u8 *)Normals +
-                                        (((u16 *)pFace)[6] & 0xfff8));
+                                        (SVECTOR *)((u8 *)Normals + (((u16 *)pFace)[6] & 0xfff8));
                                     pHit->pFace = pFace;
                                 }
                             }
@@ -630,23 +574,18 @@ void M3dColij_LineToThisItemCached(Item *pItem, SLineInfo *pInfo, SColCache *pCo
  */
 int FitFacesAtCacheEnd(int faces)
 {
-    if (ItemCacheIndex >= 20)
-        ItemCacheIndex = 0;
+    if (ItemCacheIndex >= 20) ItemCacheIndex = 0;
 
-    if (ItemCacheIndex == ItemCacheStart)
-        return 0;
+    if (ItemCacheIndex == ItemCacheStart) return 0;
 
-    if (FaceCacheStart < FaceCacheIndex && FaceCacheIndex + faces > 500)
-        FaceCacheIndex = 0;
+    if (FaceCacheStart < FaceCacheIndex && FaceCacheIndex + faces > 500) FaceCacheIndex = 0;
 
     int faceIndex = FaceCacheIndex;
     int faceStart = FaceCacheStart;
 
-    if (faceStart < faceIndex)
-        goto fits;
+    if (faceStart < faceIndex) goto fits;
 
-    if (faceStart < faceIndex + faces)
-        return 0;
+    if (faceStart < faceIndex + faces) return 0;
 
 fits:
     return 1;
@@ -659,8 +598,7 @@ void RemoveFacesFromCache(void)
 {
     ItemCache[ItemCacheStart].pItem = 0;
     ItemCacheStart++;
-    if (ItemCacheStart >= 20)
-        ItemCacheStart = 0;
+    if (ItemCacheStart >= 20) ItemCacheStart = 0;
 
     if (ItemCacheStart == ItemCacheIndex)
     {
@@ -686,15 +624,12 @@ void RemoveFacesFromCache(void)
  */
 void M3dColij_LineToItemZoned(Item **ppItem, SLineInfo *pInfo)
 {
-    if (!ppItem)
-        return;
+    if (!ppItem) return;
 
-    if (pInfo->Length == 0)
-        return;
+    if (pInfo->Length == 0) return;
 
     gte_SetRotMatrix(&pInfo->WorldCst);
-    M3dAsm_LineColijPreprocessItemsZoned(
-        ppItem, 0, pInfo, pInfo->Inquiry);
+    M3dAsm_LineColijPreprocessItemsZoned(ppItem, 0, pInfo, pInfo->Inquiry);
 
     for (; *ppItem; ++ppItem)
     {
@@ -707,14 +642,12 @@ void M3dColij_LineToItemZoned(Item **ppItem, SLineInfo *pInfo)
             pItem = *ppItem;
             for (i = 0; i < 20; ++i)
             {
-                if (ItemCache[i].pItem == pItem)
-                    break;
+                if (ItemCache[i].pItem == pItem) break;
             }
 
             if (i != 20)
             {
-                M3dColij_LineToThisItemCached(
-                    pItem, pInfo, &ItemCache[i]);
+                M3dColij_LineToThisItemCached(pItem, pInfo, &ItemCache[i]);
             }
             else
             {
@@ -733,18 +666,15 @@ void M3dColij_LineToItemZoned(Item **ppItem, SLineInfo *pInfo)
                 pModel = PSXRegion[pItem->Region].ppModels[pItem->Model];
                 Faces = pModel->NumFaces;
 
-                while (!FitFacesAtCacheEnd(Faces))
-                    RemoveFacesFromCache();
+                while (!FitFacesAtCacheEnd(Faces)) RemoveFacesFromCache();
 
                 ItemCache[ItemCacheIndex].pItem = pItem;
                 ItemCache[ItemCacheIndex].pModel = pModel;
                 ItemCache[ItemCacheIndex].Faces = Faces;
                 ItemCache[ItemCacheIndex].FirstFace = FaceCacheIndex;
 
-                if (ItemCacheStart == -1)
-                    ItemCacheStart = ItemCacheIndex;
-                if (FaceCacheStart == -1)
-                    FaceCacheStart = FaceCacheIndex;
+                if (ItemCacheStart == -1) ItemCacheStart = ItemCacheIndex;
+                if (FaceCacheStart == -1) FaceCacheStart = FaceCacheIndex;
 
                 {
                     int i;
@@ -833,17 +763,14 @@ void M3dColij_LineToItemZoned(Item **ppItem, SLineInfo *pInfo)
                         pFaceCache->ZMax = zmax;
 
                         ++pFaceCache;
-                        pFaceX = (u32 *)((u8 *)pFaceX +
-                                         (((u16 *)pFaceX)[1] & 0xfffc));
+                        pFaceX = (u32 *)((u8 *)pFaceX + (((u16 *)pFaceX)[1] & 0xfffc));
                     }
                 }
 
-                M3dColij_LineToThisItemCached(
-                    pItem, pInfo, &ItemCache[ItemCacheIndex]);
+                M3dColij_LineToThisItemCached(pItem, pInfo, &ItemCache[ItemCacheIndex]);
 
                 ++ItemCacheIndex;
-                if (ItemCacheIndex == 20)
-                    ItemCacheIndex = 0;
+                if (ItemCacheIndex == 20) ItemCacheIndex = 0;
             }
         }
     }
@@ -863,8 +790,7 @@ int M3dColij_GetLineInfo(SLineInfo *pInfo)
 {
     if (pInfo->pItem)
     {
-        M3dMaths_RotMatrixYXZ(
-            M3dColij_GteAngles(&pInfo->pItem->Angles), &Tfm);
+        M3dMaths_RotMatrixYXZ(M3dColij_GteAngles(&pInfo->pItem->Angles), &Tfm);
         gte_SetRotMatrix(&Tfm);
         // The line path stores a model-normal pointer in Normal's first word.
         gte_ldv0(*(SVECTOR **)&NearestHit.Normal);
@@ -898,17 +824,12 @@ void M3dColij_LineToThisItem(Item *pItem, SLineInfo *pInfo)
     else
         pVertices = ProjectedVertices;
 
-    if (pItem->Angles.vx == 0 &&
-        pItem->Angles.vy == 0 &&
-        pItem->Angles.vz == 0 &&
+    if (pItem->Angles.vx == 0 && pItem->Angles.vy == 0 && pItem->Angles.vz == 0 &&
         !(pItem->Flags & 0x200))
     {
-        PosnRelStart.vx =
-            pItem->Position.vx - pInfo->StartCoords.vx >> 12;
-        PosnRelStart.vy =
-            pItem->Position.vy - pInfo->StartCoords.vy >> 12;
-        PosnRelStart.vz =
-            pItem->Position.vz - pInfo->StartCoords.vz >> 12;
+        PosnRelStart.vx = pItem->Position.vx - pInfo->StartCoords.vx >> 12;
+        PosnRelStart.vy = pItem->Position.vy - pInfo->StartCoords.vy >> 12;
+        PosnRelStart.vz = pItem->Position.vz - pInfo->StartCoords.vz >> 12;
 
         gte_ZeroTransVector();
     }
@@ -916,21 +837,15 @@ void M3dColij_LineToThisItem(Item *pItem, SLineInfo *pInfo)
     {
         if (pInfo->DropDown)
         {
-            Tfm.t[0] =
-                pItem->Position.vx - pInfo->StartCoords.vx >> 12;
-            Tfm.t[1] =
-                pInfo->StartCoords.vz - pItem->Position.vz >> 12;
-            Tfm.t[2] =
-                pItem->Position.vy - pInfo->StartCoords.vy >> 12;
+            Tfm.t[0] = pItem->Position.vx - pInfo->StartCoords.vx >> 12;
+            Tfm.t[1] = pInfo->StartCoords.vz - pItem->Position.vz >> 12;
+            Tfm.t[2] = pItem->Position.vy - pInfo->StartCoords.vy >> 12;
         }
         else
         {
-            Tfm.t[0] =
-                pItem->Position.vx - pInfo->StartCoords.vx >> 12;
-            Tfm.t[1] =
-                pItem->Position.vy - pInfo->StartCoords.vy >> 12;
-            Tfm.t[2] =
-                pItem->Position.vz - pInfo->StartCoords.vz >> 12;
+            Tfm.t[0] = pItem->Position.vx - pInfo->StartCoords.vx >> 12;
+            Tfm.t[1] = pItem->Position.vy - pInfo->StartCoords.vy >> 12;
+            Tfm.t[2] = pItem->Position.vz - pInfo->StartCoords.vz >> 12;
 
             gte_ldlv0(&Tfm.t[0]);
             gte_lcv0();
@@ -945,10 +860,8 @@ void M3dColij_LineToThisItem(Item *pItem, SLineInfo *pInfo)
 
         if (pItem->Angles.vx || pItem->Angles.vy || pItem->Angles.vz)
         {
-            M3dMaths_RotMatrixYXZ(
-                M3dColij_GteAngles(&pItem->Angles), &Tfm);
-            if (pItem->Flags & 0x200)
-                M3dMaths_ScaleMatrix(pItem, &Tfm);
+            M3dMaths_RotMatrixYXZ(M3dColij_GteAngles(&pItem->Angles), &Tfm);
+            if (pItem->Flags & 0x200) M3dMaths_ScaleMatrix(pItem, &Tfm);
             M3dMaths_MulLcmMatrix(&Tfm, &Tfm);
             gte_SetColorMatrix(&Tfm);
         }
@@ -961,15 +874,12 @@ void M3dColij_LineToThisItem(Item *pItem, SLineInfo *pInfo)
         }
     }
 
-    And = M3dAsm_LineColijProcessVertices(
-        pModel, pVertices, pInfo->Length, &PosnRelStart);
+    And = M3dAsm_LineColijProcessVertices(pModel, pVertices, pInfo->Length, &PosnRelStart);
 
-    if (And & 0x060f)
-        return;
+    if (And & 0x060f) return;
 
     CollidedTriggerModel = -1;
-    M3dAsm_LineColijProcessFaces(
-        pModel, pVertices, pInfo, pItem);
+    M3dAsm_LineColijProcessFaces(pModel, pVertices, pInfo, pItem);
 
     if (CollidedTriggerModel != -1)
     {
@@ -997,7 +907,8 @@ void M3dColij_LineToThisItem(Item *pItem, SLineInfo *pInfo)
  * @param ScaleFactor Fixed-point scale applied to each body's minor radius.
  * @return The closest intersected body, or null when there is no hit.
  */
-CBody *M3dColij_LineToSphere(const CVector &OldPos, const CVector &NewPos, CVector &ColijPos, CBody *pBody, CBody *pIgnore, int ScaleFactor)
+CBody *M3dColij_LineToSphere(const CVector &OldPos, const CVector &NewPos, CVector &ColijPos,
+                             CBody *pBody, CBody *pIgnore, int ScaleFactor)
 {
     int Radius;
     int RadiusSquared;
@@ -1018,11 +929,9 @@ CBody *M3dColij_LineToSphere(const CVector &OldPos, const CVector &NewPos, CVect
     gte_ldlvl(&DirectionVec);
     gte_sqr0();
     gte_stlvnl(&SquareVec);
-    Length = M3dMaths_SquareRoot0(
-        SquareVec.vx + SquareVec.vy + SquareVec.vz);
+    Length = M3dMaths_SquareRoot0(SquareVec.vx + SquareVec.vy + SquareVec.vz);
 
-    if (Length == 0)
-        return 0;
+    if (Length == 0) return 0;
 
     DirectionVec = (DirectionVec << 12) / Length;
     gte_ldopv1(&DirectionVec);
@@ -1081,12 +990,9 @@ CBody *M3dColij_LineToSphere(const CVector &OldPos, const CVector &NewPos, CVect
                 MinCoords.vz <= pBody->CItem.mPos.vz + Radius &&
                 pBody->CItem.mPos.vz - Radius <= MaxCoords.vz)
             {
-                OldToCentre.vx =
-                    (pBody->CItem.mPos.vx - OldPos.vx) >> 12;
-                OldToCentre.vy =
-                    (pBody->CItem.mPos.vy - OldPos.vy) >> 12;
-                OldToCentre.vz =
-                    (pBody->CItem.mPos.vz - OldPos.vz) >> 12;
+                OldToCentre.vx = (pBody->CItem.mPos.vx - OldPos.vx) >> 12;
+                OldToCentre.vy = (pBody->CItem.mPos.vy - OldPos.vy) >> 12;
+                OldToCentre.vz = (pBody->CItem.mPos.vz - OldPos.vz) >> 12;
 
                 gte_ldopv2(&OldToCentre);
                 gte_op12();
@@ -1094,8 +1000,7 @@ CBody *M3dColij_LineToSphere(const CVector &OldPos, const CVector &NewPos, CVect
                 gte_stlvnl(&SquareVec);
 
                 RadiusSquared = (Radius >> 12) * (Radius >> 12);
-                if (SquareVec.vx + SquareVec.vy + SquareVec.vz <
-                    RadiusSquared)
+                if (SquareVec.vx + SquareVec.vy + SquareVec.vz < RadiusSquared)
                 {
                     gte_ldlv0(&OldToCentre);
                     gte_llv0();
@@ -1109,25 +1014,20 @@ CBody *M3dColij_LineToSphere(const CVector &OldPos, const CVector &NewPos, CVect
                             gte_sqr0();
                             gte_stlvnl(&SquareVec);
 
-                            if (RadiusSquared <=
-                                SquareVec.vx + SquareVec.vy + SquareVec.vz)
+                            if (RadiusSquared <= SquareVec.vx + SquareVec.vy + SquareVec.vz)
                                 goto next_body;
                         }
                         else if (Length < DotProd)
                         {
-                            NewToCentre.vx =
-                                (pBody->CItem.mPos.vx - NewPos.vx) >> 12;
-                            NewToCentre.vy =
-                                (pBody->CItem.mPos.vy - NewPos.vy) >> 12;
-                            NewToCentre.vz =
-                                (pBody->CItem.mPos.vz - NewPos.vz) >> 12;
+                            NewToCentre.vx = (pBody->CItem.mPos.vx - NewPos.vx) >> 12;
+                            NewToCentre.vy = (pBody->CItem.mPos.vy - NewPos.vy) >> 12;
+                            NewToCentre.vz = (pBody->CItem.mPos.vz - NewPos.vz) >> 12;
 
                             gte_ldlvl(&NewToCentre);
                             gte_sqr0();
                             gte_stlvnl(&SquareVec);
 
-                            if (RadiusSquared <=
-                                SquareVec.vx + SquareVec.vy + SquareVec.vz)
+                            if (RadiusSquared <= SquareVec.vx + SquareVec.vy + SquareVec.vz)
                                 goto next_body;
                         }
 
@@ -1138,7 +1038,7 @@ CBody *M3dColij_LineToSphere(const CVector &OldPos, const CVector &NewPos, CVect
             }
         }
 
-next_body:
+    next_body:
         pBody = pBody->CItem.mNextItem;
     }
 

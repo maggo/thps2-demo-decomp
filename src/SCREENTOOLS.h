@@ -13,8 +13,7 @@
  * ScreenElementList (declared in that order: the exe has their tables in
  * reverse declaration order, ScreenElementList first).
  */
-#if defined(SCREENTOOLS_POLYMORPHIC_LAYOUT) && \
-    !defined(SCREENTOOLS_POLYMORPHIC_LAYOUT_EMITTED)
+#if defined(SCREENTOOLS_POLYMORPHIC_LAYOUT) && !defined(SCREENTOOLS_POLYMORPHIC_LAYOUT_EMITTED)
 #define SCREENTOOLS_POLYMORPHIC_LAYOUT_EMITTED
 #define SCREENTOOLS_AGGREGATE_LAYOUT_EMITTED /* the POD views are superseded */
 
@@ -27,7 +26,8 @@
 #include "IMAGE.h"
 
 /** Base drawable of the front-end screen hierarchy. */
-struct ScreenElement : CClass {
+struct ScreenElement : CClass
+{
     int mHomeX;
     int mHomeY;
     int mDrawFirst;
@@ -57,12 +57,12 @@ struct ScreenElement : CClass {
 };
 
 /** Text-bearing screen element. */
-struct TextScreenElement : ScreenElement {
+struct TextScreenElement : ScreenElement
+{
     char *mpString;
     Font *mpFont;
 
-    TextScreenElement(char *text, Font *font, int homeX, int homeY,
-                      int screenX, int screenY);
+    TextScreenElement(char *text, Font *font, int homeX, int homeY, int screenX, int screenY);
     virtual ~TextScreenElement();
     /** Replace the owned display string with a copy of the supplied text. */
     void setString(char *text);
@@ -71,18 +71,20 @@ struct TextScreenElement : ScreenElement {
 };
 
 /** Sprite-bearing screen element. */
-struct SpriteScreenElement : ScreenElement {
+struct SpriteScreenElement : ScreenElement
+{
     Sprite2 *mSprite;
 
-    SpriteScreenElement(char *fileName, int homeX, int homeY, int screenX,
-                        int screenY, int justY, int justX);
+    SpriteScreenElement(char *fileName, int homeX, int homeY, int screenX, int screenY, int justY,
+                        int justX);
     virtual ~SpriteScreenElement();
     void draw(int x, int y);
     int width();
 };
 
 /** Fixed-capacity list of elements used by composite front-end screens. */
-struct ScreenElementList : ScreenElement {
+struct ScreenElementList : ScreenElement
+{
     ScreenElement *mpItem[16];
     int mCount;
 
@@ -94,14 +96,13 @@ struct ScreenElementList : ScreenElement {
     void addItem(ScreenElement *element);
 };
 
-typedef char frontend_screen_element_size_must_be_36[
-    (sizeof(ScreenElement) == 36) ? 1 : -1];
-typedef char frontend_screen_element_list_size_must_be_104[
-    (sizeof(ScreenElementList) == 104) ? 1 : -1];
-typedef char frontend_text_screen_element_size_must_be_44[
-    (sizeof(TextScreenElement) == 44) ? 1 : -1];
-typedef char frontend_sprite_screen_element_size_must_be_40[
-    (sizeof(SpriteScreenElement) == 40) ? 1 : -1];
+typedef char frontend_screen_element_size_must_be_36[(sizeof(ScreenElement) == 36) ? 1 : -1];
+typedef char
+    frontend_screen_element_list_size_must_be_104[(sizeof(ScreenElementList) == 104) ? 1 : -1];
+typedef char
+    frontend_text_screen_element_size_must_be_44[(sizeof(TextScreenElement) == 44) ? 1 : -1];
+typedef char
+    frontend_sprite_screen_element_size_must_be_40[(sizeof(SpriteScreenElement) == 40) ? 1 : -1];
 
 #endif // SCREENTOOLS_POLYMORPHIC_LAYOUT
 
@@ -112,8 +113,7 @@ typedef char frontend_sprite_screen_element_size_must_be_40[
  * vtables.  The block is deliberately re-entrant so a menu TU can request the
  * storage views before including the ordinary API later in its source.
  */
-#if defined(SCREENTOOLS_AGGREGATE_LAYOUT) && \
-    !defined(SCREENTOOLS_AGGREGATE_LAYOUT_EMITTED)
+#if defined(SCREENTOOLS_AGGREGATE_LAYOUT) && !defined(SCREENTOOLS_AGGREGATE_LAYOUT_EMITTED)
 #define SCREENTOOLS_AGGREGATE_LAYOUT_EMITTED
 
 #include "FONTTOOLS.h"
@@ -123,7 +123,8 @@ typedef char frontend_sprite_screen_element_size_must_be_40[
 struct Sprite2;
 
 /** Base drawable storage used by the front-end screen hierarchy. */
-struct ScreenElement {
+struct ScreenElement
+{
     struct CClass CClass;
     int mHomeX;
     int mHomeY;
@@ -149,7 +150,8 @@ struct ScreenElement {
 };
 
 /** Fixed-capacity aggregate list used by composite front-end screens. */
-struct ScreenElementList {
+struct ScreenElementList
+{
     struct ScreenElement ScreenElement;
     struct ScreenElement *mpItem[16];
     int mCount;
@@ -163,7 +165,8 @@ struct ScreenElementList {
 };
 
 /** Text-bearing screen-element storage. */
-struct TextScreenElement {
+struct TextScreenElement
+{
     struct ScreenElement ScreenElement;
     char *mpString;
     struct Font *mpFont;
@@ -175,19 +178,19 @@ struct TextScreenElement {
 };
 
 /** Sprite-bearing screen-element storage. */
-struct SpriteScreenElement {
+struct SpriteScreenElement
+{
     struct ScreenElement ScreenElement;
     struct Sprite2 *mSprite;
 };
 
-typedef char frontend_screen_element_size_must_be_36[
-    (sizeof(ScreenElement) == 36) ? 1 : -1];
-typedef char frontend_screen_element_list_size_must_be_104[
-    (sizeof(ScreenElementList) == 104) ? 1 : -1];
-typedef char frontend_text_screen_element_size_must_be_44[
-    (sizeof(TextScreenElement) == 44) ? 1 : -1];
-typedef char frontend_sprite_screen_element_size_must_be_40[
-    (sizeof(SpriteScreenElement) == 40) ? 1 : -1];
+typedef char frontend_screen_element_size_must_be_36[(sizeof(ScreenElement) == 36) ? 1 : -1];
+typedef char
+    frontend_screen_element_list_size_must_be_104[(sizeof(ScreenElementList) == 104) ? 1 : -1];
+typedef char
+    frontend_text_screen_element_size_must_be_44[(sizeof(TextScreenElement) == 44) ? 1 : -1];
+typedef char
+    frontend_sprite_screen_element_size_must_be_40[(sizeof(SpriteScreenElement) == 40) ? 1 : -1];
 
 #endif // SCREENTOOLS_AGGREGATE_LAYOUT
 
@@ -198,15 +201,15 @@ typedef char frontend_sprite_screen_element_size_must_be_40[
  */
 #if defined(SCREENTOOLS_DECLARE_SCREEN_ELEMENT_CONSTRUCTOR)
 struct ScreenElement;
-extern "C" ScreenElement *__13ScreenElementiiii(
-    ScreenElement *element, int homeX, int homeY, int screenX, int screenY);
+extern "C" ScreenElement *__13ScreenElementiiii(ScreenElement *element, int homeX, int homeY,
+                                                int screenX, int screenY);
 #undef SCREENTOOLS_DECLARE_SCREEN_ELEMENT_CONSTRUCTOR
 #endif
 
 #if defined(SCREENTOOLS_DECLARE_SCREEN_ELEMENT_LIST_CONSTRUCTOR)
 struct ScreenElementList;
-extern "C" ScreenElementList *__17ScreenElementListiiii(
-    ScreenElementList *list, int homeX, int homeY, int screenX, int screenY);
+extern "C" ScreenElementList *__17ScreenElementListiiii(ScreenElementList *list, int homeX,
+                                                        int homeY, int screenX, int screenY);
 #undef SCREENTOOLS_DECLARE_SCREEN_ELEMENT_LIST_CONSTRUCTOR
 #endif
 
@@ -215,8 +218,7 @@ struct TextMenuProperties;
 namespace TextMenuPropertiesConstructorABI
 {
 /** Construct the shared menu-text style in caller-owned storage. */
-extern "C" TextMenuProperties *__18TextMenuProperties(
-    TextMenuProperties *properties);
+extern "C" TextMenuProperties *__18TextMenuProperties(TextMenuProperties *properties);
 }
 #undef SCREENTOOLS_DECLARE_TEXT_MENU_PROPERTIES_CONSTRUCTOR
 #endif
@@ -227,8 +229,8 @@ struct TextMenuProperties;
 namespace TextMenuItemConstructorABI
 {
 /** Construct a text menu item in caller-owned storage. */
-extern "C" VMenuItem *__12TextMenuItemiPCcR18TextMenuProperties(
-    VMenuItem *item, int id, char *text, TextMenuProperties *properties);
+extern "C" VMenuItem *__12TextMenuItemiPCcR18TextMenuProperties(VMenuItem *item, int id, char *text,
+                                                                TextMenuProperties *properties);
 }
 #undef SCREENTOOLS_DECLARE_TEXT_MENU_ITEM_CONSTRUCTOR
 #endif
@@ -238,9 +240,8 @@ struct VerticalMenu2;
 namespace VerticalMenu2ConstructorABI
 {
 /** Construct a shared vertical menu in caller-owned storage. */
-extern "C" VerticalMenu2 *__13VerticalMenu2iiiiiii(
-    VerticalMenu2 *menu, int x, int y, int width, int height,
-    int justX, int justY, int spacing);
+extern "C" VerticalMenu2 *__13VerticalMenu2iiiiiii(VerticalMenu2 *menu, int x, int y, int width,
+                                                   int height, int justX, int justY, int spacing);
 }
 #undef SCREENTOOLS_DECLARE_VERTICAL_MENU2_CONSTRUCTOR
 #endif
@@ -248,17 +249,19 @@ extern "C" VerticalMenu2 *__13VerticalMenu2iiiiiii(
 #if defined(SCREENTOOLS_DECLARE_TEXT_SCREEN_ELEMENT_CONSTRUCTOR)
 struct TextScreenElement;
 struct Font;
-extern "C" TextScreenElement *__17TextScreenElementPcP4Fontiiii(
-    TextScreenElement *element, char *text, Font *font,
-    int homeX, int homeY, int screenX, int screenY);
+extern "C" TextScreenElement *__17TextScreenElementPcP4Fontiiii(TextScreenElement *element,
+                                                                char *text, Font *font, int homeX,
+                                                                int homeY, int screenX,
+                                                                int screenY);
 #undef SCREENTOOLS_DECLARE_TEXT_SCREEN_ELEMENT_CONSTRUCTOR
 #endif
 
 #if defined(SCREENTOOLS_DECLARE_SPRITE_SCREEN_ELEMENT_CONSTRUCTOR)
 struct SpriteScreenElement;
-extern "C" SpriteScreenElement *__19SpriteScreenElementPciiiiii(
-    SpriteScreenElement *element, char *fileName,
-    int homeX, int homeY, int screenX, int screenY, int justY, int justX);
+extern "C" SpriteScreenElement *__19SpriteScreenElementPciiiiii(SpriteScreenElement *element,
+                                                                char *fileName, int homeX,
+                                                                int homeY, int screenX, int screenY,
+                                                                int justY, int justX);
 #undef SCREENTOOLS_DECLARE_SPRITE_SCREEN_ELEMENT_CONSTRUCTOR
 #endif
 
@@ -272,7 +275,8 @@ struct TextScreenElement;
 #ifdef SCREENTOOLS_OWNER_DECLARATIONS
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 // Additional shared forward declarations

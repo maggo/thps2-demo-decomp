@@ -5,13 +5,15 @@
 // (CCLASS_POLY.h in BIT2/SMOKE, CNONRENDEREDBIT.h/CSPECIALDISPLAY.h/CPOLYLINE.h elsewhere).
 
 /** One smoke-ribbon width target and the time remaining to reach it. */
-struct SWidthWobble {
+struct SWidthWobble
+{
     int TChange;
     int TargetWidth;
 };
 
 /** Ten-point textured ribbon that animates and damages intersecting bodies. */
-struct CSmokeJet : CTexturedRibbon {
+struct CSmokeJet : CTexturedRibbon
+{
     SWidthWobble mWidthWobble[SMOKE_POINT_COUNT];
     int mOrgX[SMOKE_POINT_COUNT];
     int mPhase[SMOKE_POINT_COUNT];
@@ -25,10 +27,8 @@ struct CSmokeJet : CTexturedRibbon {
     int mLength;
 
     /** Construct and initialize a textured smoke jet. */
-    CSmokeJet(
-        const CVector &BasePos, const CSVector &Angles, int Length,
-        unsigned short Duration, int Damage, int r, int g, int b,
-        unsigned char ScrollSpeed, unsigned int Checksum);
+    CSmokeJet(const CVector &BasePos, const CSVector &Angles, int Length, unsigned short Duration,
+              int Damage, int r, int g, int b, unsigned char ScrollSpeed, unsigned int Checksum);
     CBIT_VIRTUAL ~CSmokeJet();
     /** Reposition every point along the smoke jet. */
     void SetPos(const CVector &Pos);

@@ -13,7 +13,8 @@
 struct CBody;
 struct CCamera;
 
-struct EditorCamera_alt_definition_0003 {
+struct EditorCamera_alt_definition_0003
+{
     struct CClass CClass;
     int Type;
     int Rot;
@@ -25,7 +26,8 @@ struct EditorCamera_alt_definition_0003 {
     struct CBody *Target;
 };
 
-struct EditorCamera_alt_definition_0004 {
+struct EditorCamera_alt_definition_0004
+{
     struct CClass CClass;
     int Type;
     int Rot;
@@ -96,7 +98,8 @@ void LaunchTheDamnGame(int selected_level, int mode);
  * Runs the shell/frontend screen loop and launches gameplay or submodes
  * when the selected screen requests them.
  */
-void FrontEnd2_Main(void) {
+void FrontEnd2_Main(void)
+{
     WhichScreen = 0;
     FrontEnd2_GameMode = 2;
     FrontEnd2_SelectedLevel = 0;
@@ -111,121 +114,140 @@ void FrontEnd2_Main(void) {
     Spooler::Init();
     Create_InitSystem();
 
-    for (;;) {
+    for (;;)
+    {
         int choice;
 
-        switch (WhichScreen) {
-        case 0:
-            LastScreen = 0;
-            choice = MainMenu_Main();
-            switch (choice) {
-            case 0x20:
-                FrontEnd2_GameMode = 2;
-                FrontEnd2_TwoPlayer = 0;
-                WhichScreen = 1;
+        switch (WhichScreen)
+        {
+            case 0:
+                LastScreen = 0;
+                choice = MainMenu_Main();
+                switch (choice)
+                {
+                    case 0x20:
+                        FrontEnd2_GameMode = 2;
+                        FrontEnd2_TwoPlayer = 0;
+                        WhichScreen = 1;
+                        break;
+                    case 0x21:
+                        FrontEnd2_GameMode = 1;
+                        FrontEnd2_TwoPlayer = 0;
+                        WhichScreen = 1;
+                        break;
+                    case 0x22:
+                        FrontEnd2_TwoPlayer = 0;
+                        WhichScreen = 4;
+                        break;
+                    case 0x23: WhichScreen = 3; break;
+                    case 0x26: WhichScreen = 2; break;
+                    case 0x27:
+                        FrontEnd2_TwoPlayer = 1;
+                        WhichScreen = 9;
+                        break;
+                    case 0x28:
+                        FrontEnd2_GameMode = 3;
+                        FrontEnd2_TwoPlayer = 0;
+                        WhichScreen = 1;
+                        break;
+                    default: break;
+                }
                 break;
-            case 0x21:
-                FrontEnd2_GameMode = 1;
-                FrontEnd2_TwoPlayer = 0;
-                WhichScreen = 1;
-                break;
-            case 0x22:
-                FrontEnd2_TwoPlayer = 0;
-                WhichScreen = 4;
-                break;
-            case 0x23:
-                WhichScreen = 3;
-                break;
-            case 0x26:
-                WhichScreen = 2;
-                break;
-            case 0x27:
-                FrontEnd2_TwoPlayer = 1;
-                WhichScreen = 9;
-                break;
-            case 0x28:
-                FrontEnd2_GameMode = 3;
-                FrontEnd2_TwoPlayer = 0;
-                WhichScreen = 1;
-                break;
-            default:
-                break;
-            }
-            break;
 
-        case 1:
-            LastScreen = 1;
-            choice = PlayerSelect_Main(FrontEnd2_GameMode);
-            if (choice != -1) {
-                WhichScreen = 2;
-            } else {
-                if (FrontEnd2_TwoPlayer != 0) {
-                    WhichScreen = 9;
-                } else {
+            case 1:
+                LastScreen = 1;
+                choice = PlayerSelect_Main(FrontEnd2_GameMode);
+                if (choice != -1)
+                {
+                    WhichScreen = 2;
+                }
+                else
+                {
+                    if (FrontEnd2_TwoPlayer != 0)
+                    {
+                        WhichScreen = 9;
+                    }
+                    else
+                    {
+                        WhichScreen = 0;
+                    }
+                }
+                break;
+
+            case 2:
+                choice = LevelSelect2_Main();
+                if (choice != -1)
+                {
+                    WhichScreen = 5;
+                    FrontEnd2_SelectedLevel = choice;
+                }
+                else
+                {
+                    WhichScreen = LastScreen;
+                }
+                break;
+
+            case 3:
+                Create_Main();
+                WhichScreen = 0;
+                break;
+
+            case 4:
+                FrontEnd2_MusicLoopDesiredVol = 0;
+                LevelEditor_Main();
+                FrontEnd2_MusicLoopDesiredVol = 0x4000;
+                if (FrontEnd2_MusicLoopVoice != 0)
+                {
+                    SFX_Stop(FrontEnd2_MusicLoopVoice);
+                }
+                FrontEnd2_MusicLoopVoice = SFX_PlayX(0x9d, (short)FrontEnd2_MusicLoopCurrentVol, 0);
+                if (GenerateLevel != 0)
+                {
+                    FrontEnd2_GameMode = 3;
+                    FrontEnd2_TwoPlayer = 0;
+                    FrontEnd2_SelectedLevel = 0;
+                    WhichScreen = 5;
+                }
+                else
+                {
                     WhichScreen = 0;
                 }
-            }
-            break;
+                break;
 
-        case 2:
-            choice = LevelSelect2_Main();
-            if (choice != -1) {
-                WhichScreen = 5;
-                FrontEnd2_SelectedLevel = choice;
-            } else {
-                WhichScreen = LastScreen;
-            }
-            break;
-
-        case 3:
-            Create_Main();
-            WhichScreen = 0;
-            break;
-
-        case 4:
-            FrontEnd2_MusicLoopDesiredVol = 0;
-            LevelEditor_Main();
-            FrontEnd2_MusicLoopDesiredVol = 0x4000;
-            if (FrontEnd2_MusicLoopVoice != 0) {
-                SFX_Stop(FrontEnd2_MusicLoopVoice);
-            }
-            FrontEnd2_MusicLoopVoice = SFX_PlayX(0x9d, (short)FrontEnd2_MusicLoopCurrentVol, 0);
-            if (GenerateLevel != 0) {
-                FrontEnd2_GameMode = 3;
-                FrontEnd2_TwoPlayer = 0;
-                FrontEnd2_SelectedLevel = 0;
-                WhichScreen = 5;
-            } else {
-                WhichScreen = 0;
-            }
-            break;
-
-        case 5:
-            FrontEnd2_MusicLoopDesiredVol = 0;
-            LaunchTheDamnGame(FrontEnd2_SelectedLevel, FrontEnd2_GameMode);
-            if (GenerateLevel != 0) {
-                WhichScreen = 4;
-            } else {
-                WhichScreen = 0;
-            }
-            break;
-
-        case 9:
-            LastScreen = 9;
-            choice = MultiSelect_Main(&FrontEnd2_GameMode);
-            if (choice == -1) {
-                WhichScreen = 0;
-            } else {
-                if (FrontEnd2_GameMode == 10) {
-                    WhichScreen = 6;
-                } else {
-                    WhichScreen = 1;
+            case 5:
+                FrontEnd2_MusicLoopDesiredVol = 0;
+                LaunchTheDamnGame(FrontEnd2_SelectedLevel, FrontEnd2_GameMode);
+                if (GenerateLevel != 0)
+                {
+                    WhichScreen = 4;
                 }
-            }
-            break;
+                else
+                {
+                    WhichScreen = 0;
+                }
+                break;
 
-        default:
-            break;
+            case 9:
+                LastScreen = 9;
+                choice = MultiSelect_Main(&FrontEnd2_GameMode);
+                if (choice == -1)
+                {
+                    WhichScreen = 0;
+                }
+                else
+                {
+                    if (FrontEnd2_GameMode == 10)
+                    {
+                        WhichScreen = 6;
+                    }
+                    else
+                    {
+                        WhichScreen = 1;
+                    }
+                }
+                break;
+
+            default: break;
         }
     }
 }
@@ -241,7 +263,8 @@ void FrontEnd2_Main(void) {
  * @param selected_level  Level to load and launch.
  * @param mode  Game mode assigned to the new session.
  */
-void LaunchTheDamnGame(int selected_level, int mode) {
+void LaunchTheDamnGame(int selected_level, int mode)
+{
     PRE_Cleanup();
     Spooler::Cleanup();
 
@@ -258,16 +281,14 @@ void LaunchTheDamnGame(int selected_level, int mode) {
     DemoTimer = 1000;
     GGame = mode;
     int players = 2;
-    if ((unsigned int)(mode - 1) < 3)
-        players = 1;
+    if ((unsigned int)(mode - 1) < 3) players = 1;
     GNumberOfPlayers = players;
     HiresMode = 0;
 
     LoadingScreen_SetCurrentLevel(selected_level, 1, 0);
     kickIt(selected_level, SelectedSkater);
 
-    if (GenerateLevel != 0)
-        LevelGenerator::UnloadOutPSX(false);
+    if (GenerateLevel != 0) LevelGenerator::UnloadOutPSX(false);
 
     Init_Restart(PACK512x240, 16);
     Db_Init();
@@ -278,8 +299,7 @@ void LaunchTheDamnGame(int selected_level, int mode) {
     unsigned int voice = FrontEnd2_MusicLoopVoice;
     FrontEnd2_MusicLoopCurrentVol = 0;
     FrontEnd2_MusicLoopDesiredVol = 0x4000;
-    if (voice != 0)
-        SFX_Stop(voice);
+    if (voice != 0) SFX_Stop(voice);
 
     FrontEnd2_MusicLoopVoice = SFX_PlayX(0x9d, (short)FrontEnd2_MusicLoopCurrentVol, 0);
 }
@@ -295,30 +315,39 @@ void LaunchTheDamnGame(int selected_level, int mode) {
  * Gradually moves the music-loop volume toward its requested level, stopping
  * the voice after a completed fade-out.
  */
-void FrontEnd2_UpdateMusicLoop(void) {
+void FrontEnd2_UpdateMusicLoop(void)
+{
     int voice = FrontEnd2_MusicLoopVoice;
     if (voice == 0) return;
     int cur = FrontEnd2_MusicLoopCurrentVol;
     int des = FrontEnd2_MusicLoopDesiredVol;
-    if (cur == des) {
+    if (cur == des)
+    {
         if (des != 0) return;
         SFX_Stop(voice);
         FrontEnd2_MusicLoopVoice = 0;
         return;
     }
-    if (cur < des) {
+    if (cur < des)
+    {
         int new_cur = cur + 0x88;
         FrontEnd2_MusicLoopCurrentVol = new_cur;
-        if (des < new_cur) {
+        if (des < new_cur)
+        {
             FrontEnd2_MusicLoopCurrentVol = des;
         }
-    } else if (des < cur) {
+    }
+    else if (des < cur)
+    {
         int new_cur = cur - 0x88;
         FrontEnd2_MusicLoopCurrentVol = new_cur;
-        if (new_cur < des) {
+        if (new_cur < des)
+        {
             FrontEnd2_MusicLoopCurrentVol = des;
         }
-    } else {
+    }
+    else
+    {
         return;
     }
     int vol = FrontEnd2_MusicLoopCurrentVol;

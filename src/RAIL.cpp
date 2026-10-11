@@ -28,8 +28,12 @@
 #undef OB_OWNER_LAYOUT
 #undef OB_LAYOUT_ONLY
 
-enum { RAIL_NODE_CAPACITY = 2000 };
-enum {
+enum
+{
+    RAIL_NODE_CAPACITY = 2000
+};
+enum
+{
     RAIL_PLAYER_FLAG_SHIFT = 4,
     RAIL_PLAYER_FLAG_MASK = 3 << RAIL_PLAYER_FLAG_SHIFT,
     RAIL_TYPE_MASK = 15,
@@ -53,35 +57,31 @@ enum {
  * count. Straight assignments commute these two instructions under GCC 2.91.
  */
 #define RAIL_PUBLISH_NODE_COUNT(count, savedCount) \
-    ((TotalRailNodes = (count)) ? ((savedCount) = (count)) \
-                                : ((savedCount) = (count)))
+    ((TotalRailNodes = (count)) ? ((savedCount) = (count)) : ((savedCount) = (count)))
 
 
 /** Alias-compatible view of the two list links used during insertion. */
-struct RailLinkAlias {
+struct RailLinkAlias
+{
     unsigned char prefix[32];
     CRail *previous;
     CRail *next;
 };
 
-#define RAIL_LINK_ALIAS_OFFSET(member) \
-    ((unsigned int)&((RailLinkAlias *)0)->member)
+#define RAIL_LINK_ALIAS_OFFSET(member) ((unsigned int)&((RailLinkAlias *)0)->member)
 #define RAIL_PREVIOUS_LINK_ALIAS(rail) \
-    (*(CRail **)((unsigned char *)(rail) + \
-                 RAIL_LINK_ALIAS_OFFSET(previous)))
+    (*(CRail **)((unsigned char *)(rail) + RAIL_LINK_ALIAS_OFFSET(previous)))
 #define RAIL_NEXT_LINK_ALIAS(rail) \
     (*(CRail **)((unsigned char *)(rail) + RAIL_LINK_ALIAS_OFFSET(next)))
 
-typedef char rail_previous_alias_offset_check[
-    ((unsigned int)&((RailLinkAlias *)0)->previous ==
-     (unsigned int)&((CRail *)0)->mpPrevious) ? 1 : -1];
-typedef char rail_next_alias_offset_check[
-    ((unsigned int)&((RailLinkAlias *)0)->next ==
-     (unsigned int)&((CRail *)0)->mpNext) ? 1 : -1];
-typedef char rail_node_sort_size_check[
-    (sizeof(NodeSort) == 4) ? 1 : -1];
-typedef char rail_object_size_check[
-    (sizeof(CRail) == 40) ? 1 : -1];
+typedef char rail_previous_alias_offset_check[((unsigned int)&((RailLinkAlias *)0)->previous ==
+                                               (unsigned int)&((CRail *)0)->mpPrevious)
+                                                  ? 1
+                                                  : -1];
+typedef char rail_next_alias_offset_check
+    [((unsigned int)&((RailLinkAlias *)0)->next == (unsigned int)&((CRail *)0)->mpNext) ? 1 : -1];
+typedef char rail_node_sort_size_check[(sizeof(NodeSort) == 4) ? 1 : -1];
+typedef char rail_object_size_check[(sizeof(CRail) == 40) ? 1 : -1];
 
 /*
  * The destructor's first vtable write must retain the original all-types alias
@@ -89,12 +89,14 @@ typedef char rail_object_size_check[
  */
 
 /** The triangle-button prefix read by the rail acquisition pass. */
-struct SControlRailOwner {
+struct SControlRailOwner
+{
     u8 TrianglePressed;
 };
 
 /** Physics states referenced by the rail-acquisition height filter. */
-enum EPhysicsStateRailOwner {
+enum EPhysicsStateRailOwner
+{
     PHYSICS_ON_GROUND_RAIL_OWNER = 0,
     PHYSICS_ON_INVISIBLE_RAIL_OWNER = 2
 };
@@ -105,7 +107,8 @@ enum EPhysicsStateRailOwner {
  * Field offsets come from original/MAIN_STRUCTS.h and are independently
  * visible in Rail_Update's target loads and stores.
  */
-struct CBruceRailOwner {
+struct CBruceRailOwner
+{
     struct CSuperOwner CSuper;
     u8 pad_to_mRail_LedgeType[3228 - sizeof(struct CSuperOwner)];
     int mRail_LedgeType;
@@ -135,8 +138,7 @@ struct CBruceRailOwner {
     struct CVector mFront;
 };
 
-typedef char CBruceRailOwner_minimum_size_check[
-    (sizeof(struct CBruceRailOwner) == 4268) ? 1 : -1];
+typedef char CBruceRailOwner_minimum_size_check[(sizeof(struct CBruceRailOwner) == 4268) ? 1 : -1];
 
 #define CAREER_OWNER_LAYOUT
 #include "CAREER.h"
@@ -176,11 +178,9 @@ unsigned short Rail_Flags(unsigned short Node)
     CVector Dummy;
     // MAIN.SYM records pRailDef as signed because -1 is the absent-rail
     // sentinel in the payload returned through the canonical unsigned API.
-    short *pRailDef = reinterpret_cast<short *>(
-        Trig_GetPosition(Dummy, Node));
+    short *pRailDef = reinterpret_cast<short *>(Trig_GetPosition(Dummy, Node));
     pRailDef += 3;
-    if (*pRailDef == -1)
-        return 0;
+    if (*pRailDef == -1) return 0;
     return (unsigned short)*pRailDef;
 }
 
@@ -199,11 +199,9 @@ unsigned short *Rail_FlagsPointer(unsigned short Node)
     CVector Dummy;
     // Keep the signed MAIN.SYM view for the -1 sentinel; callers receive the
     // same storage through this function's unsigned-word interface.
-    short *pRailDef = reinterpret_cast<short *>(
-        Trig_GetPosition(Dummy, Node));
+    short *pRailDef = reinterpret_cast<short *>(Trig_GetPosition(Dummy, Node));
     pRailDef += 3;
-    if (*pRailDef == -1)
-        return 0;
+    if (*pRailDef == -1) return 0;
     return (unsigned short *)pRailDef;
 }
 
@@ -226,12 +224,9 @@ int Rail_IsRailNode(unsigned short Node)
     if ((unsigned)(type - 10) < 2)
     {
         unsigned int flags = Rail_Flags(Node);
-        unsigned int players =
-            (flags & RAIL_PLAYER_FLAG_MASK) >> RAIL_PLAYER_FLAG_SHIFT;
-        if (players == 0)
-            goto active_rail;
-        if (players & GNumberOfPlayers)
-            goto active_rail;
+        unsigned int players = (flags & RAIL_PLAYER_FLAG_MASK) >> RAIL_PLAYER_FLAG_SHIFT;
+        if (players == 0) goto active_rail;
+        if (players & GNumberOfPlayers) goto active_rail;
         return 0;
     }
     else
@@ -369,10 +364,8 @@ void Rail_KillRail(int node)
                 return;
             }
             int NextNode = Rail_NextNode((unsigned short)CurrentNode);
-            if (NextNode == 0)
-                break;
-            if (NextNode == pRail->mStartNode)
-                break;
+            if (NextNode == 0) break;
+            if (NextNode == pRail->mStartNode) break;
             CurrentNode = NextNode;
         }
         pRail = pRail->mpNext;
@@ -391,8 +384,7 @@ void Rail_KillRail(int node)
  */
 int GetIndexOfNode(unsigned short node)
 {
-    if (node == 0)
-        return 0;
+    if (node == 0) return 0;
 
     int r = 1;
     if (r < TotalRailNodes)
@@ -400,8 +392,7 @@ int GetIndexOfNode(unsigned short node)
         NodeSort *pNode = RailNodeLookup + 1;
         do
         {
-            if (pNode->nodeNum == node)
-                return r;
+            if (pNode->nodeNum == node) return r;
             r++;
             pNode++;
         } while (r < TotalRailNodes);
@@ -422,8 +413,7 @@ void SetupLookup(void)
     unsigned short r;
     unsigned short n;
 
-    RailNodeLookup = static_cast<NodeSort *>(
-        Mem_New(RAIL_NODE_CAPACITY * sizeof(NodeSort), 1, 1));
+    RailNodeLookup = static_cast<NodeSort *>(Mem_New(RAIL_NODE_CAPACITY * sizeof(NodeSort), 1, 1));
     r = 1;
 
     for (n = 0; n < NumNodes; n++)
@@ -508,17 +498,14 @@ void Rail_CreateRails(void)
             {
                 if (is_rail_node)
                 {
-                    unsigned int prevIndex =
-                        RailNodeLookup[rail_num].prevNodeIndex;
+                    unsigned int prevIndex = RailNodeLookup[rail_num].prevNodeIndex;
                     unsigned short Prev = RailNodeLookup[prevIndex].nodeNum;
                     unsigned short First = Node;
 
                     for (;;)
                     {
-                        if (Rail_Flags(First) & RAIL_DISABLED_FLAG)
-                            break;
-                        if (Prev == 0)
-                            break;
+                        if (Rail_Flags(First) & RAIL_DISABLED_FLAG) break;
+                        if (Prev == 0) break;
 
                         prevIndex = RailNodeLookup[prevIndex].prevNodeIndex;
                         First = Prev;
@@ -536,7 +523,7 @@ void Rail_CreateRails(void)
             }
             else
             {
-next_node:
+            next_node:
                 if (is_rail_node)
                 {
                     rail_num++;
@@ -612,8 +599,7 @@ CRail::CRail(int node_index)
     // `mpNext = RailList` the store to `this->mStartNode` may alias the global
     // pointer and GCC re-reads it.
     CRail *head = RailList;
-    if (head != 0)
-        head->mpPrevious = this;
+    if (head != 0) head->mpPrevious = this;
     mStartNode = node_index;
     RAIL_NEXT_LINK_ALIAS(this) = head;
     RAIL_PREVIOUS_LINK_ALIAS(this) = 0;
@@ -642,22 +628,15 @@ CRail::CRail(int node_index)
         unsigned short NextNode;
 
         Trig_GetPosition(NodePos, CurrentNode);
-        if (NodePos.vx < mBBoxMin.vx)
-            mBBoxMin.vx = NodePos.vx;
-        if (NodePos.vy < mBBoxMin.vy)
-            mBBoxMin.vy = NodePos.vy;
-        if (NodePos.vz < mBBoxMin.vz)
-            mBBoxMin.vz = NodePos.vz;
-        if (NodePos.vx > mBBoxMax.vx)
-            mBBoxMax.vx = NodePos.vx;
-        if (NodePos.vy > mBBoxMax.vy)
-            mBBoxMax.vy = NodePos.vy;
-        if (NodePos.vz > mBBoxMax.vz)
-            mBBoxMax.vz = NodePos.vz;
+        if (NodePos.vx < mBBoxMin.vx) mBBoxMin.vx = NodePos.vx;
+        if (NodePos.vy < mBBoxMin.vy) mBBoxMin.vy = NodePos.vy;
+        if (NodePos.vz < mBBoxMin.vz) mBBoxMin.vz = NodePos.vz;
+        if (NodePos.vx > mBBoxMax.vx) mBBoxMax.vx = NodePos.vx;
+        if (NodePos.vy > mBBoxMax.vy) mBBoxMax.vy = NodePos.vy;
+        if (NodePos.vz > mBBoxMax.vz) mBBoxMax.vz = NodePos.vz;
 
         NextNode = Rail_NextNode((unsigned short)CurrentNode);
-        if (NextNode == 0)
-            return;
+        if (NextNode == 0) return;
 
         {
             /*
@@ -761,8 +740,7 @@ CRail::CRail(int node_index)
                 M3dColij_InitLineInfo(&line_info);
                 M3dZone_LineToItem(&line_info, 1);
 
-                if (line_info.pItem != 0 && !leftside)
-                    line_info.pItem = 0;
+                if (line_info.pItem != 0 && !leftside) line_info.pItem = 0;
             }
 
             if (GenerateLevel && line_info.pItem == 0)
@@ -810,7 +788,6 @@ CRail::CRail(int node_index)
         *OffsetList[CurrentNode] = 11;
         NextNode = Rail_NextNode((unsigned short)CurrentNode);
     } while (CurrentNode != mStartNode);
-
 }
 
 /**
@@ -882,12 +859,9 @@ void Rail_Update(void)
             pSkater->mRailInhibit = 0;
             continue;
         }
-        if (pSkater->mOnRail)
-            continue;
-        if (pSkater->mInBail)
-            continue;
-        if (pSkater->mRailInhibit)
-            continue;
+        if (pSkater->mOnRail) continue;
+        if (pSkater->mInBail) continue;
+        if (pSkater->mRailInhibit) continue;
 
         SkaterMin_vx = pSkater->CSuper.CBody.mOldPos.vx;
         SkaterMin_vy = pSkater->CSuper.CBody.mOldPos.vy;
@@ -923,33 +897,23 @@ void Rail_Update(void)
         SkaterMin_vz -= RAIL_SNAP_DISTANCE;
         SkaterMax_vz += RAIL_SNAP_DISTANCE;
 
-        for (CRail *pRail = RailList; pRail != 0;
-             pRail = pRail->mpNext)
+        for (CRail *pRail = RailList; pRail != 0; pRail = pRail->mpNext)
         {
             int CurrentNode;
             int NextNode;
             int Dist;
 
-            if (SkaterMax_vx < pRail->mBBoxMin.vx ||
-                SkaterMin_vx > pRail->mBBoxMax.vx)
-                continue;
-            if (SkaterMax_vy < pRail->mBBoxMin.vy ||
-                SkaterMin_vy > pRail->mBBoxMax.vy)
-                continue;
-            if (SkaterMax_vz < pRail->mBBoxMin.vz ||
-                SkaterMin_vz > pRail->mBBoxMax.vz)
+            if (SkaterMax_vx < pRail->mBBoxMin.vx || SkaterMin_vx > pRail->mBBoxMax.vx) continue;
+            if (SkaterMax_vy < pRail->mBBoxMin.vy || SkaterMin_vy > pRail->mBBoxMax.vy) continue;
+            if (SkaterMax_vz < pRail->mBBoxMin.vz || SkaterMin_vz > pRail->mBBoxMax.vz) continue;
+
+            if (pSkater->mSameRailTimer > 0 && pSkater->mDontStickRail == pRail->mStartNode)
                 continue;
 
-            if (pSkater->mSameRailTimer > 0 &&
-                pSkater->mDontStickRail == pRail->mStartNode)
-                continue;
-
-            for (CurrentNode = pRail->mStartNode;;
-                 CurrentNode = NextNode)
+            for (CurrentNode = pRail->mStartNode;; CurrentNode = NextNode)
             {
                 NextNode = Rail_NextNode((unsigned short)CurrentNode);
-                if (NextNode == 0)
-                    break;
+                if (NextNode == 0) break;
 
                 Trig_GetPosition(SegFrom, CurrentNode);
                 Trig_GetPosition(SegTo, NextNode);
@@ -975,24 +939,19 @@ void Rail_Update(void)
                     SegMax.vz = t;
                 }
 
-                if (SkaterMax_vx >= SegMin.vx &&
-                    SkaterMin_vx <= SegMax.vx &&
-                    SkaterMax_vy >= SegMin.vy &&
-                    SkaterMin_vy <= SegMax.vy &&
-                    SkaterMax_vz >= SegMin.vz &&
-                    SkaterMin_vz <= SegMax.vz)
+                if (SkaterMax_vx >= SegMin.vx && SkaterMin_vx <= SegMax.vx &&
+                    SkaterMax_vy >= SegMin.vy && SkaterMin_vy <= SegMax.vy &&
+                    SkaterMax_vz >= SegMin.vz && SkaterMin_vz <= SegMax.vz)
                 {
                     Dist = M3dUtils_LineLineClosestPoints(
                         (CVector *)&pSkater->CSuper.CBody.mOldPos,
-                        (CVector *)&pSkater->CSuper.CBody.CItem.mPos,
-                        &SegFrom, &SegTo, &SkaterPos, &s, &RailPos, &t);
+                        (CVector *)&pSkater->CSuper.CBody.CItem.mPos, &SegFrom, &SegTo, &SkaterPos,
+                        &s, &RailPos, &t);
 
                     if (Dist < pSkater->mDistToCurrentRail)
                     {
-                        if ((pSkater->mPhysicsState !=
-                                 PHYSICS_ON_GROUND_RAIL_OWNER &&
-                             pSkater->mPhysicsState !=
-                                 PHYSICS_ON_INVISIBLE_RAIL_OWNER) ||
+                        if ((pSkater->mPhysicsState != PHYSICS_ON_GROUND_RAIL_OWNER &&
+                             pSkater->mPhysicsState != PHYSICS_ON_INVISIBLE_RAIL_OWNER) ||
                             RailPos.vy >= pSkater->CSuper.CBody.CItem.mPos.vy)
                         {
                             CVector SegDir = SegTo - SegFrom;
@@ -1001,17 +960,14 @@ void Rail_Update(void)
 
                             SkaterVel = *(CVector *)&pSkater->CSuper.CBody.mVel;
                             M3dUtils_NormaliseVector(&SegDir);
-                            VelocityDotSegment =
-                                Mips_CVecDotProd(&SegDir, &SkaterVel);
+                            VelocityDotSegment = Mips_CVecDotProd(&SegDir, &SkaterVel);
 
                             // Branch-free absolute value of the fixed-point dot product.
-                            if (((VelocityDotSegment ^
-                                  (VelocityDotSegment >> 31)) -
+                            if (((VelocityDotSegment ^ (VelocityDotSegment >> 31)) -
                                  (VelocityDotSegment >> 31)) < RAIL_FIXED_ONE)
                             {
                                 CVector SkaterVel = pSkater->mFront;
-                                VelocityDotSegment =
-                                    -Mips_CVecDotProd(&SegDir, &SkaterVel);
+                                VelocityDotSegment = -Mips_CVecDotProd(&SegDir, &SkaterVel);
                             }
 
                             int End = 0;
@@ -1084,8 +1040,7 @@ void Rail_Update(void)
                                 line_info.StartCoords.vy = MidPos.vy;
                                 line_info.StartCoords.vz = MidPos.vz - Stick.vz;
                                 line_info.EndCoords.vx = line_info.StartCoords.vx;
-                                line_info.EndCoords.vy =
-                                    MidPos.vy + RAIL_COLLISION_HEIGHT;
+                                line_info.EndCoords.vy = MidPos.vy + RAIL_COLLISION_HEIGHT;
                                 line_info.EndCoords.vz = line_info.StartCoords.vz;
                                 M3dColij_InitLineInfo(&line_info);
                                 M3dZone_LineToItem(&line_info, ledge_left);
@@ -1095,8 +1050,7 @@ void Rail_Update(void)
                                 line_info.StartCoords.vy = MidPos.vy;
                                 line_info.StartCoords.vz = MidPos.vz + Stick.vz;
                                 line_info.EndCoords.vx = line_info.StartCoords.vx;
-                                line_info.EndCoords.vy =
-                                    MidPos.vy + RAIL_COLLISION_HEIGHT;
+                                line_info.EndCoords.vy = MidPos.vy + RAIL_COLLISION_HEIGHT;
                                 line_info.EndCoords.vz = line_info.StartCoords.vz;
                                 M3dColij_InitLineInfo(&line_info);
                                 M3dZone_LineToItem(&line_info, ledge_left);
@@ -1104,10 +1058,8 @@ void Rail_Update(void)
 
                                 if (leftside | rightside)
                                 {
-                                    if (rightside)
-                                        pSkater->mRail_LedgeType = ledge_right;
-                                    if (leftside)
-                                        pSkater->mRail_LedgeType = ledge_left;
+                                    if (rightside) pSkater->mRail_LedgeType = ledge_right;
+                                    if (leftside) pSkater->mRail_LedgeType = ledge_left;
                                 }
                                 else
                                 {
@@ -1138,12 +1090,8 @@ void Rail_Update(void)
 
                                     if (leftside != rightside)
                                     {
-                                        if (rightside)
-                                            pSkater->mRail_LedgeType =
-                                                ledge_right;
-                                        if (leftside)
-                                            pSkater->mRail_LedgeType =
-                                                ledge_left;
+                                        if (rightside) pSkater->mRail_LedgeType = ledge_right;
+                                        if (leftside) pSkater->mRail_LedgeType = ledge_left;
                                     }
                                     else
                                     {
@@ -1155,8 +1103,7 @@ void Rail_Update(void)
                         }
                     }
                 }
-                if (NextNode == pRail->mStartNode)
-                    break;
+                if (NextNode == pRail->mStartNode) break;
             }
         }
     }

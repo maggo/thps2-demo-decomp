@@ -26,7 +26,8 @@ extern Message *pMessages;
 struct Message;
 
 /** One 32-byte message animation program shared with message callers. */
-struct SMessageProg {
+struct SMessageProg
+{
     unsigned short Duration;
     unsigned char Semitrans;
     unsigned char Justify;
@@ -76,16 +77,15 @@ int Mess_GetScale(void);
 void Mess_SetSort(int sort);
 
 /** Set the RGB color and semitransparency used by subsequent message draws. */
-void Mess_SetRGB(unsigned char red, unsigned char green, unsigned char blue,
-                 int semitrans);
+void Mess_SetRGB(unsigned char red, unsigned char green, unsigned char blue, int semitrans);
 
 /** Draw one string with the active panel font. */
-int Mess_DrawPanelText(int x, int y, const char *message, int angle,
-                       unsigned int fireRGB, int fireSquash);
+int Mess_DrawPanelText(int x, int y, const char *message, int angle, unsigned int fireRGB,
+                       int fireSquash);
 
 /** Allocate and initialize one active message. */
-Message *Mess_Message(const char *text, SMessageProg *program,
-                      bool recenter, short xOffset, short yOffset);
+Message *Mess_Message(const char *text, SMessageProg *program, bool recenter, short xOffset,
+                      short yOffset);
 
 /** Delete every active message. */
 void Mess_DeleteAll(void);
@@ -106,16 +106,15 @@ int Mess_TextHeight(const char *message);
 int Mess_TextHeightAboveBaseline(const char *message);
 
 /** Draw one message string with the active font and render state. */
-int Mess_DrawText(int x, int y, const char *message, int drawSolid,
-                  unsigned int fireRGB, int fireSquash, bool isPanel);
+int Mess_DrawText(int x, int y, const char *message, int drawSolid, unsigned int fireRGB,
+                  int fireSquash, bool isPanel);
 
 /** Load a font from an already-resident file buffer. */
-int Mess_LoadFont(char *filename, char *fileBuffer, int charSeparation,
-                  int shadowOffset, int width);
+int Mess_LoadFont(char *filename, char *fileBuffer, int charSeparation, int shadowOffset,
+                  int width);
 
 /** Load a font from the packed-file system. */
-int Mess_LoadFont(char *filename, int charSeparation,
-                  int shadowOffset, int width);
+int Mess_LoadFont(char *filename, int charSeparation, int shadowOffset, int width);
 
 /** Release the currently loaded font. */
 void Mess_UnloadFont(void);
@@ -132,8 +131,7 @@ void Mess_SetFontScale(unsigned int scale);
 /** Return the active font's 8.8 fixed-point scale. */
 int Mess_GetFontScale(void);
 
-typedef char message_program_size_must_be_32[
-    (sizeof(SMessageProg) == 32) ? 1 : -1];
+typedef char message_program_size_must_be_32[(sizeof(SMessageProg) == 32) ? 1 : -1];
 
 #endif // MESS_INC_H
 

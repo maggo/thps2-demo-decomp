@@ -47,7 +47,8 @@ typedef unsigned char undefined3[3];
 
 struct SDoubleBuffer;
 
-struct SMovieDetails {
+struct SMovieDetails
+{
     char *name;
     unsigned short width;
     unsigned short height;
@@ -61,49 +62,50 @@ struct SMovieDetails {
 };
 
 // === Variables (gp-relative in this TU) ===
-extern int CycleTracks;       // 0x800DBD84
+extern int CycleTracks; // 0x800DBD84
 #define GAMEFMVSTATE_OWNER_DECLARATION
 #define GAMEFMVSTATE_DECLARE_ACTIVE
 #include "GAMEFMVSTATE.h"
 #define GAMEFMVSTATE_OWNER_DECLARATION
 #define GAMEFMVSTATE_DECLARE_CURRENT_FRAME
 #include "GAMEFMVSTATE.h"
-extern u8 GameFMV_CurrentTrack;       // 0x800DBDB9
-extern int GameFMV_EndFrame;       // 0x800DBD9C
+extern u8 GameFMV_CurrentTrack; // 0x800DBDB9
+extern int GameFMV_EndFrame; // 0x800DBD9C
 #define GAMEFMVSTATE_OWNER_DECLARATION
 #define GAMEFMVSTATE_DECLARE_END_X
 #include "GAMEFMVSTATE.h"
-extern int GameFMV_FrameBufferCopyActive;       // 0x800DBBC8
-extern u16 GameFMV_Height;       // 0x800DBDB0
-extern u8 GameFMV_Is24Bit;       // 0x800DBDB8
-extern int GameFMV_MusicScale;       // 0x800DBDBC
-extern int GameFMV_NumSoundSources;       // 0x800DBDB4
-extern int GameFMV_RewindSwitch;       // 0x800DBBC0
-extern int GameFMV_RingBufferSectors;       // 0x800DBDA4
-extern u8 GameFMV_SliceBuffers;       // 0x800DBDA8
-extern int GameFMV_StartSector;       // 0x800DBD98
+extern int GameFMV_FrameBufferCopyActive; // 0x800DBBC8
+extern u16 GameFMV_Height; // 0x800DBDB0
+extern u8 GameFMV_Is24Bit; // 0x800DBDB8
+extern int GameFMV_MusicScale; // 0x800DBDBC
+extern int GameFMV_NumSoundSources; // 0x800DBDB4
+extern int GameFMV_RewindSwitch; // 0x800DBBC0
+extern int GameFMV_RingBufferSectors; // 0x800DBDA4
+extern u8 GameFMV_SliceBuffers; // 0x800DBDA8
+extern int GameFMV_StartSector; // 0x800DBD98
 #define GAMEFMVSTATE_OWNER_DECLARATION
 #define GAMEFMVSTATE_DECLARE_START_X
 #include "GAMEFMVSTATE.h"
 #define GAMEFMVSTATE_OWNER_DECLARATION
 #define GAMEFMVSTATE_DECLARE_START_Y
 #include "GAMEFMVSTATE.h"
-extern int GameFMV_VLCBufferSize;       // 0x800DBDA0
-extern u16 GameFMV_Width;       // 0x800DBDAE
+extern int GameFMV_VLCBufferSize; // 0x800DBDA0
+extern u16 GameFMV_Width; // 0x800DBDAE
 #ifndef GAMEFMV_DEFINE_OWNER_LOCAL_DECODER_STATE
-extern int alreadyHandledPause;       // 0x800DBD88
-extern int currentDecodeBuffer;       // 0x800DBBCC
-extern int currentVlcBuffer;           // 0x800DBBD0
+extern int alreadyHandledPause; // 0x800DBD88
+extern int currentDecodeBuffer; // 0x800DBBCC
+extern int currentVlcBuffer; // 0x800DBBD0
 #endif
-extern RECT decodeSlice;       // 0x800DBDC0
+extern RECT decodeSlice; // 0x800DBDC0
 /** Typed prefix view of the two decoder-buffer pointers at 0x800DBDC8. */
-struct GameFMVVlcBufferPrefix {
+struct GameFMVVlcBufferPrefix
+{
     unsigned int *first;
 };
 extern GameFMVVlcBufferPrefix vlcBuffer;
 #ifndef GAMEFMV_DEFINE_OWNER_LOCAL_DECODER_STATE
-extern int pRingBuffer;               // 0x800DC8C8
-extern int sendVLC;                    // 0x800DBBD4
+extern int pRingBuffer; // 0x800DC8C8
+extern int sendVLC; // 0x800DBBD4
 #endif
 
 // === Variables (absolute in this TU) ===

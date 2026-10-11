@@ -6,7 +6,8 @@
 #endif
 
 /** Flat-colour line segments carried by the transient-bit system. */
-struct CPolyLine : CBit {
+struct CPolyLine : CBit
+{
     unsigned char mForcedPriority;
     int mNumSegs;
     struct SLineSeg *mSegs;

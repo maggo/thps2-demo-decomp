@@ -111,7 +111,8 @@ enum EMemCardState
 
 struct VerticalMenu;
 
-extern "C" {
+extern "C"
+{
 #define SAVEACTION_WITHIN_C_LINKAGE
 #include "SAVEACTION.h"
 #define CARDSTATUS_WITHIN_C_LINKAGE
@@ -177,10 +178,9 @@ struct RFrontCachedBackground
     int captureStatus;
 };
 
-typedef char RFrontSprite_size_must_be_24[
-    (sizeof(Sprite) == 24) ? 1 : -1];
-typedef char RFrontCachedBackground_size_must_be_20[
-    (sizeof(RFrontCachedBackground) == 20) ? 1 : -1];
+typedef char RFrontSprite_size_must_be_24[(sizeof(Sprite) == 24) ? 1 : -1];
+typedef char
+    RFrontCachedBackground_size_must_be_20[(sizeof(RFrontCachedBackground) == 20) ? 1 : -1];
 
 #include "VERTICALMENUITEM.h"
 
@@ -221,13 +221,11 @@ struct VerticalMenu
     void down();
 };
 
-typedef char RFrontVerticalMenu_size_must_be_820[
-    (sizeof(VerticalMenu) == 820) ? 1 : -1];
+typedef char RFrontVerticalMenu_size_must_be_820[(sizeof(VerticalMenu) == 820) ? 1 : -1];
 
 #include "LOCALTXT.h"
 
-typedef char RFront_LocalText_size_must_be_652[
-    (sizeof(LocalText) == 0x28c) ? 1 : -1];
+typedef char RFront_LocalText_size_must_be_652[(sizeof(LocalText) == 0x28c) ? 1 : -1];
 
 #define VIDEO_HEAD_LAYOUT
 #define VIDEO_LAYOUT_ONLY
@@ -295,14 +293,11 @@ struct RFrontCareerLoadBlock
     char reserved_bf4[0x0c];
 };
 
-typedef char SCardHeadRFront_size_must_be_512[
-    (sizeof(SCardHead) == 0x200) ? 1 : -1];
-typedef char SVideoInfoRFront_size_must_be_192[
-    (sizeof(SVideoInfo) == 0xc0) ? 1 : -1];
-typedef char SCareerRFront_size_must_be_2420[
-    (sizeof(SCareer) == 0x974) ? 1 : -1];
-typedef char RFrontCareerLoadBlock_size_must_be_3072[
-    (sizeof(RFrontCareerLoadBlock) == 0xc00) ? 1 : -1];
+typedef char SCardHeadRFront_size_must_be_512[(sizeof(SCardHead) == 0x200) ? 1 : -1];
+typedef char SVideoInfoRFront_size_must_be_192[(sizeof(SVideoInfo) == 0xc0) ? 1 : -1];
+typedef char SCareerRFront_size_must_be_2420[(sizeof(SCareer) == 0x974) ? 1 : -1];
+typedef char
+    RFrontCareerLoadBlock_size_must_be_3072[(sizeof(RFrontCareerLoadBlock) == 0xc00) ? 1 : -1];
 
 /** Locate typed records inside raw memory-card transfer buffers. */
 inline SVideoHead *RFront_GetVideoHeader(unsigned long *block)
@@ -340,9 +335,9 @@ int Competition_IsOver(void);
 #define RFRONT_DECLARE_VOID_STRCPY_ABI
 #include "RFRONT.h"
 void ResetOT(void);
-extern "C" VerticalMenu *__12VerticalMenuiiiPPciPiT6i(
-    VerticalMenu *menu, int top, int bottom, int spacing, char **items,
-    int count, int *first, int *last, int flags);
+extern "C" VerticalMenu *__12VerticalMenuiiiPPciPiT6i(VerticalMenu *menu, int top, int bottom,
+                                                      int spacing, char **items, int count,
+                                                      int *first, int *last, int flags);
 #include "MEM.h"
 
 #include "SFX.h"
@@ -363,7 +358,8 @@ enum RFrontDisplayConstants
     RFRONT_SFX_VOLUME = 8192,
 };
 
-extern "C" {
+extern "C"
+{
 /** Whether a career has been loaded into the front end. */
 int GHasCareerLoaded = 0;
 
@@ -372,15 +368,14 @@ int GLoadedCareerIsSaved = 0;
 
 /** First eight characters of the ten-character, blank-padded save name. */
 SaveGameNameLayout SaveGameName
-    __attribute__((section(".sdata"))) =
-        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '};
+    __attribute__((section(".sdata"))) = { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' };
 }
 
 /** Final two characters and terminator of the RFRONT-owned save name. */
-static char SaveGameNameTail[3]
-    __attribute__((section(".sdata"))) = {' ', ' ', '\0'};
+static char SaveGameNameTail[3] __attribute__((section(".sdata"))) = { ' ', ' ', '\0' };
 
-extern "C" {
+extern "C"
+{
 
 /** Cursor position and pulse amount used by the name-entry screen. */
 int CursorPos = 0;
@@ -429,39 +424,37 @@ static int SaveNeedBlocks;
 static int SaveFreeBlocks;
 static int GReturnToState;
 
-extern "C" {
+extern "C"
+{
 /** Replay restart state, cleared until a replay header is loaded. */
-SVideoRestart GVideoRestart
-    __attribute__((section(".data"))) = {0, 0, 0, 0, 0};
+SVideoRestart GVideoRestart __attribute__((section(".data"))) = { 0, 0, 0, 0, 0 };
 
 /** ASCII memory-card names and the menu views built over them. */
-char ASCIIName[15][11] __attribute__((section(".data"))) = {{0}};
-char *VertMenuItem[15] __attribute__((section(".data"))) = {0};
-int VertMenuItemIndex[15] __attribute__((section(".data"))) = {0};
+char ASCIIName[15][11] __attribute__((section(".data"))) = { { 0 } };
+char *VertMenuItem[15] __attribute__((section(".data"))) = { 0 };
+int VertMenuItemIndex[15] __attribute__((section(".data"))) = { 0 };
 
 /** Ten cached background captures used by the memory-card front end. */
-RFrontCachedBackground BGCache[10]
-    __attribute__((section(".data"))) = {{0}};
-
+RFrontCachedBackground BGCache[10] __attribute__((section(".data"))) = { { 0 } };
 }
 
 /** RFRONT-owned immutable memory-card status strings in target order. */
-static char RFrontNoSpaceText[]
-    __attribute__((section(".rdata"), aligned(4))) =
-        "no space do you want to delete blah blah";
-static char RFrontLoadingVideoText[]
-    __attribute__((section(".rdata"), aligned(4))) = "loading video file";
-static char RFrontLoadingSavedGameText[]
-    __attribute__((section(".rdata"), aligned(4))) = "loading saved game";
-static char RFrontSavingReplayFormat[]
-    __attribute__((section(".rdata"), aligned(4))) = "Saving Replay %s";
+static char RFrontNoSpaceText[] __attribute__((section(".rdata"), aligned(4))) =
+    "no space do you want to delete blah blah";
+static char RFrontLoadingVideoText[] __attribute__((section(".rdata"), aligned(4))) =
+    "loading video file";
+static char RFrontLoadingSavedGameText[] __attribute__((section(".rdata"), aligned(4))) =
+    "loading saved game";
+static char RFrontSavingReplayFormat[] __attribute__((section(".rdata"), aligned(4))) =
+    "Saving Replay %s";
 
 // === Function implementations (address order) ===
 
 /**
  * Select the muted message color used for warning text.
  */
-static void RGBRed(void) {
+static void RGBRed(void)
+{
     Mess_SetRGB(0x60, 0x60, 0x60, 0);
 }
 
@@ -469,7 +462,8 @@ static void RGBRed(void) {
 /**
  * Select the muted message color used for ordinary status text.
  */
-static void RGBGreen(void) {
+static void RGBGreen(void)
+{
     Mess_SetRGB(0x60, 0x60, 0x60, 0);
 }
 
@@ -483,12 +477,11 @@ int GetUpDown(void)
 {
     int RetVal = 0;
 
-    if (Pad[0].Up.Pressed != '\0' || Pad[1].Up.Pressed != '\0' ||
-        Pad[0].Down.Pressed != '\0' || Pad[1].Down.Pressed != '\0')
+    if (Pad[0].Up.Pressed != '\0' || Pad[1].Up.Pressed != '\0' || Pad[0].Down.Pressed != '\0' ||
+        Pad[1].Down.Pressed != '\0')
     {
         if (LeftRightAutoRepeatTimer == 0 ||
-            (LeftRightAutoRepeatTimer > 15 &&
-             (LeftRightAutoRepeatTimer & 3U) == 0))
+            (LeftRightAutoRepeatTimer > 15 && (LeftRightAutoRepeatTimer & 3U) == 0))
         {
             if ((Pad[0].Down.Pressed != '\0') || (Pad[1].Down.Pressed != '\0'))
             {
@@ -517,7 +510,8 @@ int GetUpDown(void)
  * @param y  Y coordinate.
  * @param pText  Text to operate on.
  */
-void Front_DirtyRectText(int x, int y, const char * pText) {
+void Front_DirtyRectText(int x, int y, const char *pText)
+{
     int w;
     int h;
     const char **pCachedText1;
@@ -527,14 +521,16 @@ void Front_DirtyRectText(int x, int y, const char * pText) {
     Sprite *pSpriteObj;
 
     i = 0;
-    if (0 < FreeSprite) {
+    if (0 < FreeSprite)
+    {
         int textScale = RFRONT_FULL_SCALE;
         pCachedText1 = &BGCache[0].pCachedText;
-        do {
+        do
+        {
             i = i + 1;
-            if (*pCachedText1 == pText) {
-                Mess_DrawText(
-                    x, y, pText, 0, 0, textScale, 0);
+            if (*pCachedText1 == pText)
+            {
+                Mess_DrawText(x, y, pText, 0, 0, textScale, 0);
                 return;
             }
             pCachedText1 = pCachedText1 + 5;
@@ -551,11 +547,10 @@ void Front_DirtyRectText(int x, int y, const char * pText) {
     entry->y = static_cast<short>(y) - static_cast<short>(h);
     w += 4;
     h += 4;
-    pSpriteObj = static_cast<Sprite *>(
-        ::CClass::operator new(sizeof(Sprite)));
-    if (pSpriteObj != 0) {
-        pSpriteObj = ::new (pSpriteObj) Sprite(
-            left, base[FreeSprite].y, w, h, 1, 32, 128);
+    pSpriteObj = static_cast<Sprite *>(::CClass::operator new(sizeof(Sprite)));
+    if (pSpriteObj != 0)
+    {
+        pSpriteObj = ::new (pSpriteObj) Sprite(left, base[FreeSprite].y, w, h, 1, 32, 128);
     }
     entry->pSprite = pSpriteObj;
     BGCache[FreeSprite].captureStatus = 2;
@@ -566,9 +561,12 @@ void Front_DirtyRectText(int x, int y, const char * pText) {
 /**
  * Restore every captured menu-text background before the next redraw.
  */
-void Front_RestoreBackground(void) {
-    for (int i = 0; i < FreeSprite; i++) {
-        if (BGCache[i].captureStatus == 2) {
+void Front_RestoreBackground(void)
+{
+    for (int i = 0; i < FreeSprite; i++)
+    {
+        if (BGCache[i].captureStatus == 2)
+        {
             BGCache[i].pSprite->draw(BGCache[i].x, BGCache[i].y, 0, -1, -1, -1);
         }
     }
@@ -578,12 +576,14 @@ void Front_RestoreBackground(void) {
 /**
  * Destroy all cached background sprites and reset the cache.
  */
-void Front_FreeBackground(void) {
-    for (int i = 0; i < FreeSprite; i++) {
+void Front_FreeBackground(void)
+{
+    for (int i = 0; i < FreeSprite; i++)
+    {
         Sprite *sprite = BGCache[i].pSprite;
-        if (sprite != 0) {
-            reinterpret_cast<RFrontSpriteVTable *>(
-                sprite->CClass.vtable)->destroy(sprite, 3);
+        if (sprite != 0)
+        {
+            reinterpret_cast<RFrontSpriteVTable *>(sprite->CClass.vtable)->destroy(sprite, 3);
         }
         BGCache[i].captureStatus = 0;
     }
@@ -598,7 +598,8 @@ void Front_FreeBackground(void) {
  * @param StartState Initial memory-card state.
  * @param ReturnToState Front-end state restored after the operation finishes.
  */
-void Front_InitMemCardMenus(int Resolution, EMemCardState StartState, EPausedStatus ReturnToState) {
+void Front_InitMemCardMenus(int Resolution, EMemCardState StartState, EPausedStatus ReturnToState)
+{
     GReturnToState = ReturnToState;
     FreeSprite = 0;
     MCResolution = Resolution;
@@ -612,7 +613,8 @@ void Front_InitMemCardMenus(int Resolution, EMemCardState StartState, EPausedSta
  *
  * @param LoadAction Requested replay, replay-header, or career load.
  */
-void Front_SetLoadAction(ELoadAction LoadAction) {
+void Front_SetLoadAction(ELoadAction LoadAction)
+{
     GLoadAction = LoadAction;
 }
 
@@ -622,7 +624,8 @@ void Front_SetLoadAction(ELoadAction LoadAction) {
  *
  * @param SaveAction Requested save operation.
  */
-void Front_SetSaveAction(ESaveAction SaveAction) {
+void Front_SetSaveAction(ESaveAction SaveAction)
+{
     GSaveAction = SaveAction;
 }
 
@@ -633,18 +636,24 @@ void Front_SetSaveAction(ESaveAction SaveAction) {
  * @param pSJIS  SJIS to operate on.
  * @param pASCII  ASCII to operate on.
  */
-void Front_ExtractASCIINameFromSJIS(char * pSJIS, char * pASCII) {
-    for (int i = 0; i < 10; i++) {
+void Front_ExtractASCIINameFromSJIS(char *pSJIS, char *pASCII)
+{
+    for (int i = 0; i < 10; i++)
+    {
         int c = *reinterpret_cast<unsigned char *>(pSJIS);
-        if (c == 0) {
+        if (c == 0)
+        {
             *pASCII = 0;
             return;
         }
-        if (c == 0x82) {
+        if (c == 0x82)
+        {
             int c2 = reinterpret_cast<unsigned char *>(pSJIS)[1];
             pSJIS += 2;
             *pASCII++ = c2 - 0x1f;
-        } else if (c == 0x81) {
+        }
+        else if (c == 0x81)
+        {
             *pASCII++ = 0x20;
             pSJIS += 2;
         }
@@ -658,32 +667,41 @@ void Front_ExtractASCIINameFromSJIS(char * pSJIS, char * pASCII) {
  * @param SJISName Destination card-title buffer.
  */
 #define SAVE_NAME ((unsigned char *)&RFrontSaveNameViews::SaveGameName)
-void Front_SetSJISName(char * SJISName) {
+void Front_SetSJISName(char *SJISName)
+{
     int i = 9;
-    do {
+    do
+    {
         if (SAVE_NAME[i] != 0x20 && SAVE_NAME[i] != 0) goto fill_phase;
         SAVE_NAME[i] = 0;
         i--;
     } while (i > 0);
 fill_phase:
-    if (i >= 0) {
-        do {
+    if (i >= 0)
+    {
+        do
+        {
             if (SAVE_NAME[i] == 0) SAVE_NAME[i] = 0x20;
             i--;
         } while (i >= 0);
     }
-    for (i = 0; i < 10; i++) {
+    for (i = 0; i < 10; i++)
+    {
         unsigned int v0 = SAVE_NAME[i];
         unsigned int v1 = v0 & 0xff;
-        if (v1 == 0) {
+        if (v1 == 0)
+        {
             *SJISName = 0;
             return;
         }
         v0 = v0 - 'A';
-        if ((v0 & 0xff) < 26) {
+        if ((v0 & 0xff) < 26)
+        {
             *SJISName++ = 0x82;
             *SJISName++ = SAVE_NAME[i] + 0x1f;
-        } else if (v1 == 0x20) {
+        }
+        else if (v1 == 0x20)
+        {
             *SJISName++ = 0x81;
             *SJISName++ = 0x40;
         }
@@ -695,19 +713,21 @@ fill_phase:
 /**
  * Initialize name entry and restore the last name for this save category.
  */
-void InitEnterName(void) {
+void InitEnterName(void)
+{
     CursorPos = 0;
     SizeUp = 0;
     Pad[0].Up.Triggered = 0;
     Pad[0].Down.Triggered = 0;
     Pad[1].Up.Triggered = 0;
     Pad[1].Down.Triggered = 0;
-    if (GSaveAction == SAVE_VIDEO) {
-        strcpy(&RFrontSaveNameViews::SaveGameName,
-               &RFrontSaveNameViews::LastVideoName);
-    } else {
-        strcpy(&RFrontSaveNameViews::SaveGameName,
-               &RFrontSaveNameViews::LastCareerName);
+    if (GSaveAction == SAVE_VIDEO)
+    {
+        strcpy(&RFrontSaveNameViews::SaveGameName, &RFrontSaveNameViews::LastVideoName);
+    }
+    else
+    {
+        strcpy(&RFrontSaveNameViews::SaveGameName, &RFrontSaveNameViews::LastCareerName);
     }
 }
 
@@ -715,7 +735,8 @@ void InitEnterName(void) {
 /**
  * Draw the low-resolution prompt for the active memory-card state.
  */
-void Front_MemCardDisplay(void) {
+void Front_MemCardDisplay(void)
+{
     int i;
     int XMid = MCResolution >> 1;
 
@@ -724,300 +745,245 @@ void Front_MemCardDisplay(void) {
 
     switch (MCState)
     {
-    case SVSTATUS_CHECKINGCARDPAUSE:
-    case SVSTATUS_CHECKINGCARD:
-    case LVSTATUS_CHECKINGCARDPAUSE:
-    case LVSTATUS_CHECKINGCARD:
-        RGBGreen();
-        Mess_DrawText(
-            XMid, 90, GameText.pCheckingCard, 0, 0, RFRONT_FULL_SCALE, 0);
-        RGBRed();
-        Mess_DrawText(
-            XMid, 140, GameText.pDoNotRemove1, 0, 0, RFRONT_FULL_SCALE, 0);
-        Mess_DrawText(
-            XMid, 166, GameText.pDoNotRemove2, 0, 0, RFRONT_FULL_SCALE, 0);
-        break;
+        case SVSTATUS_CHECKINGCARDPAUSE:
+        case SVSTATUS_CHECKINGCARD:
+        case LVSTATUS_CHECKINGCARDPAUSE:
+        case LVSTATUS_CHECKINGCARD:
+            RGBGreen();
+            Mess_DrawText(XMid, 90, GameText.pCheckingCard, 0, 0, RFRONT_FULL_SCALE, 0);
+            RGBRed();
+            Mess_DrawText(XMid, 140, GameText.pDoNotRemove1, 0, 0, RFRONT_FULL_SCALE, 0);
+            Mess_DrawText(XMid, 166, GameText.pDoNotRemove2, 0, 0, RFRONT_FULL_SCALE, 0);
+            break;
 
-    case SVSTATUS_INSERTCARD:
-    case LVSTATUS_INSERTCARD:
-        RGBRed();
-        Mess_DrawText(
-            XMid, 90, GameText.pPleaseInsert1, 0, 0, RFRONT_FULL_SCALE, 0);
-        Mess_DrawText(
-            XMid, 116, GameText.pPleaseInsert2, 0, 0, RFRONT_FULL_SCALE, 0);
-        Mess_DrawText(
-            XMid, 142, GameText.pPleaseInsert3, 0, 0, RFRONT_FULL_SCALE, 0);
-        Mess_DrawText(
-            XMid, 168, GameText.pPleaseInsert4, 0, 0, RFRONT_FULL_SCALE, 0);
-        break;
+        case SVSTATUS_INSERTCARD:
+        case LVSTATUS_INSERTCARD:
+            RGBRed();
+            Mess_DrawText(XMid, 90, GameText.pPleaseInsert1, 0, 0, RFRONT_FULL_SCALE, 0);
+            Mess_DrawText(XMid, 116, GameText.pPleaseInsert2, 0, 0, RFRONT_FULL_SCALE, 0);
+            Mess_DrawText(XMid, 142, GameText.pPleaseInsert3, 0, 0, RFRONT_FULL_SCALE, 0);
+            Mess_DrawText(XMid, 168, GameText.pPleaseInsert4, 0, 0, RFRONT_FULL_SCALE, 0);
+            break;
 
-    case SVSTATUS_UNFORMATTEDCARD:
-        Front_PrintGoBackSelect();
-        RGBRed();
-        Mess_DrawText(
-            XMid, 35, GameText.pUnformatted1, 0, 0, RFRONT_FULL_SCALE, 0);
-        Mess_DrawText(
-            XMid, 61, GameText.pUnformatted2, 0, 0, RFRONT_FULL_SCALE, 0);
-        Mess_DrawText(
-            XMid, 87, GameText.pUnformatted3, 0, 0, RFRONT_FULL_SCALE, 0);
-        Mess_DrawText(
-            XMid, 113, GameText.pUnformatted4, 0, 0, RFRONT_FULL_SCALE, 0);
-        {
-            CMenu *menu = pYesNoMenu;
-            menu->mY = 148;
-            menu->Display();
-        }
-        break;
-
-    case SVSTATUS_FORMATTING:
-        RGBGreen();
-        if ((TTime / 10) & 1U)
-        {
-            Mess_DrawText(
-                XMid, 110, GameText.pFormatting,
-                0, 0, RFRONT_FULL_SCALE, 0);
-        }
-        RGBRed();
-        Mess_DrawText(
-            XMid, 140, GameText.pDoNotRemove1, 0, 0, RFRONT_FULL_SCALE, 0);
-        Mess_DrawText(
-            XMid, 166, GameText.pDoNotRemove2, 0, 0, RFRONT_FULL_SCALE, 0);
-        break;
-
-    case SVSTATUS_FORMATSUCCEEDED:
-        RGBGreen();
-        Mess_DrawText(
-            XMid, 110, GameText.pFormatComplete,
-            0, 0, RFRONT_FULL_SCALE, 0);
-        break;
-
-    case SVSTATUS_FORMATFAILED:
-        RGBRed();
-        Mess_DrawText(
-            XMid, 110, GameText.pFormatFailed,
-            0, 0, RFRONT_FULL_SCALE, 0);
-        break;
-
-    case SVSTATUS_CARDFULL:
-    {
-        char buf[24];
-
-        RGBRed();
-        Mess_SetScale(RFRONT_CARD_FULL_SCALE);
-        Mess_DrawText(
-            XMid, 67, GameText.pCardFull1, 0, 0, RFRONT_FULL_SCALE, 0);
-        Mess_DrawText(
-            XMid, 85, GameText.pCardFull2, 0, 0, RFRONT_FULL_SCALE, 0);
-        Mess_DrawText(
-            XMid, 103, GameText.pCardFull3, 0, 0, RFRONT_FULL_SCALE, 0);
-        sprintf(
-            buf, GameText.pCardFull4, SaveNeedBlocks,
-            SaveNeedBlocks == 1 ? "" : "s");
-        Mess_DrawText(
-            XMid, 121, buf, 0, 0, RFRONT_FULL_SCALE, 0);
-        sprintf(
-            buf, GameText.pCardFull5,
-            SaveNeedBlocks - SaveFreeBlocks,
-            SaveNeedBlocks - SaveFreeBlocks == 1 ? "" : "s");
-        Mess_DrawText(
-            XMid, 139, buf, 0, 0, RFRONT_FULL_SCALE, 0);
-        Mess_DrawText(
-            XMid, 157, GameText.pCardFull6, 0, 0, RFRONT_FULL_SCALE, 0);
-        Front_PrintCentredPrompt(GameText.pContinue);
-        break;
-    }
-
-    case SVSTATUS_OKTOOVERWRITE:
-        RGBGreen();
-        Mess_DrawText(
-            XMid, 50, GameText.pAFileByThat, 0, 0, RFRONT_FULL_SCALE, 0);
-        Mess_DrawText(
-            XMid, 76, GameText.pNameAlreadyExists,
-            0, 0, RFRONT_FULL_SCALE, 0);
-        Mess_DrawText(
-            XMid, 102, GameText.pOKToOverwrite1,
-            0, 0, RFRONT_FULL_SCALE, 0);
-        Front_PrintGoBackSelect();
-        {
-            CMenu *menu = pYesNoMenu;
-            menu->mY = 0x91;
-            menu->Display();
-        }
-        break;
-
-    case SVSTATUS_SAVING:
-        RGBGreen();
-        Mess_DrawText(
-            XMid, 110, GameText.pSaving, 0, 0, RFRONT_FULL_SCALE, 0);
-        RGBRed();
-        Mess_DrawText(
-            XMid, 140, GameText.pDoNotRemove1, 0, 0, RFRONT_FULL_SCALE, 0);
-        Mess_DrawText(
-            XMid, 166, GameText.pDoNotRemove2, 0, 0, RFRONT_FULL_SCALE, 0);
-        break;
-
-    case SVSTATUS_SAVECOMPLETED:
-        RGBGreen();
-        Mess_DrawText(
-            XMid, 110, GameText.pSaveComplete, 0, 0, RFRONT_FULL_SCALE, 0);
-        Front_PrintCentredPrompt(GameText.pContinue);
-        break;
-
-    case SVSTATUS_SAVEFAILED:
-        RGBRed();
-        Mess_DrawText(
-            XMid, 110, GameText.pSaveFailed, 0, 0, RFRONT_FULL_SCALE, 0);
-        Front_PrintCentredPrompt(GameText.pContinue);
-        break;
-
-    case SVSTATUS_ENTERNAME:
-    {
-        i = 0;
-        RGBRed();
-        Mess_SetTextJustify(0);
-        Mess_SetScale(RFRONT_FULL_SCALE);
-        Mess_DrawText(
-            XMid, 40, GameText.pEnterName, 0, 0, RFRONT_FULL_SCALE, 0);
-
-        do
-        {
-            if (SizeUp > 0)
+        case SVSTATUS_UNFORMATTEDCARD:
+            Front_PrintGoBackSelect();
+            RGBRed();
+            Mess_DrawText(XMid, 35, GameText.pUnformatted1, 0, 0, RFRONT_FULL_SCALE, 0);
+            Mess_DrawText(XMid, 61, GameText.pUnformatted2, 0, 0, RFRONT_FULL_SCALE, 0);
+            Mess_DrawText(XMid, 87, GameText.pUnformatted3, 0, 0, RFRONT_FULL_SCALE, 0);
+            Mess_DrawText(XMid, 113, GameText.pUnformatted4, 0, 0, RFRONT_FULL_SCALE, 0);
             {
-                SizeUp--;
+                CMenu *menu = pYesNoMenu;
+                menu->mY = 148;
+                menu->Display();
             }
+            break;
 
-            Mess_SetScale(RFRONT_FULL_SCALE);
-            if (i == CursorPos)
+        case SVSTATUS_FORMATTING:
+            RGBGreen();
+            if ((TTime / 10) & 1U)
             {
-                Mess_SetRGB(0xb6, 0x84, 0x24, 0);
+                Mess_DrawText(XMid, 110, GameText.pFormatting, 0, 0, RFRONT_FULL_SCALE, 0);
+            }
+            RGBRed();
+            Mess_DrawText(XMid, 140, GameText.pDoNotRemove1, 0, 0, RFRONT_FULL_SCALE, 0);
+            Mess_DrawText(XMid, 166, GameText.pDoNotRemove2, 0, 0, RFRONT_FULL_SCALE, 0);
+            break;
+
+        case SVSTATUS_FORMATSUCCEEDED:
+            RGBGreen();
+            Mess_DrawText(XMid, 110, GameText.pFormatComplete, 0, 0, RFRONT_FULL_SCALE, 0);
+            break;
+
+        case SVSTATUS_FORMATFAILED:
+            RGBRed();
+            Mess_DrawText(XMid, 110, GameText.pFormatFailed, 0, 0, RFRONT_FULL_SCALE, 0);
+            break;
+
+        case SVSTATUS_CARDFULL:
+        {
+            char buf[24];
+
+            RGBRed();
+            Mess_SetScale(RFRONT_CARD_FULL_SCALE);
+            Mess_DrawText(XMid, 67, GameText.pCardFull1, 0, 0, RFRONT_FULL_SCALE, 0);
+            Mess_DrawText(XMid, 85, GameText.pCardFull2, 0, 0, RFRONT_FULL_SCALE, 0);
+            Mess_DrawText(XMid, 103, GameText.pCardFull3, 0, 0, RFRONT_FULL_SCALE, 0);
+            sprintf(buf, GameText.pCardFull4, SaveNeedBlocks, SaveNeedBlocks == 1 ? "" : "s");
+            Mess_DrawText(XMid, 121, buf, 0, 0, RFRONT_FULL_SCALE, 0);
+            sprintf(buf, GameText.pCardFull5, SaveNeedBlocks - SaveFreeBlocks,
+                    SaveNeedBlocks - SaveFreeBlocks == 1 ? "" : "s");
+            Mess_DrawText(XMid, 139, buf, 0, 0, RFRONT_FULL_SCALE, 0);
+            Mess_DrawText(XMid, 157, GameText.pCardFull6, 0, 0, RFRONT_FULL_SCALE, 0);
+            Front_PrintCentredPrompt(GameText.pContinue);
+            break;
+        }
+
+        case SVSTATUS_OKTOOVERWRITE:
+            RGBGreen();
+            Mess_DrawText(XMid, 50, GameText.pAFileByThat, 0, 0, RFRONT_FULL_SCALE, 0);
+            Mess_DrawText(XMid, 76, GameText.pNameAlreadyExists, 0, 0, RFRONT_FULL_SCALE, 0);
+            Mess_DrawText(XMid, 102, GameText.pOKToOverwrite1, 0, 0, RFRONT_FULL_SCALE, 0);
+            Front_PrintGoBackSelect();
+            {
+                CMenu *menu = pYesNoMenu;
+                menu->mY = 0x91;
+                menu->Display();
+            }
+            break;
+
+        case SVSTATUS_SAVING:
+            RGBGreen();
+            Mess_DrawText(XMid, 110, GameText.pSaving, 0, 0, RFRONT_FULL_SCALE, 0);
+            RGBRed();
+            Mess_DrawText(XMid, 140, GameText.pDoNotRemove1, 0, 0, RFRONT_FULL_SCALE, 0);
+            Mess_DrawText(XMid, 166, GameText.pDoNotRemove2, 0, 0, RFRONT_FULL_SCALE, 0);
+            break;
+
+        case SVSTATUS_SAVECOMPLETED:
+            RGBGreen();
+            Mess_DrawText(XMid, 110, GameText.pSaveComplete, 0, 0, RFRONT_FULL_SCALE, 0);
+            Front_PrintCentredPrompt(GameText.pContinue);
+            break;
+
+        case SVSTATUS_SAVEFAILED:
+            RGBRed();
+            Mess_DrawText(XMid, 110, GameText.pSaveFailed, 0, 0, RFRONT_FULL_SCALE, 0);
+            Front_PrintCentredPrompt(GameText.pContinue);
+            break;
+
+        case SVSTATUS_ENTERNAME:
+        {
+            i = 0;
+            RGBRed();
+            Mess_SetTextJustify(0);
+            Mess_SetScale(RFRONT_FULL_SCALE);
+            Mess_DrawText(XMid, 40, GameText.pEnterName, 0, 0, RFRONT_FULL_SCALE, 0);
+
+            do
+            {
+                if (SizeUp > 0)
+                {
+                    SizeUp--;
+                }
+
+                Mess_SetScale(RFRONT_FULL_SCALE);
+                if (i == CursorPos)
+                {
+                    Mess_SetRGB(0xb6, 0x84, 0x24, 0);
+                }
+                else
+                {
+                    Mess_SetRGB(0x7a, 0x7a, 0x7a, 0);
+                }
+
+                Mess_DrawText(XMid + (i * RFRONT_NAME_SPACING) - RFRONT_NAME_HALF_WIDTH, 100, "_",
+                              0, 0, RFRONT_FULL_SCALE, 0);
+                if (i == CursorPos)
+                {
+                    Mess_SetScale((SizeUp * 6) + RFRONT_FULL_SCALE);
+                }
+
+                if ((&RFrontSaveNameViews::SaveGameName)[i] != 0)
+                {
+                    char tmp[3] = "\0\0";
+                    tmp[0] = (&RFrontSaveNameViews::SaveGameName)[i];
+                    Mess_DrawText(XMid + (i * RFRONT_NAME_SPACING) - RFRONT_NAME_HALF_WIDTH, 92,
+                                  tmp, 0, 0, RFRONT_FULL_SCALE, 0);
+                }
+
+                i++;
+            } while (i < 10);
+
+            Front_PrintGoBackSelect();
+            break;
+        }
+
+        case SVSTATUS_DELETEQUERY:
+            Mess_DrawText(XMid, 100, RFrontNoSpaceText, 0, 0, RFRONT_FULL_SCALE, 0);
+            break;
+
+        case LVSTATUS_NOFILES:
+            RGBRed();
+            if (GLoadAction == LOAD_GAME)
+            {
+                Mess_DrawText(XMid, 110, GameText.pNoCareerFiles, 0, 0, RFRONT_FULL_SCALE, 0);
             }
             else
             {
-                Mess_SetRGB(0x7a, 0x7a, 0x7a, 0);
+                Mess_DrawText(XMid, 110, GameText.pNoVideoFiles, 0, 0, RFRONT_FULL_SCALE, 0);
             }
-
-            Mess_DrawText(
-                XMid + (i * RFRONT_NAME_SPACING) - RFRONT_NAME_HALF_WIDTH, 100, "_", 0, 0, RFRONT_FULL_SCALE, 0);
-            if (i == CursorPos)
+            if (MCResolution == RFRONT_STANDARD_WIDTH)
             {
-                Mess_SetScale((SizeUp * 6) + RFRONT_FULL_SCALE);
+                Front_PrintCentredPrompt(GameText.pContinue);
             }
+            break;
 
-            if ((&RFrontSaveNameViews::SaveGameName)[i] != 0)
+        case LVSTATUS_SELECTFILE:
+            if (MCResolution == RFRONT_STANDARD_WIDTH)
             {
-                char tmp[3] = "\0\0";
-                tmp[0] = (&RFrontSaveNameViews::SaveGameName)[i];
-                Mess_DrawText(
-                    XMid + (i * RFRONT_NAME_SPACING) - RFRONT_NAME_HALF_WIDTH, 92, tmp, 0, 0, RFRONT_FULL_SCALE, 0);
+                Front_PrintGoBackSelect();
             }
+            break;
 
-            i++;
-        } while (i < 10);
+        case LVSTATUS_LOADING:
+            RGBGreen();
+            Mess_DrawText(XMid, 110, RFrontLoadingVideoText, 0, 0, RFRONT_FULL_SCALE, 0);
+            RGBRed();
+            Mess_DrawText(XMid, 140, GameText.pDoNotRemove1, 0, 0, RFRONT_FULL_SCALE, 0);
+            Mess_DrawText(XMid, 166, GameText.pDoNotRemove2, 0, 0, RFRONT_FULL_SCALE, 0);
+            break;
 
-        Front_PrintGoBackSelect();
-        break;
-    }
+        case LVSTATUS_LOADFAILED:
+            RGBRed();
+            Mess_DrawText(XMid, 110, GameText.pLoadFailed, 0, 0, RFRONT_FULL_SCALE, 0);
+            if (MCResolution == RFRONT_STANDARD_WIDTH)
+            {
+                Front_PrintCentredPrompt(GameText.pContinue);
+            }
+            break;
 
-    case SVSTATUS_DELETEQUERY:
-        Mess_DrawText(
-            XMid, 100, RFrontNoSpaceText,
-            0, 0, RFRONT_FULL_SCALE, 0);
-        break;
+        case LVSTATUS_LOADCOMPLETED: break;
 
-    case LVSTATUS_NOFILES:
-        RGBRed();
-        if (GLoadAction == LOAD_GAME)
-        {
-            Mess_DrawText(
-                XMid, 110, GameText.pNoCareerFiles,
-                0, 0, RFRONT_FULL_SCALE, 0);
-        }
-        else
-        {
-            Mess_DrawText(
-                XMid, 110, GameText.pNoVideoFiles,
-                0, 0, RFRONT_FULL_SCALE, 0);
-        }
-        if (MCResolution == RFRONT_STANDARD_WIDTH)
-        {
-            Front_PrintCentredPrompt(GameText.pContinue);
-        }
-        break;
-
-    case LVSTATUS_SELECTFILE:
-        if (MCResolution == RFRONT_STANDARD_WIDTH)
-        {
-            Front_PrintGoBackSelect();
-        }
-        break;
-
-    case LVSTATUS_LOADING:
-        RGBGreen();
-        Mess_DrawText(
-            XMid, 110, RFrontLoadingVideoText, 0, 0, RFRONT_FULL_SCALE, 0);
-        RGBRed();
-        Mess_DrawText(
-            XMid, 140, GameText.pDoNotRemove1, 0, 0, RFRONT_FULL_SCALE, 0);
-        Mess_DrawText(
-            XMid, 166, GameText.pDoNotRemove2, 0, 0, RFRONT_FULL_SCALE, 0);
-        break;
-
-    case LVSTATUS_LOADFAILED:
-        RGBRed();
-        Mess_DrawText(
-            XMid, 110, GameText.pLoadFailed, 0, 0, RFRONT_FULL_SCALE, 0);
-        if (MCResolution == RFRONT_STANDARD_WIDTH)
-        {
-            Front_PrintCentredPrompt(GameText.pContinue);
-        }
-        break;
-
-    case LVSTATUS_LOADCOMPLETED:
-        break;
-
-    default:
-        break;
+        default: break;
     }
 }
 
 /** Mutable status text stored in RFRONT's target small-data tail. */
-static char RFrontLoadingReplayText[]
-    __attribute__((section(".sdata"), aligned(4))) = "loading replay";
-static char RFrontVideoLoadedText[]
-    __attribute__((section(".sdata"), aligned(4))) = "Video loaded";
+static char RFrontLoadingReplayText[] __attribute__((section(".sdata"), aligned(4))) =
+    "loading replay";
+static char RFrontVideoLoadedText[] __attribute__((section(".sdata"), aligned(4))) = "Video loaded";
 
 /** Rolling suffixes used when a blank replay or career name is accepted. */
-static int Video
-    __attribute__((section(".sdata"), aligned(4))) = 0;
-static int Career
-    __attribute__((section(".sdata"), aligned(4))) = 0;
+static int Video __attribute__((section(".sdata"), aligned(4))) = 0;
+static int Career __attribute__((section(".sdata"), aligned(4))) = 0;
 
 /** On-disc replay filename template; byte four is replaced by the slot letter. */
-static char RFrontDemoFileName[]
-    __attribute__((section(".sdata"), aligned(4))) = "demoX.rec";
+static char RFrontDemoFileName[] __attribute__((section(".sdata"), aligned(4))) = "demoX.rec";
 
-extern "C" {
+extern "C"
+{
 /** Memory-card payload and operation selected by the front end (RFRONT owns both). */
 ELoadAction GLoadAction = LOAD_VIDEO;
 ESaveAction GSaveAction = SAVE_VIDEO;
 
 /** Career name copied to and from the active save-name buffer. */
-char StoredCareerName[11] __attribute__((section(".sdata"))) = {0};
+char StoredCareerName[11] __attribute__((section(".sdata"))) = { 0 };
 }
 
 
 /**
  * Draw the high-resolution memory-card state and its file-selection menu.
  */
-void Front_MemCardHiResDisplay(void) {
+void Front_MemCardHiResDisplay(void)
+{
     int i;
     int XMid;
 
     Mess_SetScale(RFRONT_HIGH_RES_SCALE);
     XMid = MCResolution >> 1;
 
-    if ((MCState == LVSTATUS_LOADING) &&
-        (static_cast<unsigned int>(GLoadAction - 1) < 2U))
+    if ((MCState == LVSTATUS_LOADING) && (static_cast<unsigned int>(GLoadAction - 1) < 2U))
     {
         char *load;
 
@@ -1093,164 +1059,153 @@ void Front_MemCardHiResDisplay(void) {
 
     switch (MCState)
     {
-    case LVSTATUS_CHECKINGCARDPAUSE:
-    case LVSTATUS_CHECKINGCARD:
-        RGBGreen();
-        Front_DirtyRectText(XMid, 180, GameText.pCheckingCard);
-        RGBRed();
-        Front_DirtyRectText(XMid, 280, GameText.pDoNotRemove1);
-        Front_DirtyRectText(XMid, 332, GameText.pDoNotRemove2);
-        break;
+        case LVSTATUS_CHECKINGCARDPAUSE:
+        case LVSTATUS_CHECKINGCARD:
+            RGBGreen();
+            Front_DirtyRectText(XMid, 180, GameText.pCheckingCard);
+            RGBRed();
+            Front_DirtyRectText(XMid, 280, GameText.pDoNotRemove1);
+            Front_DirtyRectText(XMid, 332, GameText.pDoNotRemove2);
+            break;
 
-    case LVSTATUS_INSERTCARD:
-        RGBRed();
-        Front_DirtyRectText(XMid, 180, GameText.pPleaseInsert1);
-        Front_DirtyRectText(XMid, 232, GameText.pPleaseInsert2);
-        Front_DirtyRectText(XMid, 284, GameText.pPleaseInsert3);
-        Front_DirtyRectText(XMid, 336, GameText.pPleaseInsert4);
-        break;
+        case LVSTATUS_INSERTCARD:
+            RGBRed();
+            Front_DirtyRectText(XMid, 180, GameText.pPleaseInsert1);
+            Front_DirtyRectText(XMid, 232, GameText.pPleaseInsert2);
+            Front_DirtyRectText(XMid, 284, GameText.pPleaseInsert3);
+            Front_DirtyRectText(XMid, 336, GameText.pPleaseInsert4);
+            break;
 
-    case LVSTATUS_UNFORMATTEDCARD:
-        RGBRed();
-        Front_DirtyRectText(XMid, 174, GameText.pHiResUnformatted1);
-        Front_DirtyRectText(XMid, 226, GameText.pHiResUnformatted2);
-        Front_DirtyRectText(XMid, 278, GameText.pHiResUnformatted3);
-        break;
+        case LVSTATUS_UNFORMATTEDCARD:
+            RGBRed();
+            Front_DirtyRectText(XMid, 174, GameText.pHiResUnformatted1);
+            Front_DirtyRectText(XMid, 226, GameText.pHiResUnformatted2);
+            Front_DirtyRectText(XMid, 278, GameText.pHiResUnformatted3);
+            break;
 
-    case LVSTATUS_NOFILES:
-        RGBRed();
-        if (GLoadAction == LOAD_GAME)
-        {
-            Front_DirtyRectText(
-                XMid, 220, GameText.pNoCareerFiles);
-        }
-        else
-        {
-            Front_DirtyRectText(
-                XMid, 220, GameText.pNoVideoFiles);
-        }
-        if (MCResolution == RFRONT_STANDARD_WIDTH)
-        {
-            Front_PrintCentredPrompt(GameText.pContinue);
-        }
-        break;
-
-    case LVSTATUS_SELECTFILE:
-    {
-        // Preserve the target local-common identity used by the native linker.
-        static char msg[32];
-
-        if (pVertMenu == 0)
-        {
-            VerticalMenu *m = static_cast<VerticalMenu *>(
-                ::CClass::operator new(sizeof(VerticalMenu)));
-            if (m != 0)
+        case LVSTATUS_NOFILES:
+            RGBRed();
+            if (GLoadAction == LOAD_GAME)
             {
-                m = __12VerticalMenuiiiPPciPiT6i(
-                    m, 100, 398, 0xf, VertMenuItem,
-                    (NumVertMenuItems < 6) ? NumVertMenuItems : 5,
-                    0, 0, 0);
+                Front_DirtyRectText(XMid, 220, GameText.pNoCareerFiles);
             }
-            pVertMenu = m;
-            sprintf(msg, GameText.pHiResScroll, GameText.pHiResUpOrDown);
-            Front_DirtyRectText(XMid, 380, msg);
-        }
-
-        for (i = 0; i < 5; i++)
-        {
-            if ((i != pVertMenu->getSelected()) ||
-                (VertMenuTopChanged != 0))
+            else
             {
-                pVertMenu->setString(
-                    i, VertMenuItem[VertMenuTopIndex + i]);
+                Front_DirtyRectText(XMid, 220, GameText.pNoVideoFiles);
             }
-        }
-
-        if (NumVertMenuItems > 5)
-        {
-            if (((TTime / 20) & 3) != 0)
+            if (MCResolution == RFRONT_STANDARD_WIDTH)
             {
-                int up;
-                int top;
-                int lastTop;
-                int canScrollBothWays;
+                Front_PrintCentredPrompt(GameText.pContinue);
+            }
+            break;
 
-                RGBGreen();
-                top = VertMenuTopIndex;
-                up = top > 0;
-                lastTop = NumVertMenuItems - 5;
-                canScrollBothWays = top < lastTop;
-                if (up && canScrollBothWays)
+        case LVSTATUS_SELECTFILE:
+        {
+            // Preserve the target local-common identity used by the native linker.
+            static char msg[32];
+
+            if (pVertMenu == 0)
+            {
+                VerticalMenu *m =
+                    static_cast<VerticalMenu *>(::CClass::operator new(sizeof(VerticalMenu)));
+                if (m != 0)
                 {
-                    sprintf(
-                        msg, GameText.pHiResScroll,
-                        GameText.pHiResUpOrDown);
+                    m = __12VerticalMenuiiiPPciPiT6i(m, 100, 398, 0xf, VertMenuItem,
+                                                     (NumVertMenuItems < 6) ? NumVertMenuItems : 5,
+                                                     0, 0, 0);
                 }
-                else
-                {
-                    sprintf(
-                        msg, GameText.pHiResScroll,
-                        up ? GameText.pHiResUp
-                           : GameText.pHiResDown);
-                }
+                pVertMenu = m;
+                sprintf(msg, GameText.pHiResScroll, GameText.pHiResUpOrDown);
                 Front_DirtyRectText(XMid, 380, msg);
             }
+
+            for (i = 0; i < 5; i++)
+            {
+                if ((i != pVertMenu->getSelected()) || (VertMenuTopChanged != 0))
+                {
+                    pVertMenu->setString(i, VertMenuItem[VertMenuTopIndex + i]);
+                }
+            }
+
+            if (NumVertMenuItems > 5)
+            {
+                if (((TTime / 20) & 3) != 0)
+                {
+                    int up;
+                    int top;
+                    int lastTop;
+                    int canScrollBothWays;
+
+                    RGBGreen();
+                    top = VertMenuTopIndex;
+                    up = top > 0;
+                    lastTop = NumVertMenuItems - 5;
+                    canScrollBothWays = top < lastTop;
+                    if (up && canScrollBothWays)
+                    {
+                        sprintf(msg, GameText.pHiResScroll, GameText.pHiResUpOrDown);
+                    }
+                    else
+                    {
+                        sprintf(msg, GameText.pHiResScroll,
+                                up ? GameText.pHiResUp : GameText.pHiResDown);
+                    }
+                    Front_DirtyRectText(XMid, 380, msg);
+                }
+            }
+
+            pVertMenu->vtable->draw(pVertMenu);
+            if (MCResolution == RFRONT_STANDARD_WIDTH)
+            {
+                Front_PrintGoBackSelect();
+            }
+            break;
         }
 
-        pVertMenu->vtable->draw(pVertMenu);
-        if (MCResolution == RFRONT_STANDARD_WIDTH)
-        {
-            Front_PrintGoBackSelect();
-        }
-        break;
-    }
+        case LVSTATUS_LOADING:
+            RGBGreen();
+            Front_DirtyRectText(XMid, 220, RFrontLoadingVideoText);
+            RGBRed();
+            Front_DirtyRectText(XMid, 280, GameText.pDoNotRemove1);
+            Front_DirtyRectText(XMid, 332, GameText.pDoNotRemove2);
+            break;
 
-    case LVSTATUS_LOADING:
-        RGBGreen();
-        Front_DirtyRectText(XMid, 220, RFrontLoadingVideoText);
-        RGBRed();
-        Front_DirtyRectText(XMid, 280, GameText.pDoNotRemove1);
-        Front_DirtyRectText(XMid, 332, GameText.pDoNotRemove2);
-        break;
+        case LVSTATUS_LOADFAILED:
+            RGBRed();
+            Front_DirtyRectText(XMid, 220, GameText.pLoadFailed);
+            if (MCResolution == RFRONT_STANDARD_WIDTH)
+            {
+                Front_PrintCentredPrompt(GameText.pContinue);
+            }
+            break;
 
-    case LVSTATUS_LOADFAILED:
-        RGBRed();
-        Front_DirtyRectText(XMid, 220, GameText.pLoadFailed);
-        if (MCResolution == RFRONT_STANDARD_WIDTH)
-        {
-            Front_PrintCentredPrompt(GameText.pContinue);
-        }
-        break;
+        case LVSTATUS_LOADCOMPLETED:
+            RGBRed();
+            Front_DirtyRectText(XMid, 220, RFrontVideoLoadedText);
+            if (MCResolution == RFRONT_STANDARD_WIDTH)
+            {
+                Front_PrintCentredPrompt(GameText.pContinue);
+            }
+            break;
 
-    case LVSTATUS_LOADCOMPLETED:
-        RGBRed();
-        Front_DirtyRectText(XMid, 220, RFrontVideoLoadedText);
-        if (MCResolution == RFRONT_STANDARD_WIDTH)
-        {
-            Front_PrintCentredPrompt(GameText.pContinue);
-        }
-        break;
+        case LVSTATUS_FULLCARDWARNING:
+            RGBRed();
+            Front_DirtyRectText(XMid, 134, GameText.pCardFull1);
+            Front_DirtyRectText(XMid, 170, GameText.pCardFull2);
+            Front_DirtyRectText(XMid, 206, GameText.pCardFullWarning1);
+            Front_DirtyRectText(XMid, 242, GameText.pCardFullWarning2);
+            Front_DirtyRectText(XMid, 278, GameText.pCardFullWarning3);
+            Front_DirtyRectText(XMid, 314, GameText.pCardFullWarning4);
+            Front_DirtyRectText(XMid, 350, GameText.pCardFullWarning5);
+            if (MCResolution == RFRONT_STANDARD_WIDTH)
+            {
+                Front_PrintCentredPrompt(GameText.pContinue);
+            }
+            break;
 
-    case LVSTATUS_FULLCARDWARNING:
-        RGBRed();
-        Front_DirtyRectText(XMid, 134, GameText.pCardFull1);
-        Front_DirtyRectText(XMid, 170, GameText.pCardFull2);
-        Front_DirtyRectText(XMid, 206, GameText.pCardFullWarning1);
-        Front_DirtyRectText(XMid, 242, GameText.pCardFullWarning2);
-        Front_DirtyRectText(XMid, 278, GameText.pCardFullWarning3);
-        Front_DirtyRectText(XMid, 314, GameText.pCardFullWarning4);
-        Front_DirtyRectText(XMid, 350, GameText.pCardFullWarning5);
-        if (MCResolution == RFRONT_STANDARD_WIDTH)
-        {
-            Front_PrintCentredPrompt(GameText.pContinue);
-        }
-        break;
+        case LVSTATUS_BUILDMENU: break;
 
-    case LVSTATUS_BUILDMENU:
-        break;
-
-    default:
-        break;
+        default: break;
     }
 
     return;
@@ -1262,13 +1217,13 @@ void Front_MemCardHiResDisplay(void) {
  *
  * @return 1 when the name is blank, otherwise 0.
  */
-int NameWasBlank(void) {
-    for (int i = 0; i < 10; i++) {
+int NameWasBlank(void)
+{
+    for (int i = 0; i < 10; i++)
+    {
         int c = (&RFrontSaveNameViews::SaveGameName)[i];
-        if (c == 0)
-            return 1;
-        if (c != ' ')
-            return 0;
+        if (c == 0) return 1;
+        if (c != ' ') return 0;
     }
     return 1;
 }
@@ -1277,8 +1232,10 @@ int NameWasBlank(void) {
 /**
  * Build the next default VIDEO or CAREER name and advance its suffix.
  */
-void FillInDefaultName(void) {
-    if (GSaveAction == SAVE_VIDEO) {
+void FillInDefaultName(void)
+{
+    if (GSaveAction == SAVE_VIDEO)
+    {
         int next;
 
         SaveGameName.b0 = 'V';
@@ -1315,10 +1272,11 @@ void FillInDefaultName(void) {
  *
  * @return The state appropriate to the current save and competition context.
  */
-static EPausedStatus SaveReturnState(void) {
-    if (GSaveAction == SAVE_VIDEO) {
-        if (InCompetition() != 0 && Competition_IsOver() == 0)
-            return STATUS_ENDHEATVIDEOMENU;
+static EPausedStatus SaveReturnState(void)
+{
+    if (GSaveAction == SAVE_VIDEO)
+    {
+        if (InCompetition() != 0 && Competition_IsOver() == 0) return STATUS_ENDHEATVIDEOMENU;
         return STATUS_VIDEOSCREEN;
     }
     return static_cast<EPausedStatus>(GReturnToState);
@@ -1329,7 +1287,8 @@ static EPausedStatus SaveReturnState(void) {
  * Advances the save/load memory-card state machine and returns the front-end
  * state that should run on the next frame.
  */
-EPausedStatus Front_MemCardUpdate(void) {
+EPausedStatus Front_MemCardUpdate(void)
+{
     static int Delay;
     static int Retries;
     int Activated;
@@ -1347,71 +1306,88 @@ EPausedStatus Front_MemCardUpdate(void) {
 
     switch (MCState)
     {
-    case SVSTATUS_CHECKINGCARDPAUSE:
-        if (CheckingCardPause != 0)
-        {
-            CheckingCardPause--;
-            if (CheckingCardPause == 0)
+        case SVSTATUS_CHECKINGCARDPAUSE:
+            if (CheckingCardPause != 0)
             {
-                MCState = SVSTATUS_CHECKINGCARD;
-            }
-        }
-        else
-        {
-            CheckingCardPause = 10;
-        }
-        break;
-
-    case SVSTATUS_CHECKINGCARD:
-        if (VideoToDisk != 0)
-        {
-            MCState = SVSTATUS_ENTERNAME;
-            break;
-        }
-
-        if (CardStatus == -1)
-        {
-            goto save_card_missing;
-        }
-
-        if (CardStatus < 0)
-        {
-            if (CardStatus == -2)
-            {
-                goto save_card_unformatted;
-            }
-            break;
-        }
-
-        if (CardStatus != 1)
-        {
-            break;
-        }
-
-        SaveFreeBlocks = Card_GetDirAndFreeBlocks(0, 0);
-        if (GSaveAction == SAVE_GAME)
-        {
-            SaveNeedBlocks = 1;
-            if (SaveFreeBlocks <= 0)
-            {
-                if (GHasCareerLoaded == 0)
+                CheckingCardPause--;
+                if (CheckingCardPause == 0)
                 {
-                    MCState = SVSTATUS_CARDFULL;
-                    break;
+                    MCState = SVSTATUS_CHECKINGCARD;
                 }
             }
-            if (GHasCareerLoaded != 0)
+            else
             {
-                for (int i = 0; i < 10; ++i)
+                CheckingCardPause = 10;
+            }
+            break;
+
+        case SVSTATUS_CHECKINGCARD:
+            if (VideoToDisk != 0)
+            {
+                MCState = SVSTATUS_ENTERNAME;
+                break;
+            }
+
+            if (CardStatus == -1)
+            {
+                goto save_card_missing;
+            }
+
+            if (CardStatus < 0)
+            {
+                if (CardStatus == -2)
                 {
-                    RFrontNameStorageView *names =
-                        RFront_NameStorage(
-                            &RFrontSaveNameViews::SaveGameName);
-                    names->saveGameName[i] = names->storedCareerName[i];
+                    goto save_card_unformatted;
                 }
-                MCState = SVSTATUS_SAVING;
-                Delay = 4;
-                Retries = 4;
+                break;
+            }
+
+            if (CardStatus != 1)
+            {
+                break;
+            }
+
+            SaveFreeBlocks = Card_GetDirAndFreeBlocks(0, 0);
+            if (GSaveAction == SAVE_GAME)
+            {
+                SaveNeedBlocks = 1;
+                if (SaveFreeBlocks <= 0)
+                {
+                    if (GHasCareerLoaded == 0)
+                    {
+                        MCState = SVSTATUS_CARDFULL;
+                        break;
+                    }
+                }
+                if (GHasCareerLoaded != 0)
+                {
+                    for (int i = 0; i < 10; ++i)
+                    {
+                        RFrontNameStorageView *names =
+                            RFront_NameStorage(&RFrontSaveNameViews::SaveGameName);
+                        names->saveGameName[i] = names->storedCareerName[i];
+                    }
+                    MCState = SVSTATUS_SAVING;
+                    Delay = 4;
+                    Retries = 4;
+                }
+                else
+                {
+                    MCState = SVSTATUS_ENTERNAME;
+                    InitEnterName();
+                }
+                break;
+            }
+
+            SaveNeedBlocks = 3;
+            if (GNumberOfPlayers == 2)
+            {
+                SaveNeedBlocks = 6;
+            }
+
+            if (SaveFreeBlocks < SaveNeedBlocks)
+            {
+                MCState = SVSTATUS_CARDFULL;
             }
             else
             {
@@ -1419,257 +1395,188 @@ EPausedStatus Front_MemCardUpdate(void) {
                 InitEnterName();
             }
             break;
-        }
 
-        SaveNeedBlocks = 3;
-        if (GNumberOfPlayers == 2)
-        {
-            SaveNeedBlocks = 6;
-        }
-
-        if (SaveFreeBlocks < SaveNeedBlocks)
-        {
-            MCState = SVSTATUS_CARDFULL;
-        }
-        else
-        {
-            MCState = SVSTATUS_ENTERNAME;
-            InitEnterName();
-        }
-        break;
-
-    save_card_missing:
-        MCState = SVSTATUS_INSERTCARD;
-        break;
-
-    save_card_unformatted:
-        MCState = SVSTATUS_UNFORMATTEDCARD;
-        pYesNoMenu->SetLine(
-            static_cast<unsigned char>(
-                pYesNoMenu->FindEntry(GameText.pNo)));
-        break;
-
-    case SVSTATUS_CARDFULL:
-        switch (CardStatus)
-        {
-        case -1:
+        save_card_missing:
             MCState = SVSTATUS_INSERTCARD;
             break;
 
-        case -2:
-        case 2:
-            MCState = SVSTATUS_CHECKINGCARDPAUSE;
+        save_card_unformatted:
+            MCState = SVSTATUS_UNFORMATTEDCARD;
+            pYesNoMenu->SetLine(static_cast<unsigned char>(pYesNoMenu->FindEntry(GameText.pNo)));
             break;
 
-        default:
+        case SVSTATUS_CARDFULL:
+            switch (CardStatus)
+            {
+                case -1: MCState = SVSTATUS_INSERTCARD; break;
+
+                case -2:
+                case 2: MCState = SVSTATUS_CHECKINGCARDPAUSE; break;
+
+                default: break;
+            }
+            if (AnyButton != 0)
+            {
+                SFX_PlayX(2, RFRONT_SFX_VOLUME, 0);
+                return static_cast<EPausedStatus>(SaveReturnState());
+            }
             break;
-        }
-        if (AnyButton != 0)
-        {
-            SFX_PlayX(2, RFRONT_SFX_VOLUME, 0);
-            return static_cast<EPausedStatus>(SaveReturnState());
-        }
-        break;
 
-    case SVSTATUS_ENTERNAME:
-    {
-        int UpDown = GetUpDown();
-
-        if (UpDown == -1)
+        case SVSTATUS_ENTERNAME:
         {
-            SizeUp = 16;
-            SFX_PlayX(0x11, RFRONT_SFX_VOLUME, 0);
-            if ((RFront_NameBytes(&RFrontSaveNameViews::SaveGameName)[CursorPos] == ' ') ||
-                (RFront_NameBytes(&RFrontSaveNameViews::SaveGameName)[CursorPos] == '\0'))
+            int UpDown = GetUpDown();
+
+            if (UpDown == -1)
             {
-                RFront_NameBytes(&RFrontSaveNameViews::SaveGameName)[CursorPos] = 'A';
-            }
-            else
-            {
-                ++RFront_NameBytes(&RFrontSaveNameViews::SaveGameName)[CursorPos];
-                if (RFront_NameBytes(&RFrontSaveNameViews::SaveGameName)[CursorPos] > 'Z')
+                SizeUp = 16;
+                SFX_PlayX(0x11, RFRONT_SFX_VOLUME, 0);
+                if ((RFront_NameBytes(&RFrontSaveNameViews::SaveGameName)[CursorPos] == ' ') ||
+                    (RFront_NameBytes(&RFrontSaveNameViews::SaveGameName)[CursorPos] == '\0'))
                 {
-                    RFront_NameBytes(&RFrontSaveNameViews::SaveGameName)[CursorPos] = ' ';
-                }
-            }
-        }
-
-        if (UpDown == 1)
-        {
-            SizeUp = 16;
-            SFX_PlayX(0x11, RFRONT_SFX_VOLUME, 0);
-            if ((RFront_NameBytes(&RFrontSaveNameViews::SaveGameName)[CursorPos] == ' ') ||
-                (RFront_NameBytes(&RFrontSaveNameViews::SaveGameName)[CursorPos] == '\0'))
-            {
-                RFront_NameBytes(&RFrontSaveNameViews::SaveGameName)[CursorPos] = 'Z';
-            }
-            else
-            {
-                --RFront_NameBytes(&RFrontSaveNameViews::SaveGameName)[CursorPos];
-                if (RFront_NameBytes(&RFrontSaveNameViews::SaveGameName)[CursorPos] < 'A')
-                {
-                    RFront_NameBytes(&RFrontSaveNameViews::SaveGameName)[CursorPos] = ' ';
-                }
-            }
-        }
-
-        if ((Pad[0].Left.Triggered != 0) ||
-            (Pad[1].Left.Triggered != 0))
-        {
-            SizeUp = 16;
-            SFX_PlayX(5, RFRONT_SFX_VOLUME, 0);
-            Pad[0].Left.Triggered = 0;
-            Pad[1].Left.Triggered = 0;
-            CursorPos--;
-            if (CursorPos < 0)
-            {
-                CursorPos = 9;
-            }
-        }
-
-        if ((Pad[0].Right.Triggered != 0) ||
-            (Pad[1].Right.Triggered != 0))
-        {
-            SizeUp = 16;
-            SFX_PlayX(5, RFRONT_SFX_VOLUME, 0);
-            Pad[0].Right.Triggered = 0;
-            Pad[1].Right.Triggered = 0;
-            CursorPos++;
-            if (CursorPos > 9)
-            {
-                CursorPos = 0;
-            }
-        }
-
-        strcpy(
-            GSaveAction == SAVE_VIDEO
-                ? &RFrontSaveNameViews::LastVideoName
-                : &RFrontSaveNameViews::LastCareerName,
-            &RFrontSaveNameViews::SaveGameName);
-
-        if (GoBack == 0)
-        {
-            if ((CardStatus == -1) && (VideoToDisk == 0))
-            {
-                MCState = SVSTATUS_INSERTCARD;
-            }
-
-            if ((Activated != 0) && (VideoToDisk == 0))
-            {
-                SFX_PlayX(5, RFRONT_SFX_VOLUME, 0);
-                EFileType FileType = GSaveAction == SAVE_VIDEO
-                    ? THPS_VIDEO_FILE : THPS_SAVE_FILE;
-
-                if (NameWasBlank())
-                {
-                    do
-                    {
-                        FillInDefaultName();
-                    } while (Card_FileExists(FileType));
-                }
-
-                if (Card_FileExists(FileType) &&
-                    ((GSaveAction != SAVE_GAME) ||
-                     (GHasCareerLoaded == 0)))
-                {
-                    MCState = SVSTATUS_OKTOOVERWRITE;
-                    int entry = pYesNoMenu->FindEntry(GameText.pNo);
-                    pYesNoMenu->SetLine(
-                        static_cast<unsigned char>(entry));
-                    pYesNoMenu->CentreY();
+                    RFront_NameBytes(&RFrontSaveNameViews::SaveGameName)[CursorPos] = 'A';
                 }
                 else
                 {
+                    ++RFront_NameBytes(&RFrontSaveNameViews::SaveGameName)[CursorPos];
+                    if (RFront_NameBytes(&RFrontSaveNameViews::SaveGameName)[CursorPos] > 'Z')
+                    {
+                        RFront_NameBytes(&RFrontSaveNameViews::SaveGameName)[CursorPos] = ' ';
+                    }
+                }
+            }
+
+            if (UpDown == 1)
+            {
+                SizeUp = 16;
+                SFX_PlayX(0x11, RFRONT_SFX_VOLUME, 0);
+                if ((RFront_NameBytes(&RFrontSaveNameViews::SaveGameName)[CursorPos] == ' ') ||
+                    (RFront_NameBytes(&RFrontSaveNameViews::SaveGameName)[CursorPos] == '\0'))
+                {
+                    RFront_NameBytes(&RFrontSaveNameViews::SaveGameName)[CursorPos] = 'Z';
+                }
+                else
+                {
+                    --RFront_NameBytes(&RFrontSaveNameViews::SaveGameName)[CursorPos];
+                    if (RFront_NameBytes(&RFrontSaveNameViews::SaveGameName)[CursorPos] < 'A')
+                    {
+                        RFront_NameBytes(&RFrontSaveNameViews::SaveGameName)[CursorPos] = ' ';
+                    }
+                }
+            }
+
+            if ((Pad[0].Left.Triggered != 0) || (Pad[1].Left.Triggered != 0))
+            {
+                SizeUp = 16;
+                SFX_PlayX(5, RFRONT_SFX_VOLUME, 0);
+                Pad[0].Left.Triggered = 0;
+                Pad[1].Left.Triggered = 0;
+                CursorPos--;
+                if (CursorPos < 0)
+                {
+                    CursorPos = 9;
+                }
+            }
+
+            if ((Pad[0].Right.Triggered != 0) || (Pad[1].Right.Triggered != 0))
+            {
+                SizeUp = 16;
+                SFX_PlayX(5, RFRONT_SFX_VOLUME, 0);
+                Pad[0].Right.Triggered = 0;
+                Pad[1].Right.Triggered = 0;
+                CursorPos++;
+                if (CursorPos > 9)
+                {
+                    CursorPos = 0;
+                }
+            }
+
+            strcpy(GSaveAction == SAVE_VIDEO ? &RFrontSaveNameViews::LastVideoName
+                                             : &RFrontSaveNameViews::LastCareerName,
+                   &RFrontSaveNameViews::SaveGameName);
+
+            if (GoBack == 0)
+            {
+                if ((CardStatus == -1) && (VideoToDisk == 0))
+                {
+                    MCState = SVSTATUS_INSERTCARD;
+                }
+
+                if ((Activated != 0) && (VideoToDisk == 0))
+                {
+                    SFX_PlayX(5, RFRONT_SFX_VOLUME, 0);
+                    EFileType FileType =
+                        GSaveAction == SAVE_VIDEO ? THPS_VIDEO_FILE : THPS_SAVE_FILE;
+
+                    if (NameWasBlank())
+                    {
+                        do
+                        {
+                            FillInDefaultName();
+                        } while (Card_FileExists(FileType));
+                    }
+
+                    if (Card_FileExists(FileType) &&
+                        ((GSaveAction != SAVE_GAME) || (GHasCareerLoaded == 0)))
+                    {
+                        MCState = SVSTATUS_OKTOOVERWRITE;
+                        int entry = pYesNoMenu->FindEntry(GameText.pNo);
+                        pYesNoMenu->SetLine(static_cast<unsigned char>(entry));
+                        pYesNoMenu->CentreY();
+                    }
+                    else
+                    {
+                        MCState = SVSTATUS_SAVING;
+                        Delay = 4;
+                        Retries = 4;
+                    }
+                }
+
+                if ((Activated != 0) && (VideoToDisk != 0))
+                {
+                    SFX_PlayX(5, RFRONT_SFX_VOLUME, 0);
+                    MCState = SVSTATUS_SAVING2;
+                }
+            }
+            else
+            {
+                SFX_PlayX(2, RFRONT_SFX_VOLUME, 0);
+                return static_cast<EPausedStatus>(SaveReturnState());
+            }
+            break;
+        }
+
+        case SVSTATUS_OKTOOVERWRITE:
+            pYesNoMenu->Update();
+            if (Activated != 0)
+            {
+                if (pYesNoMenu->ChoiceIs(GameText.pYes))
+                {
+                    SFX_PlayX(5, RFRONT_SFX_VOLUME, 0);
                     MCState = SVSTATUS_SAVING;
                     Delay = 4;
                     Retries = 4;
                 }
+                else
+                {
+                    SFX_PlayX(2, RFRONT_SFX_VOLUME, 0);
+                    MCState = SVSTATUS_ENTERNAME;
+                    InitEnterName();
+                }
             }
-
-            if ((Activated != 0) && (VideoToDisk != 0))
-            {
-                SFX_PlayX(5, RFRONT_SFX_VOLUME, 0);
-                MCState = SVSTATUS_SAVING2;
-            }
-        }
-        else
-        {
-            SFX_PlayX(2, RFRONT_SFX_VOLUME, 0);
-            return static_cast<EPausedStatus>(SaveReturnState());
-        }
-        break;
-    }
-
-    case SVSTATUS_OKTOOVERWRITE:
-        pYesNoMenu->Update();
-        if (Activated != 0)
-        {
-            if (pYesNoMenu->ChoiceIs(GameText.pYes))
-            {
-                SFX_PlayX(5, RFRONT_SFX_VOLUME, 0);
-                MCState = SVSTATUS_SAVING;
-                Delay = 4;
-                Retries = 4;
-            }
-            else
+            if (GoBack != 0)
             {
                 SFX_PlayX(2, RFRONT_SFX_VOLUME, 0);
                 MCState = SVSTATUS_ENTERNAME;
                 InitEnterName();
             }
-        }
-        if (GoBack != 0)
-        {
-            SFX_PlayX(2, RFRONT_SFX_VOLUME, 0);
-            MCState = SVSTATUS_ENTERNAME;
-            InitEnterName();
-        }
-        break;
+            break;
 
-    case SVSTATUS_INSERTCARD:
-        if (CardStatus == -2)
-        {
-            MCState = SVSTATUS_CHECKINGCARDPAUSE;
-        }
-        else if (CardStatus > -3)
-        {
-            if (CardStatus < 3)
+        case SVSTATUS_INSERTCARD:
+            if (CardStatus == -2)
             {
-                if (CardStatus > 0)
-                {
-                    MCState = SVSTATUS_CHECKINGCARDPAUSE;
-                }
+                MCState = SVSTATUS_CHECKINGCARDPAUSE;
             }
-        }
-        if (AnyButton != 0)
-        {
-            SFX_PlayX(2, RFRONT_SFX_VOLUME, 0);
-            return static_cast<EPausedStatus>(SaveReturnState());
-        }
-        break;
-
-    case LVSTATUS_UNFORMATTEDCARD:
-        if (CardStatus == -1)
-        {
-            MCState = LVSTATUS_INSERTCARD;
-        }
-        if (AnyButton != 0)
-        {
-            unsigned int sound = 0x91;
-            if (GoBack != 0)
-            {
-                sound = 0x93;
-            }
-            SFX_PlayX(sound, RFRONT_SFX_VOLUME, 0);
-            return static_cast<EPausedStatus>(SaveReturnState());
-        }
-        break;
-
-    case SVSTATUS_UNFORMATTEDCARD:
-        pYesNoMenu->Update();
-        if (CardStatus != -1)
-        {
-            if (CardStatus >= -1)
+            else if (CardStatus > -3)
             {
                 if (CardStatus < 3)
                 {
@@ -1679,576 +1586,588 @@ EPausedStatus Front_MemCardUpdate(void) {
                     }
                 }
             }
-        }
-        else
-        {
-            MCState = SVSTATUS_INSERTCARD;
-        }
-
-        if (Activated != 0)
-        {
-            if (pYesNoMenu->ChoiceIs(GameText.pYes))
+            if (AnyButton != 0)
             {
-                SFX_PlayX(5, RFRONT_SFX_VOLUME, 0);
-                MCState = SVSTATUS_FORMATTING;
-                Delay = 4;
-                Retries = 4;
+                SFX_PlayX(2, RFRONT_SFX_VOLUME, 0);
+                return static_cast<EPausedStatus>(SaveReturnState());
+            }
+            break;
+
+        case LVSTATUS_UNFORMATTEDCARD:
+            if (CardStatus == -1)
+            {
+                MCState = LVSTATUS_INSERTCARD;
+            }
+            if (AnyButton != 0)
+            {
+                unsigned int sound = 0x91;
+                if (GoBack != 0)
+                {
+                    sound = 0x93;
+                }
+                SFX_PlayX(sound, RFRONT_SFX_VOLUME, 0);
+                return static_cast<EPausedStatus>(SaveReturnState());
+            }
+            break;
+
+        case SVSTATUS_UNFORMATTEDCARD:
+            pYesNoMenu->Update();
+            if (CardStatus != -1)
+            {
+                if (CardStatus >= -1)
+                {
+                    if (CardStatus < 3)
+                    {
+                        if (CardStatus > 0)
+                        {
+                            MCState = SVSTATUS_CHECKINGCARDPAUSE;
+                        }
+                    }
+                }
             }
             else
             {
-                SFX_PlayX(5, RFRONT_SFX_VOLUME, 0);
-                return static_cast<EPausedStatus>(SaveReturnState());
+                MCState = SVSTATUS_INSERTCARD;
             }
-        }
 
-        if (GoBack != 0)
-        {
-            SFX_PlayX(2, RFRONT_SFX_VOLUME, 0);
-            MCState = SVSTATUS_CHECKINGCARDPAUSE;
-        }
-        break;
+            if (Activated != 0)
+            {
+                if (pYesNoMenu->ChoiceIs(GameText.pYes))
+                {
+                    SFX_PlayX(5, RFRONT_SFX_VOLUME, 0);
+                    MCState = SVSTATUS_FORMATTING;
+                    Delay = 4;
+                    Retries = 4;
+                }
+                else
+                {
+                    SFX_PlayX(5, RFRONT_SFX_VOLUME, 0);
+                    return static_cast<EPausedStatus>(SaveReturnState());
+                }
+            }
 
-    case SVSTATUS_FORMATTING:
-        GSoftResetEnabled = 0;
-        if ((CardStatus == 2) || (CardStatus == -1))
-        {
-            MCState = SVSTATUS_FORMATFAILED;
-            Delay = 75;
+            if (GoBack != 0)
+            {
+                SFX_PlayX(2, RFRONT_SFX_VOLUME, 0);
+                MCState = SVSTATUS_CHECKINGCARDPAUSE;
+            }
             break;
-        }
 
-        Delay--;
-        if (Delay >= 0)
-        {
-            break;
-        }
-        if (CardStatus == 0)
-        {
-            break;
-        }
-
-        if (Card_FormatCard(0, 0) == 1)
-        {
-            MCState = SVSTATUS_FORMATSUCCEEDED;
-            Delay = 75;
-        }
-        else
-        {
-            Retries--;
-            if (Retries < 0)
+        case SVSTATUS_FORMATTING:
+            GSoftResetEnabled = 0;
+            if ((CardStatus == 2) || (CardStatus == -1))
             {
                 MCState = SVSTATUS_FORMATFAILED;
+                Delay = 75;
+                break;
+            }
+
+            Delay--;
+            if (Delay >= 0)
+            {
+                break;
+            }
+            if (CardStatus == 0)
+            {
+                break;
+            }
+
+            if (Card_FormatCard(0, 0) == 1)
+            {
+                MCState = SVSTATUS_FORMATSUCCEEDED;
                 Delay = 75;
             }
             else
             {
-                Delay = (4 - Retries) * 60;
+                Retries--;
+                if (Retries < 0)
+                {
+                    MCState = SVSTATUS_FORMATFAILED;
+                    Delay = 75;
+                }
+                else
+                {
+                    Delay = (4 - Retries) * 60;
+                }
             }
-        }
-        break;
+            break;
 
-    case SVSTATUS_SAVEFAILED:
-    case SVSTATUS_SAVECOMPLETED:
-        if (Activated != 0)
-        {
-            SFX_PlayX(5, RFRONT_SFX_VOLUME, 0);
-            return static_cast<EPausedStatus>(SaveReturnState());
-        }
-        break;
+        case SVSTATUS_SAVEFAILED:
+        case SVSTATUS_SAVECOMPLETED:
+            if (Activated != 0)
+            {
+                SFX_PlayX(5, RFRONT_SFX_VOLUME, 0);
+                return static_cast<EPausedStatus>(SaveReturnState());
+            }
+            break;
 
-    case SVSTATUS_FORMATFAILED:
-    case SVSTATUS_FORMATSUCCEEDED:
-        Delay--;
-        if (Delay < 0)
+        case SVSTATUS_FORMATFAILED:
+        case SVSTATUS_FORMATSUCCEEDED:
+            Delay--;
+            if (Delay < 0)
+            {
+                if (CardStatus == -1)
+                {
+                    MCState = SVSTATUS_INSERTCARD;
+                }
+                else
+                {
+                    MCState = SVSTATUS_CHECKINGCARDPAUSE;
+                }
+            }
+
+            if (AnyButton != 0)
+            {
+                unsigned int sound = 5;
+                if (GoBack != 0)
+                {
+                    sound = 2;
+                }
+                SFX_PlayX(sound, RFRONT_SFX_VOLUME, 0);
+                MCState = SVSTATUS_CHECKINGCARDPAUSE;
+            }
+            break;
+
+        case SVSTATUS_SAVING:
         {
+            int WriteError;
+
+            GSoftResetEnabled = 0;
             if (CardStatus == -1)
             {
-                MCState = SVSTATUS_INSERTCARD;
+                MCState = SVSTATUS_SAVEFAILED;
+                Delay = 75;
+            }
+
+            Delay--;
+            if (Delay >= 0)
+            {
+                break;
+            }
+            if (CardStatus == 0)
+            {
+                break;
+            }
+
+            switch (GSaveAction)
+            {
+                case SAVE_VIDEO:
+                    SaveNeedBlocks = 3;
+                    if (GNumberOfPlayers == 2)
+                    {
+                        SaveNeedBlocks = 6;
+                    }
+                    WriteError = Card_Write(THPS_VIDEO_FILE, SaveNeedBlocks);
+                    break;
+
+                case SAVE_GAME:
+                    SaveNeedBlocks = 1;
+                    WriteError = Card_Write(THPS_SAVE_FILE, SaveNeedBlocks);
+                    break;
+
+                default: break;
+            }
+
+            if (WriteError == 0)
+            {
+                MCState = SVSTATUS_SAVECOMPLETED;
+                if (GSaveAction == SAVE_GAME)
+                {
+                    int i = 0;
+                    GHasCareerLoaded = GSaveAction;
+                    GLoadedCareerIsSaved = GSaveAction;
+                    do
+                    {
+                        (&RFrontSaveNameViews::StoredCareerName)[i] =
+                            (&RFrontSaveNameViews::SaveGameName)[i];
+                        ++i;
+                    } while (i < 10);
+                }
             }
             else
             {
-                MCState = SVSTATUS_CHECKINGCARDPAUSE;
+                MCState = SVSTATUS_SAVEFAILED;
+                Delay = 75;
             }
+            break;
         }
 
-        if (AnyButton != 0)
+        case SVSTATUS_SAVING2:
         {
-            unsigned int sound = 5;
-            if (GoBack != 0)
+            GSoftResetEnabled = 0;
+            unsigned char first = static_cast<unsigned char>(RFrontSaveNameViews::SaveGameName);
+            if (static_cast<unsigned int>(first - 'A') >= 26U)
             {
-                sound = 2;
+                RFrontSaveNameViews::SaveGameName = 'A';
+                first = 'A';
             }
-            SFX_PlayX(sound, RFRONT_SFX_VOLUME, 0);
-            MCState = SVSTATUS_CHECKINGCARDPAUSE;
-        }
-        break;
 
-    case SVSTATUS_SAVING:
-    {
-        int WriteError;
-
-        GSoftResetEnabled = 0;
-        if (CardStatus == -1)
-        {
-            MCState = SVSTATUS_SAVEFAILED;
-            Delay = 75;
-        }
-
-        Delay--;
-        if (Delay >= 0)
-        {
-            break;
-        }
-        if (CardStatus == 0)
-        {
-            break;
-        }
-
-        switch (GSaveAction)
-        {
-        case SAVE_VIDEO:
-            SaveNeedBlocks = 3;
-            if (GNumberOfPlayers == 2)
+            if (first >= 'K')
             {
-                SaveNeedBlocks = 6;
+                MCState = SVSTATUS_ENTERNAME;
+                Activated = 0;
+                GoBack = 0;
             }
-            WriteError = Card_Write(
-                THPS_VIDEO_FILE, SaveNeedBlocks);
-            break;
-
-        case SAVE_GAME:
-            SaveNeedBlocks = 1;
-            WriteError = Card_Write(
-                THPS_SAVE_FILE, SaveNeedBlocks);
-            break;
-
-        default:
+            else
+            {
+                char save_name[16];
+                __builtin_memcpy(save_name, RFrontDemoFileName, sizeof(RFrontDemoFileName));
+                save_name[4] = first;
+                printf(RFrontSavingReplayFormat, save_name);
+                Card_WriteReplayToDisk(THPS_VIDEO_FILE, save_name);
+                MCState = SVSTATUS_SAVECOMPLETED;
+            }
             break;
         }
 
-        if (WriteError == 0)
-        {
-            MCState = SVSTATUS_SAVECOMPLETED;
-            if (GSaveAction == SAVE_GAME)
+        case SVSTATUS_DELETEQUERY:
+            if (AnyButton != 0)
             {
-                int i = 0;
-                GHasCareerLoaded = GSaveAction;
-                GLoadedCareerIsSaved = GSaveAction;
-                do
+                SFX_PlayX(5, RFRONT_SFX_VOLUME, 0);
+            }
+            break;
+
+        case LVSTATUS_FULLCARDCHECK:
+            if (CardStatus == 1)
+            {
+                if (Card_GetDirAndFreeBlocks(0, 0) != 0)
                 {
-                    (&RFrontSaveNameViews::StoredCareerName)[i] =
-                        (&RFrontSaveNameViews::SaveGameName)[i];
-                    ++i;
-                } while (i < 10);
+                    goto return_to_front_state;
+                }
+                MCState = LVSTATUS_FULLCARDWARNING;
             }
-        }
-        else
-        {
-            MCState = SVSTATUS_SAVEFAILED;
-            Delay = 75;
-        }
-        break;
-    }
-
-    case SVSTATUS_SAVING2:
-    {
-        GSoftResetEnabled = 0;
-        unsigned char first = static_cast<unsigned char>(
-            RFrontSaveNameViews::SaveGameName);
-        if (static_cast<unsigned int>(first - 'A') >= 26U)
-        {
-            RFrontSaveNameViews::SaveGameName = 'A';
-            first = 'A';
-        }
-
-        if (first >= 'K')
-        {
-            MCState = SVSTATUS_ENTERNAME;
-            Activated = 0;
-            GoBack = 0;
-        }
-        else
-        {
-            char save_name[16];
-            __builtin_memcpy(
-                save_name, RFrontDemoFileName, sizeof(RFrontDemoFileName));
-            save_name[4] = first;
-            printf(RFrontSavingReplayFormat, save_name);
-            Card_WriteReplayToDisk(
-                THPS_VIDEO_FILE, save_name);
-            MCState = SVSTATUS_SAVECOMPLETED;
-        }
-        break;
-    }
-
-    case SVSTATUS_DELETEQUERY:
-        if (AnyButton != 0)
-        {
-            SFX_PlayX(5, RFRONT_SFX_VOLUME, 0);
-        }
-        break;
-
-    case LVSTATUS_FULLCARDCHECK:
-        if (CardStatus == 1)
-        {
-            if (Card_GetDirAndFreeBlocks(0, 0) != 0)
+            else if (CardStatus != 0)
             {
-                goto return_to_front_state;
-            }
-            MCState = LVSTATUS_FULLCARDWARNING;
-        }
-        else if (CardStatus != 0)
-        {
-            if (CardStatus != 2)
-            {
-                goto return_to_front_state;
-            }
-        }
-        break;
-
-    return_to_front_state:
-        return static_cast<EPausedStatus>(GReturnToState);
-
-    case LVSTATUS_FULLCARDWARNING:
-        if (AnyButton != 0)
-        {
-            unsigned int sound = 0x91;
-            if (GoBack != 0)
-            {
-                sound = 0x93;
-            }
-            SFX_PlayX(sound, RFRONT_SFX_VOLUME, 0);
-            if (GoBack == 0)
-            {
-                return static_cast<EPausedStatus>(SaveReturnState());
-            }
-            return STATUS_LOADFAILED;
-        }
-        break;
-
-    case LVSTATUS_CHECKINGCARDPAUSE:
-        if (CheckingCardPause != 0)
-        {
-            CheckingCardPause--;
-            if (CheckingCardPause == 0)
-            {
-                MCState = LVSTATUS_CHECKINGCARD;
-            }
-        }
-        else
-        {
-            CheckingCardPause = 10;
-        }
-        break;
-
-    case LVSTATUS_CHECKINGCARD:
-        if (CardStatus == -1)
-        {
-            goto load_card_missing;
-        }
-        if (CardStatus < 0)
-        {
-            if (CardStatus == -2)
-            {
-                goto load_card_unformatted;
+                if (CardStatus != 2)
+                {
+                    goto return_to_front_state;
+                }
             }
             break;
-        }
-        if (CardStatus != 1)
-        {
-            break;
-        }
 
-        {
-            SaveFreeBlocks = Card_GetDirAndFreeBlocks(0, 0);
-            const EFileType WantedFileType =
-                (GLoadAction == LOAD_GAME)
-                    ? THPS_SAVE_FILE
-                    : THPS_VIDEO_FILE;
-            int Vids = 0;
+        return_to_front_state:
+            return static_cast<EPausedStatus>(GReturnToState);
 
-            for (int i = 0; i < 15; ++i)
+        case LVSTATUS_FULLCARDWARNING:
+            if (AnyButton != 0)
             {
-                Vids += (FileType[i] == WantedFileType);
+                unsigned int sound = 0x91;
+                if (GoBack != 0)
+                {
+                    sound = 0x93;
+                }
+                SFX_PlayX(sound, RFRONT_SFX_VOLUME, 0);
+                if (GoBack == 0)
+                {
+                    return static_cast<EPausedStatus>(SaveReturnState());
+                }
+                return STATUS_LOADFAILED;
+            }
+            break;
+
+        case LVSTATUS_CHECKINGCARDPAUSE:
+            if (CheckingCardPause != 0)
+            {
+                CheckingCardPause--;
+                if (CheckingCardPause == 0)
+                {
+                    MCState = LVSTATUS_CHECKINGCARD;
+                }
+            }
+            else
+            {
+                CheckingCardPause = 10;
+            }
+            break;
+
+        case LVSTATUS_CHECKINGCARD:
+            if (CardStatus == -1)
+            {
+                goto load_card_missing;
+            }
+            if (CardStatus < 0)
+            {
+                if (CardStatus == -2)
+                {
+                    goto load_card_unformatted;
+                }
+                break;
+            }
+            if (CardStatus != 1)
+            {
+                break;
             }
 
-            if (Vids != 0)
             {
-                int m = 0;
+                SaveFreeBlocks = Card_GetDirAndFreeBlocks(0, 0);
+                const EFileType WantedFileType =
+                    (GLoadAction == LOAD_GAME) ? THPS_SAVE_FILE : THPS_VIDEO_FILE;
+                int Vids = 0;
 
                 for (int i = 0; i < 15; ++i)
                 {
-                    // fileTypeBase must be written twice inside the loop:
-                    // a single-assignment base is hoisted out of the loop and
-                    // a single-assignment address becomes a walking pointer,
-                    // both of which the original build does not do here.
-                    EFileType *fileTypeBase = FileType;
-                    EFileType *fileTypeAddress =
-                        reinterpret_cast<EFileType *>(
-                            i * sizeof(EFileType));
-                    fileTypeAddress = reinterpret_cast<EFileType *>(
-                        reinterpret_cast<int>(fileTypeAddress) +
-                        reinterpret_cast<int>(fileTypeBase));
-                    fileTypeBase = fileTypeAddress;
-                    if (*fileTypeAddress == WantedFileType)
+                    Vids += (FileType[i] == WantedFileType);
+                }
+
+                if (Vids != 0)
+                {
+                    int m = 0;
+
+                    for (int i = 0; i < 15; ++i)
                     {
-                        SCardHead CardHead;
-                        char *p;
-
-                        Card_ReadFileHeader(
-                            SLOT_DIR[i].name, &CardHead);
-                        p = ASCIIName[m];
-                        int j;
-                        for (j = 0; j < 10; ++j)
+                        // fileTypeBase must be written twice inside the loop:
+                        // a single-assignment base is hoisted out of the loop and
+                        // a single-assignment address becomes a walking pointer,
+                        // both of which the original build does not do here.
+                        EFileType *fileTypeBase = FileType;
+                        EFileType *fileTypeAddress =
+                            reinterpret_cast<EFileType *>(i * sizeof(EFileType));
+                        fileTypeAddress =
+                            reinterpret_cast<EFileType *>(reinterpret_cast<int>(fileTypeAddress) +
+                                                          reinterpret_cast<int>(fileTypeBase));
+                        fileTypeBase = fileTypeAddress;
+                        if (*fileTypeAddress == WantedFileType)
                         {
-                            if (static_cast<unsigned char>(
-                                    CardHead.Title[j * 2 + 28]) == 0)
-                            {
-                                *p++ = '\0';
-                                break;
-                            }
-                            if (static_cast<unsigned char>(
-                                    CardHead.Title[j * 2 + 28]) == 0x82)
-                            {
-                                *p = static_cast<unsigned char>(
-                                         CardHead.Title[j * 2 + 29]) -
-                                     0x1f;
-                            }
-                            else
-                            {
-                                *p = ' ';
-                            }
-                            ++p;
-                        }
+                            SCardHead CardHead;
+                            char *p;
 
-                        VertMenuItem[m] = ASCIIName[m];
-                        *p = '\0';
-                        VertMenuItemIndex[m] = i;
-                        ++m;
+                            Card_ReadFileHeader(SLOT_DIR[i].name, &CardHead);
+                            p = ASCIIName[m];
+                            int j;
+                            for (j = 0; j < 10; ++j)
+                            {
+                                if (static_cast<unsigned char>(CardHead.Title[j * 2 + 28]) == 0)
+                                {
+                                    *p++ = '\0';
+                                    break;
+                                }
+                                if (static_cast<unsigned char>(CardHead.Title[j * 2 + 28]) == 0x82)
+                                {
+                                    *p = static_cast<unsigned char>(CardHead.Title[j * 2 + 29]) -
+                                         0x1f;
+                                }
+                                else
+                                {
+                                    *p = ' ';
+                                }
+                                ++p;
+                            }
+
+                            VertMenuItem[m] = ASCIIName[m];
+                            *p = '\0';
+                            VertMenuItemIndex[m] = i;
+                            ++m;
+                        }
+                    }
+
+                    NumVertMenuItems = m;
+                    VertMenuTopIndex = 0;
+                    MCState = LVSTATUS_SELECTFILE;
+                }
+                else
+                {
+                    MCState = LVSTATUS_NOFILES;
+                }
+            }
+            break;
+
+        load_card_missing:
+            MCState = LVSTATUS_INSERTCARD;
+            break;
+
+        load_card_unformatted:
+            MCState = LVSTATUS_UNFORMATTEDCARD;
+            break;
+
+        case LVSTATUS_INSERTCARD:
+            if (CardStatus == -2)
+            {
+                MCState = LVSTATUS_CHECKINGCARDPAUSE;
+            }
+            else if (CardStatus > -3)
+            {
+                if (CardStatus < 3)
+                {
+                    if (CardStatus > 0)
+                    {
+                        MCState = LVSTATUS_CHECKINGCARDPAUSE;
                     }
                 }
-
-                NumVertMenuItems = m;
-                VertMenuTopIndex = 0;
-                MCState = LVSTATUS_SELECTFILE;
             }
-            else
+            if (AnyButton != 0)
             {
-                MCState = LVSTATUS_NOFILES;
-            }
-        }
-        break;
-
-    load_card_missing:
-        MCState = LVSTATUS_INSERTCARD;
-        break;
-
-    load_card_unformatted:
-        MCState = LVSTATUS_UNFORMATTEDCARD;
-        break;
-
-    case LVSTATUS_INSERTCARD:
-        if (CardStatus == -2)
-        {
-            MCState = LVSTATUS_CHECKINGCARDPAUSE;
-        }
-        else if (CardStatus > -3)
-        {
-            if (CardStatus < 3)
-            {
-                if (CardStatus > 0)
+                unsigned int sound = 0x91;
+                if (GoBack != 0)
                 {
-                    MCState = LVSTATUS_CHECKINGCARDPAUSE;
+                    sound = 0x93;
+                }
+                SFX_PlayX(sound, RFRONT_SFX_VOLUME, 0);
+                return static_cast<EPausedStatus>(SaveReturnState());
+            }
+            break;
+
+        case LVSTATUS_NOFILES:
+            if (AnyButton != 0)
+            {
+                unsigned int sound = 0x91;
+                if (GoBack != 0)
+                {
+                    sound = 0x93;
+                }
+                SFX_PlayX(sound, RFRONT_SFX_VOLUME, 0);
+                return static_cast<EPausedStatus>(SaveReturnState());
+            }
+            break;
+
+        case LVSTATUS_SELECTFILE:
+            VertMenuTopChanged = 0;
+
+            if ((Pad[0].Up.Triggered != 0) || (Pad[1].Up.Triggered != 0))
+            {
+                Pad[0].Up.Triggered = 0;
+                Pad[1].Up.Triggered = 0;
+                if (pVertMenu->getSelected() > 0)
+                {
+                    pVertMenu->up();
+                }
+                else
+                {
+                    if (VertMenuTopIndex > 0)
+                    {
+                        VertMenuTopIndex--;
+                        VertMenuTopChanged = 1;
+                    }
                 }
             }
-        }
-        if (AnyButton != 0)
-        {
-            unsigned int sound = 0x91;
-            if (GoBack != 0)
-            {
-                sound = 0x93;
-            }
-            SFX_PlayX(sound, RFRONT_SFX_VOLUME, 0);
-            return static_cast<EPausedStatus>(SaveReturnState());
-        }
-        break;
 
-    case LVSTATUS_NOFILES:
-        if (AnyButton != 0)
-        {
-            unsigned int sound = 0x91;
-            if (GoBack != 0)
+            if ((Pad[0].Down.Triggered != 0) || (Pad[1].Down.Triggered != 0))
             {
-                sound = 0x93;
-            }
-            SFX_PlayX(sound, RFRONT_SFX_VOLUME, 0);
-            return static_cast<EPausedStatus>(SaveReturnState());
-        }
-        break;
-
-    case LVSTATUS_SELECTFILE:
-        VertMenuTopChanged = 0;
-
-        if ((Pad[0].Up.Triggered != 0) ||
-            (Pad[1].Up.Triggered != 0))
-        {
-            Pad[0].Up.Triggered = 0;
-            Pad[1].Up.Triggered = 0;
-            if (pVertMenu->getSelected() > 0)
-            {
-                pVertMenu->up();
-            }
-            else
-            {
-                if (VertMenuTopIndex > 0)
+                Pad[0].Down.Triggered = 0;
+                Pad[1].Down.Triggered = 0;
+                if (VertMenuTopIndex < NumVertMenuItems - 5)
                 {
-                    VertMenuTopIndex--;
+                    VertMenuTopIndex++;
                     VertMenuTopChanged = 1;
                 }
+                else if (pVertMenu->getSelected() < 4)
+                {
+                    pVertMenu->down();
+                }
             }
-        }
 
-        if ((Pad[0].Down.Triggered != 0) ||
-            (Pad[1].Down.Triggered != 0))
-        {
-            Pad[0].Down.Triggered = 0;
-            Pad[1].Down.Triggered = 0;
-            if (VertMenuTopIndex < NumVertMenuItems - 5)
+            if ((GoBack != 0) || (CardStatus == -1))
             {
-                VertMenuTopIndex++;
-                VertMenuTopChanged = 1;
+                SFX_PlayX(0x93, RFRONT_SFX_VOLUME, 0);
+                goto return_to_front_state;
             }
-            else if (pVertMenu->getSelected() < 4)
+
+            if (Activated != 0)
             {
-                pVertMenu->down();
+                Card_SetSelectedFile(
+                    SLOT_DIR[VertMenuItemIndex[VertMenuTopIndex + pVertMenu->getSelected()]].name);
+                SFX_PlayX(0x91, RFRONT_SFX_VOLUME, 0);
+                MCState = LVSTATUS_LOADING;
             }
-        }
-
-        if ((GoBack != 0) || (CardStatus == -1))
-        {
-            SFX_PlayX(0x93, RFRONT_SFX_VOLUME, 0);
-            goto return_to_front_state;
-        }
-
-        if (Activated != 0)
-        {
-            Card_SetSelectedFile(
-                SLOT_DIR[
-                    VertMenuItemIndex[
-                        VertMenuTopIndex +
-                        pVertMenu->getSelected()]]
-                    .name);
-            SFX_PlayX(0x91, RFRONT_SFX_VOLUME, 0);
-            MCState = LVSTATUS_LOADING;
-        }
-        break;
-
-    case LVSTATUS_LOADING:
-        GSoftResetEnabled = 0;
-        switch (GLoadAction)
-        {
-        case LOAD_VIDEO:
-        {
-            VblankUpdateBar = 1;
-            int loadError = Card_Load(
-                THPS_VIDEO_FILE, GVInfo1.pBlockStart, 0);
-            VblankUpdateBar = 0;
-            if (loadError != 0)
-            {
-                MCState = LVSTATUS_LOADFAILED;
-                break;
-            }
-
-            SVideoHead *VH = RFront_GetVideoHeader(GVInfo1.pBlockStart);
-            GVInfo1.NumFrames = VH->NumFrames;
-            for (int i = 0; i < 5; ++i)
-            {
-                GVInfo1.Highlights[i] = VH->Highlights[i];
-            }
-            MCState = LVSTATUS_LOADCOMPLETED;
             break;
-        }
 
-        case LOAD_VIDEO_HEADER:
-        {
-            if (Card_Load(
-                    THPS_VIDEO_HEADER, GVInfo1.pBlockStart, 0))
+        case LVSTATUS_LOADING:
+            GSoftResetEnabled = 0;
+            switch (GLoadAction)
             {
-                MCState = LVSTATUS_LOADFAILED;
-                break;
-            }
+                case LOAD_VIDEO:
+                {
+                    VblankUpdateBar = 1;
+                    int loadError = Card_Load(THPS_VIDEO_FILE, GVInfo1.pBlockStart, 0);
+                    VblankUpdateBar = 0;
+                    if (loadError != 0)
+                    {
+                        MCState = LVSTATUS_LOADFAILED;
+                        break;
+                    }
 
-            SVideoHead *VH = RFront_GetVideoHeader(GVInfo1.pBlockStart);
-            GVideoRestart.NumSkaters = VH->NumSkaters;
-            GVideoRestart.Skater = VH->Skater;
-            GVideoRestart.Skater2 = VH->Skater2;
-            GVideoRestart.Level = VH->Level;
-            GVideoRestart.GGame = VH->GGame;
-            GVInfo1.NumFrames = VH->NumFrames;
-            for (int i = 0; i < 5; ++i)
-            {
-                GVInfo1.Highlights[i] = VH->Highlights[i];
+                    SVideoHead *VH = RFront_GetVideoHeader(GVInfo1.pBlockStart);
+                    GVInfo1.NumFrames = VH->NumFrames;
+                    for (int i = 0; i < 5; ++i)
+                    {
+                        GVInfo1.Highlights[i] = VH->Highlights[i];
+                    }
+                    MCState = LVSTATUS_LOADCOMPLETED;
+                    break;
+                }
+
+                case LOAD_VIDEO_HEADER:
+                {
+                    if (Card_Load(THPS_VIDEO_HEADER, GVInfo1.pBlockStart, 0))
+                    {
+                        MCState = LVSTATUS_LOADFAILED;
+                        break;
+                    }
+
+                    SVideoHead *VH = RFront_GetVideoHeader(GVInfo1.pBlockStart);
+                    GVideoRestart.NumSkaters = VH->NumSkaters;
+                    GVideoRestart.Skater = VH->Skater;
+                    GVideoRestart.Skater2 = VH->Skater2;
+                    GVideoRestart.Level = VH->Level;
+                    GVideoRestart.GGame = VH->GGame;
+                    GVInfo1.NumFrames = VH->NumFrames;
+                    for (int i = 0; i < 5; ++i)
+                    {
+                        GVInfo1.Highlights[i] = VH->Highlights[i];
+                    }
+                    MCState = LVSTATUS_LOADCOMPLETED;
+                    break;
+                }
+
+                case LOAD_GAME:
+                {
+                    unsigned long *pTmp =
+                        static_cast<unsigned long *>(Mem_New(sizeof(RFrontCareerLoadBlock), 1, 1));
+                    EMemCardState nextState;
+                    if (Card_Load(THPS_SAVE_FILE, pTmp, 0) != 0)
+                    {
+                        nextState = LVSTATUS_LOADFAILED;
+                    }
+                    else
+                    {
+                        GCareer = RFront_GetCareerLoadBlock(pTmp)->career;
+                        GHasCareerLoaded = 1;
+                        GLoadedCareerIsSaved = 0;
+                        Front_ExtractASCIINameFromSJIS(
+                            RFront_GetCareerLoadBlock(pTmp)->sjisName,
+                            (RFront_NameStorage(&RFrontSaveNameViews::SaveGameName))
+                                ->storedCareerName);
+                        nextState = LVSTATUS_LOADCOMPLETED;
+                    }
+                    MCState = nextState;
+                    Mem_Delete(pTmp);
+                    break;
+                }
+
+                default: break;
             }
-            MCState = LVSTATUS_LOADCOMPLETED;
             break;
-        }
 
-        case LOAD_GAME:
-        {
-            unsigned long *pTmp = static_cast<unsigned long *>(
-                Mem_New(sizeof(RFrontCareerLoadBlock), 1, 1));
-            EMemCardState nextState;
-            if (Card_Load(
-                    THPS_SAVE_FILE, pTmp, 0) != 0)
+        case LVSTATUS_LOADFAILED:
+            if (AnyButton != 0)
             {
-                nextState = LVSTATUS_LOADFAILED;
+                unsigned int sound = 0x91;
+                if (GoBack != 0)
+                {
+                    sound = 0x93;
+                }
+                SFX_PlayX(sound, RFRONT_SFX_VOLUME, 0);
+                return STATUS_LOADFAILED;
             }
-            else
-            {
-                GCareer = RFront_GetCareerLoadBlock(pTmp)->career;
-                GHasCareerLoaded = 1;
-                GLoadedCareerIsSaved = 0;
-                Front_ExtractASCIINameFromSJIS(
-                    RFront_GetCareerLoadBlock(pTmp)->sjisName,
-                    (RFront_NameStorage(
-                        &RFrontSaveNameViews::SaveGameName))->storedCareerName);
-                nextState = LVSTATUS_LOADCOMPLETED;
-            }
-            MCState = nextState;
-            Mem_Delete(pTmp);
             break;
-        }
 
-        default:
-            break;
-        }
-        break;
+        case LVSTATUS_LOADCOMPLETED: return STATUS_LOADSUCCESS;
 
-    case LVSTATUS_LOADFAILED:
-        if (AnyButton != 0)
-        {
-            unsigned int sound = 0x91;
-            if (GoBack != 0)
-            {
-                sound = 0x93;
-            }
-            SFX_PlayX(sound, RFRONT_SFX_VOLUME, 0);
-            return STATUS_LOADFAILED;
-        }
-        break;
+        case LVSTATUS_HIRESREFRESH1:
+        case LVSTATUS_HIRESREFRESH2:
+        case LVSTATUS_HIRESREFRESH3:
+        case LVSTATUS_BUILDMENU: break;
 
-    case LVSTATUS_LOADCOMPLETED:
-        return STATUS_LOADSUCCESS;
-
-    case LVSTATUS_HIRESREFRESH1:
-    case LVSTATUS_HIRESREFRESH2:
-    case LVSTATUS_HIRESREFRESH3:
-    case LVSTATUS_BUILDMENU:
-        break;
-
-    default:
-        break;
+        default: break;
     }
 
     return STATUS_MEMCARDMENUS;
@@ -2258,7 +2177,8 @@ EPausedStatus Front_MemCardUpdate(void) {
 /**
  * Clear the replay restart descriptor to its inactive sentinel state.
  */
-void Front_ClearGVideoRestartData(void) {
+void Front_ClearGVideoRestartData(void)
+{
     GVideoRestart.NumSkaters = 0;
     GVideoRestart.Skater = -1;
     GVideoRestart.Skater2 = -1;

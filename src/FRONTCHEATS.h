@@ -5,8 +5,7 @@
  * MAIN physically owns these front-end cheat toggles in small data.  FRONT
  * retains the target-proven absolute-address import view.
  */
-#if defined(FRONTCHEATS_OWNER_DECLARATION) && \
-    defined(FRONTCHEATS_ABSOLUTE_DECLARATION)
+#if defined(FRONTCHEATS_OWNER_DECLARATION) && defined(FRONTCHEATS_ABSOLUTE_DECLARATION)
 #error "Select only one front-end cheat declaration view"
 #elif defined(FRONTCHEATS_OWNER_DECLARATION)
 #define FRONTCHEATS_DECL_ATTR

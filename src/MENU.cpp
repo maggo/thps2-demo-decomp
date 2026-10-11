@@ -17,7 +17,8 @@ struct Slice;
 #undef CClass
 
 /** Sliced image used for the optional menu arrows. */
-struct SlicedImage2 : Image {
+struct SlicedImage2 : Image
+{
     Slice *SliceTab;
     short W;
     short H;
@@ -34,8 +35,7 @@ struct SlicedImage2 : Image {
 };
 
 typedef char menu_image_size_must_be_28[(sizeof(Image) == 28) ? 1 : -1];
-typedef char menu_sliced_image_size_must_be_60[
-    (sizeof(SlicedImage2) == 60) ? 1 : -1];
+typedef char menu_sliced_image_size_must_be_60[(sizeof(SlicedImage2) == 60) ? 1 : -1];
 
 #include "SFX.h"
 #include "PAD.h"
@@ -43,7 +43,8 @@ typedef char menu_sliced_image_size_must_be_60[
 
 class ScrollingMenu2;
 
-inline void *operator new(unsigned int, void *p) {
+inline void *operator new(unsigned int, void *p)
+{
     return p;
 }
 
@@ -68,25 +69,30 @@ static char processPress_fmt[24] __attribute__((section(".rdata"), aligned(4))) 
  *
  * @return result
  */
-int Menu_GetPress(void) {
+int Menu_GetPress(void)
+{
     SControl *pad = &Pad[0];
     int press = -1;
-    if (pad->Left.Triggered != 0) {
+    if (pad->Left.Triggered != 0)
+    {
         pad->Left.Triggered = 0;
         press = 0;
         goto done;
     }
-    if (pad->Right.Triggered != 0) {
+    if (pad->Right.Triggered != 0)
+    {
         pad->Right.Triggered = 0;
         press = 1;
         goto done;
     }
-    if (pad->Up.Triggered != 0) {
+    if (pad->Up.Triggered != 0)
+    {
         pad->Up.Triggered = 0;
         press = 2;
         goto done;
     }
-    if (pad->Down.Triggered != 0) {
+    if (pad->Down.Triggered != 0)
+    {
         pad->Down.Triggered = 0;
         press = 3;
     }
@@ -103,7 +109,8 @@ done:
  *
  * @param id  Identifier.
  */
-MenuItem::MenuItem(int id) {
+MenuItem::MenuItem(int id)
+{
     this->ID = id;
 }
 
@@ -114,7 +121,8 @@ MenuItem::MenuItem(int id) {
  * Mangled:   _._8MenuItem
  * Demangled: MenuItem::~MenuItem()
  */
-MenuItem::~MenuItem() {
+MenuItem::~MenuItem()
+{
 }
 
 
@@ -126,7 +134,8 @@ MenuItem::~MenuItem() {
  *
  * @param highlight_state  New highlight state.
  */
-void MenuItem::setHighlightState(bool highlight_state) {
+void MenuItem::setHighlightState(bool highlight_state)
+{
     this->Highlighted = highlight_state;
 }
 
@@ -139,7 +148,8 @@ void MenuItem::setHighlightState(bool highlight_state) {
  *
  * @param state  New interaction state for the item.
  */
-void MenuItem::setItemState(int state) {
+void MenuItem::setItemState(int state)
+{
     this->InternalState = state;
 }
 
@@ -152,7 +162,8 @@ void MenuItem::setItemState(int state) {
  *
  * @param press  Button press code.
  */
-void MenuItem::processPress(int press) {
+void MenuItem::processPress(int press)
+{
     printf(processPress_fmt, this->Highlighted);
 }
 
@@ -163,7 +174,8 @@ void MenuItem::processPress(int press) {
  * Mangled:   update__8MenuItem
  * Demangled: MenuItem::update(void)
  */
-void MenuItem::update() {
+void MenuItem::update()
+{
 }
 
 
@@ -174,7 +186,8 @@ void MenuItem::update() {
  * Demangled: VMenuItem::VMenuItem(int)
  *
  */
-VMenuItem::VMenuItem(int id) : MenuItem(id) {
+VMenuItem::VMenuItem(int id) : MenuItem(id)
+{
 }
 
 
@@ -186,7 +199,8 @@ VMenuItem::VMenuItem(int id) : MenuItem(id) {
  *
  * @return Identifier cached for the highlighted menu item.
  */
-int MenuWrapper::GetHighlightedId() {
+int MenuWrapper::GetHighlightedId()
+{
     return this->HighlightedId;
 }
 
@@ -197,7 +211,8 @@ int MenuWrapper::GetHighlightedId() {
  * Mangled:   __18TextMenuProperties
  * Demangled: TextMenuProperties::TextMenuProperties(void)
  */
-TextMenuProperties::TextMenuProperties() {
+TextMenuProperties::TextMenuProperties()
+{
     this->BigScale = 0x1324;
     this->NormalScale = 0x1000;
     this->SelectedR = 0xB6;
@@ -222,9 +237,8 @@ TextMenuProperties::TextMenuProperties() {
  * @param text  Label displayed by the item.
  * @param properties  Shared font and styling properties.
  */
-TextMenuItem::TextMenuItem(int id, const char *text,
-                           TextMenuProperties &properties)
-    : VMenuItem(id) {
+TextMenuItem::TextMenuItem(int id, const char *text, TextMenuProperties &properties) : VMenuItem(id)
+{
     strcpy(Text, text);
     ID = id;
     TheProperties = &properties;
@@ -244,7 +258,8 @@ TextMenuItem::TextMenuItem(int id, const char *text,
  * Mangled:   _._12TextMenuItem
  * Demangled: TextMenuItem::~TextMenuItem()
  */
-TextMenuItem::~TextMenuItem() {
+TextMenuItem::~TextMenuItem()
+{
 }
 
 
@@ -257,7 +272,8 @@ TextMenuItem::~TextMenuItem() {
  * @param x  X coordinate.
  * @param y  Y coordinate.
  */
-void TextMenuItem::setXY(int x, int y) {
+void TextMenuItem::setXY(int x, int y)
+{
     this->X = x;
     this->Y = y;
 }
@@ -271,28 +287,34 @@ void TextMenuItem::setXY(int x, int y) {
  * Demangled: TextMenuItem::draw(void)
  *
  */
-void TextMenuItem::draw() {
+void TextMenuItem::draw()
+{
     TextMenuProperties *props = TheProperties;
     props->TheFont.JustX = JustX;
     TextMenuProperties *props2 = TheProperties;
     props2->TheFont.JustY = 1;
     TextMenuProperties *font = TheProperties;
     font->TheFont.Scale = font->NormalScale;
-    if (Selectable == 0) {
+    if (Selectable == 0)
+    {
         TextMenuProperties *p = TheProperties;
         p->TheFont.R = p->GrayR;
         TextMenuProperties *p2 = TheProperties;
         p2->TheFont.G = p2->GrayG;
         TextMenuProperties *p3 = TheProperties;
         p3->TheFont.B = p3->GrayB;
-    } else if (Highlighted == 0) {
+    }
+    else if (Highlighted == 0)
+    {
         TextMenuProperties *p = TheProperties;
         p->TheFont.R = p->NormalR;
         TextMenuProperties *p2 = TheProperties;
         p2->TheFont.G = p2->NormalG;
         TextMenuProperties *p3 = TheProperties;
         p3->TheFont.B = p3->NormalB;
-    } else {
+    }
+    else
+    {
         TextMenuProperties *p = TheProperties;
         p->TheFont.Scale = p->BigScale;
         TextMenuProperties *p2 = TheProperties;
@@ -302,12 +324,13 @@ void TextMenuItem::draw() {
         TextMenuProperties *p4 = TheProperties;
         p4->TheFont.B = p4->SelectedB;
     }
-    if (TheProperties->TheFont.JustX == 1) {
-        TheProperties->TheFont.draw(
-            X + (W >> 1), Y + (H >> 1), Text, 0);
-    } else {
-        TheProperties->TheFont.draw(
-            X, Y + (H >> 1), Text, 0);
+    if (TheProperties->TheFont.JustX == 1)
+    {
+        TheProperties->TheFont.draw(X + (W >> 1), Y + (H >> 1), Text, 0);
+    }
+    else
+    {
+        TheProperties->TheFont.draw(X, Y + (H >> 1), Text, 0);
     }
 }
 
@@ -322,9 +345,9 @@ void TextMenuItem::draw() {
  * @param text  Label displayed by the title.
  * @param properties  Shared font and styling properties.
  */
-TitleMenuItem::TitleMenuItem(int id, const char *text,
-                             TextMenuProperties &properties)
-    : TextMenuItem(id, text, properties) {
+TitleMenuItem::TitleMenuItem(int id, const char *text, TextMenuProperties &properties)
+    : TextMenuItem(id, text, properties)
+{
     Selectable = 0;
     int h = H;
     h = h + (h >> 1);
@@ -340,7 +363,8 @@ TitleMenuItem::TitleMenuItem(int id, const char *text,
  * Demangled: TitleMenuItem::draw(void)
  *
  */
-void TitleMenuItem::draw() {
+void TitleMenuItem::draw()
+{
     TextMenuProperties *props = TheProperties;
     props->TheFont.JustX = JustX;
     TextMenuProperties *props2 = TheProperties;
@@ -353,12 +377,13 @@ void TitleMenuItem::draw() {
     p3->TheFont.G = p3->SelectedG;
     TextMenuProperties *p4 = TheProperties;
     p4->TheFont.B = p4->SelectedB;
-    if (TheProperties->TheFont.JustX == 1) {
-        TheProperties->TheFont.draw(
-            X + (W >> 1), Y + (H >> 1), Text, 0);
-    } else {
-        TheProperties->TheFont.draw(
-            X, Y + (H >> 1), Text, 0);
+    if (TheProperties->TheFont.JustX == 1)
+    {
+        TheProperties->TheFont.draw(X + (W >> 1), Y + (H >> 1), Text, 0);
+    }
+    else
+    {
+        TheProperties->TheFont.draw(X, Y + (H >> 1), Text, 0);
     }
 }
 
@@ -369,7 +394,8 @@ void TitleMenuItem::draw() {
  * Mangled:   _._14SelectMenuItem
  * Demangled: SelectMenuItem::~SelectMenuItem()
  */
-SelectMenuItem::~SelectMenuItem() {
+SelectMenuItem::~SelectMenuItem()
+{
 }
 
 
@@ -382,7 +408,8 @@ SelectMenuItem::~SelectMenuItem() {
  * @param x  X coordinate.
  * @param y  Y coordinate.
  */
-void SelectMenuItem::setXY(int x, int y) {
+void SelectMenuItem::setXY(int x, int y)
+{
     X = x;
     Y = y;
 }
@@ -398,50 +425,65 @@ void SelectMenuItem::setXY(int x, int y) {
  *            Reuses the scale local as the denominator to mirror the original draw register lifetime.
  *
  */
-void SelectMenuItem::draw(void) {
+void SelectMenuItem::draw(void)
+{
     TextMenuProperties *props = TheProperties;
     props->TheFont.JustX = 0;
     TextMenuProperties *props2 = TheProperties;
     props2->TheFont.JustY = 1;
-    if (Highlighted != 0) {
+    if (Highlighted != 0)
+    {
         TextMenuProperties *p = TheProperties;
         p->TheFont.Scale = p->BigScale;
-    } else {
+    }
+    else
+    {
         TextMenuProperties *p = TheProperties;
         p->TheFont.Scale = p->NormalScale;
     }
     int x;
-    if (JustX == 1 && AmHighlighted == 0) {
+    if (JustX == 1 && AmHighlighted == 0)
+    {
         int scale = (int)TheProperties;
         int w = W;
         int scaled = w * ((TextMenuProperties *)scale)->NormalScale;
         scale = ((TextMenuProperties *)scale)->BigScale;
         scaled = scaled / scale;
         x = X + (w >> 1) - (scaled >> 1);
-    } else {
+    }
+    else
+    {
         x = X;
     }
     int count = NumOptions;
-    if (count > 0) {
+    if (count > 0)
+    {
         int i = 0;
         char *str = Option[0];
-        do {
+        do
+        {
             TextMenuProperties *p = TheProperties;
-            if (i == 0 || i == InternalState) {
-                if (Highlighted != 0) {
+            if (i == 0 || i == InternalState)
+            {
+                if (Highlighted != 0)
+                {
                     p->TheFont.R = p->SelectedR;
                     TextMenuProperties *p2 = TheProperties;
                     p2->TheFont.G = p2->SelectedG;
                     TextMenuProperties *p3 = TheProperties;
                     p3->TheFont.B = p3->SelectedB;
-                } else {
+                }
+                else
+                {
                     p->TheFont.R = p->NormalR;
                     TextMenuProperties *p2 = TheProperties;
                     p2->TheFont.G = p2->NormalG;
                     TextMenuProperties *p3 = TheProperties;
                     p3->TheFont.B = p3->NormalB;
                 }
-            } else {
+            }
+            else
+            {
                 p->TheFont.R = p->GrayR;
                 TextMenuProperties *p2 = TheProperties;
                 p2->TheFont.G = p2->GrayG;
@@ -469,7 +511,8 @@ void SelectMenuItem::draw(void) {
  *
  * @param press  Button press code.
  */
-void SelectMenuItem::processPress(int press) {
+void SelectMenuItem::processPress(int press)
+{
     if (Highlighted == 0) return;
     if (press != 0) goto up;
     {
@@ -505,19 +548,21 @@ up:
  * @param right  Down/right navigation arrow sprite.
  * @param spacing  Horizontal offset applied to the arrows.
  */
-void BasicMenu::setArrows(
-    SlicedImage2 *left, SlicedImage2 *right, int spacing) {
+void BasicMenu::setArrows(SlicedImage2 *left, SlicedImage2 *right, int spacing)
+{
     LeftArrow = left;
     RightArrow = right;
     ArrowSpace = spacing;
-    if (left) {
+    if (left)
+    {
         left->JustX = 2;
         SlicedImage2 *a = LeftArrow;
         a->JustY = 1;
     }
     {
         SlicedImage2 *d = RightArrow;
-        if (d) {
+        if (d)
+        {
             d->JustX = 0;
             SlicedImage2 *d2 = RightArrow;
             d2->JustY = 1;
@@ -536,14 +581,18 @@ void BasicMenu::setArrows(
  *
  * @return Identifier of the highlighted item, or -1 when none is highlighted.
  */
-int BasicMenu::getHighlighted(void) {
+int BasicMenu::getHighlighted(void)
+{
     int i = 0;
     VMenuItem **ptr = Item;
 
-    do {
+    do
+    {
         VMenuItem *item = *ptr;
-        if (item != 0) {
-            if (item->Highlighted != 0) {
+        if (item != 0)
+        {
+            if (item->Highlighted != 0)
+            {
                 return item->ID;
             }
         }
@@ -562,11 +611,13 @@ int BasicMenu::getHighlighted(void) {
  *
  * @param id Item identifier to select.
  */
-void BasicMenu::setHighlighted(int id) {
+void BasicMenu::setHighlighted(int id)
+{
     VMenuItem *item = Item[Selected];
     item->setHighlightState(0);
     Selected = 0;
-    while (1) {
+    while (1)
+    {
         int selected = Selected;
         VMenuItem *current = Item[selected];
         if (current != 0 && current->ID == id) break;
@@ -596,11 +647,12 @@ void BasicMenu::setHighlighted(int id) {
  * @param spacing  Vertical gap between items.
  * @return `this` pointer (GCC 2.x ctor convention).
  */
-VerticalMenu2::VerticalMenu2(int x, int y, int w, int h, int just_x,
-                             int just_y, int spacing) {
+VerticalMenu2::VerticalMenu2(int x, int y, int w, int h, int just_x, int just_y, int spacing)
+{
     int i = 0;
     VMenuItem **ptr = Item;
-    do {
+    do
+    {
         *ptr = 0;
         i++;
         ptr++;
@@ -630,7 +682,8 @@ VerticalMenu2::VerticalMenu2(int x, int y, int w, int h, int just_x,
  * @param self  Implicit object pointer.
  * @param flag  GCC 2.x in-charge flag (bit 0 → also invoke `operator delete` on `this`).
  */
-VerticalMenu2::~VerticalMenu2() {
+VerticalMenu2::~VerticalMenu2()
+{
 }
 
 
@@ -641,7 +694,8 @@ VerticalMenu2::~VerticalMenu2() {
  * Mangled:   activate__13VerticalMenu2
  * Demangled: VerticalMenu2::activate(void)
  */
-void VerticalMenu2::activate() {
+void VerticalMenu2::activate()
+{
     int total_h;
     int initialCount;
     VMenuItem **items;
@@ -650,10 +704,12 @@ void VerticalMenu2::activate() {
         total_h = 0;
         initialCount = HighestSlot;
         items = Item;
-        if (initialCount > 0) {
+        if (initialCount > 0)
+        {
             int spacing = Spacing;
             VMenuItem **ptr = items;
-            do {
+            do
+            {
                 VMenuItem *item = *ptr;
                 ptr++;
                 i++;
@@ -664,33 +720,42 @@ void VerticalMenu2::activate() {
         }
     }
     int y;
-    if (JustY == 1) {
+    if (JustY == 1)
+    {
         int space = H - total_h;
         y = Y + (space >> 1);
-    } else {
+    }
+    else
+    {
         y = Y;
     }
     int arrow_x = ArrowSpace;
     SlicedImage2 *upArrow = LeftArrow;
-    if (upArrow != 0) {
+    if (upArrow != 0)
+    {
         int h = upArrow->W;
         h = h << 1;
         arrow_x += h;
     }
     {
         int i = 0;
-        if (initialCount > 0) {
+        if (initialCount > 0)
+        {
             VMenuItem **ptr = items;
-            do {
+            do
+            {
                 (*ptr)->JustX = JustX;
                 int alignment = JustX;
-                if (alignment == 1) {
+                if (alignment == 1)
+                {
                     int halfW = W >> 1;
                     int centerX = X + halfW;
                     VMenuItem *item = *ptr;
                     int itemHalfW = item->W >> 1;
                     item->setXY(centerX - itemHalfW, y);
-                } else {
+                }
+                else
+                {
                     VMenuItem *item = *ptr;
                     item->setXY(X + arrow_x, y);
                 }
@@ -706,10 +771,13 @@ void VerticalMenu2::activate() {
     {
         int i = 0;
         int count = HighestSlot;
-        for (; i < count; i++) {
-            if (Item[Selected]->Selectable == 0) {
+        for (; i < count; i++)
+        {
+            if (Item[Selected]->Selectable == 0)
+            {
                 Selected++;
-                if (Selected == count) {
+                if (Selected == count)
+                {
                     Selected = 0;
                 }
                 break;
@@ -729,19 +797,21 @@ void VerticalMenu2::activate() {
  * Demangled: VerticalMenu2::draw(void)
  *
  */
-void VerticalMenu2::draw() {
+void VerticalMenu2::draw()
+{
     SlicedImage2 *upArrow = LeftArrow;
-    if (upArrow != 0) {
+    if (upArrow != 0)
+    {
         VMenuItem *item = Item[Selected];
         int x = item->X - ArrowSpace;
         int y = item->Y + (item->H >> 1);
         int *vt = upArrow->CClassData.vtable;
-        ((void (*)(SlicedImage2 *, int, int, int))vt[5])(
-            upArrow, x, y + (Spacing >> 1), 0);
+        ((void (*)(SlicedImage2 *, int, int, int))vt[5])(upArrow, x, y + (Spacing >> 1), 0);
     }
     VMenuItem **items = Item;
     SlicedImage2 *downArrow = RightArrow;
-    if (downArrow != 0) {
+    if (downArrow != 0)
+    {
         int itemOffset = Selected * sizeof(*items);
         char *itemAddress = (char *)items;
         itemAddress += itemOffset;
@@ -750,14 +820,15 @@ void VerticalMenu2::draw() {
         int x = item->X + item->W + ArrowSpace;
         int y = item->Y + (item->H >> 1);
         int *vt = downArrow->CClassData.vtable;
-        ((void (*)(SlicedImage2 *, int, int, int))vt[5])(
-            downArrow, x, y + (Spacing >> 1), 0);
+        ((void (*)(SlicedImage2 *, int, int, int))vt[5])(downArrow, x, y + (Spacing >> 1), 0);
     }
     int i = 15;
     VMenuItem **ptr = &Item[15];
-    do {
+    do
+    {
         VMenuItem *item = *ptr;
-        if (item != 0) {
+        if (item != 0)
+        {
             item->draw();
         }
         i--;
@@ -775,12 +846,15 @@ void VerticalMenu2::draw() {
  *            Iterates items, calling each item's virtual update method at vtable[8]
  *
  */
-void VerticalMenu2::update(void) {
+void VerticalMenu2::update(void)
+{
     int count = HighestSlot;
-    if (count > 0) {
+    if (count > 0)
+    {
         int i = 0;
         VMenuItem **ptr = Item;
-        do {
+        do
+        {
             VMenuItem *item = *ptr;
             item->update();
             ptr++;
@@ -801,26 +875,34 @@ void VerticalMenu2::update(void) {
  *
  * @param press  Button press code.
  */
-void VerticalMenu2::processPress(int press) {
+void VerticalMenu2::processPress(int press)
+{
     Item[Selected]->setHighlightState(0);
 
-    if ((unsigned int)press < 2) {
+    if ((unsigned int)press < 2)
+    {
         Item[Selected]->processPress(press);
     }
 
-    if (press == 2) {
-        do {
+    if (press == 2)
+    {
+        do
+        {
             Selected--;
-            if (Selected < 0) {
+            if (Selected < 0)
+            {
                 Selected = HighestSlot - 1;
             }
         } while (Item[Selected]->Selectable == 0);
     }
 
-    if (press == 3) {
-        do {
+    if (press == 3)
+    {
+        do
+        {
             Selected++;
-            if (Selected >= HighestSlot) {
+            if (Selected >= HighestSlot)
+            {
                 Selected = 0;
             }
         } while (Item[Selected]->Selectable == 0);
@@ -838,7 +920,8 @@ void VerticalMenu2::processPress(int press) {
  *
  * @param item  Menu item to append.
  */
-void VerticalMenu2::addItem(VMenuItem *item) {
+void VerticalMenu2::addItem(VMenuItem *item)
+{
     int count = this->HighestSlot;
     this->Item[count] = item;
     this->HighestSlot = this->HighestSlot + 1;
@@ -861,11 +944,12 @@ void VerticalMenu2::addItem(VMenuItem *item) {
  * @param slide_amount  Distance moved during each scrolling step.
  * @return `this` pointer (GCC 2.x ctor convention).
  */
-ScrollingMenu2::ScrollingMenu2(int x, int y, int w, int h, int just_x,
-                               int slide_amount) {
+ScrollingMenu2::ScrollingMenu2(int x, int y, int w, int h, int just_x, int slide_amount)
+{
     int i = 0;
     VMenuItem **ptr = Item;
-    do {
+    do
+    {
         *ptr = 0;
         i++;
         ptr++;
@@ -896,7 +980,8 @@ ScrollingMenu2::ScrollingMenu2(int x, int y, int w, int h, int just_x,
  * @param self  Implicit object pointer.
  * @param flag  GCC 2.x in-charge flag (bit 0 → also invoke `operator delete` on `this`).
  */
-ScrollingMenu2::~ScrollingMenu2() {
+ScrollingMenu2::~ScrollingMenu2()
+{
 }
 
 
@@ -909,10 +994,12 @@ ScrollingMenu2::~ScrollingMenu2() {
  *
  * @param self  Implicit object pointer.
  */
-void ScrollingMenu2::activate() {
+void ScrollingMenu2::activate()
+{
     int arrow_x = ArrowSpace;
     SlicedImage2 *upArrow = LeftArrow;
-    if (upArrow != 0) {
+    if (upArrow != 0)
+    {
         int h = upArrow->W;
         h = h << 1;
         arrow_x += h;
@@ -920,18 +1007,23 @@ void ScrollingMenu2::activate() {
     int j = 0;
     VMenuItem **items = Item;
     int y = Y - Top;
-    if (HighestSlot > 0) {
+    if (HighestSlot > 0)
+    {
         VMenuItem **ptr = items;
-        do {
+        do
+        {
             (*ptr)->JustX = JustX;
             int alignment = JustX;
-            if (alignment == 1) {
+            if (alignment == 1)
+            {
                 int halfW = W >> 1;
                 int centerX = X + halfW;
                 VMenuItem *item = *ptr;
                 int itemHalfW = item->W >> 1;
                 item->setXY(centerX - itemHalfW, y);
-            } else {
+            }
+            else
+            {
                 VMenuItem *item = *ptr;
                 item->setXY(X + arrow_x, y);
             }
@@ -943,10 +1035,13 @@ void ScrollingMenu2::activate() {
     }
     int count = HighestSlot;
     ScrollingMenu2 *menu = this;
-    for (int i = 0; i < count; i++) {
-        if (menu->Item[menu->Selected]->Selectable == 0) {
+    for (int i = 0; i < count; i++)
+    {
+        if (menu->Item[menu->Selected]->Selectable == 0)
+        {
             menu->Selected++;
-            if (menu->Selected == count) {
+            if (menu->Selected == count)
+            {
                 menu->Selected = 0;
             }
             break;
@@ -966,7 +1061,8 @@ void ScrollingMenu2::activate() {
  * Demangled: ScrollingMenu2::draw(void)
  *
  */
-void ScrollingMenu2::draw(void) {
+void ScrollingMenu2::draw(void)
+{
     int idx = Selected;
     VMenuItem **items_base = Item;
     char *itemAddress = (char *)items_base;
@@ -976,16 +1072,21 @@ void ScrollingMenu2::draw(void) {
     int halfH = item->H >> 1;
     int y = item->Y + halfH;
     int startY = Y;
-    if (y < startY) {
+    if (y < startY)
+    {
         y = startY;
-    } else {
+    }
+    else
+    {
         int endY = startY + H;
-        if (y >= endY) {
+        if (y >= endY)
+        {
             y = endY - 1;
         }
     }
     SlicedImage2 *upArrow = LeftArrow;
-    if (upArrow != 0) {
+    if (upArrow != 0)
+    {
         int curIdx = Selected;
         char *itemAddress = (char *)items_base;
         itemAddress += curIdx * sizeof(*items_base);
@@ -993,11 +1094,11 @@ void ScrollingMenu2::draw(void) {
         VMenuItem *curItem = *itemSlot;
         int *vt = upArrow->CClassData.vtable;
         int x = curItem->X - ArrowSpace;
-        ((void (*)(SlicedImage2 *, int, int, int))vt[5])(
-            upArrow, x, y, 0);
+        ((void (*)(SlicedImage2 *, int, int, int))vt[5])(upArrow, x, y, 0);
     }
     SlicedImage2 *downArrow = RightArrow;
-    if (downArrow != 0) {
+    if (downArrow != 0)
+    {
         int curIdx = Selected;
         char *itemAddress = (char *)items_base;
         itemAddress += curIdx * sizeof(*items_base);
@@ -1005,15 +1106,16 @@ void ScrollingMenu2::draw(void) {
         VMenuItem *curItem = *itemSlot;
         int x = curItem->X + curItem->W + ArrowSpace;
         int *vt = downArrow->CClassData.vtable;
-        ((void (*)(SlicedImage2 *, int, int, int))vt[5])(
-            downArrow, x, y, 0);
+        ((void (*)(SlicedImage2 *, int, int, int))vt[5])(downArrow, x, y, 0);
     }
     SetClippingBox2(0, 0, 0x200, 0x100);
     int i = 15;
     VMenuItem **ptr = &items_base[15];
-    do {
+    do
+    {
         VMenuItem *it = *ptr;
-        if (it != 0) {
+        if (it != 0)
+        {
             it->draw();
         }
         i--;
@@ -1032,32 +1134,38 @@ void ScrollingMenu2::draw(void) {
  *
  * @param self  Implicit object pointer.
  */
-void ScrollingMenu2::update() {
+void ScrollingMenu2::update()
+{
     int *offsets = RY;
     int idx = Selected;
     int idxOff = idx << 2;
     int *offsetPtr = (int *)((char *)offsets + idxOff);
     int curOffset = *offsetPtr;
     int scrollPos = Top;
-    if (curOffset < scrollPos) {
+    if (curOffset < scrollPos)
+    {
         int speed = ArrowSlide;
         int newPos = scrollPos - speed;
         int newBottom = Bottom - speed;
         Top = newPos;
         Bottom = newBottom;
         int ofs = *offsetPtr;
-        if (newPos < ofs) {
+        if (newPos < ofs)
+        {
             Top = ofs;
             Bottom = ofs + H;
         }
-    } else {
+    }
+    else
+    {
         VMenuItem **itemsBase = Item;
         VMenuItem **itemSlot = (VMenuItem **)((char *)itemsBase + idxOff);
         VMenuItem *item = *itemSlot;
         int itemH = item->H;
         int bottom = curOffset + itemH;
         int viewBottom = Bottom;
-        if (viewBottom < bottom) {
+        if (viewBottom < bottom)
+        {
             int speed = ArrowSlide;
             int newPos = scrollPos + speed;
             int newBottom = viewBottom + speed;
@@ -1067,7 +1175,8 @@ void ScrollingMenu2::update() {
             int ofs2 = *offsetPtr;
             int itemH2 = item2->H;
             int top = ofs2 + itemH2;
-            if (top < newBottom) {
+            if (top < newBottom)
+            {
                 Bottom = top;
                 Top = top - H;
             }
@@ -1075,10 +1184,12 @@ void ScrollingMenu2::update() {
     }
     activate();
     int count = HighestSlot;
-    if (count > 0) {
+    if (count > 0)
+    {
         int i = 0;
         VMenuItem **ptr = Item;
-        do {
+        do
+        {
             VMenuItem *item = *ptr;
             item->update();
             ptr++;
@@ -1099,7 +1210,8 @@ void ScrollingMenu2::update() {
  *
  * @param press  Button press code.
  */
-void ScrollingMenu2::processPress(int press) {
+void ScrollingMenu2::processPress(int press)
+{
     /*
      * The integer cursor form is retained after three typed Item/Selected
      * rewrites each reversed a target commutative addu operand. All other
@@ -1108,14 +1220,18 @@ void ScrollingMenu2::processPress(int press) {
     int self = (int)this;
     int *items = (int *)(self + 0x10);
     Item[Selected]->setHighlightState(0);
-    if ((unsigned int)press < 2) {
+    if ((unsigned int)press < 2)
+    {
         Item[Selected]->processPress(press);
     }
-    if (press == 2) {
+    if (press == 2)
+    {
         int target = *(int *)(self + 0x54) - 1;
-        if (target >= 0) {
+        if (target >= 0)
+        {
             int *ptr = (int *)(target * 4 + (int)items);
-            do {
+            do
+            {
                 int *cur = (int *)*ptr;
                 if (*(int *)((int)cur + 8) != 0) goto found_up;
                 target--;
@@ -1123,23 +1239,28 @@ void ScrollingMenu2::processPress(int press) {
             } while (target >= 0);
         }
     found_up:
-        if (target >= 0) {
+        if (target >= 0)
+        {
             *(int *)(self + 0x54) = target;
         }
     }
-    if (press == 3) {
+    if (press == 3)
+    {
         int target = Selected + 1;
         int highestSlot = HighestSlot;
-        if (target < highestSlot) {
+        if (target < highestSlot)
+        {
             int *ptr = (int *)(target * 4 + (int)items);
-            do {
+            do
+            {
                 int *cur = (int *)*ptr;
                 if (*(int *)((int)cur + 8) != 0) goto found_down;
                 target++;
                 ptr++;
             } while (target < highestSlot);
         found_down:
-            if (target < HighestSlot) {
+            if (target < HighestSlot)
+            {
                 Selected = target;
             }
         }
@@ -1158,11 +1279,15 @@ void ScrollingMenu2::processPress(int press) {
  *
  * @param item  Menu item to append.
  */
-void ScrollingMenu2::addItem(VMenuItem *item) {
+void ScrollingMenu2::addItem(VMenuItem *item)
+{
     Item[HighestSlot] = item;
-    if (HighestSlot == 0) {
+    if (HighestSlot == 0)
+    {
         RY[0] = 0;
-    } else {
+    }
+    else
+    {
         RY[HighestSlot] = RY[HighestSlot - 1] + Item[HighestSlot - 1]->H;
     }
     ++HighestSlot;
@@ -1184,9 +1309,8 @@ void ScrollingMenu2::addItem(VMenuItem *item) {
  * @param use_scrolling_menu  Selects the scrolling rather than vertical layout.
  * @return `this` pointer (GCC 2.x ctor convention).
  */
-TextMenuWrapper::TextMenuWrapper(
-    char *const *string_list, int *id_list, int num_items, char *font_name,
-    bool use_scrolling_menu)
+TextMenuWrapper::TextMenuWrapper(char *const *string_list, int *id_list, int num_items,
+                                 char *font_name, bool use_scrolling_menu)
 {
     TextMenuProperties *properties = &Props;
     if (use_scrolling_menu)
@@ -1251,14 +1375,18 @@ TextMenuWrapper::TextMenuWrapper(
  * @param self  Implicit object pointer.
  * @param flag  GCC 2.x in-charge flag (bit 0 → also invoke `operator delete` on `this`).
  */
-TextMenuWrapper::~TextMenuWrapper() {
+TextMenuWrapper::~TextMenuWrapper()
+{
     int i = 0;
     int count = NumItems;
-    if (count > 0) {
+    if (count > 0)
+    {
         VMenuItem **ptr = ItemList;
-        do {
+        do
+        {
             VMenuItem *item = *ptr;
-            if (item != 0) {
+            if (item != 0)
+            {
                 delete item;
                 count = NumItems;
             }
@@ -1267,7 +1395,8 @@ TextMenuWrapper::~TextMenuWrapper() {
         } while (i < count);
     }
     BasicMenu *menu = Menu;
-    if (menu != 0) {
+    if (menu != 0)
+    {
         delete menu;
     }
 }
@@ -1281,9 +1410,11 @@ TextMenuWrapper::~TextMenuWrapper() {
  * Demangled: TextMenuWrapper::HandleInput(void)
  *
  */
-void TextMenuWrapper::HandleInput(void) {
+void TextMenuWrapper::HandleInput(void)
+{
     int press = Menu_GetPress();
-    if ((unsigned int)(press - 2) < 2) {
+    if ((unsigned int)(press - 2) < 2)
+    {
         SFX_PlayX(0x90, 0x2000, 0);
     }
     Menu->processPress(press);
@@ -1300,7 +1431,8 @@ void TextMenuWrapper::HandleInput(void) {
  *
  * @return 1 when the menu accepts or cancels input, otherwise 0.
  */
-int TextMenuWrapper::TestComplete(void) {
+int TextMenuWrapper::TestComplete(void)
+{
     SControl *pad = &Pad[0];
     VMenuItem *item;
     int i;
@@ -1312,7 +1444,8 @@ do_work:
     pad->X.Triggered = 0;
     HighlightedId = -1;
     if (NumItems <= 0) goto sfx_91;
-    do {
+    do
+    {
         item = ItemList[i];
         if (item->Highlighted != 0) goto loop_break;
         i++;
@@ -1326,7 +1459,8 @@ loop_break:
 check_pad1:
     {
         int p1 = pad->Triangle.Triggered;
-        if (p1 != 0) {
+        if (p1 != 0)
+        {
             pad->Triangle.Triggered = 0;
             HighlightedId = -1;
             SFX_PlayX(0x93, 0x2000, 0);

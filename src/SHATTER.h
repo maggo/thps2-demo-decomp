@@ -5,9 +5,8 @@
 struct Item;
 
 /** Split or shatter one face on an environmental item. */
-int Shatter_Face(Item *pItem, unsigned int *pFace, int numSplits,
-                 int makeFlash, int useFlags, int modifyFlags,
-                 int tryToShatter);
+int Shatter_Face(Item *pItem, unsigned int *pFace, int numSplits, int makeFlash, int useFlags,
+                 int modifyFlags, int tryToShatter);
 /** Shatter an environmental item when its model permits it. */
 int Shatter_Item(Item *pItem, int useFlags, int modifyFlags);
 /** Play the rate-limited glass-shatter sound when its lockout permits it. */
@@ -16,7 +15,8 @@ void Shatter_MaybeMakeGlassShatterSound(void);
 #ifdef SHATTER_OWNER_DECLARATIONS
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 // Primitive types
@@ -48,7 +48,8 @@ typedef unsigned char undefined3[3];
 // Palette entry (20 bytes)
 
 // MeshHeader (28 bytes)
-typedef struct MeshHeader {
+typedef struct MeshHeader
+{
     u16 meshFlags;
     u16 vertexCount;
     u16 normalCount;

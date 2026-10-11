@@ -36,13 +36,15 @@ void Rail_Update(void);
 
 #include "globals.h"
 
-struct NodeSort {
+struct NodeSort
+{
     unsigned short nodeNum;
     unsigned short prevNodeIndex;
 };
 
 /** One linked rail segment and its world-space bounds. */
-struct CRail : CClass {
+struct CRail : CClass
+{
     short mStartNode;
     unsigned short mType;
     struct CVector mBBoxMin;
@@ -56,16 +58,14 @@ struct CRail : CClass {
     /** Unlinks this segment from the active rail list. */
     virtual ~CRail();
     /** Preserve GCC 2.x's nullable class-allocation call shape. */
-    static void *operator new(unsigned int size) throw() {
-        return ::CClass::operator new(size);
-    }
+    static void *operator new(unsigned int size) throw() { return ::CClass::operator new(size); }
 #endif
 };
 
 // === Variables (gp-relative in this TU) ===
-extern CRail *RailList;              // 0x800DA524
-extern NodeSort *RailNodeLookup;     // 0x800DA548
-extern int TotalRailNodes;           // 0x800DA54C
+extern CRail *RailList; // 0x800DA524
+extern NodeSort *RailNodeLookup; // 0x800DA548
+extern int TotalRailNodes; // 0x800DA54C
 
 // === Variables (absolute in this TU) ===
 #include "GENERATELEVEL.h"

@@ -3,7 +3,8 @@
 
 #ifdef CCAR_NATURAL
 /** Traffic car state extending the natural CBaddy model. */
-struct CCar : CBaddy {
+struct CCar : CBaddy
+{
     CCar(short *pInfo, int nodeIndex, int type);
     virtual ~CCar();
     virtual void AI();
@@ -14,7 +15,8 @@ struct CCar : CBaddy {
 };
 #else
 /** Traffic car state extending the shared baddy layout. */
-struct CCar : CBaddy {
+struct CCar : CBaddy
+{
     /** Initialize a traffic car from one trigger record. */
     CCar(short *pInfo, int nodeIndex, int type);
     /** Advance the car along its road route. */

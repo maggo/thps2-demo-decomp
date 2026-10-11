@@ -32,7 +32,8 @@ inline void *operator new(unsigned int, void *storage)
  * Base particle/bit slice used by the CBody shadow quad.
  * Layout recovered from original/MAIN_STRUCTS.h (struct CBit).
  */
-struct CBitOwner {
+struct CBitOwner
+{
     struct CBitOwner *mPrevious;
     struct CBitOwner *mNext;
     s16 mAge;
@@ -53,7 +54,8 @@ struct CBitOwner {
  * Shadow quad billboard owned through CBody::mpShadow.
  * Layout recovered from original/MAIN_STRUCTS.h (struct CQuadBit).
  */
-struct CQuadBitOwner {
+struct CQuadBitOwner
+{
     struct CBitOwner CBit;
     struct CVector mPosB;
     struct CVector mPosC;
@@ -67,14 +69,15 @@ struct CQuadBitOwner {
 };
 
 /** Narrow natural interface for the shadow quad services owned by BIT.cpp. */
-struct CQuadBit {
+struct CQuadBit
+{
     CQuadBit();
     void SetTexture(char *name, int frame);
     void FlagOn(u8 flag);
     void SetSemiTransparent();
     void SetTransparency(u8 transparency);
-    void OrientUsing(const CVector &position, const SVECTOR &normal,
-                     int width, int height, int flags);
+    void OrientUsing(const CVector &position, const SVECTOR &normal, int width, int height,
+                     int flags);
 };
 
 typedef char CBitOwner_size_check[(sizeof(struct CBitOwner) == 72) ? 1 : -1];
@@ -114,30 +117,27 @@ extern char s_Shadow[];
 #undef CVECTOROPS_OMIT_DIVIDE
 namespace ObVectorAbi
 {
-extern "C" void __dv__FRC7CVectorRCi(
-    CVectorOwner *, const CVectorOwner *, const int *);
+extern "C" void __dv__FRC7CVectorRCi(CVectorOwner *, const CVectorOwner *, const int *);
 }
 #define Ob_VectorDivide ObVectorAbi::__dv__FRC7CVectorRCi
 
 /** Active and suspended environmental-object list heads. */
-CBody *EnvironmentalObjectList
-    __attribute__((section(".sdata"))) = 0;
-CBody *SuspendedList
-    __attribute__((section(".sdata"))) = 0;
+CBody *EnvironmentalObjectList __attribute__((section(".sdata"))) = 0;
+CBody *SuspendedList __attribute__((section(".sdata"))) = 0;
 
 /** Canonical zero vectors (constructed by the TU's global initializer). */
 CVector ZeroVector(0, 0, 0);
 CSVector ZeroSVector(0, 0, 0);
 
 /** Distance beyond which environmental objects may be suspended. */
-unsigned int SuspendDistance
-    __attribute__((section(".sdata"))) = 13000;
+unsigned int SuspendDistance __attribute__((section(".sdata"))) = 13000;
 
 /** Texture name used by the body shadow quad. */
-namespace ObAddressViewOwners {
-extern "C" {
-static char s_Shadow[8]
-    __attribute__((section(".sdata"))) = "Shadow";
+namespace ObAddressViewOwners
+{
+extern "C"
+{
+static char s_Shadow[8] __attribute__((section(".sdata"))) = "Shadow";
 }
 }
 
@@ -149,27 +149,32 @@ static char s_Shadow[8]
 // [6] DoLightingSetup, [7] Hit, [8] DeleteStuff.
 
 /** Invoke a CBit's virtual destructor with in-charge flag 3 (also frees). */
-static inline void DeleteBit(CBitOwner *pBit) {
+static inline void DeleteBit(CBitOwner *pBit)
+{
     ((void (*)(CBitOwner *, int))((int *)pBit->_vf)[2])(pBit, 3);
 }
 
 /** Invoke a CBody's virtual destructor with in-charge flag 3 (also frees). */
-static inline void DeleteBody(CBodyOwner *pBody) {
+static inline void DeleteBody(CBodyOwner *pBody)
+{
     delete reinterpret_cast<CBody *>(pBody);
 }
 
 /** Dispatch CBody::AI() through the object's vtable. */
-static inline void CallAI(CBodyOwner *pBody) {
+static inline void CallAI(CBodyOwner *pBody)
+{
     reinterpret_cast<CBody *>(pBody)->AI();
 }
 
 /** Dispatch CBody::EveryFrame() through the object's vtable. */
-static inline void CallEveryFrame(CBodyOwner *pBody) {
+static inline void CallEveryFrame(CBodyOwner *pBody)
+{
     reinterpret_cast<CBody *>(pBody)->EveryFrame();
 }
 
 /** Dispatch CBody::DeleteStuff() through the object's vtable. */
-static inline void CallDeleteStuff(CBodyOwner *pBody) {
+static inline void CallDeleteStuff(CBodyOwner *pBody)
+{
     reinterpret_cast<CBody *>(pBody)->DeleteStuff();
 }
 
@@ -190,7 +195,8 @@ void *CItem::operator new(unsigned int size)
     int *p = (int *)pnew;
     unsigned int words = (size + 3) >> 2;
     unsigned int i = 0;
-    while (i < words) {
+    while (i < words)
+    {
         *p = 0;
         i++;
         p++;
@@ -367,7 +373,8 @@ void CItem::FlashUpdate()
  * Demangled: CBody::(void)
  *
  */
-CBody::CBody() {
+CBody::CBody()
+{
     CBodyOwner *body = reinterpret_cast<CBodyOwner *>(this);
     body->mFric.Set(1, 1, 1);
     body->mAngFric.Set(1, 1, 1);
@@ -390,10 +397,12 @@ CBody::CBody() {
  * The compiler supplies the original hidden in-charge flag and emits the
  * target `_._5CBody` ABI entry.
  */
-CBody::~CBody() {
+CBody::~CBody()
+{
     CBodyOwner *body = (CBodyOwner *)this;
     CQuadBitOwner *shadow = (CQuadBitOwner *)body->mpShadow;
-    if (shadow != 0) {
+    if (shadow != 0)
+    {
         DeleteBit(&shadow->CBit);
     }
 }
@@ -407,15 +416,17 @@ CBody::~CBody() {
  *
  * @param ppList  List head to update.
  */
-void CBody::AttachTo(CBody **list) {
+void CBody::AttachTo(CBody **list)
+{
     CBodyOwner *body = reinterpret_cast<CBodyOwner *>(this);
     CBodyOwner **ppList = reinterpret_cast<CBodyOwner **>(list);
     CBodyOwner *oldHead = *ppList;
     body->CItem.mPreviousItem = 0;
     body->CItem.mNextItem = &oldHead->CItem;
-    *ppList = body;                      // *ppList = this
+    *ppList = body; // *ppList = this
     CBodyOwner *next = (CBodyOwner *)body->CItem.mNextItem;
-    if (next) {
+    if (next)
+    {
         next->CItem.mPreviousItem = &body->CItem;
     }
 }
@@ -429,21 +440,27 @@ void CBody::AttachTo(CBody **list) {
  *
  * @param ppList  List head to update.
  */
-void CBody::DeleteFrom(CBody **ppList) {
-    if ((mCBodyFlags & 1) != 0) {
-        if (ppList != &SuspendedList) {
+void CBody::DeleteFrom(CBody **ppList)
+{
+    if ((mCBodyFlags & 1) != 0)
+    {
+        if (ppList != &SuspendedList)
+        {
             UnSuspend();
         }
     }
     CBody *next = (CBody *)mNextItem;
-    if (next) {
+    if (next)
+    {
         next->mPreviousItem = mPreviousItem;
     }
     CBody *prev = (CBody *)mPreviousItem;
-    if (prev) {
+    if (prev)
+    {
         prev->mNextItem = mNextItem;
     }
-    if (*ppList == this) {
+    if (*ppList == this)
+    {
         *ppList = (CBody *)mNextItem;
     }
 }
@@ -458,7 +475,8 @@ void CBody::DeleteFrom(CBody **ppList) {
  * @param p_info  Packed position stream cursor.
  * @return Cursor immediately after the consumed position words.
  */
-short *CBody::SquirtPos(short *p_info) {
+short *CBody::SquirtPos(short *p_info)
+{
     CBodyOwner *body = reinterpret_cast<CBodyOwner *>(this);
     int *src = (int *)p_info;
     int x = src[0] << 12;
@@ -483,7 +501,8 @@ short *CBody::SquirtPos(short *p_info) {
  * @param p_info  Packed angle stream cursor.
  * @return Cursor immediately after the consumed angle words.
  */
-short *CBody::SquirtAngles(short *p_info) {
+short *CBody::SquirtAngles(short *p_info)
+{
     CBodyOwner *body = reinterpret_cast<CBodyOwner *>(this);
     body->CItem.mAngles.x = *p_info++;
     body->CItem.mAngles.y = *p_info++;
@@ -500,14 +519,13 @@ short *CBody::SquirtAngles(short *p_info) {
  *
  * @param ppOriginalList  Original list head saved for restoration.
  */
-void CBody::Suspend(CBody **originalList) {
+void CBody::Suspend(CBody **originalList)
+{
     CBodyOwner *body = reinterpret_cast<CBodyOwner *>(this);
-    CBodyOwner **ppOriginalList =
-        reinterpret_cast<CBodyOwner **>(originalList);
+    CBodyOwner **ppOriginalList = reinterpret_cast<CBodyOwner **>(originalList);
     CallDeleteStuff(body);
     body->mppOriginalList = ppOriginalList;
-    reinterpret_cast<CBody *>(body)->DeleteFrom(
-        reinterpret_cast<CBody **>(ppOriginalList));
+    reinterpret_cast<CBody *>(body)->DeleteFrom(reinterpret_cast<CBody **>(ppOriginalList));
     reinterpret_cast<CBody *>(body)->AttachTo(&SuspendedList);
     u16 flags = body->mCBodyFlags;
     body->mCBodyFlags = flags | 1;
@@ -521,13 +539,14 @@ void CBody::Suspend(CBody **originalList) {
  * Mangled: UnSuspend__5CBody
  *
  */
-void CBody::UnSuspend() {
+void CBody::UnSuspend()
+{
     CBodyOwner *body = reinterpret_cast<CBodyOwner *>(this);
-    if (((body->mCBodyFlags ^ 1) & 1) == 0) {
+    if (((body->mCBodyFlags ^ 1) & 1) == 0)
+    {
         reinterpret_cast<CBody *>(body)->DeleteFrom(&SuspendedList);
         CBodyOwner **savedList = body->mppOriginalList;
-        reinterpret_cast<CBody *>(body)->AttachTo(
-            reinterpret_cast<CBody **>(savedList));
+        reinterpret_cast<CBody *>(body)->AttachTo(reinterpret_cast<CBody **>(savedList));
         u16 flags = body->mCBodyFlags;
         body->mCBodyFlags = flags & 0xFFFE;
     }
@@ -541,7 +560,8 @@ void CBody::UnSuspend() {
  *          Target: lhu $v0,0x52($a0); nop; ori $v0,8; jr $ra; sh $v0,0x52($a0)
  * Mangled: ShadowOn__5CBody
  */
-void CBody::ShadowOn() {
+void CBody::ShadowOn()
+{
     CBodyOwner *body = reinterpret_cast<CBodyOwner *>(this);
     body->mCBodyFlags = body->mCBodyFlags | 8;
 }
@@ -553,11 +573,13 @@ void CBody::ShadowOn() {
  * Address: 0x800447C8
  * Mangled: KillShadow__5CBody
  */
-void CBody::KillShadow() {
+void CBody::KillShadow()
+{
     CBodyOwner *body = reinterpret_cast<CBodyOwner *>(this);
     body->mCBodyFlags = body->mCBodyFlags & 0xFFF7;
     CQuadBitOwner *shadow = (CQuadBitOwner *)body->mpShadow;
-    if (shadow) {
+    if (shadow)
+    {
         DeleteBit(&shadow->CBit);
         body->mpShadow = 0;
     }
@@ -572,45 +594,50 @@ void CBody::KillShadow() {
  * Demangled: CBody::UpdateShadow(void)
  *
  */
-void CBody::UpdateShadow() {
+void CBody::UpdateShadow()
+{
     CBodyOwner *_this = reinterpret_cast<CBodyOwner *>(this);
     SVECTOR up;
 
-    if ((_this->mCBodyFlags & 8) != 0) {
-        if (_this->mpShadow == (void *)0x0) {
+    if ((_this->mCBodyFlags & 8) != 0)
+    {
+        if (_this->mpShadow == (void *)0x0)
+        {
             UseCacheForBits = 0;
-            CQuadBitOwner *shadow = static_cast<CQuadBitOwner *>(
-                CBit::operator new(sizeof(CQuadBitOwner)));
-            if (shadow != (CQuadBitOwner *)0x0) {
-                shadow = reinterpret_cast<CQuadBitOwner *>(
-                    ::new (shadow) CQuadBit());
+            CQuadBitOwner *shadow =
+                static_cast<CQuadBitOwner *>(CBit::operator new(sizeof(CQuadBitOwner)));
+            if (shadow != (CQuadBitOwner *)0x0)
+            {
+                shadow = reinterpret_cast<CQuadBitOwner *>(::new (shadow) CQuadBit());
             }
             _this->mpShadow = shadow;
             UseCacheForBits = 1;
-            reinterpret_cast<CQuadBit *>(shadow)->SetTexture(
-                s_Shadow, 0);
+            reinterpret_cast<CQuadBit *>(shadow)->SetTexture(s_Shadow, 0);
             reinterpret_cast<CQuadBit *>(_this->mpShadow)->FlagOn(4);
-            reinterpret_cast<CQuadBit *>(_this->mpShadow)
-                ->SetSemiTransparent();
+            reinterpret_cast<CQuadBit *>(_this->mpShadow)->SetSemiTransparent();
             ((CQuadBitOwner *)_this->mpShadow)->CBit.mFrigDeltaZ = 0x20;
             ((CQuadBitOwner *)_this->mpShadow)->CBit.mProtected = 1;
         }
-        if (_this->mShadowNormal.y < -0x80) {
+        if (_this->mShadowNormal.y < -0x80)
+        {
             up.vx = _this->mShadowNormal.x;
             up.vz = _this->mShadowNormal.z;
             up.vy = _this->mShadowNormal.y;
-            reinterpret_cast<CQuadBit *>(_this->mpShadow)->OrientUsing(
-                *(const CVector *)&_this->mShadowPos, up,
-                _this->mShadowScale, _this->mShadowScale, 0);
+            reinterpret_cast<CQuadBit *>(_this->mpShadow)
+                ->OrientUsing(*(const CVector *)&_this->mShadowPos, up, _this->mShadowScale,
+                              _this->mShadowScale, 0);
         }
-        int trans = (((int)_this->mShadowThreshold - (int)_this->mShadowDist) * 0x80) / (int)_this->mShadowThreshold;
-        if (trans < 0) {
+        int trans = (((int)_this->mShadowThreshold - (int)_this->mShadowDist) * 0x80) /
+                    (int)_this->mShadowThreshold;
+        if (trans < 0)
+        {
             trans = 0;
         }
         trans /= 6;
-        reinterpret_cast<CQuadBit *>(_this->mpShadow)
-            ->SetTransparency((u8)trans);
-    } else {
+        reinterpret_cast<CQuadBit *>(_this->mpShadow)->SetTransparency((u8)trans);
+    }
+    else
+    {
         reinterpret_cast<CBody *>(_this)->KillShadow();
     }
 }
@@ -624,9 +651,11 @@ void CBody::UpdateShadow() {
  *
  * @param body  Body marked for deletion.
  */
-void CBody::Die() {
+void CBody::Die()
+{
     CBodyOwner *body = reinterpret_cast<CBodyOwner *>(this);
-    if (!reinterpret_cast<const CBody *>(body)->IsDead()) {
+    if (!reinterpret_cast<const CBody *>(body)->IsDead())
+    {
         body->mCBodyFlags = body->mCBodyFlags | 0x40;
     }
 }
@@ -640,9 +669,9 @@ void CBody::Die() {
  *
  * @return flags != 0
  */
-int CBody::IsDead() const {
-    const CBodyOwner *bodyView =
-        reinterpret_cast<const CBodyOwner *>(this);
+int CBody::IsDead() const
+{
+    const CBodyOwner *bodyView = reinterpret_cast<const CBodyOwner *>(this);
     u32 flags = bodyView->mCBodyFlags;
     flags = flags & 0x40;
     return flags != 0;
@@ -662,7 +691,8 @@ int CBody::IsDead() const {
  * @param whathit  Impact source identifier.
  * @return 1
  */
-int CBody::Hit(int Damage, const CVector &knock, int whathit) {
+int CBody::Hit(int Damage, const CVector &knock, int whathit)
+{
     (void)this;
     (void)Damage;
     (void)knock;
@@ -681,7 +711,8 @@ int CBody::Hit(int Damage, const CVector &knock, int whathit) {
  * @param super  Animated body being initialized.
  * @return `this` pointer (GCC 2.x ctor convention).
  */
-CSuper::CSuper() {
+CSuper::CSuper()
+{
     CSuperOwner *super = reinterpret_cast<CSuperOwner *>(this);
     super->mExtraFlags = 0;
     super->mAnimSpeed = 0x10000;
@@ -702,18 +733,23 @@ CSuper::CSuper() {
  * The compiler supplies the original hidden in-charge flag and emits the
  * target `_._6CSuper` ABI entry.
  */
-CSuper::~CSuper() {
+CSuper::~CSuper()
+{
     CSuperOwner *super = (CSuperOwner *)this;
-    if (super->mpPoseBuffer != 0) {
+    if (super->mpPoseBuffer != 0)
+    {
         Mem_Delete((void *)super->mpPoseBuffer);
     }
-    if (super->mpJoints != 0) {
+    if (super->mpJoints != 0)
+    {
         Mem_Delete((void *)super->mpJoints);
     }
-    if (super->mpDecompressedFrame != 0) {
+    if (super->mpDecompressedFrame != 0)
+    {
         Mem_Delete((void *)super->mpDecompressedFrame);
     }
-    if (super->mpCalculationOrder != 0) {
+    if (super->mpCalculationOrder != 0)
+    {
         Mem_Delete((void *)super->mpCalculationOrder);
     }
 }
@@ -731,41 +767,55 @@ CSuper::~CSuper() {
  * @param to  Target frame, or -1 to select the final frame.
  * @param to2  Secondary target-frame value.
  */
-void CSuper::RunAnim(int anim, int from, int to, int to2) {
+void CSuper::RunAnim(int anim, int from, int to, int to2)
+{
     mAnim = anim;
-    if (mAnim >= PSXRegion[mRegion].pAnimFile[0]) {
+    if (mAnim >= PSXRegion[mRegion].pAnimFile[0])
+    {
         mAnim = 46;
     }
     mNumFrames = ((u8 *)PSXRegion[mRegion].pAnimFile)[mAnim * 8 + 8];
 
-    if (from == -1) {
+    if (from == -1)
+    {
         from = mNumFrames - 1;
     }
-    if (to == -1) {
+    if (to == -1)
+    {
         to = mNumFrames - 1;
     }
 
-    if (from < 0) {
+    if (from < 0)
+    {
         from = 0;
     }
-    if (to < 0) {
+    if (to < 0)
+    {
         to = 0;
     }
-    if (from >= mNumFrames) {
+    if (from >= mNumFrames)
+    {
         from = mNumFrames - 1;
     }
-    if (to >= mNumFrames) {
+    if (to >= mNumFrames)
+    {
         to = mNumFrames - 1;
     }
 
     mAnimMode = 0;
-    if (to <= from) {
-        if (to < from) {
+    if (to <= from)
+    {
+        if (to < from)
+        {
             mAnimDir = -1;
-        } else {
+        }
+        else
+        {
             mAnimDir = 0;
         }
-    } else {
+    }
+    else
+    {
         mAnimDir = 1;
     }
 
@@ -788,7 +838,8 @@ void CSuper::RunAnim(int anim, int from, int to, int to2) {
  * @param anim  Animation index.
  * @param animdir  Initial playback direction.
  */
-void CSuper::CycleAnim(int anim, signed char animdir) {
+void CSuper::CycleAnim(int anim, signed char animdir)
+{
     mAnim = anim;
     mNumFrames = ((u8 *)PSXRegion[mRegion].pAnimFile)[mAnim * 8 + 8];
 
@@ -810,10 +861,11 @@ void CSuper::CycleAnim(int anim, signed char animdir) {
  * Advances the active animation frame according to mode, direction,
  * target frames, and the global time scale.
  */
-void CSuper::UpdateFrame() {
+void CSuper::UpdateFrame()
+{
 // Named-member views retain the target's deliberate signed/unsigned loads.
-#define SUPER_S8(member)  (*(signed char *)&((CSuperOwner *)this)->member)
-#define SUPER_U8(member)  (*(u8 *)&((CSuperOwner *)this)->member)
+#define SUPER_S8(member) (*(signed char *)&((CSuperOwner *)this)->member)
+#define SUPER_U8(member) (*(u8 *)&((CSuperOwner *)this)->member)
 #define SUPER_S16(member) (*(s16 *)&((CSuperOwner *)this)->member)
 #define SUPER_U16(member) (*(u16 *)&((CSuperOwner *)this)->member)
 #define SUPER_S32(member) (*(int *)&((CSuperOwner *)this)->member)
@@ -828,19 +880,20 @@ void CSuper::UpdateFrame() {
     int f;
     int frame;
 
-    if (SUPER_U8(mAnimMode) == 0 || SUPER_U8(mAnimMode) == 2) {
+    if (SUPER_U8(mAnimMode) == 0 || SUPER_U8(mAnimMode) == 2)
+    {
         int d = SUPER_S8(mAnimDir);
-        if ((d == 1 &&
-             (t = SUPER_U8(mTargetFrame),
-              SUPER_S16(mFrame) >= SUPER_S8(mTargetFrame))) ||
-            (d == -1 &&
-             (t = SUPER_U8(mTargetFrame),
-              SUPER_S16(mFrame) <= SUPER_S8(mTargetFrame)))) {
-            if (SUPER_S8(mTargetFrame2) > 0) {
+        if ((d == 1 && (t = SUPER_U8(mTargetFrame), SUPER_S16(mFrame) >= SUPER_S8(mTargetFrame))) ||
+            (d == -1 && (t = SUPER_U8(mTargetFrame), SUPER_S16(mFrame) <= SUPER_S8(mTargetFrame))))
+        {
+            if (SUPER_S8(mTargetFrame2) > 0)
+            {
                 SUPER_U8(mTargetFrame) = SUPER_U8(mTargetFrame2);
                 SUPER_U8(mTargetFrame2) = t;
                 SUPER_U8(mAnimDir) = -SUPER_U8(mAnimDir);
-            } else {
+            }
+            else
+            {
                 SUPER_U8(mAnimFinished) = 1;
             }
         }
@@ -853,7 +906,8 @@ void CSuper::UpdateFrame() {
         m = SUPER_U8(mAnimMode);
         rawDirection = SUPER_U8(mAnimDir);
         rawFrame = SUPER_U16(mFrame);
-        if (m - 2 < 2u) {
+        if (m - 2 < 2u)
+        {
             AdjustedSpeed = 0;
         }
     }
@@ -864,10 +918,12 @@ void CSuper::UpdateFrame() {
         dir = (signed char)rawDirection;
         f = hi | lo;
     }
-    if (dir == 1) {
+    if (dir == 1)
+    {
         f += AdjustedSpeed;
     }
-    if (dir == -1) {
+    if (dir == -1)
+    {
         f -= AdjustedSpeed;
     }
 
@@ -876,80 +932,88 @@ void CSuper::UpdateFrame() {
     AdjustedSpeed = SUPER_U8(mAnimMode);
     SUPER_U16(mFrameFrac) = (u16)f;
 
-    switch (AdjustedSpeed) {
-    case 0:
-        if (dir != 1 ||
-            (cmp = frame < SUPER_S8(mTargetFrame),
-             t = SUPER_U8(mTargetFrame), cmp)) {
-            if (dir != -1) {
-                return;
+    switch (AdjustedSpeed)
+    {
+        case 0:
+            if (dir != 1 || (cmp = frame < SUPER_S8(mTargetFrame), t = SUPER_U8(mTargetFrame), cmp))
+            {
+                if (dir != -1)
+                {
+                    return;
+                }
+                cmp = SUPER_S8(mTargetFrame) < frame;
+                t = SUPER_U8(mTargetFrame);
+                if (cmp)
+                {
+                    return;
+                }
             }
-            cmp = SUPER_S8(mTargetFrame) < frame;
-            t = SUPER_U8(mTargetFrame);
-            if (cmp) {
-                return;
-            }
-        }
-        SUPER_S16(mFrame) = (signed char)t;
-        return;
-
-    case 4:
-        if (dir != 1 ||
-            (cmp = frame < SUPER_S8(mTargetFrame),
-             t = SUPER_U8(mTargetFrame), cmp)) {
-            if (dir != -1) {
-                return;
-            }
-            cmp = SUPER_S8(mTargetFrame) < frame;
-            t = SUPER_U8(mTargetFrame);
-            if (cmp) {
-                return;
-            }
-        }
-        {
-            u8 od = SUPER_U8(mAnimDir);
-            u8 oldStart = SUPER_U8(mStartFrame);
             SUPER_S16(mFrame) = (signed char)t;
-            SUPER_S16(mStartFrame) = (signed char)t;
-            SUPER_U8(mAnimDir) = -od;
-            SUPER_U8(mTargetFrame) = oldStart;
-        }
-        return;
+            return;
 
-    case 3: {
-        int dif = SUPER_S16(mPingPongEnd) - SUPER_S16(mPingPongStart);
-        if (dif > 0) {
-            int width = dif * 2;
-            int x =
-                ((XFrames - SUPER_S16(mPingPongFrame)) /
-                 (0x20000 / speed)) % width;
-            if (dif < x) {
-                x = width - x;
+        case 4:
+            if (dir != 1 || (cmp = frame < SUPER_S8(mTargetFrame), t = SUPER_U8(mTargetFrame), cmp))
+            {
+                if (dir != -1)
+                {
+                    return;
+                }
+                cmp = SUPER_S8(mTargetFrame) < frame;
+                t = SUPER_U8(mTargetFrame);
+                if (cmp)
+                {
+                    return;
+                }
             }
-            SUPER_S16(mFrame) = SUPER_U16(mPingPongStart) + x;
-        } else {
-            int width;
-            int x;
-            dif = -dif;
-            width = dif * 2;
-            x = ((XFrames - SUPER_S16(mPingPongFrame)) /
-                 (0x20000 / speed)) % width;
-            if (dif < x) {
-                x = width - x;
+            {
+                u8 od = SUPER_U8(mAnimDir);
+                u8 oldStart = SUPER_U8(mStartFrame);
+                SUPER_S16(mFrame) = (signed char)t;
+                SUPER_S16(mStartFrame) = (signed char)t;
+                SUPER_U8(mAnimDir) = -od;
+                SUPER_U8(mTargetFrame) = oldStart;
             }
-            SUPER_S16(mFrame) = SUPER_U16(mPingPongStart) - x;
-        }
-        return;
-    }
+            return;
 
-    case 1:
-        if (SUPER_U8(mNumFrames) <= frame) {
-            SUPER_S16(mFrame) = 0;
+        case 3:
+        {
+            int dif = SUPER_S16(mPingPongEnd) - SUPER_S16(mPingPongStart);
+            if (dif > 0)
+            {
+                int width = dif * 2;
+                int x = ((XFrames - SUPER_S16(mPingPongFrame)) / (0x20000 / speed)) % width;
+                if (dif < x)
+                {
+                    x = width - x;
+                }
+                SUPER_S16(mFrame) = SUPER_U16(mPingPongStart) + x;
+            }
+            else
+            {
+                int width;
+                int x;
+                dif = -dif;
+                width = dif * 2;
+                x = ((XFrames - SUPER_S16(mPingPongFrame)) / (0x20000 / speed)) % width;
+                if (dif < x)
+                {
+                    x = width - x;
+                }
+                SUPER_S16(mFrame) = SUPER_U16(mPingPongStart) - x;
+            }
+            return;
         }
-        if (SUPER_S16(mFrame) < 0) {
-            SUPER_S16(mFrame) = SUPER_U8(mNumFrames) - 1;
-        }
-        return;
+
+        case 1:
+            if (SUPER_U8(mNumFrames) <= frame)
+            {
+                SUPER_S16(mFrame) = 0;
+            }
+            if (SUPER_S16(mFrame) < 0)
+            {
+                SUPER_S16(mFrame) = SUPER_U8(mNumFrames) - 1;
+            }
+            return;
     }
 
 #undef SUPER_S8
@@ -969,7 +1033,8 @@ void CSuper::UpdateFrame() {
  * @param modelId  Model hierarchy slot.
  * @param animOrder  Matching animation hierarchy slot.
  */
-void CSuper::SetAnimOrder(u8 modelId, u8 animOrder) {
+void CSuper::SetAnimOrder(u8 modelId, u8 animOrder)
+{
     CSuperOwner *super = reinterpret_cast<CSuperOwner *>(this);
     super->mAnimOrder[modelId] = animOrder;
     super->mUseAnimOrder = 1;
@@ -988,15 +1053,18 @@ void CSuper::SetAnimOrder(u8 modelId, u8 animOrder) {
  * @param pModelHierarchy  Model hierarchy names.
  * @param modelPartCount  Number of model hierarchy names.
  */
-void CSuper::CalculateAnimOrder(
-    char **pAnimHierarchy, int animPartCount,
-    char **pModelHierarchy, int modelPartCount) {
+void CSuper::CalculateAnimOrder(char **pAnimHierarchy, int animPartCount, char **pModelHierarchy,
+                                int modelPartCount)
+{
     int i;
 
-    for (i = 0; i < modelPartCount; i++) {
+    for (i = 0; i < modelPartCount; i++)
+    {
         int j;
-        for (j = 0; j < animPartCount; j++) {
-            if (strcmp(pModelHierarchy[i], pAnimHierarchy[j]) == 0) {
+        for (j = 0; j < animPartCount; j++)
+        {
+            if (strcmp(pModelHierarchy[i], pAnimHierarchy[j]) == 0)
+            {
                 SetAnimOrder(i, j);
                 break;
             }
@@ -1015,12 +1083,15 @@ void CSuper::CalculateAnimOrder(
  * Runs body AI at its requested cadence and interpolates position/angles
  * between full AI samples.
  */
-void CBody::InterleaveAI() {
+void CBody::InterleaveAI()
+{
     CSuperOwner *super = reinterpret_cast<CSuperOwner *>(this);
-    if ((super->CBody.CItem.mFlags & 2) != 0) {
+    if ((super->CBody.CItem.mFlags & 2) != 0)
+    {
         reinterpret_cast<CSuper *>(super)->UpdateFrame();
         CallEveryFrame(&super->CBody);
-        if (super->CBody.mAIFrequency < 2) {
+        if (super->CBody.mAIFrequency < 2)
+        {
             super->mNewFrame = *(u16 *)&super->mFrame;
             CallAI(&super->CBody);
             super->mOldFrame = *(u16 *)&super->mFrame;
@@ -1028,9 +1099,12 @@ void CBody::InterleaveAI() {
             super->mOldAnimDir = *(u8 *)&super->mAnimDir;
             return;
         }
-    } else {
+    }
+    else
+    {
         CallEveryFrame(&super->CBody);
-        if (super->CBody.mAIFrequency < 2) {
+        if (super->CBody.mAIFrequency < 2)
+        {
             CallAI(&super->CBody);
             return;
         }
@@ -1038,20 +1112,24 @@ void CBody::InterleaveAI() {
 
     int cnt = super->CBody.mAICount + 1;
     super->CBody.mAICount = (u8)cnt;
-    if ((u8)cnt >= super->CBody.mAIFrequency) {
+    if ((u8)cnt >= super->CBody.mAIFrequency)
+    {
         super->CBody.mAICount = 0;
         super->CBody.CItem.mPos = super->CBody.mNewPos;
         super->CBody.mOldPos = super->CBody.CItem.mPos;
         super->CBody.CItem.mAngles = super->CBody.mNewAngles;
         super->CBody.mOldAngles = super->CBody.CItem.mAngles;
 
-        if ((super->CBody.CItem.mFlags & 2) != 0) {
+        if ((super->CBody.CItem.mFlags & 2) != 0)
+        {
             super->mNewFrame = *(u16 *)&super->mFrame;
             CallAI(&super->CBody);
             super->mOldFrame = *(u16 *)&super->mFrame;
             super->mOldAnim = *(u8 *)&super->mAnim;
             super->mOldAnimDir = *(u8 *)&super->mAnimDir;
-        } else {
+        }
+        else
+        {
             CallAI(&super->CBody);
         }
 
@@ -1060,27 +1138,21 @@ void CBody::InterleaveAI() {
             super->CBody.CItem.mPos = super->CBody.mOldPos;
 
             CVectorOwner stepPos;
-            CVector deltaPos =
-                reinterpret_cast<const CVector &>(super->CBody.mNewPos) -
-                reinterpret_cast<const CVector &>(super->CBody.mOldPos);
+            CVector deltaPos = reinterpret_cast<const CVector &>(super->CBody.mNewPos) -
+                               reinterpret_cast<const CVector &>(super->CBody.mOldPos);
             int divisor;
 
             divisor = super->CBody.mAIFrequency;
-            Ob_VectorDivide(
-                &stepPos,
-                reinterpret_cast<const CVectorOwner *>(&deltaPos),
-                &divisor);
+            Ob_VectorDivide(&stepPos, reinterpret_cast<const CVectorOwner *>(&deltaPos), &divisor);
             super->CBody.mDPos = stepPos;
         }
 
         {
             super->CBody.mNewAngles = super->CBody.CItem.mAngles;
             super->CBody.CItem.mAngles = super->CBody.mOldAngles;
-            CSVector deltaAngles =
-                reinterpret_cast<const CSVector &>(super->CBody.mNewAngles) -
-                reinterpret_cast<const CSVector &>(super->CBody.mOldAngles);
-            super->CBody.mDAngles =
-                reinterpret_cast<const CSVectorOwner &>(deltaAngles);
+            CSVector deltaAngles = reinterpret_cast<const CSVector &>(super->CBody.mNewAngles) -
+                                   reinterpret_cast<const CSVector &>(super->CBody.mOldAngles);
+            super->CBody.mDAngles = reinterpret_cast<const CSVectorOwner &>(deltaAngles);
 
             if (super->CBody.mDAngles.x < -0x800) super->CBody.mDAngles.x += 0x1000;
             if (super->CBody.mDAngles.x > 0x800) super->CBody.mDAngles.x -= 0x1000;
@@ -1089,14 +1161,12 @@ void CBody::InterleaveAI() {
             if (super->CBody.mDAngles.z < -0x800) super->CBody.mDAngles.z += 0x1000;
             if (super->CBody.mDAngles.z > 0x800) super->CBody.mDAngles.z -= 0x1000;
 
-            reinterpret_cast<CSVector &>(super->CBody.mDAngles) /=
-                super->CBody.mAIFrequency;
+            reinterpret_cast<CSVector &>(super->CBody.mDAngles) /= super->CBody.mAIFrequency;
         }
         return;
     }
 
-    *(CVector *)&super->CBody.CItem.mPos +=
-        *(const CVector *)&super->CBody.mDPos;
+    *(CVector *)&super->CBody.CItem.mPos += *(const CVector *)&super->CBody.mDPos;
     reinterpret_cast<CSVector &>(super->CBody.CItem.mAngles) +=
         reinterpret_cast<const CSVector &>(super->CBody.mDAngles);
     reinterpret_cast<CSVector &>(super->CBody.CItem.mAngles).Mask();
@@ -1111,7 +1181,8 @@ void CBody::InterleaveAI() {
  *
  * @param pBody  Body to operate on.
  */
-void Ob_ClearInputFlags(CBody * pBody) {
+void Ob_ClearInputFlags(CBody *pBody)
+{
     CBodyOwner *body = (CBodyOwner *)pBody;
     if (!body) return;
     CBodyOwner *pNext = (CBodyOwner *)body->CItem.mNextItem;
@@ -1135,50 +1206,63 @@ loop:
  *
  * @param ppBody  List head pointer to process; suspended bodies may be removed.
  */
-void Ob_AI(CBody ** ppBody) {
+void Ob_AI(CBody **ppBody)
+{
     CBodyOwner *pBody = (CBodyOwner *)*ppBody;
 
-    while (pBody) {
+    while (pBody)
+    {
         CBodyOwner *pNext = (CBodyOwner *)pBody->CItem.mNextItem;
 
-        if (pBody->CItem.mFlashTimer != 0) {
+        if (pBody->CItem.mFlashTimer != 0)
+        {
             ((CItem *)pBody)->FlashUpdate();
         }
 
         unsigned short flags = pBody->mCBodyFlags;
-        if ((flags & 0x40) != 0) {
-            if ((flags & 0x80) != 0) {
-                if (pBody != 0) {
+        if ((flags & 0x40) != 0)
+        {
+            if ((flags & 0x80) != 0)
+            {
+                if (pBody != 0)
+                {
                     DeleteBody(pBody);
                 }
             }
-            else {
+            else
+            {
                 pBody->mCBodyFlags = flags | 0x80;
             }
         }
-        else {
-            unsigned int dist = Utils_CrapDist(
-                *(CVector *)&reinterpret_cast<CBrucePositionOwner *>(GSkater[0])
-                    ->CSuper.CBody.CItem.mPos,
-                *(CVector *)&pBody->CItem.mPos);
+        else
+        {
+            unsigned int dist =
+                Utils_CrapDist(*(CVector *)&reinterpret_cast<CBrucePositionOwner *>(GSkater[0])
+                                    ->CSuper.CBody.CItem.mPos,
+                               *(CVector *)&pBody->CItem.mPos);
 
-            if (GNumberOfPlayers == 2) {
-                unsigned int dist2 = Utils_CrapDist(
-                    *(CVector *)&reinterpret_cast<CBrucePositionOwner *>(GSkater[1])
-                        ->CSuper.CBody.CItem.mPos,
-                    *(CVector *)&pBody->CItem.mPos);
-                if (dist2 < dist) {
+            if (GNumberOfPlayers == 2)
+            {
+                unsigned int dist2 =
+                    Utils_CrapDist(*(CVector *)&reinterpret_cast<CBrucePositionOwner *>(GSkater[1])
+                                        ->CSuper.CBody.CItem.mPos,
+                                   *(CVector *)&pBody->CItem.mPos);
+                if (dist2 < dist)
+                {
                     dist = dist2;
                 }
             }
 
             pBody->mPlayerDist = dist;
-            if ((pBody->mCBodyFlags & 2) != 0 && dist > SuspendDistance) {
+            if ((pBody->mCBodyFlags & 2) != 0 && dist > SuspendDistance)
+            {
                 reinterpret_cast<CBody *>(pBody)->Suspend(ppBody);
             }
-            else {
+            else
+            {
                 reinterpret_cast<CBody *>(pBody)->InterleaveAI();
-                if ((pBody->mCBodyFlags & 8) != 0) {
+                if ((pBody->mCBodyFlags & 8) != 0)
+                {
                     reinterpret_cast<CBody *>(pBody)->UpdateShadow();
                 }
             }
@@ -1198,7 +1282,8 @@ void Ob_AI(CBody ** ppBody) {
  *
  * @param ppBody  List head pointer to process.
  */
-void Ob_QuickAI(CBody ** ppBody) {
+void Ob_QuickAI(CBody **ppBody)
+{
     CBodyOwner *pBody = (CBodyOwner *)*ppBody;
     CBodyOwner *pNext;
     unsigned short flags;
@@ -1206,18 +1291,26 @@ void Ob_QuickAI(CBody ** ppBody) {
     if (!pBody) return;
     pNext = (CBodyOwner *)pBody->CItem.mNextItem;
 
-    while (1) {
+    while (1)
+    {
         flags = pBody->mCBodyFlags;
 
-        if (flags & 0x40) {
-            if (flags & 0x80) {
-                if (pBody) {
+        if (flags & 0x40)
+        {
+            if (flags & 0x80)
+            {
+                if (pBody)
+                {
                     DeleteBody(pBody);
                 }
-            } else {
+            }
+            else
+            {
                 pBody->mCBodyFlags = flags | 0x80;
             }
-        } else {
+        }
+        else
+        {
             CallAI(pBody);
         }
 
@@ -1241,22 +1334,26 @@ void Ob_MaybeUnSuspendOrCull(void)
     CBodyOwner *pBody = (CBodyOwner *)SuspendedList;
     if (pBody == (CBodyOwner *)0) return;
     CBodyOwner *pNext = (CBodyOwner *)pBody->CItem.mNextItem;
-    while (1) {
-        if ((pBody->mCBodyFlags & 2) != 0) {
+    while (1)
+    {
+        if ((pBody->mCBodyFlags & 2) != 0)
+        {
             CVector *pBodyPos = (CVector *)&pBody->CItem.mPos;
             unsigned int dist = (unsigned int)Utils_CrapDist(
                 *(CVector *)&((CBodyOwner *)MechList)->CItem.mPos, *pBodyPos);
-            if (GNumberOfPlayers == 2) {
+            if (GNumberOfPlayers == 2)
+            {
                 unsigned int dist2 = (unsigned int)Utils_CrapDist(
-                    *(CVector *)&((CBodyOwner *)((CBodyOwner *)MechList)
-                                      ->CItem.mNextItem)
-                        ->CItem.mPos,
+                    *(CVector *)&((CBodyOwner *)((CBodyOwner *)MechList)->CItem.mNextItem)
+                         ->CItem.mPos,
                     *pBodyPos);
-                if (dist2 < dist) {
+                if (dist2 < dist)
+                {
                     dist = dist2;
                 }
             }
-            if (SuspendDistance >= dist) {
+            if (SuspendDistance >= dist)
+            {
                 reinterpret_cast<CBody *>(pBody)->UnSuspend();
             }
         }
@@ -1265,5 +1362,3 @@ void Ob_MaybeUnSuspendOrCull(void)
         pNext = (CBodyOwner *)pNext->CItem.mNextItem;
     }
 }
-
-

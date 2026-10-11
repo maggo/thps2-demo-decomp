@@ -7,7 +7,8 @@
 #endif
 
 /** One point in a rendered ribbon, including its three screen histories. */
-struct SRibbonPoint {
+struct SRibbonPoint
+{
     struct CVector Pos;
     unsigned char r;
     unsigned char g;

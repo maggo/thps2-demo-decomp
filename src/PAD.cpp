@@ -44,8 +44,7 @@ int WarningTimer = 0;
 int Pad_IdleTime = 0;
 
 /** DualShock actuator alignment packet retained within the PAD owner. */
-static unsigned char align[6]
-    __attribute__((section(".sdata"))) = {0, 1, 255, 255, 255, 255};
+static unsigned char align[6] __attribute__((section(".sdata"))) = { 0, 1, 255, 255, 255, 255 };
 
 /** Whether the controller subsystem has completed initialization. */
 static int ControlSystemInitialised = 0;
@@ -53,8 +52,7 @@ static int ControlSystemInitialised = 0;
 // === Function implementations (address order) ===
 
 /* Advance a field cursor to the corresponding field in the next pad. */
-#define NEXT_PAD_BUTTON(button) \
-    ((SButton *)((unsigned char *)(button) + sizeof(SControl)))
+#define NEXT_PAD_BUTTON(button) ((SButton *)((unsigned char *)(button) + sizeof(SControl)))
 #define NEXT_PAD_BUTTON_LINK(button_link) \
     ((SButton **)((unsigned char *)(button_link) + sizeof(SControl)))
 
@@ -214,7 +212,8 @@ void Pad_ClearTriggers(SControl *p_pad)
  * @param motor Actuator index, zero or one.
  * @param motor_value Value sent to the selected actuator.
  */
-void Pad_ActuatorOn(unsigned char index, unsigned short time, unsigned char motor, unsigned char motor_value)
+void Pad_ActuatorOn(unsigned char index, unsigned short time, unsigned char motor,
+                    unsigned char motor_value)
 {
     int checkIndex = 0;
     int port;
@@ -334,10 +333,14 @@ static void ReadControllers(void)
     {
         if (controllers[controller_port].pad[1] == 0x80)
         {
-            ReadController(&theControllers[controller_port * 4], &controllers[controller_port].pad[2]);
-            ReadController(&theControllers[controller_port * 4 + 1], &controllers[controller_port].pad[10]);
-            ReadController(&theControllers[controller_port * 4 + 2], &controllers[controller_port].pad[18]);
-            ReadController(&theControllers[controller_port * 4 + 3], &controllers[controller_port].pad[26]);
+            ReadController(&theControllers[controller_port * 4],
+                           &controllers[controller_port].pad[2]);
+            ReadController(&theControllers[controller_port * 4 + 1],
+                           &controllers[controller_port].pad[10]);
+            ReadController(&theControllers[controller_port * 4 + 2],
+                           &controllers[controller_port].pad[18]);
+            ReadController(&theControllers[controller_port * 4 + 3],
+                           &controllers[controller_port].pad[26]);
         }
         else
         {
@@ -396,10 +399,8 @@ static void ReadController(ControllerData *p_controller_data, unsigned char *p_b
  */
 int Pad_Analog(int x, int min, int max, int c)
 {
-    if (x < min)
-        return -127;
-    if (max < x)
-        return 127;
+    if (x < min) return -127;
+    if (max < x) return 127;
     if (x < c - 32)
     {
         Pad_IdleTime = 0;
@@ -497,8 +498,7 @@ int Pad_Update(void)
 
     if (theControllers[4].type == 'A' || theControllers[4].type == 's')
     {
-        pad1 = (unsigned short)~((theControllers[4].button1 << 8) |
-                                 theControllers[4].button2);
+        pad1 = (unsigned short)~((theControllers[4].button1 << 8) | theControllers[4].button2);
     }
     else
     {
@@ -520,9 +520,8 @@ int Pad_Update(void)
     c1 = theControllers[4].analog2 & ~3;
     d1 = theControllers[4].analog3 & ~3;
 
-    if (pad_data != 0 ||
-        a0 != olda0 || b0 != oldb0 || c0 != oldc0 || d0 != oldd0 ||
-        a1 != olda1 || b1 != oldb1 || c1 != oldc1 || d1 != oldd1)
+    if (pad_data != 0 || a0 != olda0 || b0 != oldb0 || c0 != oldc0 || d0 != oldd0 || a1 != olda1 ||
+        b1 != oldb1 || c1 != oldc1 || d1 != oldd1)
     {
         olda0 = a0;
         oldb0 = b0;
@@ -558,10 +557,14 @@ int Pad_Update(void)
         {
             if (Pad[p].Type == 's' || Pad[p].Type == 'S')
             {
-                Pad[p].AnalogueAimLeftRight = (char)Pad_Analog(theControllers[p * 4].analog0, XMinR, XMaxR, XCenterR);
-                Pad[p].AnalogueAimForwardsBackwards = (char)Pad_Analog(theControllers[p * 4].analog1, YMinR, YMaxR, YCenterR);
-                Pad[p].AnalogueMoveLeftRight = (char)Pad_Analog(theControllers[p * 4].analog2, XMinL, XMaxL, XCenterL);
-                Pad[p].AnalogueMoveForwardsBackwards = (char)Pad_Analog(theControllers[p * 4].analog3, YMinL, YMaxL, YCenterL);
+                Pad[p].AnalogueAimLeftRight =
+                    (char)Pad_Analog(theControllers[p * 4].analog0, XMinR, XMaxR, XCenterR);
+                Pad[p].AnalogueAimForwardsBackwards =
+                    (char)Pad_Analog(theControllers[p * 4].analog1, YMinR, YMaxR, YCenterR);
+                Pad[p].AnalogueMoveLeftRight =
+                    (char)Pad_Analog(theControllers[p * 4].analog2, XMinL, XMaxL, XCenterL);
+                Pad[p].AnalogueMoveForwardsBackwards =
+                    (char)Pad_Analog(theControllers[p * 4].analog3, YMinL, YMaxL, YCenterL);
             }
             else
             {
@@ -590,10 +593,14 @@ int Pad_Update(void)
             Pad_Button(pBut++, pad_data & 0x08);
             Pad_Button(pBut++, pad_data & 0x02);
 
-            Pad_Button(pBut++, (pad_data & 0x8000) | ((signed char)Pad[p].AnalogueMoveLeftRight < -40));
-            Pad_Button(pBut++, (pad_data & 0x2000) | ((signed char)Pad[p].AnalogueMoveLeftRight >= 41));
-            Pad_Button(pBut++, (pad_data & 0x1000) | ((signed char)Pad[p].AnalogueMoveForwardsBackwards < -40));
-            Pad_Button(pBut++, (pad_data & 0x4000) | ((signed char)Pad[p].AnalogueMoveForwardsBackwards >= 41));
+            Pad_Button(pBut++,
+                       (pad_data & 0x8000) | ((signed char)Pad[p].AnalogueMoveLeftRight < -40));
+            Pad_Button(pBut++,
+                       (pad_data & 0x2000) | ((signed char)Pad[p].AnalogueMoveLeftRight >= 41));
+            Pad_Button(pBut++, (pad_data & 0x1000) |
+                                   ((signed char)Pad[p].AnalogueMoveForwardsBackwards < -40));
+            Pad_Button(pBut++, (pad_data & 0x4000) |
+                                   ((signed char)Pad[p].AnalogueMoveForwardsBackwards >= 41));
             Pad_Button(pBut++, pad_data & 0x0200);
             Pad_Button(pBut++, pad_data & 0x0400);
             Pad_Button(pBut++, pad_data & 0x0800);

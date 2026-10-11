@@ -11,8 +11,7 @@
 #endif
 
 /** Prevent replay sounds from being emitted recursively during playback. */
-extern int ReplaySoundLockout
-    REPLAYSOUNDLOCKOUT_DECL_ATTR;
+extern int ReplaySoundLockout REPLAYSOUNDLOCKOUT_DECL_ATTR;
 
 #undef REPLAYSOUNDLOCKOUT_DECL_ATTR
 #undef REPLAYSOUNDLOCKOUT_ABSOLUTE_DECLARATION

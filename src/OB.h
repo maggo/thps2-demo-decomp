@@ -25,7 +25,8 @@ void Ob_QuickAI(CBody **ppBody);
 #include "globals.h"
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 // Primitive types
@@ -59,14 +60,16 @@ struct SHook;
 struct CPowerUp;
 struct SLight;
 
-struct SLink {
+struct SLink
+{
     unsigned short Part;
     unsigned short ParentPart;
     struct SVector Pivot;
     unsigned short ParentLink;
 };
 
-struct SJoint {
+struct SJoint
+{
     struct SVector Angles;
     struct SVector Displacement;
 };
@@ -76,8 +79,8 @@ struct SJoint {
 #endif
 
 // === Variables (gp-relative in this TU) ===
-extern "C" CSVector ZeroSVector;       // 0x800D9B40
-extern "C" CVector ZeroVector;       // 0x800D9B34
+extern "C" CSVector ZeroSVector; // 0x800D9B40
+extern "C" CVector ZeroVector; // 0x800D9B34
 
 // === Variables (absolute in this TU) ===
 #define BITSTATE_DECLARE_USE_CACHE_FOR_BITS
@@ -98,13 +101,27 @@ extern "C" CVector ZeroVector;       // 0x800D9B34
 struct SLight;
 
 /** Game-space vector with aliases used by both recovered naming conventions. */
-struct CVectorOwner {
-    union { int x; int vx; };
-    union { int y; int vy; };
-    union { int z; int vz; };
+struct CVectorOwner
+{
+    union
+    {
+        int x;
+        int vx;
+    };
+    union
+    {
+        int y;
+        int vy;
+    };
+    union
+    {
+        int z;
+        int vz;
+    };
 
     /** Assign all three game-space components. */
-    void Set(int _x, int _y, int _z) {
+    void Set(int _x, int _y, int _z)
+    {
         x = _x;
         y = _y;
         z = _z;
@@ -112,13 +129,27 @@ struct CVectorOwner {
 };
 
 /** Short game-space vector with recovered x/vx naming aliases. */
-struct CSVectorOwner {
-    union { short x; short vx; };
-    union { short y; short vy; };
-    union { short z; short vz; };
+struct CSVectorOwner
+{
+    union
+    {
+        short x;
+        short vx;
+    };
+    union
+    {
+        short y;
+        short vy;
+    };
+    union
+    {
+        short z;
+        short vz;
+    };
 
     /** Assign all three fixed-point components. */
-    void Set(int _x, int _y, int _z) {
+    void Set(int _x, int _y, int _z)
+    {
         x = _x;
         y = _y;
         z = _z;
@@ -128,20 +159,23 @@ struct CSVectorOwner {
 #include "CFRICTION.h"
 
 /** One eight-byte entry in a region's packed animation lookup table. */
-struct ObAnimationEntryOwner {
+struct ObAnimationEntryOwner
+{
     u8 mNumFrames;
     u8 _reserved[7];
 };
 
 /** Header and entries addressed by `SPSXRegion::pAnimFile`. */
-struct ObAnimationTableOwner {
+struct ObAnimationTableOwner
+{
     u32 mAnimationCount;
     u32 _reserved;
     ObAnimationEntryOwner mAnimations[1];
 };
 
 /** CItem data layout shared by base-object owner routines. */
-struct CItemOwner {
+struct CItemOwner
+{
     u16 mFlags;
     u16 mInquiry;
     struct CVectorOwner mPos;
@@ -165,11 +199,16 @@ struct CItemOwner {
     s16 mFlash_dR;
     s16 mFlash_dG;
     s16 mFlash_dB;
-    union { void *vtable; void *_vf; };
+    union
+    {
+        void *vtable;
+        void *_vf;
+    };
 };
 
 /** CBody data layout implemented by OB.cpp. */
-struct CBodyOwner {
+struct CBodyOwner
+{
     struct CItemOwner CItem;
     struct CBodyOwner **mppOriginalList;
     u16 mInputFlags;
@@ -209,7 +248,8 @@ struct CBodyOwner {
 };
 
 /** Animated CSuper data layout implemented by OB.cpp. */
-struct CSuperOwner {
+struct CSuperOwner
+{
     struct CBodyOwner CBody;
     u32 mExtraFlags;
     u16 *mpCalculationOrder;
@@ -249,14 +289,16 @@ struct CSuperOwner {
 };
 
 /** CBruce prefix needed to read the inherited CItem position. */
-struct CBrucePositionOwner {
+struct CBrucePositionOwner
+{
     CSuperOwner CSuper;
 };
 
 /**
  * Owner-local CBruce slice covering the player index used for vibration.
  */
-struct CBruceVibrationOwner {
+struct CBruceVibrationOwner
+{
     u8 _padToIndex[0xDAC];
     int mIndex;
 };
@@ -264,7 +306,8 @@ struct CBruceVibrationOwner {
 /**
  * Owner-local CBruce slice covering trick-state fields used in OB.cpp.
  */
-struct CBruceTrickOwner {
+struct CBruceTrickOwner
+{
     u8 _padToNoSpin[0xD68];
     int mNoSpin;
     int mNoSpinScore;
@@ -292,28 +335,27 @@ typedef char CSVectorOwner_size_check[(sizeof(struct CSVectorOwner) == 6) ? 1 : 
 typedef char SDK_VECTOR_owner_size_check[(sizeof(VECTOR) == 16) ? 1 : -1];
 typedef char SDK_SVECTOR_owner_size_check[(sizeof(SVECTOR) == 8) ? 1 : -1];
 typedef char SDK_CVECTOR_owner_size_check[(sizeof(CVECTOR) == 4) ? 1 : -1];
-typedef char ObAnimationEntryOwner_size_check[
-    (sizeof(struct ObAnimationEntryOwner) == 8) ? 1 : -1];
-typedef char ObAnimationTableOwner_size_check[
-    (sizeof(struct ObAnimationTableOwner) == 16) ? 1 : -1];
+typedef char ObAnimationEntryOwner_size_check[(sizeof(struct ObAnimationEntryOwner) == 8) ? 1 : -1];
+typedef char
+    ObAnimationTableOwner_size_check[(sizeof(struct ObAnimationTableOwner) == 16) ? 1 : -1];
 typedef char CItemOwner_size_check[(sizeof(struct CItemOwner) == 76) ? 1 : -1];
 typedef char CBodyOwner_size_check[(sizeof(struct CBodyOwner) == 264) ? 1 : -1];
 typedef char MATRIX_owner_size_check[(sizeof(MATRIX) == 32) ? 1 : -1];
-typedef char CSuperOwner_shadow_source_offset_check[
-    ((unsigned long)&((struct CSuperOwner *)0)->mpShadowSource == 316) ? 1 : -1];
-typedef char CSuperOwner_shadow_rgb_offset_check[
-    ((unsigned long)&((struct CSuperOwner *)0)->mpShadowRGB == 320) ? 1 : -1];
-typedef char CSuperOwner_transform_offset_check[
-    ((int)&((struct CSuperOwner *)0)->mTransform == 324) ? 1 : -1];
-typedef char CSuperOwner_pose_buffer_offset_check[
-    ((int)&((struct CSuperOwner *)0)->mpPoseBuffer == 356) ? 1 : -1];
+typedef char CSuperOwner_shadow_source_offset_check
+    [((unsigned long)&((struct CSuperOwner *)0)->mpShadowSource == 316) ? 1 : -1];
+typedef char CSuperOwner_shadow_rgb_offset_check
+    [((unsigned long)&((struct CSuperOwner *)0)->mpShadowRGB == 320) ? 1 : -1];
+typedef char CSuperOwner_transform_offset_check[((int)&((struct CSuperOwner *)0)->mTransform == 324)
+                                                    ? 1
+                                                    : -1];
+typedef char CSuperOwner_pose_buffer_offset_check
+    [((int)&((struct CSuperOwner *)0)->mpPoseBuffer == 356) ? 1 : -1];
 typedef char CSuperOwner_size_check[(sizeof(struct CSuperOwner) == 400) ? 1 : -1];
-typedef char CBrucePositionOwner_prefix_size_check[
-    (sizeof(struct CBrucePositionOwner) == 400) ? 1 : -1];
-typedef char CBruceVibrationOwner_size_check[
-    (sizeof(struct CBruceVibrationOwner) == 3504) ? 1 : -1];
-typedef char CBruceTrickOwner_size_check[
-    (sizeof(struct CBruceTrickOwner) == 4208) ? 1 : -1];
+typedef char
+    CBrucePositionOwner_prefix_size_check[(sizeof(struct CBrucePositionOwner) == 400) ? 1 : -1];
+typedef char
+    CBruceVibrationOwner_size_check[(sizeof(struct CBruceVibrationOwner) == 3504) ? 1 : -1];
+typedef char CBruceTrickOwner_size_check[(sizeof(struct CBruceTrickOwner) == 4208) ? 1 : -1];
 
 #endif // OB_OWNER_LAYOUT
 
@@ -322,8 +364,7 @@ typedef char CBruceTrickOwner_size_check[
  * owner include so they retain their target-proven encounter point.  This
  * re-entrant owner view exposes only that service surface at the later site.
  */
-#if defined(OB_OWNER_SERVICE_DECLARATIONS) && \
-    !defined(OB_OWNER_SERVICE_DECLARATIONS_EMITTED)
+#if defined(OB_OWNER_SERVICE_DECLARATIONS) && !defined(OB_OWNER_SERVICE_DECLARATIONS_EMITTED)
 #define OB_OWNER_SERVICE_DECLARATIONS_EMITTED
 
 struct CBody;

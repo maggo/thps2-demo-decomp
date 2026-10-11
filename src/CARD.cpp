@@ -76,14 +76,11 @@ struct SVideoInfo
     char reserved_008[184];
 };
 
-typedef char SCareer_size_must_be_2420[
-    (sizeof(SCareer) == 2420) ? 1 : -1];
-typedef char SCardFilePrefix_size_must_be_640[
-    (sizeof(SCardFilePrefix) == CARD_HEADER_SIZE) ? 1 : -1];
-typedef char SCardHead_size_must_be_512[
-    (sizeof(SCardHead) == CARD_SECTOR_SIZE) ? 1 : -1];
-typedef char SVideoInfo_size_must_be_192[
-    (sizeof(SVideoInfo) == 192) ? 1 : -1];
+typedef char SCareer_size_must_be_2420[(sizeof(SCareer) == 2420) ? 1 : -1];
+typedef char
+    SCardFilePrefix_size_must_be_640[(sizeof(SCardFilePrefix) == CARD_HEADER_SIZE) ? 1 : -1];
+typedef char SCardHead_size_must_be_512[(sizeof(SCardHead) == CARD_SECTOR_SIZE) ? 1 : -1];
+typedef char SVideoInfo_size_must_be_192[(sizeof(SVideoInfo) == 192) ? 1 : -1];
 
 /** Obtain typed portions of a raw memory-card file buffer. */
 static inline SCardFilePrefix *Card_FilePrefix(unsigned long *buffer)
@@ -135,8 +132,7 @@ namespace CardAddressViewOwners
 {
 extern "C"
 {
-static char s_CardFileNameFmt[8]
-    __attribute__((section(".sdata"))) = "bu00:%s";
+static char s_CardFileNameFmt[8] __attribute__((section(".sdata"))) = "bu00:%s";
 }
 }
 
@@ -150,12 +146,10 @@ static char s_CardFileNameFmt[8]
 #include "CARD.h"
 
 /** Memory-card wildcard used to enumerate one connector and slot. */
-static char s_CardWildcardFmt[12]
-    __attribute__((section(".sdata"))) = "bu%1d%1d:*";
+static char s_CardWildcardFmt[12] __attribute__((section(".sdata"))) = "bu%1d%1d:*";
 
 /** Memory-card device name used by the format operation. */
-static char s_CardDeviceFmt[12]
-    __attribute__((section(".sdata"))) = "bu%1d%1d:";
+static char s_CardDeviceFmt[12] __attribute__((section(".sdata"))) = "bu%1d%1d:";
 
 int CardStatusTemp = 0;
 int CardStatusMode = 0;
@@ -173,116 +167,82 @@ long FILE_DSCRPTR = 0;
 
 // === CARD-owned read-only data ===
 /** Development-host diagnostic printed before writing the first header. */
-static char s_WriteHeaderSizeFmt[36]
-    __attribute__((section(".rdata"))) =
-        "\nWriting the header buffer, size %d";
+static char s_WriteHeaderSizeFmt[36] __attribute__((section(".rdata"))) =
+    "\nWriting the header buffer, size %d";
 
 /** Development-host diagnostic printed before writing the first payload. */
-static char s_WriteDataSizeFmt[36]
-    __attribute__((section(".rdata"))) =
-        "\nWriting the data buffer, size %d";
+static char s_WriteDataSizeFmt[36] __attribute__((section(".rdata"))) =
+    "\nWriting the data buffer, size %d";
 
 /** Development-host diagnostic printed before writing the second header. */
-static char s_Write2PHeaderSizeFmt[48]
-    __attribute__((section(".rdata"))) =
-        "\nWriting the 2 player header buffer, size %d";
+static char s_Write2PHeaderSizeFmt[48] __attribute__((section(".rdata"))) =
+    "\nWriting the 2 player header buffer, size %d";
 
 /** Development-host diagnostic printed before writing the second payload. */
-static char s_Write2PDataSizeFmt[44]
-    __attribute__((section(".rdata"))) =
-        "\nWriting the 2 player data buffer, size %d";
+static char s_Write2PDataSizeFmt[44] __attribute__((section(".rdata"))) =
+    "\nWriting the 2 player data buffer, size %d";
 
 /** Replay checksum diagnostic for the first player payload. */
-static char s_ChecksumError1P[52]
-    __attribute__((section(".rdata"))) =
-        "\nChecksum error for 1P in Card_LoadReplayFromCD()";
+static char s_ChecksumError1P[52] __attribute__((section(".rdata"))) =
+    "\nChecksum error for 1P in Card_LoadReplayFromCD()";
 
 /** Replay checksum diagnostic for the second player payload. */
-static char s_ChecksumError2P[52]
-    __attribute__((section(".rdata"))) =
-        "\nChecksum error for 2P in Card_LoadReplayFromCD()";
+static char s_ChecksumError2P[52] __attribute__((section(".rdata"))) =
+    "\nChecksum error for 2P in Card_LoadReplayFromCD()";
 
 /** Shift-JIS title stored in career-save headers. */
-static char CARD_GTITLE[30]
-    __attribute__((section(".rdata"))) =
-        "\x82\x73\x82\x67\x82\x6f\x82\x72\x81\x40\x82\x62\x82\x60"
-        "\x82\x71\x82\x64\x82\x64\x82\x71\x81\x40\x81\x5b\x81\x40";
+static char CARD_GTITLE[30] __attribute__((section(".rdata"))) =
+    "\x82\x73\x82\x67\x82\x6f\x82\x72\x81\x40\x82\x62\x82\x60"
+    "\x82\x71\x82\x64\x82\x64\x82\x71\x81\x40\x81\x5b\x81\x40";
 
 /** Shift-JIS title stored in replay-save headers. */
-static char CARD_VTITLE[30]
-    __attribute__((section(".rdata"))) =
-        "\x82\x73\x82\x67\x82\x6f\x82\x72\x81\x40\x82\x71\x82\x64"
-        "\x82\x6f\x82\x6b\x82\x60\x82\x78\x81\x40\x81\x5b\x81\x40";
+static char CARD_VTITLE[30] __attribute__((section(".rdata"))) =
+    "\x82\x73\x82\x67\x82\x6f\x82\x72\x81\x40\x82\x71\x82\x64"
+    "\x82\x6f\x82\x6b\x82\x60\x82\x78\x81\x40\x81\x5b\x81\x40";
 
 /** 16-color CLUT for the replay memory-card icon. */
-static char Tape01IconPalette[32]
-    __attribute__((section(".rdata"))) = {
-        0xFA, 0x5E, 0x74, 0x35, 0x7B, 0x6F, 0x30, 0x4E,
-        0x72, 0x56, 0x16, 0x73, 0xF5, 0x6E, 0xE6, 0x1C,
-        0x6A, 0x2D, 0x07, 0x25, 0xEE, 0x41, 0xAC, 0x39,
-        0x41, 0x08, 0x84, 0x10, 0xFF, 0x7F, 0xF6, 0x62,
+static char Tape01IconPalette[32] __attribute__((section(".rdata"))) = {
+    0xFA, 0x5E, 0x74, 0x35, 0x7B, 0x6F, 0x30, 0x4E, 0x72, 0x56, 0x16, 0x73, 0xF5, 0x6E, 0xE6, 0x1C,
+    0x6A, 0x2D, 0x07, 0x25, 0xEE, 0x41, 0xAC, 0x39, 0x41, 0x08, 0x84, 0x10, 0xFF, 0x7F, 0xF6, 0x62,
 };
 
 /** 16x16 four-bit replay memory-card icon pixels. */
-static char Tape01IconTexture[128]
-    __attribute__((section(".rdata"))) = {
-        0x55, 0x55, 0x55, 0x55, 0x55, 0xB4, 0x6B, 0x55,
-        0x55, 0x55, 0x55, 0x55, 0xB4, 0xD8, 0x9C, 0x56,
-        0x55, 0x55, 0x55, 0x36, 0x8A, 0xAD, 0xB2, 0x59,
-        0x55, 0x55, 0x45, 0xAA, 0x79, 0xF8, 0xEE, 0x38,
-        0x55, 0x45, 0xBB, 0xD8, 0x2B, 0xAF, 0xEF, 0xCB,
-        0x65, 0x8B, 0xC9, 0xFD, 0x42, 0x8A, 0x8D, 0xCC,
-        0x84, 0xD9, 0x3C, 0x44, 0x11, 0xAF, 0xDD, 0xCD,
-        0xA9, 0xDC, 0xE2, 0x3E, 0x01, 0x7B, 0xD9, 0x37,
-        0xBB, 0x8C, 0xEE, 0x42, 0x87, 0x97, 0x7D, 0x56,
-        0x76, 0xCD, 0xE2, 0x4E, 0x7D, 0xC7, 0x67, 0x55,
-        0x35, 0xDD, 0x29, 0xDF, 0xDD, 0xBC, 0x56, 0x55,
-        0x55, 0x79, 0xCC, 0xDC, 0xCD, 0x53, 0x55, 0x55,
-        0x55, 0x74, 0xC7, 0xCC, 0x3C, 0x55, 0x55, 0x55,
-        0x55, 0xA5, 0x79, 0xCC, 0x53, 0x55, 0x55, 0x55,
-        0x55, 0x65, 0xD8, 0x3C, 0x55, 0x55, 0x55, 0x55,
-        0x55, 0x55, 0xD4, 0x53, 0x55, 0x55, 0x55, 0x55,
+static char Tape01IconTexture[128] __attribute__((section(".rdata"))) = {
+    0x55, 0x55, 0x55, 0x55, 0x55, 0xB4, 0x6B, 0x55, 0x55, 0x55, 0x55, 0x55, 0xB4, 0xD8, 0x9C, 0x56,
+    0x55, 0x55, 0x55, 0x36, 0x8A, 0xAD, 0xB2, 0x59, 0x55, 0x55, 0x45, 0xAA, 0x79, 0xF8, 0xEE, 0x38,
+    0x55, 0x45, 0xBB, 0xD8, 0x2B, 0xAF, 0xEF, 0xCB, 0x65, 0x8B, 0xC9, 0xFD, 0x42, 0x8A, 0x8D, 0xCC,
+    0x84, 0xD9, 0x3C, 0x44, 0x11, 0xAF, 0xDD, 0xCD, 0xA9, 0xDC, 0xE2, 0x3E, 0x01, 0x7B, 0xD9, 0x37,
+    0xBB, 0x8C, 0xEE, 0x42, 0x87, 0x97, 0x7D, 0x56, 0x76, 0xCD, 0xE2, 0x4E, 0x7D, 0xC7, 0x67, 0x55,
+    0x35, 0xDD, 0x29, 0xDF, 0xDD, 0xBC, 0x56, 0x55, 0x55, 0x79, 0xCC, 0xDC, 0xCD, 0x53, 0x55, 0x55,
+    0x55, 0x74, 0xC7, 0xCC, 0x3C, 0x55, 0x55, 0x55, 0x55, 0xA5, 0x79, 0xCC, 0x53, 0x55, 0x55, 0x55,
+    0x55, 0x65, 0xD8, 0x3C, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0xD4, 0x53, 0x55, 0x55, 0x55, 0x55,
 };
 
 /** 16-color CLUT for the career memory-card icon. */
-static char Tony01IconPalette[32]
-    __attribute__((section(".rdata"))) = {
-        0x83, 0x18, 0x2F, 0x5E, 0x91, 0x66, 0x8B, 0x35,
-        0xCD, 0x41, 0x07, 0x25, 0x32, 0x42, 0x99, 0x1E,
-        0x36, 0x1A, 0xDC, 0x26, 0xBA, 0x26, 0x56, 0x26,
-        0x1D, 0x33, 0xB9, 0x32, 0xFF, 0x7F, 0xDE, 0x7B,
+static char Tony01IconPalette[32] __attribute__((section(".rdata"))) = {
+    0x83, 0x18, 0x2F, 0x5E, 0x91, 0x66, 0x8B, 0x35, 0xCD, 0x41, 0x07, 0x25, 0x32, 0x42, 0x99, 0x1E,
+    0x36, 0x1A, 0xDC, 0x26, 0xBA, 0x26, 0x56, 0x26, 0x1D, 0x33, 0xB9, 0x32, 0xFF, 0x7F, 0xDE, 0x7B,
 };
 
 /** 16x16 four-bit career memory-card icon pixels. */
-static char Tony01IconTexture[128]
-    __attribute__((section(".rdata"))) = {
-        0x22, 0x12, 0x12, 0x12, 0x22, 0x12, 0x22, 0x31,
-        0xEE, 0x4E, 0x4E, 0x4E, 0xEE, 0x4E, 0xEE, 0x0E,
-        0xE1, 0x55, 0x3E, 0x5E, 0x6E, 0x5E, 0x3E, 0x05,
-        0xE1, 0x30, 0xEE, 0x5E, 0xEE, 0x5E, 0xEE, 0x0F,
-        0xE1, 0x30, 0x3E, 0x5E, 0x5E, 0x00, 0x34, 0x0F,
-        0xE1, 0x30, 0x5E, 0x5E, 0x0E, 0x45, 0xEE, 0x0F,
-        0x61, 0x30, 0x04, 0x03, 0x03, 0x43, 0x54, 0x00,
-        0x66, 0x64, 0x46, 0x46, 0x46, 0x66, 0x46, 0x33,
-        0xDD, 0xDD, 0xDD, 0xDD, 0xDD, 0xDD, 0xDD, 0xBD,
-        0xDC, 0x9A, 0xA9, 0x99, 0x99, 0xA9, 0x9A, 0xBB,
-        0x5D, 0x7B, 0xAA, 0xAA, 0xAA, 0xAA, 0xBA, 0x80,
-        0xBC, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x78,
-        0x9C, 0x87, 0xAA, 0x7A, 0x7A, 0x7A, 0x78, 0x89,
-        0x9C, 0x08, 0x98, 0x99, 0x99, 0xB9, 0x80, 0x77,
-        0x99, 0x8A, 0xA7, 0x77, 0x7A, 0x77, 0xA8, 0x87,
-        0x87, 0x88, 0x88, 0x88, 0x88, 0x88, 0x88, 0x88,
+static char Tony01IconTexture[128] __attribute__((section(".rdata"))) = {
+    0x22, 0x12, 0x12, 0x12, 0x22, 0x12, 0x22, 0x31, 0xEE, 0x4E, 0x4E, 0x4E, 0xEE, 0x4E, 0xEE, 0x0E,
+    0xE1, 0x55, 0x3E, 0x5E, 0x6E, 0x5E, 0x3E, 0x05, 0xE1, 0x30, 0xEE, 0x5E, 0xEE, 0x5E, 0xEE, 0x0F,
+    0xE1, 0x30, 0x3E, 0x5E, 0x5E, 0x00, 0x34, 0x0F, 0xE1, 0x30, 0x5E, 0x5E, 0x0E, 0x45, 0xEE, 0x0F,
+    0x61, 0x30, 0x04, 0x03, 0x03, 0x43, 0x54, 0x00, 0x66, 0x64, 0x46, 0x46, 0x46, 0x66, 0x46, 0x33,
+    0xDD, 0xDD, 0xDD, 0xDD, 0xDD, 0xDD, 0xDD, 0xBD, 0xDC, 0x9A, 0xA9, 0x99, 0x99, 0xA9, 0x9A, 0xBB,
+    0x5D, 0x7B, 0xAA, 0xAA, 0xAA, 0xAA, 0xBA, 0x80, 0xBC, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x78,
+    0x9C, 0x87, 0xAA, 0x7A, 0x7A, 0x7A, 0x78, 0x89, 0x9C, 0x08, 0x98, 0x99, 0x99, 0xB9, 0x80, 0x77,
+    0x99, 0x8A, 0xA7, 0x77, 0x7A, 0x77, 0xA8, 0x87, 0x87, 0x88, 0x88, 0x88, 0x88, 0x88, 0x88, 0x88,
 };
 
 // === Absolute-addressed globals ===
 /** Memory-card filename templates for career and replay saves. */
-char CARD_FNAME[25] __attribute__((section(".data"))) =
-    "bu00:BASLUS-00860THPSGxx";
-char CARD_VNAME[25] __attribute__((section(".data"))) =
-    "bu00:BASLUS-00860THPSVxx";
+char CARD_FNAME[25] __attribute__((section(".data"))) = "bu00:BASLUS-00860THPSGxx";
+char CARD_VNAME[25] __attribute__((section(".data"))) = "bu00:BASLUS-00860THPSVxx";
 /** Per-directory-entry file classification and raw card directory records. */
-EFileType FileType[15] __attribute__((section(".data"))) = {THPS_SAVE_FILE};
-DIRENTRY SLOT_DIR[15] __attribute__((section(".data"))) = {{{0}}};
+EFileType FileType[15] __attribute__((section(".data"))) = { THPS_SAVE_FILE };
+DIRENTRY SLOT_DIR[15] __attribute__((section(".data"))) = { { { 0 } } };
 
 /**
  * Independent view of the CARD-owned file-type table.
@@ -306,14 +266,10 @@ void Card_GetNextTimeStamp(void);
  */
 void Card_SetSelectedFile(char *pPName)
 {
-    CARD_FNAME[CARD_FILENAME_CHECKSUM_INDEX] =
-        pPName[CARD_DIRECTORY_CHECKSUM_INDEX];
-    CARD_FNAME[CARD_FILENAME_CHECKSUM_INDEX + 1] =
-        pPName[CARD_DIRECTORY_CHECKSUM_INDEX + 1];
-    CARD_VNAME[CARD_FILENAME_CHECKSUM_INDEX] =
-        pPName[CARD_DIRECTORY_CHECKSUM_INDEX];
-    CARD_VNAME[CARD_FILENAME_CHECKSUM_INDEX + 1] =
-        pPName[CARD_DIRECTORY_CHECKSUM_INDEX + 1];
+    CARD_FNAME[CARD_FILENAME_CHECKSUM_INDEX] = pPName[CARD_DIRECTORY_CHECKSUM_INDEX];
+    CARD_FNAME[CARD_FILENAME_CHECKSUM_INDEX + 1] = pPName[CARD_DIRECTORY_CHECKSUM_INDEX + 1];
+    CARD_VNAME[CARD_FILENAME_CHECKSUM_INDEX] = pPName[CARD_DIRECTORY_CHECKSUM_INDEX];
+    CARD_VNAME[CARD_FILENAME_CHECKSUM_INDEX + 1] = pPName[CARD_DIRECTORY_CHECKSUM_INDEX + 1];
 }
 
 /**
@@ -356,8 +312,7 @@ short CalcChecksum(unsigned long *pDataBuf, unsigned long DataSize)
 {
     int i = 0;
     short Checksum = 0;
-    if (DataSize == 0)
-        goto done;
+    if (DataSize == 0) goto done;
     do
     {
         int byte = reinterpret_cast<unsigned char *>(pDataBuf)[i];
@@ -434,8 +389,7 @@ int SyncToGoodState(void)
     CardLoadFlag = 0;
     goto check;
 loop:
-    if (timeout >= 0)
-        goto check;
+    if (timeout >= 0) goto check;
     CardStatusTemp = 0;
     CardStatus = 0;
     return 1;
@@ -463,27 +417,19 @@ int Card_FileExists(EFileType FileType)
 {
     SCardHead Headdy;
     char *FName;
-    if (FileType != THPS_SAVE_FILE)
-        goto use2;
+    if (FileType != THPS_SAVE_FILE) goto use2;
     FName = CARD_FNAME;
     goto init;
 use2:
     FName = CARD_VNAME;
 init:
-    Card_SetHeader(
-        &Headdy,
-        1,
-        Headdy.Magic,
-        Headdy.Magic);
+    Card_SetHeader(&Headdy, 1, Headdy.Magic, Headdy.Magic);
     Front_SetSJISName(Headdy.Title + CARD_TITLE_NAME_OFFSET);
-    SetSJISChecksum(
-        Headdy.Title, FName + CARD_FILENAME_CHECKSUM_INDEX);
-    if (SyncToGoodState() == 1)
-        return 0;
+    SetSJISChecksum(Headdy.Title, FName + CARD_FILENAME_CHECKSUM_INDEX);
+    if (SyncToGoodState() == 1) return 0;
     {
         int fd = open(FName, 1);
-        if (fd == -1)
-            return 0;
+        if (fd == -1) return 0;
         close(fd);
     }
     return 1;
@@ -512,45 +458,41 @@ int Card_Write(EFileType FileType, int NumBlocks)
     char *pIcon;
     char *FName;
 
-    if (SyncToGoodState() == 1)
-        return 1;
+    if (SyncToGoodState() == 1) return 1;
 
     switch (FileType)
     {
-    case THPS_SAVE_FILE:
-        Card_GetNextTimeStamp();
-        GCareer.TimeStamp = static_cast<unsigned short>(TimeStamp);
-        FName = CARD_FNAME;
-        pHeaderBuf = GVInfo1.pBlockStart;
-        HeaderSize = CARD_HEADER_SIZE;
-        pDataBuf = reinterpret_cast<unsigned long *>(&GCareer);
-        DataSize = CARD_CAREER_DATA_SIZE;
-        pHeaderBuf2 = 0;
-        HeaderSize2 = 0;
-        pDataBuf2 = 0;
-        DataSize2 = 0;
-        pClut = Tony01IconPalette;
-        pIcon = Tony01IconTexture;
-        break;
-    case THPS_VIDEO_FILE:
-        FName = CARD_VNAME;
-        pHeaderBuf = GVInfo1.pBlockStart;
-        HeaderSize = CARD_HEADER_SIZE;
-        pDataBuf = Card_FilePayload(pHeaderBuf);
-        DataSize = CARD_REPLAY_DATA_SIZE;
-        pClut = Tape01IconPalette;
-        pIcon = Tape01IconTexture;
-        pHeaderBuf2 = GVInfo2.pBlockStart;
-        HeaderSize2 = CARD_HEADER_SIZE;
-        pDataBuf2 = Card_FilePayload(pHeaderBuf2);
-        DataSize2 = CARD_REPLAY_DATA_SIZE;
-        break;
-    case THPS_VIDEO_HEADER:
-        break;
-    case OTHER_FILE:
-        break;
-    default:
-        break;
+        case THPS_SAVE_FILE:
+            Card_GetNextTimeStamp();
+            GCareer.TimeStamp = static_cast<unsigned short>(TimeStamp);
+            FName = CARD_FNAME;
+            pHeaderBuf = GVInfo1.pBlockStart;
+            HeaderSize = CARD_HEADER_SIZE;
+            pDataBuf = reinterpret_cast<unsigned long *>(&GCareer);
+            DataSize = CARD_CAREER_DATA_SIZE;
+            pHeaderBuf2 = 0;
+            HeaderSize2 = 0;
+            pDataBuf2 = 0;
+            DataSize2 = 0;
+            pClut = Tony01IconPalette;
+            pIcon = Tony01IconTexture;
+            break;
+        case THPS_VIDEO_FILE:
+            FName = CARD_VNAME;
+            pHeaderBuf = GVInfo1.pBlockStart;
+            HeaderSize = CARD_HEADER_SIZE;
+            pDataBuf = Card_FilePayload(pHeaderBuf);
+            DataSize = CARD_REPLAY_DATA_SIZE;
+            pClut = Tape01IconPalette;
+            pIcon = Tape01IconTexture;
+            pHeaderBuf2 = GVInfo2.pBlockStart;
+            HeaderSize2 = CARD_HEADER_SIZE;
+            pDataBuf2 = Card_FilePayload(pHeaderBuf2);
+            DataSize2 = CARD_REPLAY_DATA_SIZE;
+            break;
+        case THPS_VIDEO_HEADER: break;
+        case OTHER_FILE: break;
+        default: break;
     }
 
     Video_SetHeader(&Card_FilePrefix(pHeaderBuf)->Video, 0);
@@ -566,30 +508,24 @@ int Card_Write(EFileType FileType, int NumBlocks)
         asm volatile("" : "+r"(pClutArg));
         Card_SetHeader(pHead, NumBlocks, pClutArg, pIcon);
     }
-    Front_SetSJISName(
-        Card_FilePrefix(pHeaderBuf)->Card.Title + CARD_TITLE_NAME_OFFSET);
-    SetSJISChecksum(
-        Card_FilePrefix(pHeaderBuf)->Card.Title,
-        FName + CARD_FILENAME_CHECKSUM_INDEX);
+    Front_SetSJISName(Card_FilePrefix(pHeaderBuf)->Card.Title + CARD_TITLE_NAME_OFFSET);
+    SetSJISChecksum(Card_FilePrefix(pHeaderBuf)->Card.Title, FName + CARD_FILENAME_CHECKSUM_INDEX);
 
     switch (FileType)
     {
-    case THPS_SAVE_FILE:
-        Card_FilePrefix(pHeaderBuf)->Video.Checksum = CalcChecksum(pDataBuf, DataSize);
-        break;
-    case THPS_VIDEO_FILE:
-        Card_FilePrefix(pHeaderBuf)->Video.Checksum = CalcChecksum(pDataBuf, DataSize);
-        if (pHeaderBuf2 != 0)
-        {
-            Card_FilePrefix(pHeaderBuf2)->Video.Checksum = CalcChecksum(pDataBuf2, DataSize2);
-        }
-        break;
-    case THPS_VIDEO_HEADER:
-        break;
-    case OTHER_FILE:
-        break;
-    default:
-        break;
+        case THPS_SAVE_FILE:
+            Card_FilePrefix(pHeaderBuf)->Video.Checksum = CalcChecksum(pDataBuf, DataSize);
+            break;
+        case THPS_VIDEO_FILE:
+            Card_FilePrefix(pHeaderBuf)->Video.Checksum = CalcChecksum(pDataBuf, DataSize);
+            if (pHeaderBuf2 != 0)
+            {
+                Card_FilePrefix(pHeaderBuf2)->Video.Checksum = CalcChecksum(pDataBuf2, DataSize2);
+            }
+            break;
+        case THPS_VIDEO_HEADER: break;
+        case OTHER_FILE: break;
+        default: break;
     }
 
     i = 0;
@@ -722,22 +658,22 @@ int Card_Load(EFileType FileType, unsigned long *pBuf_, unsigned long *pBuf2_)
 
     switch (FileType)
     {
-    case THPS_SAVE_FILE:
-        FName = CARD_FNAME;
-        ReadSize = CARD_COMPLETE_FILE_SIZE;
-        break;
-    case THPS_VIDEO_FILE:
-        FName = CARD_VNAME;
-        ReadSize = CARD_REPLAY_HEADER_SIZE;
-        break;
-    case THPS_VIDEO_HEADER:
-        FName = CARD_VNAME;
-        ReadSize = CARD_HEADER_SIZE;
-        break;
-    case OTHER_FILE:
-        FName = 0;
-        ReadSize = 0;
-        break;
+        case THPS_SAVE_FILE:
+            FName = CARD_FNAME;
+            ReadSize = CARD_COMPLETE_FILE_SIZE;
+            break;
+        case THPS_VIDEO_FILE:
+            FName = CARD_VNAME;
+            ReadSize = CARD_REPLAY_HEADER_SIZE;
+            break;
+        case THPS_VIDEO_HEADER:
+            FName = CARD_VNAME;
+            ReadSize = CARD_HEADER_SIZE;
+            break;
+        case OTHER_FILE:
+            FName = 0;
+            ReadSize = 0;
+            break;
     }
 
     if (SyncToGoodState() != 1)
@@ -763,55 +699,51 @@ load_file:
         goto load_failed;
     }
 
-        {
-            int Chk1 = 0;
-            int Chk2 = 0;
+    {
+        int Chk1 = 0;
+        int Chk2 = 0;
 
-            switch (FileType)
-            {
+        switch (FileType)
+        {
             case THPS_SAVE_FILE:
                 Chk1 = Card_FilePrefix(pBuf)->Video.Checksum;
-                Chk2 = CalcChecksum(
-                    Card_FilePayload(pBuf), CARD_CAREER_DATA_SIZE);
+                Chk2 = CalcChecksum(Card_FilePayload(pBuf), CARD_CAREER_DATA_SIZE);
                 break;
             case THPS_VIDEO_FILE:
                 Chk1 = Card_FilePrefix(pBuf)->Video.Checksum;
-                Chk2 = CalcChecksum(
-                    Card_FilePayload(pBuf), CARD_REPLAY_DATA_SIZE);
+                Chk2 = CalcChecksum(Card_FilePayload(pBuf), CARD_REPLAY_DATA_SIZE);
                 break;
             case THPS_VIDEO_HEADER:
             case OTHER_FILE:
-            default:
-                break;
-            }
-
-            if (Chk1 != Chk2)
-            {
-                return 1;
-            }
+            default: break;
         }
 
-        if (pBuf2 != 0)
+        if (Chk1 != Chk2)
         {
-            if (read(fd, pBuf2, ReadSize) != ReadSize)
-            {
-                goto load_failed;
-            }
-
-            int Chk1 = 0;
-            int Chk2 = 0;
-            if (FileType == THPS_VIDEO_FILE)
-            {
-                Chk1 = Card_FilePrefix(pBuf2)->Video.Checksum;
-                Chk2 = CalcChecksum(
-                    Card_FilePayload(pBuf2), CARD_REPLAY_DATA_SIZE);
-            }
-
-            if (Chk1 != Chk2)
-            {
-                return 1;
-            }
+            return 1;
         }
+    }
+
+    if (pBuf2 != 0)
+    {
+        if (read(fd, pBuf2, ReadSize) != ReadSize)
+        {
+            goto load_failed;
+        }
+
+        int Chk1 = 0;
+        int Chk2 = 0;
+        if (FileType == THPS_VIDEO_FILE)
+        {
+            Chk1 = Card_FilePrefix(pBuf2)->Video.Checksum;
+            Chk2 = CalcChecksum(Card_FilePayload(pBuf2), CARD_REPLAY_DATA_SIZE);
+        }
+
+        if (Chk1 != Chk2)
+        {
+            return 1;
+        }
+    }
 
     close(fd);
     return 0;
@@ -841,10 +773,8 @@ int Card_LoadReplayFromCD(unsigned long *pBuf, unsigned long *pBuf2, char *file_
     Mem_Copy(pBuf, pData, CARD_REPLAY_HEADER_SIZE);
     if (pBuf2 != 0)
     {
-        Mem_Copy(
-            pBuf2,
-            pData + CARD_REPLAY_HEADER_SIZE / sizeof(unsigned long),
-            CARD_REPLAY_HEADER_SIZE);
+        Mem_Copy(pBuf2, pData + CARD_REPLAY_HEADER_SIZE / sizeof(unsigned long),
+                 CARD_REPLAY_HEADER_SIZE);
     }
     Mem_Delete(pData);
     Chk1 = Card_FilePrefix(pBuf)->Video.Checksum;
@@ -855,8 +785,7 @@ int Card_LoadReplayFromCD(unsigned long *pBuf, unsigned long *pBuf2, char *file_
     if (pBuf2 != 0)
     {
         Chk1 = Card_FilePrefix(pBuf2)->Video.Checksum;
-        if (Chk1 != CalcChecksum(
-                Card_FilePayload(pBuf2), CARD_REPLAY_DATA_SIZE))
+        if (Chk1 != CalcChecksum(Card_FilePayload(pBuf2), CARD_REPLAY_DATA_SIZE))
         {
             printf(s_ChecksumError2P);
         }
@@ -906,14 +835,10 @@ int _card_event(void)
 {
     int ret;
     ret = TestEvent(ev0) == 1;
-    if (TestEvent(ev1) == 1)
-        ret = 2;
-    if (TestEvent(ev2) == 1)
-        ret = 3;
-    if (TestEvent(ev3) == 1)
-        ret = 4;
-    if (EVENT_TIME_OUT++ >= CARD_EVENT_TIMEOUT)
-        ret = 2;
+    if (TestEvent(ev1) == 1) ret = 2;
+    if (TestEvent(ev2) == 1) ret = 3;
+    if (TestEvent(ev3) == 1) ret = 4;
+    if (EVENT_TIME_OUT++ >= CARD_EVENT_TIMEOUT) ret = 2;
     return ret;
 }
 
@@ -935,12 +860,9 @@ int _card_event_x(void)
 {
     do
     {
-        if (TestEvent(ev10) == 1)
-            return 1;
-        if (TestEvent(ev11) == 1)
-            return 2;
-        if (TestEvent(ev12) == 1)
-            return 3;
+        if (TestEvent(ev10) == 1) return 1;
+        if (TestEvent(ev11) == 1) return 2;
+        if (TestEvent(ev12) == 1) return 3;
     } while (TestEvent(ev13) != 1);
     return 4;
 }
@@ -1030,19 +952,16 @@ int Card_GetDirAndFreeBlocks(int cnct, int slot)
         do
         {
             size = size + d->size;
-            if (Utils_CompareStrings(
-                    d->name,
-                    CARD_FNAME + CARD_FILENAME_COMPARE_OFFSET,
-                    CARD_FILENAME_COMPARE_LENGTH) != 0)
+            if (Utils_CompareStrings(d->name, CARD_FNAME + CARD_FILENAME_COMPARE_OFFSET,
+                                     CARD_FILENAME_COMPARE_LENGTH) != 0)
             {
                 *fileType = THPS_SAVE_FILE;
             }
             else
             {
-                int comparison = Utils_CompareStrings(
-                    d->name,
-                    CARD_VNAME + CARD_FILENAME_COMPARE_OFFSET,
-                    CARD_FILENAME_COMPARE_LENGTH);
+                int comparison =
+                    Utils_CompareStrings(d->name, CARD_VNAME + CARD_FILENAME_COMPARE_OFFSET,
+                                         CARD_FILENAME_COMPARE_LENGTH);
                 if (comparison != 0)
                 {
                     comparison = THPS_VIDEO_FILE;
@@ -1072,90 +991,82 @@ int Card_CheckStatus(int cnct, int slot)
     chan = cnct * CARD_CHANNEL_STRIDE + slot;
     switch (CardStatusMode)
     {
-    case CARD_STATUS_BEGIN_INFO:
-        _card_info(chan);
-        CardStatusMode = CARD_STATUS_WAIT_INFO;
-        EVENT_TIME_OUT = 0;
-        CardStatus = 0;
-        break;
-    case CARD_STATUS_WAIT_INFO:
-    {
-        int event = _card_event();
-        if (event != 0)
+        case CARD_STATUS_BEGIN_INFO:
+            _card_info(chan);
+            CardStatusMode = CARD_STATUS_WAIT_INFO;
+            EVENT_TIME_OUT = 0;
+            CardStatus = 0;
+            break;
+        case CARD_STATUS_WAIT_INFO:
         {
-            switch (event)
+            int event = _card_event();
+            if (event != 0)
             {
-            case 1:
-                CardStatusTemp = event;
-                if (CardLoadFlag == event)
+                switch (event)
                 {
-                    CardStatusMode = CARD_STATUS_FINISH;
+                    case 1:
+                        CardStatusTemp = event;
+                        if (CardLoadFlag == event)
+                        {
+                            CardStatusMode = CARD_STATUS_FINISH;
+                        }
+                        else
+                        {
+                            CardStatusMode = CARD_STATUS_BEGIN_LOAD;
+                        }
+                        return CardStatus;
+                    case 3:
+                        CardStatusTemp = -1;
+                        CardStatusMode = CARD_STATUS_FINISH;
+                        CardLoadFlag = 0;
+                        break;
+                    case 4:
+                        GHasCareerLoaded = 0;
+                        CardStatusTemp = 2;
+                        _clear_event_x();
+                        _card_clear(chan);
+                        _card_event_x();
+                        CardStatusMode = CARD_STATUS_BEGIN_LOAD;
+                        CardLoadFlag = 0;
+                        goto done;
+                    case 2:
+                    default:
+                        CardStatusTemp = -3;
+                        CardStatusMode = CARD_STATUS_FINISH;
+                        CardLoadFlag = 0;
+                        break;
                 }
-                else
-                {
-                    CardStatusMode = CARD_STATUS_BEGIN_LOAD;
-                }
-                return CardStatus;
-            case 3:
-                CardStatusTemp = -1;
-                CardStatusMode = CARD_STATUS_FINISH;
-                CardLoadFlag = 0;
-                break;
-            case 4:
-                GHasCareerLoaded = 0;
-                CardStatusTemp = 2;
-                _clear_event_x();
-                _card_clear(chan);
-                _card_event_x();
-                CardStatusMode = CARD_STATUS_BEGIN_LOAD;
-                CardLoadFlag = 0;
-                goto done;
-            case 2:
-            default:
-                CardStatusTemp = -3;
-                CardStatusMode = CARD_STATUS_FINISH;
-                CardLoadFlag = 0;
-                break;
             }
+            break;
         }
-        break;
-    }
-    case CARD_STATUS_BEGIN_LOAD:
-        _clear_event();
-        _card_load(chan);
-        CardStatusMode = CARD_STATUS_WAIT_LOAD;
-        EVENT_TIME_OUT = 0;
-        break;
-    case CARD_STATUS_WAIT_LOAD:
-    {
-        int event = _card_event();
-        if (event != 0)
+        case CARD_STATUS_BEGIN_LOAD:
+            _clear_event();
+            _card_load(chan);
+            CardStatusMode = CARD_STATUS_WAIT_LOAD;
+            EVENT_TIME_OUT = 0;
+            break;
+        case CARD_STATUS_WAIT_LOAD:
         {
-            CardStatusMode = CARD_STATUS_FINISH;
-            switch (event)
+            int event = _card_event();
+            if (event != 0)
             {
-            case 1:
-                CardLoadFlag = 1;
-                goto done;
-            case 3:
-                ret = -1;
-                break;
-            case 4:
-                ret = -2;
-                break;
-            case 2:
-            default:
-                ret = -3;
-                break;
+                CardStatusMode = CARD_STATUS_FINISH;
+                switch (event)
+                {
+                    case 1: CardLoadFlag = 1; goto done;
+                    case 3: ret = -1; break;
+                    case 4: ret = -2; break;
+                    case 2:
+                    default: ret = -3; break;
+                }
+                CardStatusTemp = ret;
+                CardLoadFlag = 0;
             }
-            CardStatusTemp = ret;
-            CardLoadFlag = 0;
+            break;
         }
-        break;
-    }
-    case CARD_STATUS_FINISH:
-        CardStatusMode = CARD_STATUS_BEGIN_INFO;
-        CardStatus = CardStatusTemp;
+        case CARD_STATUS_FINISH:
+            CardStatusMode = CARD_STATUS_BEGIN_INFO;
+            CardStatus = CardStatusTemp;
     }
 done:
     return CardStatus;
@@ -1175,8 +1086,7 @@ int Card_FormatCard(int cnct, int slot)
     _clear_event_x();
     int fret = format(fs);
     int ret = _card_event_x();
-    if (ret == 1)
-        goto check_fmt;
+    if (ret == 1) goto check_fmt;
     if (ret == 3)
     {
         ret = -1;
@@ -1214,13 +1124,11 @@ void Card_GetNextTimeStamp(void)
         {
             if (*pFileType == THPS_SAVE_FILE)
             {
-                pTmp = static_cast<unsigned long *>(Mem_New(
-                    CARD_COMPLETE_FILE_SIZE, 1, 1));
+                pTmp = static_cast<unsigned long *>(Mem_New(CARD_COMPLETE_FILE_SIZE, 1, 1));
                 Card_SetSelectedFile(pEntry->name);
                 if (Card_Load(THPS_SAVE_FILE, pTmp, 0) == 0)
                 {
-                    TmpCareer = *reinterpret_cast<SCareer *>(
-                        Card_FilePayload(pTmp));
+                    TmpCareer = *reinterpret_cast<SCareer *>(Card_FilePayload(pTmp));
                     {
                         unsigned short ts = TmpCareer.TimeStamp;
                         if (TimeStamp <= ts)

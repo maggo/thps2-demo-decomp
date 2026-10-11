@@ -25,8 +25,7 @@ struct SCardHead
 /* Psy-Q owns the directory record returned by the memory-card API. */
 #include <KERNEL.H>
 
-typedef char Card_DIRENTRY_size_must_be_40[
-    (sizeof(DIRENTRY) == 40) ? 1 : -1];
+typedef char Card_DIRENTRY_size_must_be_40[(sizeof(DIRENTRY) == 40) ? 1 : -1];
 
 /** CARD-owned file classifications and directory records. */
 extern EFileType FileType[15];
@@ -37,8 +36,7 @@ int Card_FileExists(EFileType FileType);
 int Card_Write(EFileType FileType, int NumBlocks);
 int Card_WriteReplayToDisk(EFileType FileType, char *save_name);
 int Card_Load(EFileType FileType, unsigned long *pBuf, unsigned long *pBuf2);
-int Card_LoadReplayFromCD(
-    unsigned long *pBuf, unsigned long *pBuf2, char *file_name);
+int Card_LoadReplayFromCD(unsigned long *pBuf, unsigned long *pBuf2, char *file_name);
 void Card_Init(long val);
 int Card_ReadFileHeader(char *FName, SCardHead *pHeader);
 int Card_GetDirAndFreeBlocks(int cnct, int slot);

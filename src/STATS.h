@@ -2,13 +2,13 @@
 #error STATS_BOARD_LAYOUT_ONLY requires STATS_BOARD_LAYOUT
 #endif
 
-#if !defined(STATS_BOARD_LAYOUT_ONLY) && \
-    !defined(THPS2_PSX_PROTO_STATS_H)
+#if !defined(STATS_BOARD_LAYOUT_ONLY) && !defined(THPS2_PSX_PROTO_STATS_H)
 #define THPS2_PSX_PROTO_STATS_H
 #define STATS_ORDINARY_LAYOUT_ACTIVE
 
 /** Fixed table and embedded-array lengths recovered from MAIN.SYM layouts. */
-enum {
+enum
+{
     HawkBioLineCount = 11,
     MuskaBioLineCount = 17,
     UnavailableBioLineCount = 5,
@@ -49,24 +49,25 @@ struct SBoard
     int turning;
 };
 
-typedef char SBoard_size_must_be_32[
-    (sizeof(struct SBoard) == 32) ? 1 : -1];
-typedef char SBoard_BoardTexture_offset_must_be_0[
-    ((unsigned long)&(((struct SBoard *)0)->BoardTexture) == 0) ? 1 : -1];
-typedef char SBoard_BoardName_offset_must_be_4[
-    ((unsigned long)&(((struct SBoard *)0)->BoardName) == 4) ? 1 : -1];
-typedef char SBoard_TapesToUnlock_offset_must_be_8[
-    ((unsigned long)&(((struct SBoard *)0)->TapesToUnlock) == 8) ? 1 : -1];
-typedef char SBoard_ollie_offset_must_be_12[
-    ((unsigned long)&(((struct SBoard *)0)->ollie) == 12) ? 1 : -1];
-typedef char SBoard_speed_offset_must_be_16[
-    ((unsigned long)&(((struct SBoard *)0)->speed) == 16) ? 1 : -1];
-typedef char SBoard_air_offset_must_be_20[
-    ((unsigned long)&(((struct SBoard *)0)->air) == 20) ? 1 : -1];
-typedef char SBoard_balance_offset_must_be_24[
-    ((unsigned long)&(((struct SBoard *)0)->balance) == 24) ? 1 : -1];
-typedef char SBoard_turning_offset_must_be_28[
-    ((unsigned long)&(((struct SBoard *)0)->turning) == 28) ? 1 : -1];
+typedef char SBoard_size_must_be_32[(sizeof(struct SBoard) == 32) ? 1 : -1];
+typedef char SBoard_BoardTexture_offset_must_be_0
+    [((unsigned long)&(((struct SBoard *)0)->BoardTexture) == 0) ? 1 : -1];
+typedef char SBoard_BoardName_offset_must_be_4
+    [((unsigned long)&(((struct SBoard *)0)->BoardName) == 4) ? 1 : -1];
+typedef char SBoard_TapesToUnlock_offset_must_be_8
+    [((unsigned long)&(((struct SBoard *)0)->TapesToUnlock) == 8) ? 1 : -1];
+typedef char
+    SBoard_ollie_offset_must_be_12[((unsigned long)&(((struct SBoard *)0)->ollie) == 12) ? 1 : -1];
+typedef char
+    SBoard_speed_offset_must_be_16[((unsigned long)&(((struct SBoard *)0)->speed) == 16) ? 1 : -1];
+typedef char
+    SBoard_air_offset_must_be_20[((unsigned long)&(((struct SBoard *)0)->air) == 20) ? 1 : -1];
+typedef char
+    SBoard_balance_offset_must_be_24[((unsigned long)&(((struct SBoard *)0)->balance) == 24) ? 1
+                                                                                             : -1];
+typedef char
+    SBoard_turning_offset_must_be_28[((unsigned long)&(((struct SBoard *)0)->turning) == 28) ? 1
+                                                                                             : -1];
 
 #endif // STATS_BOARD_LAYOUT && !STATS_BOARD_LAYOUT_EMITTED
 
@@ -151,7 +152,8 @@ typedef char SStats_size_must_be_344[(sizeof(SStats) == 344) ? 1 : -1];
 typedef char SLevel_size_must_be_116[(sizeof(SLevel) == 116) ? 1 : -1];
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 extern char *HawkBio[HawkBioLineCount];

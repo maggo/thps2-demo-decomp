@@ -72,9 +72,7 @@ void Spool_Sync(void);
 int Spool_GetReducedSkater(char *modelFile, char *animFile);
 
 /** Loads and parses a PSH hierarchy-name table. */
-char *Spool_LoadPSH(
-    char *pPSHName, char **pHierarchyArray, int *pPartCount,
-    int maxPartNames);
+char *Spool_LoadPSH(char *pPSHName, char **pHierarchyArray, int *pPartCount, int maxPartNames);
 
 #endif // SPOOL_OWNER_LOCAL_SERVICE_DECLS
 
@@ -99,7 +97,8 @@ extern char s_ShrinkingAnimation[];
 #define SPOOL_QUEUE_LAYOUT_EMITTED
 
 /** One pending spool request in the packed global queue. */
-struct SQueue {
+struct SQueue
+{
     char Name[13];
     unsigned char Occupied;
     unsigned char FileType;
@@ -107,17 +106,15 @@ struct SQueue {
     unsigned char KeepTextures;
 };
 
-typedef char SQueue_size_must_be_17[
-    (sizeof(SQueue) == 17) ? 1 : -1];
-typedef char SQueue_Name_offset_must_be_0[
-    ((unsigned long)&(((SQueue *)0)->Name) == 0) ? 1 : -1];
-typedef char SQueue_Occupied_offset_must_be_13[
-    ((unsigned long)&(((SQueue *)0)->Occupied) == 13) ? 1 : -1];
-typedef char SQueue_FileType_offset_must_be_14[
-    ((unsigned long)&(((SQueue *)0)->FileType) == 14) ? 1 : -1];
-typedef char SQueue_Region_offset_must_be_15[
-    ((unsigned long)&(((SQueue *)0)->Region) == 15) ? 1 : -1];
-typedef char SQueue_KeepTextures_offset_must_be_16[
-    ((unsigned long)&(((SQueue *)0)->KeepTextures) == 16) ? 1 : -1];
+typedef char SQueue_size_must_be_17[(sizeof(SQueue) == 17) ? 1 : -1];
+typedef char SQueue_Name_offset_must_be_0[((unsigned long)&(((SQueue *)0)->Name) == 0) ? 1 : -1];
+typedef char
+    SQueue_Occupied_offset_must_be_13[((unsigned long)&(((SQueue *)0)->Occupied) == 13) ? 1 : -1];
+typedef char
+    SQueue_FileType_offset_must_be_14[((unsigned long)&(((SQueue *)0)->FileType) == 14) ? 1 : -1];
+typedef char
+    SQueue_Region_offset_must_be_15[((unsigned long)&(((SQueue *)0)->Region) == 15) ? 1 : -1];
+typedef char SQueue_KeepTextures_offset_must_be_16
+    [((unsigned long)&(((SQueue *)0)->KeepTextures) == 16) ? 1 : -1];
 
 #endif // SPOOL_QUEUE_LAYOUT && !SPOOL_QUEUE_LAYOUT_EMITTED

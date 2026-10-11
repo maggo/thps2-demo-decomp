@@ -4,7 +4,8 @@
 #include "globals.h"
 
 /** Display and animation state for one front-end menu entry. */
-struct SEntry {
+struct SEntry
+{
     char *pString;
     short CurrentScale;
     short TargetScale;
@@ -25,7 +26,7 @@ struct SEntry {
 /** Front-end text menu and its ordinary service interface. */
 struct CMenu
 #ifdef CMENU_POLYMORPHIC_LAYOUT
-    : CClass   /* natural polymorphic base (CCLASS_POLY.h); FRONT.cpp owns __vt_5CMenu */
+    : CClass /* natural polymorphic base (CCLASS_POLY.h); FRONT.cpp owns __vt_5CMenu */
 #endif
 {
 #ifndef CMENU_POLYMORPHIC_LAYOUT
@@ -44,17 +45,14 @@ struct CMenu
 
 #ifndef CMENU_POLYMORPHIC_LAYOUT
     /** Allocate menu storage through the shared CClass arena. */
-    static void *operator new(unsigned int size) throw()
-    {
-        return ::CClass::operator new(size);
-    }
+    static void *operator new(unsigned int size) throw() { return ::CClass::operator new(size); }
 #endif
-    CMenu(int x, int y, unsigned char justification,
-          int highScale, int lowScale, int lineSeparation);
+    CMenu(int x, int y, unsigned char justification, int highScale, int lowScale,
+          int lineSeparation);
 #ifdef CMENU_POLYMORPHIC_LAYOUT
     virtual
 #endif
-    ~CMenu();
+        ~CMenu();
     /** Center the visible entries vertically. */
     void CentreY();
     /** Select one menu line. */
@@ -77,9 +75,7 @@ struct CMenu
     void Update();
 };
 
-typedef char CMenu_SEntry_size_must_be_24[
-    (sizeof(SEntry) == 0x18) ? 1 : -1];
-typedef char CMenu_size_must_be_384[
-    (sizeof(CMenu) == 0x180) ? 1 : -1];
+typedef char CMenu_SEntry_size_must_be_24[(sizeof(SEntry) == 0x18) ? 1 : -1];
+typedef char CMenu_size_must_be_384[(sizeof(CMenu) == 0x180) ? 1 : -1];
 
 #endif // THPS2_CMENU_H

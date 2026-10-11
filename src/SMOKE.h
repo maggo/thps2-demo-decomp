@@ -10,7 +10,10 @@
 #include "globals.h"
 
 /** Target-proven storage size of one smoke jet. */
-enum { SMOKE_JET_STORAGE_SIZE = 364 };
+enum
+{
+    SMOKE_JET_STORAGE_SIZE = 364
+};
 
 enum
 {

@@ -6,7 +6,8 @@
 #endif
 
 /** A transient bit whose default display hook emits no geometry. */
-struct CSpecialDisplay : CBit {
+struct CSpecialDisplay : CBit
+{
     /** Construct and attach a special-display bit. */
     CSpecialDisplay();
     /** Detach and destroy a special-display bit. */

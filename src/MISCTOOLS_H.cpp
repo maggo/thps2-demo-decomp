@@ -6,11 +6,11 @@
 // Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 
-
 #include "globals.h"
 
 /** Slider state with the target-proven MISCTOOLS.H layout. */
-struct Slider {
+struct Slider
+{
     CClass CClass;
     int X;
     int V;
@@ -29,7 +29,8 @@ typedef char MiscTools_SliderSizeCheck[(sizeof(Slider) == 44) ? 1 : -1];
 typedef void (*MiscTools_SliderDestructor)(Slider *, int);
 typedef void (*MiscTools_ClassDestructor)(CClass *, int);
 
-extern "C" {
+extern "C"
+{
 static void __DOT__6Slider(Slider *, int);
 
 // GCC 2.x emits a private copy of `CClass::~CClass` beside a private base
@@ -42,17 +43,13 @@ static void __DOT__6CClass_8005AC88(CClass *, int);
 // than arrays, so -G8 still yields the target's `addiu $vX, $gp, off` form.
 // The public vtable is unnamed in MAIN.SYM; the base vtable is the one both
 // destructors install, at $gp + 0x2a5c.
-static int MiscTools_SliderVTable
-    __attribute__((aligned(8))) = 0;
+static int MiscTools_SliderVTable __attribute__((aligned(8))) = 0;
 static int MiscTools_SliderVTableIndex = 0;
-static MiscTools_SliderDestructor MiscTools_SliderVTableDtor =
-    __DOT__6Slider;
+static MiscTools_SliderDestructor MiscTools_SliderVTableDtor = __DOT__6Slider;
 
-static int MiscTools_DestructorVTable
-    __attribute__((aligned(8))) = 0;
+static int MiscTools_DestructorVTable __attribute__((aligned(8))) = 0;
 static int MiscTools_DestructorVTableIndex = 0;
-static MiscTools_ClassDestructor MiscTools_DestructorVTableDtor =
-    __DOT__6CClass_8005AC88;
+static MiscTools_ClassDestructor MiscTools_DestructorVTableDtor = __DOT__6CClass_8005AC88;
 
 // === Function implementations (address order) ===
 
@@ -66,9 +63,11 @@ static MiscTools_ClassDestructor MiscTools_DestructorVTableDtor =
  * @param _this Slider being destroyed.
  * @param __in_chrg GCC 2.x in-charge flag; bit 0 releases the object.
  */
-static void __DOT__6Slider(Slider *_this, int __in_chrg) {
+static void __DOT__6Slider(Slider *_this, int __in_chrg)
+{
     _this->CClass.vtable = &MiscTools_DestructorVTable;
-    if (__in_chrg & 1) {
+    if (__in_chrg & 1)
+    {
         CClass::operator delete(_this);
     }
 }
@@ -81,9 +80,11 @@ static void __DOT__6Slider(Slider *_this, int __in_chrg) {
  * @param _this Base object being destroyed.
  * @param __in_chrg GCC 2.x in-charge flag; bit 0 releases the object.
  */
-static void __DOT__6CClass_8005AC88(CClass *_this, int __in_chrg) {
+static void __DOT__6CClass_8005AC88(CClass *_this, int __in_chrg)
+{
     _this->vtable = &MiscTools_DestructorVTable;
-    if (__in_chrg & 1) {
+    if (__in_chrg & 1)
+    {
         CClass::operator delete(_this);
     }
 }

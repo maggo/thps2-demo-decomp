@@ -32,7 +32,8 @@
 struct SLight;
 
 /** Composition-only item view used while scanning environmental objects. */
-struct PlatformCItemOwner {
+struct PlatformCItemOwner
+{
     u16 mFlags;
     u16 mInquiry;
     struct CVector mPos;
@@ -61,12 +62,14 @@ struct PlatformCItemOwner {
 };
 
 /** Packed six-halfword interpretation used by platform collision helpers. */
-struct PlatformModelBounds {
+struct PlatformModelBounds
+{
     short Half[6];
 };
 
 /** Scripted bouncing-platform object layout. */
-struct CPlatform : CBaddy {
+struct CPlatform : CBaddy
+{
     /** Initialize a scripted platform from one trigger record. */
     CPlatform(short *pInfo, int nodeIndex);
     virtual ~CPlatform();
@@ -85,7 +88,8 @@ struct CPlatform : CBaddy {
     u16 mDeathTimer;
     struct CSVector mTargetAngles;
     u32 mTrodUpon;
-    union {
+    union
+    {
         u32 mNotTrodUponTimer;
         s16 mNotTrodUponScriptValue;
     };
@@ -117,22 +121,20 @@ struct CPlatform : CBaddy {
  * Skater layout slice exposing the inherited CSuper prefix.
  * The known complete size prevents accidental by-value stride changes.
  */
-struct CBruce : CSuper {
+struct CBruce : CSuper
+{
     u8 _opaqueTail[5228 - 400];
 
     /** Drive one controller vibration actuator for this skater. */
     void Vibrate(int time, int motor, int value);
 };
 
-typedef char CItem_platform_size_check[
-    (sizeof(struct PlatformCItemOwner) == 76) ? 1 : -1];
-typedef char Platform_SDK_SVECTOR_size_must_be_8[
-    (sizeof(SVECTOR) == 8) ? 1 : -1];
+typedef char CItem_platform_size_check[(sizeof(struct PlatformCItemOwner) == 76) ? 1 : -1];
+typedef char Platform_SDK_SVECTOR_size_must_be_8[(sizeof(SVECTOR) == 8) ? 1 : -1];
 typedef char CPlatform_size_check[(sizeof(struct CPlatform) == 592) ? 1 : -1];
-typedef char CPlatform_public_size_check[
-    (sizeof(struct CPlatform) == PLATFORM_OBJECT_SIZE) ? 1 : -1];
-typedef char CBruce_platform_size_check[
-    (sizeof(struct CBruce) == 5228) ? 1 : -1];
+typedef char
+    CPlatform_public_size_check[(sizeof(struct CPlatform) == PLATFORM_OBJECT_SIZE) ? 1 : -1];
+typedef char CBruce_platform_size_check[(sizeof(struct CBruce) == 5228) ? 1 : -1];
 
 #include "SHATTER.h"
 #include "TRIG.h"
@@ -198,21 +200,18 @@ static inline Item *PlatformShatterItem(CItem &item)
  * named without introducing calls in either large function.
  */
 #define PLATFORM_VECTOR_VIEW(vector) reinterpret_cast<CVector &>(vector)
-#define PLATFORM_CONST_VECTOR_VIEW(vector)                                  \
-    reinterpret_cast<const CVector &>(vector)
-#define PLATFORM_SHORT_VECTOR_VIEW(vector)                                  \
-    reinterpret_cast<CSVector &>(vector)
-#define PLATFORM_CONST_SHORT_VECTOR_VIEW(vector)                            \
-    reinterpret_cast<const CSVector &>(vector)
+#define PLATFORM_CONST_VECTOR_VIEW(vector) reinterpret_cast<const CVector &>(vector)
+#define PLATFORM_SHORT_VECTOR_VIEW(vector) reinterpret_cast<CSVector &>(vector)
+#define PLATFORM_CONST_SHORT_VECTOR_VIEW(vector) reinterpret_cast<const CSVector &>(vector)
 #define PLATFORM_SHATTER_ITEM_POINTER(item) reinterpret_cast<Item *>(item)
 
 /** Align serialized script data to its next 32-bit word boundary. */
-#define PLATFORM_ALIGNED_SCRIPT(type, script)                                \
-    reinterpret_cast<type *>(                                                \
-        (reinterpret_cast<int>(script) + 3) & ~3)
+#define PLATFORM_ALIGNED_SCRIPT(type, script) \
+    reinterpret_cast<type *>((reinterpret_cast<int>(script) + 3) & ~3)
 
 /** Script opcodes handled directly by CPlatform. */
-enum PlatformCommand {
+enum PlatformCommand
+{
     PlatformCommandDie = 0x4205,
     PlatformCommandMoveTo = 0x4220,
     PlatformCommandMoveToNode = 0x4221,
@@ -233,7 +232,8 @@ enum PlatformCommand {
 };
 
 /** Script variables owned by CPlatform rather than its CBaddy base. */
-enum PlatformVariable {
+enum PlatformVariable
+{
     PlatformVariableAngularVelocity = 0x2127,
     PlatformVariableAngularAcceleration = 0x2128,
     PlatformVariableApplyGravity = 0x2123,
@@ -245,7 +245,8 @@ enum PlatformVariable {
 };
 
 /** Platform-owned state bits stored in CBaddy::mSpecificFlags. */
-enum PlatformStateFlag {
+enum PlatformStateFlag
+{
     PlatformMovingToTarget = 1 << 0,
     PlatformHasBoundingBox = 1 << 2,
     PlatformBounceEnabled = 1 << 4,
@@ -253,7 +254,8 @@ enum PlatformStateFlag {
 };
 
 /** CItem flags manipulated by platform construction and script commands. */
-enum PlatformItemFlag {
+enum PlatformItemFlag
+{
     PlatformItemShattered = 1 << 0,
     PlatformItemCollision = 1 << 3,
     PlatformItemBounceContact = 1 << 5,
@@ -262,7 +264,8 @@ enum PlatformItemFlag {
 };
 
 /** Fixed platform dimensions and initial gameplay values. */
-enum PlatformConstant {
+enum PlatformConstant
+{
     PlatformFixedOne = 1 << 12,
     PlatformHalfTurn = PlatformFixedOne / 2,
     PlatformQuarterTurn = PlatformFixedOne / 4,
@@ -350,10 +353,8 @@ void CPlatform::Bounce(CBruce *pSkater, const CVector &Direction)
 {
     CPlatform *platform = this;
     int Height;
-    if (!(platform->mSpecificFlags & PlatformBounceEnabled))
-        return;
-    if (platform->mSpecificFlags & PlatformBouncing)
-        return;
+    if (!(platform->mSpecificFlags & PlatformBounceEnabled)) return;
+    if (platform->mSpecificFlags & PlatformBouncing) return;
 
     CVector Dir = Direction;
     Dir.vy = 0;
@@ -364,82 +365,70 @@ void CPlatform::Bounce(CBruce *pSkater, const CVector &Direction)
     platform->mFlags |= PlatformItemBounceContact;
     platform->mTargetAngles.vy = Rnd(PlatformFixedOne);
     int randomAngleX = (Rnd(2) << 11) - PlatformQuarterTurn;
-    platform->mTargetAngles.vx =
-        platform->mAngles.vx + randomAngleX;
+    platform->mTargetAngles.vx = platform->mAngles.vx + randomAngleX;
     int randomAngleZ = (Rnd(2) << 11) - PlatformQuarterTurn;
-    platform->mTargetAngles.vz =
-        platform->mAngles.vz + randomAngleZ;
+    platform->mTargetAngles.vz = platform->mAngles.vz + randomAngleZ;
 
     switch (platform->mType)
     {
-    case 1:
-        SFX_PlayX(0x68, PlatformSoundVolume, 0);
-        goto standard_bounce;
-    case 3:
-        SFX_PlayX(0x3C, PlatformSoundVolume, 0);
-    standard_bounce:
-        SFX_Grunt(pSkater);
-        pSkater->Vibrate(6, 1, 0x78);
-
-        Height = Speed < 40
-            ? PlatformSoftBounceVelocity
-            : PlatformStandardBounceVelocity;
-        if (Speed < 18)
-        {
-            platform->mTargetAngles.vy =
-                platform->mAngles.vy +
-                Rnd(PlatformQuarterTurn) - PlatformEighthTurn;
-            platform->mTargetAngles.vx =
-                (platform->mAngles.vx +
-                 PlatformEighthTurn) & PlatformOrthogonalAngleMask;
-            platform->mTargetAngles.vz =
-                (platform->mAngles.vz +
-                 PlatformEighthTurn) & PlatformOrthogonalAngleMask;
-        }
-
-        PlatformSet(platform->mVel, Direction.vx, Height, Direction.vz);
-        return;
-
-    case 2:
-    case 4:
-    case 5:
-    {
-        if (platform->mType == 2)
-        {
-            int sound = GLevel == 0 ? Rnd(2) + 0x53 : 0x6A;
-            SFX_PlayX(sound, PlatformSoundVolume, 0);
-        }
-        else if (platform->mType == 4)
-        {
+        case 1: SFX_PlayX(0x68, PlatformSoundVolume, 0); goto standard_bounce;
+        case 3:
+            SFX_PlayX(0x3C, PlatformSoundVolume, 0);
+        standard_bounce:
             SFX_Grunt(pSkater);
-            SFX_PlayX(0x52, PlatformSoundVolume, 0);
-        }
+            pSkater->Vibrate(6, 1, 0x78);
 
-        pSkater->Vibrate(2, 1, 0xB4);
-        PlatformSet(platform->mVel, Direction.vx + (Direction.vx >> 1),
-                                               PlatformStrongBounceVelocity,
-                                               Direction.vz + (Direction.vz >> 1));
-
-        if (AngleMagnitude(platform->mTargetAngles.vx) == PlatformHalfTurn &&
-            platform->mTargetAngles.vz == 0)
-        {
-            platform->mTargetAngles.vz =
-                platform->mAngles.vz;
-        }
-        if (platform->mTargetAngles.vx == 0)
-        {
-            if (AngleMagnitude(platform->mTargetAngles.vz) == PlatformHalfTurn)
+            Height = Speed < 40 ? PlatformSoftBounceVelocity : PlatformStandardBounceVelocity;
+            if (Speed < 18)
             {
+                platform->mTargetAngles.vy =
+                    platform->mAngles.vy + Rnd(PlatformQuarterTurn) - PlatformEighthTurn;
                 platform->mTargetAngles.vx =
-                    platform->mAngles.vx;
+                    (platform->mAngles.vx + PlatformEighthTurn) & PlatformOrthogonalAngleMask;
+                platform->mTargetAngles.vz =
+                    (platform->mAngles.vz + PlatformEighthTurn) & PlatformOrthogonalAngleMask;
             }
-        }
-        return;
-    }
 
-    default:
-        PlatformSet(platform->mVel, Direction.vx, PlatformStandardBounceVelocity, Direction.vz);
-        return;
+            PlatformSet(platform->mVel, Direction.vx, Height, Direction.vz);
+            return;
+
+        case 2:
+        case 4:
+        case 5:
+        {
+            if (platform->mType == 2)
+            {
+                int sound = GLevel == 0 ? Rnd(2) + 0x53 : 0x6A;
+                SFX_PlayX(sound, PlatformSoundVolume, 0);
+            }
+            else if (platform->mType == 4)
+            {
+                SFX_Grunt(pSkater);
+                SFX_PlayX(0x52, PlatformSoundVolume, 0);
+            }
+
+            pSkater->Vibrate(2, 1, 0xB4);
+            PlatformSet(platform->mVel, Direction.vx + (Direction.vx >> 1),
+                        PlatformStrongBounceVelocity, Direction.vz + (Direction.vz >> 1));
+
+            if (AngleMagnitude(platform->mTargetAngles.vx) == PlatformHalfTurn &&
+                platform->mTargetAngles.vz == 0)
+            {
+                platform->mTargetAngles.vz = platform->mAngles.vz;
+            }
+            if (platform->mTargetAngles.vx == 0)
+            {
+                if (AngleMagnitude(platform->mTargetAngles.vz) == PlatformHalfTurn)
+                {
+                    platform->mTargetAngles.vx = platform->mAngles.vx;
+                }
+            }
+            return;
+        }
+
+        default:
+            PlatformSet(platform->mVel, Direction.vx, PlatformStandardBounceVelocity, Direction.vz);
+            return;
     }
 }
 
@@ -468,58 +457,39 @@ void CPlatform::BouncyAI()
         }
     }
 
-    if ((this->mSpecificFlags & PlatformBouncing) == 0)
-        return;
+    if ((this->mSpecificFlags & PlatformBouncing) == 0) return;
 
     this->mTargetAngles.Mask();
 
-    this->mAngVel.vx =
-        static_cast<short>((this->mTargetAngles.vx -
-        this->mAngles.vx) >> 5);
-    this->mAngVel.vy =
-        static_cast<short>((this->mTargetAngles.vy -
-        this->mAngles.vy) >> 5);
-    this->mAngVel.vz =
-        static_cast<short>((this->mTargetAngles.vz -
-        this->mAngles.vz) >> 5);
-    PLATFORM_SHORT_VECTOR_VIEW(
-        this->mAngVel).KillSmall();
+    this->mAngVel.vx = static_cast<short>((this->mTargetAngles.vx - this->mAngles.vx) >> 5);
+    this->mAngVel.vy = static_cast<short>((this->mTargetAngles.vy - this->mAngles.vy) >> 5);
+    this->mAngVel.vz = static_cast<short>((this->mTargetAngles.vz - this->mAngles.vz) >> 5);
+    PLATFORM_SHORT_VECTOR_VIEW(this->mAngVel).KillSmall();
 
     if (AngleMagnitude(this->mAngVel.vx) < 40 &&
-        VectorMagnitude(this->mTargetAngles.vx -
-            this->mAngles.vx) > 40)
+        VectorMagnitude(this->mTargetAngles.vx - this->mAngles.vx) > 40)
     {
-        this->mAngVel.vx =
-            this->mAngVel.vx < 0 ? -40 : 40;
+        this->mAngVel.vx = this->mAngVel.vx < 0 ? -40 : 40;
     }
     if (AngleMagnitude(this->mAngVel.vy) < 40 &&
-        VectorMagnitude(this->mTargetAngles.vy -
-            this->mAngles.vy) > 40)
+        VectorMagnitude(this->mTargetAngles.vy - this->mAngles.vy) > 40)
     {
-        this->mAngVel.vy =
-            this->mAngVel.vy < 0 ? -40 : 40;
+        this->mAngVel.vy = this->mAngVel.vy < 0 ? -40 : 40;
     }
     if (AngleMagnitude(this->mAngVel.vz) < 40 &&
-        VectorMagnitude(this->mTargetAngles.vz -
-            this->mAngles.vz) > 40)
+        VectorMagnitude(this->mTargetAngles.vz - this->mAngles.vz) > 40)
     {
-        this->mAngVel.vz =
-            this->mAngVel.vz < 0 ? -40 : 40;
+        this->mAngVel.vz = this->mAngVel.vz < 0 ? -40 : 40;
     }
 
-    PLATFORM_SHORT_VECTOR_VIEW(this->mAngles) +=
-        PLATFORM_CONST_SHORT_VECTOR_VIEW(this->mAngVel);
-    PLATFORM_SHORT_VECTOR_VIEW(
-        this->mAngles).Mask();
-    M3dMaths_RotMatrixYXZ(
-        reinterpret_cast<SVECTOR *>(
-            &this->mAngles),
-        &m);
+    PLATFORM_SHORT_VECTOR_VIEW(this->mAngles) += PLATFORM_CONST_SHORT_VECTOR_VIEW(this->mAngVel);
+    PLATFORM_SHORT_VECTOR_VIEW(this->mAngles).Mask();
+    M3dMaths_RotMatrixYXZ(reinterpret_cast<SVECTOR *>(&this->mAngles), &m);
 
     ObjectExtent =
-        (this->mWidth * AngleMagnitude(m.m[1][0]) +
-         this->mHeight * AngleMagnitude(m.m[1][1]) +
-         this->mDepth * AngleMagnitude(m.m[1][2])) >> 1;
+        (this->mWidth * AngleMagnitude(m.m[1][0]) + this->mHeight * AngleMagnitude(m.m[1][1]) +
+         this->mDepth * AngleMagnitude(m.m[1][2])) >>
+        1;
 
     NewVel = PlatformVector(this->mVel);
     NewVel.vy += PlatformGravityPerFrame;
@@ -527,8 +497,7 @@ void CPlatform::BouncyAI()
 
     NewVel %= Fric;
     NewVel.KillSmall();
-    NewPos = operator+(
-        PlatformVector(this->mPos), NewVel);
+    NewPos = operator+(PlatformVector(this->mPos), NewVel);
 
     CVector Dir = NewVel;
     Dir.vy = 0;
@@ -536,12 +505,9 @@ void CPlatform::BouncyAI()
 
     for (int NumChecks = 0; NumChecks < 3; NumChecks++)
     {
-        LInfo.StartCoords.vx =
-            this->mPos.vx;
-        LInfo.StartCoords.vy =
-            this->mPos.vy;
-        LInfo.StartCoords.vz =
-            this->mPos.vz;
+        LInfo.StartCoords.vx = this->mPos.vx;
+        LInfo.StartCoords.vy = this->mPos.vy;
+        LInfo.StartCoords.vz = this->mPos.vz;
         LInfo.EndCoords.vx = NewPos.vx;
         LInfo.EndCoords.vy = NewPos.vy;
         LInfo.EndCoords.vz = NewPos.vz;
@@ -564,10 +530,8 @@ void CPlatform::BouncyAI()
 
             if (LInfo.pItem == 0)
             {
-                this->mPos =
-                    PlatformOwnerVector(NewPos);
-                this->mVel =
-                    PlatformOwnerVector(NewVel);
+                this->mPos = PlatformOwnerVector(NewPos);
+                this->mVel = PlatformOwnerVector(NewVel);
                 break;
             }
         }
@@ -577,41 +541,41 @@ void CPlatform::BouncyAI()
         {
             switch (this->mType)
             {
-            case 1:
-                if (Rnd(2) == 0)
-                    SFX_PlayX(0x67, PlatformSoundVolume, 0);
-                else
-                    SFX_PlayX(0x66, PlatformSoundVolume, 0);
-                NumBounces = this->mNumBounces;
-                break;
-            case 3:
-                SFX_PlayX(0x45, PlatformSoundVolume, 0);
-                NumBounces = this->mNumBounces;
-                break;
-            case 2:
-                if (GLevel != 0)
-                {
+                case 1:
                     if (Rnd(2) == 0)
-                        SFX_PlayX(0x6B, PlatformSoundVolume, 0);
+                        SFX_PlayX(0x67, PlatformSoundVolume, 0);
                     else
-                        SFX_PlayX(0x6A, PlatformSoundVolume, 0);
+                        SFX_PlayX(0x66, PlatformSoundVolume, 0);
                     NumBounces = this->mNumBounces;
                     break;
-                }
-                SFX_PlayX(Rnd(2) + 0x53, PlatformSoundVolume, 0);
-                NumBounces = this->mNumBounces;
-                break;
-            case 4:
-                if (Rnd(2) == 0)
-                    SFX_PlayX(0x51, PlatformSoundVolume, 0);
-                else
-                    SFX_PlayX(0x50, PlatformSoundVolume, 0);
-                NumBounces = this->mNumBounces;
-                break;
-            case 5:
-                SFX_PlayX(Rnd(2) + 0x53, PlatformSoundVolume, 0);
-                NumBounces = this->mNumBounces;
-                break;
+                case 3:
+                    SFX_PlayX(0x45, PlatformSoundVolume, 0);
+                    NumBounces = this->mNumBounces;
+                    break;
+                case 2:
+                    if (GLevel != 0)
+                    {
+                        if (Rnd(2) == 0)
+                            SFX_PlayX(0x6B, PlatformSoundVolume, 0);
+                        else
+                            SFX_PlayX(0x6A, PlatformSoundVolume, 0);
+                        NumBounces = this->mNumBounces;
+                        break;
+                    }
+                    SFX_PlayX(Rnd(2) + 0x53, PlatformSoundVolume, 0);
+                    NumBounces = this->mNumBounces;
+                    break;
+                case 4:
+                    if (Rnd(2) == 0)
+                        SFX_PlayX(0x51, PlatformSoundVolume, 0);
+                    else
+                        SFX_PlayX(0x50, PlatformSoundVolume, 0);
+                    NumBounces = this->mNumBounces;
+                    break;
+                case 5:
+                    SFX_PlayX(Rnd(2) + 0x53, PlatformSoundVolume, 0);
+                    NumBounces = this->mNumBounces;
+                    break;
             }
         }
 
@@ -638,17 +602,12 @@ void CPlatform::BouncyAI()
 
             if (this->mNumBounces == 1)
             {
-                this->mTargetAngles.vx +=
-                    static_cast<short>(
-                        (Rnd(2) << 11) - PlatformQuarterTurn);
+                this->mTargetAngles.vx += static_cast<short>((Rnd(2) << 11) - PlatformQuarterTurn);
                 if ((this->mType == 2 || this->mType == 4) &&
-                    ((this->mTargetAngles.vx == PlatformHalfTurn &&
-                      this->mTargetAngles.vz == 0) ||
-                     (this->mTargetAngles.vx == 0 &&
-                      this->mTargetAngles.vz == PlatformHalfTurn)))
+                    ((this->mTargetAngles.vx == PlatformHalfTurn && this->mTargetAngles.vz == 0) ||
+                     (this->mTargetAngles.vx == 0 && this->mTargetAngles.vz == PlatformHalfTurn)))
                 {
-                    this->mTargetAngles.vx =
-                        (Rnd(2) << 11) - PlatformQuarterTurn;
+                    this->mTargetAngles.vx = (Rnd(2) << 11) - PlatformQuarterTurn;
                 }
             }
 
@@ -656,27 +615,21 @@ void CPlatform::BouncyAI()
             {
                 this->mTargetAngles.vz += (Rnd(3) - 1) << 10;
                 if ((this->mType == 2 || this->mType == 4) &&
-                    ((this->mTargetAngles.vx == PlatformHalfTurn &&
-                      this->mTargetAngles.vz == 0) ||
-                     (this->mTargetAngles.vx == 0 &&
-                      this->mTargetAngles.vz == PlatformHalfTurn)))
+                    ((this->mTargetAngles.vx == PlatformHalfTurn && this->mTargetAngles.vz == 0) ||
+                     (this->mTargetAngles.vx == 0 && this->mTargetAngles.vz == PlatformHalfTurn)))
                 {
-                    this->mTargetAngles.vz =
-                        (Rnd(2) << 11) - PlatformQuarterTurn;
+                    this->mTargetAngles.vz = (Rnd(2) << 11) - PlatformQuarterTurn;
                 }
             }
 
             if (this->mNumBounces == 1 && Speed < 18)
             {
                 this->mTargetAngles.vy =
-                    this->mAngles.vy +
-                    Rnd(PlatformQuarterTurn) - PlatformEighthTurn;
+                    this->mAngles.vy + Rnd(PlatformQuarterTurn) - PlatformEighthTurn;
                 this->mTargetAngles.vx =
-                    (this->mAngles.vx +
-                     PlatformEighthTurn) & PlatformOrthogonalAngleMask;
+                    (this->mAngles.vx + PlatformEighthTurn) & PlatformOrthogonalAngleMask;
                 this->mTargetAngles.vz =
-                    (this->mAngles.vz +
-                     PlatformEighthTurn) & PlatformOrthogonalAngleMask;
+                    (this->mAngles.vz + PlatformEighthTurn) & PlatformOrthogonalAngleMask;
             }
         }
 
@@ -685,35 +638,25 @@ void CPlatform::BouncyAI()
 
         if (this->mNumBounces > 18)
         {
-            this->mAngles.vx =
-                this->mTargetAngles.vx;
-            this->mAngles.vz =
-                this->mTargetAngles.vz;
-            M3dMaths_RotMatrixYXZ(
-                reinterpret_cast<SVECTOR *>(
-                    &this->mAngles),
-                &m);
+            this->mAngles.vx = this->mTargetAngles.vx;
+            this->mAngles.vz = this->mTargetAngles.vz;
+            M3dMaths_RotMatrixYXZ(reinterpret_cast<SVECTOR *>(&this->mAngles), &m);
             NewVel.vx = NewVel.vy = NewVel.vz = 0;
             this->mDeathTimer = 10;
             this->mSpecificFlags &= ~PlatformBouncing;
             return;
         }
 
-        NewPos.vx = LInfo.Position.vx +
-            Mips_FixMul(LInfo.Normal.vx, ObjectExtent);
-        NewPos.vy = LInfo.Position.vy +
-            Mips_FixMul(LInfo.Normal.vy, ObjectExtent);
-        NewPos.vz = LInfo.Position.vz +
-            Mips_FixMul(LInfo.Normal.vz, ObjectExtent);
+        NewPos.vx = LInfo.Position.vx + Mips_FixMul(LInfo.Normal.vx, ObjectExtent);
+        NewPos.vy = LInfo.Position.vy + Mips_FixMul(LInfo.Normal.vy, ObjectExtent);
+        NewPos.vz = LInfo.Position.vz + Mips_FixMul(LInfo.Normal.vz, ObjectExtent);
     }
 
     if (this->mNumBounces > 18)
     {
         NewVel.vx = NewVel.vy = NewVel.vz = 0;
-        this->mAngles.vx =
-            this->mTargetAngles.vx;
-        this->mAngles.vz =
-            this->mTargetAngles.vz;
+        this->mAngles.vx = this->mTargetAngles.vx;
+        this->mAngles.vz = this->mTargetAngles.vz;
         this->mDeathTimer = 10;
         this->mSpecificFlags &= ~PlatformBouncing;
     }
@@ -729,27 +672,21 @@ void CPlatform::AI()
     if (platform->mScaleXTimer != 0)
     {
         platform->mScaleXTimer--;
-        platform->mScale.vx +=
-            platform->mScaleXAdjust;
+        platform->mScale.vx += platform->mScaleXAdjust;
     }
     if (platform->mScaleYTimer != 0)
     {
         platform->mScaleYTimer--;
-        platform->mScale.vy +=
-            platform->mScaleYAdjust;
+        platform->mScale.vy += platform->mScaleYAdjust;
     }
     if (platform->mScaleZTimer != 0)
     {
         platform->mScaleZTimer--;
-        platform->mScale.vz +=
-            platform->mScaleZAdjust;
+        platform->mScale.vz += platform->mScaleZAdjust;
     }
 
-    platform->mAcc.vx =
-        platform->mAcc.vy =
-        platform->mAcc.vz = 0;
-    if (platform->mTrodUpon == 0)
-        platform->mNotTrodUponTimer++;
+    platform->mAcc.vx = platform->mAcc.vy = platform->mAcc.vz = 0;
+    if (platform->mTrodUpon == 0) platform->mNotTrodUponTimer++;
 
     unsigned short inputFlags = platform->mInputFlags;
     platform->mInputFlagsCopy = inputFlags;
@@ -779,63 +716,44 @@ void CPlatform::AI()
 
     if ((platform->mSpecificFlags & PlatformMovingToTarget) != 0)
     {
-        CVector distance =
-            PLATFORM_CONST_VECTOR_VIEW(
-                platform->mPos) -
-            PLATFORM_CONST_VECTOR_VIEW(platform->mTargetPos);
+        CVector distance = PLATFORM_CONST_VECTOR_VIEW(platform->mPos) -
+                           PLATFORM_CONST_VECTOR_VIEW(platform->mTargetPos);
         int distanceToTarget = distance.Length();
-        int reachedTarget = !(
-            static_cast<int>(platform->mBaddyAttributes[0]) <
-            distanceToTarget);
+        int reachedTarget = !(static_cast<int>(platform->mBaddyAttributes[0]) < distanceToTarget);
         if (reachedTarget != 0)
         {
-            platform->mPos =
-                platform->mTargetPos;
+            platform->mPos = platform->mTargetPos;
             if (platform->mBaddyAttributes[2] < 2)
             {
-                CVector *velocity =
-                    &platform->mVel;
+                CVector *velocity = &platform->mVel;
                 velocity->vx = velocity->vy = velocity->vz = 0;
             }
             platform->mSpecificFlags &= ~PlatformMovingToTarget;
         }
         else
         {
-            unsigned short movementMode =
-                platform->mBaddyAttributes[2];
+            unsigned short movementMode = platform->mBaddyAttributes[2];
             if (movementMode == 0)
             {
                 CSVector ideal_angles;
-                Utils_CalcAim(
-                    PLATFORM_SHORT_VECTOR_VIEW(ideal_angles),
-                    PLATFORM_CONST_VECTOR_VIEW(
-                        platform->mPos),
-                    PLATFORM_CONST_VECTOR_VIEW(
-                        platform->mTargetPos));
-                Utils_GetVecFromMagDir(
-                    PLATFORM_VECTOR_VIEW(
-                        platform->mVel),
-                    platform->mBaddyAttributes[0],
-                    PLATFORM_CONST_SHORT_VECTOR_VIEW(ideal_angles));
+                Utils_CalcAim(PLATFORM_SHORT_VECTOR_VIEW(ideal_angles),
+                              PLATFORM_CONST_VECTOR_VIEW(platform->mPos),
+                              PLATFORM_CONST_VECTOR_VIEW(platform->mTargetPos));
+                Utils_GetVecFromMagDir(PLATFORM_VECTOR_VIEW(platform->mVel),
+                                       platform->mBaddyAttributes[0],
+                                       PLATFORM_CONST_SHORT_VECTOR_VIEW(ideal_angles));
             }
             else if (movementMode == 1)
             {
                 CSVector ideal_angles;
-                Utils_CalcAim(
-                    PLATFORM_SHORT_VECTOR_VIEW(ideal_angles),
-                    PLATFORM_CONST_VECTOR_VIEW(
-                        platform->mPos),
-                    PLATFORM_CONST_VECTOR_VIEW(
-                        platform->mTargetPos));
+                Utils_CalcAim(PLATFORM_SHORT_VECTOR_VIEW(ideal_angles),
+                              PLATFORM_CONST_VECTOR_VIEW(platform->mPos),
+                              PLATFORM_CONST_VECTOR_VIEW(platform->mTargetPos));
                 int ang_acc;
                 {
-                    CVector remaining =
-                        PLATFORM_CONST_VECTOR_VIEW(
-                            platform->mTargetPos) -
-                        PLATFORM_CONST_VECTOR_VIEW(
-                            platform->mPos);
-                    ang_acc = PlatformTurnNumerator /
-                        remaining.Length();
+                    CVector remaining = PLATFORM_CONST_VECTOR_VIEW(platform->mTargetPos) -
+                                        PLATFORM_CONST_VECTOR_VIEW(platform->mPos);
+                    ang_acc = PlatformTurnNumerator / remaining.Length();
                 }
                 if (ang_acc < -PlatformMaxAngularAcceleration)
                     ang_acc = -PlatformMaxAngularAcceleration;
@@ -846,69 +764,49 @@ void CPlatform::AI()
                 else if (ang_acc < 0 && ang_acc > -4)
                     ang_acc = -4;
 
-                Utils_TurnTowards(
-                    PLATFORM_CONST_SHORT_VECTOR_VIEW(
-                        platform->mAngles),
-                    PLATFORM_SHORT_VECTOR_VIEW(
-                        platform->mAngVel),
-                    PLATFORM_SHORT_VECTOR_VIEW(
-                        platform->mAngAcc),
-                    PLATFORM_CONST_SHORT_VECTOR_VIEW(ideal_angles),
-                    ang_acc);
+                Utils_TurnTowards(PLATFORM_CONST_SHORT_VECTOR_VIEW(platform->mAngles),
+                                  PLATFORM_SHORT_VECTOR_VIEW(platform->mAngVel),
+                                  PLATFORM_SHORT_VECTOR_VIEW(platform->mAngAcc),
+                                  PLATFORM_CONST_SHORT_VECTOR_VIEW(ideal_angles), ang_acc);
                 platform->mAngles.vx = 0;
-                Utils_GetVecFromMagDir(
-                    PLATFORM_VECTOR_VIEW(
-                        platform->mAcc),
-                    platform->mBaddyAttributes[0],
-                    PLATFORM_CONST_SHORT_VECTOR_VIEW(ideal_angles));
+                Utils_GetVecFromMagDir(PLATFORM_VECTOR_VIEW(platform->mAcc),
+                                       platform->mBaddyAttributes[0],
+                                       PLATFORM_CONST_SHORT_VECTOR_VIEW(ideal_angles));
 
                 short roll = 0;
                 if ((platform->mSpecificFlags & PlatformBouncing) != 0)
                 {
-                    roll = static_cast<short>((ideal_angles.vy -
-                        platform->mAngles.vy) &
-                        PlatformAngleMask);
+                    roll = static_cast<short>((ideal_angles.vy - platform->mAngles.vy) &
+                                              PlatformAngleMask);
                 }
-                if (roll > PlatformHalfTurn)
-                    roll = static_cast<short>(roll - PlatformFixedOne);
+                if (roll > PlatformHalfTurn) roll = static_cast<short>(roll - PlatformFixedOne);
                 if (roll > PlatformQuarterTurn)
                     roll = PlatformQuarterTurn;
                 else if (roll < -PlatformQuarterTurn)
                     roll = -PlatformQuarterTurn;
 
                 roll = static_cast<short>((-roll >> 1) & PlatformAngleMask);
-                short rolldiff = static_cast<short>(roll -
-                    platform->mAngles.vz);
+                short rolldiff = static_cast<short>(roll - platform->mAngles.vz);
                 if (rolldiff < -PlatformHalfTurn)
-                    rolldiff = static_cast<short>(
-                        rolldiff + PlatformFixedOne);
+                    rolldiff = static_cast<short>(rolldiff + PlatformFixedOne);
                 if (rolldiff > PlatformHalfTurn)
-                    rolldiff = static_cast<short>(
-                        rolldiff - PlatformFixedOne);
+                    rolldiff = static_cast<short>(rolldiff - PlatformFixedOne);
                 if (rolldiff != 0)
-                    platform->mAngAcc.vz =
-                        static_cast<short>(rolldiff >> 3);
+                    platform->mAngAcc.vz = static_cast<short>(rolldiff >> 3);
                 else
                     platform->mAngVel.vz = 0;
             }
             else if (movementMode == 2)
             {
                 CSVector ideal_angles;
-                Utils_CalcAim(
-                    PLATFORM_SHORT_VECTOR_VIEW(ideal_angles),
-                    PLATFORM_CONST_VECTOR_VIEW(
-                        platform->mPos),
-                    PLATFORM_CONST_VECTOR_VIEW(
-                        platform->mTargetPos));
+                Utils_CalcAim(PLATFORM_SHORT_VECTOR_VIEW(ideal_angles),
+                              PLATFORM_CONST_VECTOR_VIEW(platform->mPos),
+                              PLATFORM_CONST_VECTOR_VIEW(platform->mTargetPos));
                 int ang_acc;
                 {
-                    CVector remaining =
-                        PLATFORM_CONST_VECTOR_VIEW(
-                            platform->mTargetPos) -
-                        PLATFORM_CONST_VECTOR_VIEW(
-                            platform->mPos);
-                    ang_acc = PlatformTurnNumerator /
-                        remaining.Length();
+                    CVector remaining = PLATFORM_CONST_VECTOR_VIEW(platform->mTargetPos) -
+                                        PLATFORM_CONST_VECTOR_VIEW(platform->mPos);
+                    ang_acc = PlatformTurnNumerator / remaining.Length();
                 }
                 if (ang_acc < -PlatformMaxAngularAcceleration)
                     ang_acc = -PlatformMaxAngularAcceleration;
@@ -919,37 +817,27 @@ void CPlatform::AI()
                 else if (ang_acc < 0 && ang_acc > -4)
                     ang_acc = -4;
 
-                Utils_TurnTowards(
-                    PLATFORM_CONST_SHORT_VECTOR_VIEW(
-                        platform->mAngles),
-                    PLATFORM_SHORT_VECTOR_VIEW(
-                        platform->mAngVel),
-                    PLATFORM_SHORT_VECTOR_VIEW(
-                        platform->mAngAcc),
-                    PLATFORM_CONST_SHORT_VECTOR_VIEW(ideal_angles),
-                    ang_acc);
+                Utils_TurnTowards(PLATFORM_CONST_SHORT_VECTOR_VIEW(platform->mAngles),
+                                  PLATFORM_SHORT_VECTOR_VIEW(platform->mAngVel),
+                                  PLATFORM_SHORT_VECTOR_VIEW(platform->mAngAcc),
+                                  PLATFORM_CONST_SHORT_VECTOR_VIEW(ideal_angles), ang_acc);
                 platform->mAngles.vx = 0;
-                Utils_GetVecFromMagDir(
-                    PLATFORM_VECTOR_VIEW(
-                        platform->mAcc),
-                    platform->mBaddyAttributes[0],
-                    PLATFORM_CONST_SHORT_VECTOR_VIEW(ideal_angles));
+                Utils_GetVecFromMagDir(PLATFORM_VECTOR_VIEW(platform->mAcc),
+                                       platform->mBaddyAttributes[0],
+                                       PLATFORM_CONST_SHORT_VECTOR_VIEW(ideal_angles));
             }
         }
     }
     else if (platform->mBaddyAttributes[2] == 1)
     {
-        short rolldiff = static_cast<short>(
-            -platform->mAngles.vz);
+        short rolldiff = static_cast<short>(-platform->mAngles.vz);
         if (rolldiff < -PlatformHalfTurn)
             rolldiff = static_cast<short>(rolldiff + PlatformFixedOne);
-        if (rolldiff > PlatformHalfTurn)
-            rolldiff = static_cast<short>(rolldiff - PlatformFixedOne);
+        if (rolldiff > PlatformHalfTurn) rolldiff = static_cast<short>(rolldiff - PlatformFixedOne);
         if (rolldiff == 0)
             platform->mAngVel.vz = 0;
         else
-            platform->mAngAcc.vz =
-                static_cast<short>(rolldiff >> 3);
+            platform->mAngAcc.vz = static_cast<short>(rolldiff >> 3);
     }
 
     if (platform->mApplyGravity != 0)
@@ -962,16 +850,11 @@ void CPlatform::AI()
     }
 
     platform->DoPhysics();
-    if (platform->mLoopingSoundUpdate != -1 &&
-        TTime % platform->mLoopingSoundUpdate == 0)
+    if (platform->mLoopingSoundUpdate != -1 && TTime % platform->mLoopingSoundUpdate == 0)
     {
-        SFX_ModifyPos(
-            platform->mLoopingSound,
-            PlatformVector(platform->mPos),
-            0);
+        SFX_ModifyPos(platform->mLoopingSound, PlatformVector(platform->mPos), 0);
     }
     platform->mTrodUpon = 0;
-
 }
 
 /**
@@ -998,9 +881,7 @@ int CPlatform::Hit(int damage, const CVector &knock, int whathit)
             if (mHealth <= 0)
             {
                 Die();
-                Shatter_Item(
-                    PlatformShatterItem(*this),
-                    0, 1);
+                Shatter_Item(PlatformShatterItem(*this), 0, 1);
             }
             else
             {
@@ -1029,15 +910,9 @@ void CPlatform::DoPhysics()
         int vy = mVel.vy + mAcc.vy;
         int vz = mVel.vz + mAcc.vz;
         short sz;
-        if (static_cast<u32>(vx + PlatformVelocityRounding) <
-            PlatformVelocityDeadZone)
-            vx = 0;
-        if (static_cast<u32>(vy + PlatformVelocityRounding) <
-            PlatformVelocityDeadZone)
-            vy = 0;
-        if (static_cast<u32>(vz + PlatformVelocityRounding) <
-            PlatformVelocityDeadZone)
-            vz = 0;
+        if (static_cast<u32>(vx + PlatformVelocityRounding) < PlatformVelocityDeadZone) vx = 0;
+        if (static_cast<u32>(vy + PlatformVelocityRounding) < PlatformVelocityDeadZone) vy = 0;
+        if (static_cast<u32>(vz + PlatformVelocityRounding) < PlatformVelocityDeadZone) vz = 0;
         mVel.vx = vx;
         mVel.vy = vy;
         mVel.vz = vz;
@@ -1047,8 +922,7 @@ void CPlatform::DoPhysics()
 
         short sx = mAngVel.vx;
         short sy = mAngVel.vy;
-        int ax = (sx + static_cast<u16>(mAngles.vx)) &
-            PlatformAngleMask;
+        int ax = (sx + static_cast<u16>(mAngles.vx)) & PlatformAngleMask;
         mAngles.vx = ax;
         u16 ay = mAngles.vy;
         sx += mAngAcc.vx;
@@ -1060,12 +934,9 @@ void CPlatform::DoPhysics()
         mAngles.vz = bz;
         sy += mAngAcc.vy;
         sz += mAngAcc.vz;
-        if (static_cast<u16>(sx + 1) < 3)
-            sx = 0;
-        if (static_cast<u16>(sy + 1) < 3)
-            sy = 0;
-        if (static_cast<u16>(sz + 1) < 3)
-            sz = 0;
+        if (static_cast<u16>(sx + 1) < 3) sx = 0;
+        if (static_cast<u16>(sy + 1) < 3) sy = 0;
+        if (static_cast<u16>(sz + 1) < 3) sz = 0;
         mAngVel.vx = sx;
         mAngVel.vy = sy;
         mAngVel.vz = sz;
@@ -1079,25 +950,17 @@ void CPlatform::DoPhysics()
         }
 
         CVector *velocity = &mVel;
-        PLATFORM_VECTOR_VIEW(*velocity) +=
-            PLATFORM_CONST_VECTOR_VIEW(mAcc);
-        PLATFORM_VECTOR_VIEW(*velocity) %=
-            mFric;
+        PLATFORM_VECTOR_VIEW(*velocity) += PLATFORM_CONST_VECTOR_VIEW(mAcc);
+        PLATFORM_VECTOR_VIEW(*velocity) %= mFric;
         PLATFORM_VECTOR_VIEW(*velocity).KillSmall();
-        PLATFORM_VECTOR_VIEW(mPos) +=
-            PLATFORM_CONST_VECTOR_VIEW(*velocity);
+        PLATFORM_VECTOR_VIEW(mPos) += PLATFORM_CONST_VECTOR_VIEW(*velocity);
 
         CSVector *angVel = &mAngVel;
-        CSVector *angles =
-            &mAngles;
-        PLATFORM_SHORT_VECTOR_VIEW(*angles) +=
-            PLATFORM_CONST_SHORT_VECTOR_VIEW(*angVel);
+        CSVector *angles = &mAngles;
+        PLATFORM_SHORT_VECTOR_VIEW(*angles) += PLATFORM_CONST_SHORT_VECTOR_VIEW(*angVel);
         PLATFORM_SHORT_VECTOR_VIEW(*angles).Mask();
-        PLATFORM_SHORT_VECTOR_VIEW(*angVel) +=
-            PLATFORM_CONST_SHORT_VECTOR_VIEW(
-                mAngAcc);
-        PLATFORM_SHORT_VECTOR_VIEW(*angVel) %=
-            mAngFric;
+        PLATFORM_SHORT_VECTOR_VIEW(*angVel) += PLATFORM_CONST_SHORT_VECTOR_VIEW(mAngAcc);
+        PLATFORM_SHORT_VECTOR_VIEW(*angVel) %= mAngFric;
         PLATFORM_SHORT_VECTOR_VIEW(*angVel).KillSmall();
     }
 }
@@ -1111,8 +974,7 @@ void CPlatform::MoveTo(CVector &pos)
 {
     if (PLATFORM_VECTOR_VIEW(mTargetPos) != pos)
     {
-        mTargetPos =
-            PlatformOwnerVector(pos);
+        mTargetPos = PlatformOwnerVector(pos);
         mSpecificFlags |= PlatformMovingToTarget;
     }
 }
@@ -1135,259 +997,248 @@ int CPlatform::ExecuteCommand(unsigned short command)
     CItem *item = plat;
 
     /* Scale commands only take effect once the per-item scale is enabled. */
-#define PLATFORM_ENABLE_SCALE()                                                \
-    do {                                                                       \
-        int flags = item->mFlags;                                              \
-        if ((flags & PlatformItemScaleEnabled) == 0) {                         \
-            flags |= PlatformItemScaleEnabled;                                \
-            item->mFlags = flags;                                              \
-            item->mScale.vz = PlatformFixedOne;                                \
-            item->mScale.vy = PlatformFixedOne;                                \
-            item->mScale.vx = PlatformFixedOne;                                \
-        }                                                                      \
+#define PLATFORM_ENABLE_SCALE() \
+    do \
+    { \
+        int flags = item->mFlags; \
+        if ((flags & PlatformItemScaleEnabled) == 0) \
+        { \
+            flags |= PlatformItemScaleEnabled; \
+            item->mFlags = flags; \
+            item->mScale.vz = PlatformFixedOne; \
+            item->mScale.vy = PlatformFixedOne; \
+            item->mScale.vx = PlatformFixedOne; \
+        } \
     } while (0)
 
     switch (command)
     {
-    case PlatformCommandSetBounceType:
-    {
-        unsigned short *pc = plat->mpScript;
-        unsigned short type = pc[0];
-        plat->mpScript = pc + 1;
-        plat->mType = type;
-        if (type != 0)
-            plat->mSpecificFlags |= PlatformBounceEnabled;
-        else
-            plat->mSpecificFlags &= ~PlatformBounceEnabled;
-        struct SModel *m =
-            PSXRegion[item->mRegion].ppModels[item->mModel];
-        short *pBox = ((PlatformModelBounds *)&m->Box)->Half;
-        plat->mWidth = pBox[0] - pBox[1];
-        plat->mHeight = pBox[2] - pBox[3];
-        plat->mDepth = pBox[4] - pBox[5];
-        break;
-    }
-
-    case PlatformCommandSetCollision:
-    {
-        unsigned short *pc = plat->mpScript;
-        unsigned short on = pc[0];
-        plat->mpScript = pc + 1;
-        if (on != 0)
-            item->mFlags |= PlatformItemCollision;
-        else
-            item->mFlags &= ~PlatformItemCollision;
-        break;
-    }
-
-    case PlatformCommandPlayLoopingSound:
-    {
-        if (plat->mLoopingSound != 0)
-            SFX_Stop(plat->mLoopingSound);
-        unsigned short *pc = plat->mpScript;
-        unsigned short sound = pc[0];
-        plat->mpScript = pc + 1;
-        plat->mLoopingSound = SFX_PlayX(sound, PlatformSoundVolume, 0);
-        plat->mLoopingSoundUpdate = -1;
-        break;
-    }
-
-    case PlatformCommandPlayPositionalLoopingSound:
-    {
-        if (plat->mLoopingSound != 0)
-            SFX_Stop(plat->mLoopingSound);
-        unsigned short *pc = plat->mpScript;
-        unsigned short sound = *pc++;
-        plat->mpScript = pc;
-        unsigned short update = *pc++;
-        plat->mpScript = pc;
-        plat->mLoopingSoundUpdate = update;
-        plat->mLoopingSound = SFX_PlayPos(
-            sound, PLATFORM_CONST_VECTOR_VIEW(item->mPos), 0);
-        break;
-    }
-
-    case PlatformCommandStopLoopingSound:
-        if (plat->mLoopingSound != 0)
-            SFX_Stop(plat->mLoopingSound);
-        plat->mLoopingSound = 0;
-        break;
-
-    case PlatformCommandScale:
-    {
-        PLATFORM_ENABLE_SCALE();
-        unsigned short *pc = plat->mpScript;
-        short p = *pc++;
-        plat->mpScript = pc;
-        plat->mScaleXTimer = plat->mScaleYTimer =
-            plat->mScaleZTimer = *pc++;
-        plat->mpScript = pc;
-        if (plat->mScaleXTimer != 0)
+        case PlatformCommandSetBounceType:
         {
-            plat->mScaleYAdjust = plat->mScaleZAdjust =
-                plat->mScaleXAdjust = (static_cast<int>(p) << 12) /
-                    static_cast<int>(
-                        static_cast<unsigned int>(plat->mScaleXTimer) * 100);
+            unsigned short *pc = plat->mpScript;
+            unsigned short type = pc[0];
+            plat->mpScript = pc + 1;
+            plat->mType = type;
+            if (type != 0)
+                plat->mSpecificFlags |= PlatformBounceEnabled;
+            else
+                plat->mSpecificFlags &= ~PlatformBounceEnabled;
+            struct SModel *m = PSXRegion[item->mRegion].ppModels[item->mModel];
+            short *pBox = ((PlatformModelBounds *)&m->Box)->Half;
+            plat->mWidth = pBox[0] - pBox[1];
+            plat->mHeight = pBox[2] - pBox[3];
+            plat->mDepth = pBox[4] - pBox[5];
+            break;
         }
-        else
+
+        case PlatformCommandSetCollision:
         {
-            plat->mScaleYAdjust = plat->mScaleZAdjust =
+            unsigned short *pc = plat->mpScript;
+            unsigned short on = pc[0];
+            plat->mpScript = pc + 1;
+            if (on != 0)
+                item->mFlags |= PlatformItemCollision;
+            else
+                item->mFlags &= ~PlatformItemCollision;
+            break;
+        }
+
+        case PlatformCommandPlayLoopingSound:
+        {
+            if (plat->mLoopingSound != 0) SFX_Stop(plat->mLoopingSound);
+            unsigned short *pc = plat->mpScript;
+            unsigned short sound = pc[0];
+            plat->mpScript = pc + 1;
+            plat->mLoopingSound = SFX_PlayX(sound, PlatformSoundVolume, 0);
+            plat->mLoopingSoundUpdate = -1;
+            break;
+        }
+
+        case PlatformCommandPlayPositionalLoopingSound:
+        {
+            if (plat->mLoopingSound != 0) SFX_Stop(plat->mLoopingSound);
+            unsigned short *pc = plat->mpScript;
+            unsigned short sound = *pc++;
+            plat->mpScript = pc;
+            unsigned short update = *pc++;
+            plat->mpScript = pc;
+            plat->mLoopingSoundUpdate = update;
+            plat->mLoopingSound = SFX_PlayPos(sound, PLATFORM_CONST_VECTOR_VIEW(item->mPos), 0);
+            break;
+        }
+
+        case PlatformCommandStopLoopingSound:
+            if (plat->mLoopingSound != 0) SFX_Stop(plat->mLoopingSound);
+            plat->mLoopingSound = 0;
+            break;
+
+        case PlatformCommandScale:
+        {
+            PLATFORM_ENABLE_SCALE();
+            unsigned short *pc = plat->mpScript;
+            short p = *pc++;
+            plat->mpScript = pc;
+            plat->mScaleXTimer = plat->mScaleYTimer = plat->mScaleZTimer = *pc++;
+            plat->mpScript = pc;
+            if (plat->mScaleXTimer != 0)
+            {
+                plat->mScaleYAdjust = plat->mScaleZAdjust = plat->mScaleXAdjust =
+                    (static_cast<int>(p) << 12) /
+                    static_cast<int>(static_cast<unsigned int>(plat->mScaleXTimer) * 100);
+            }
+            else
+            {
+                plat->mScaleYAdjust = plat->mScaleZAdjust = plat->mScaleXAdjust =
+                    (static_cast<int>(p) << 12) / 100;
+            }
+            item->mScale.vx += plat->mScaleXAdjust;
+            item->mScale.vy += plat->mScaleYAdjust;
+            item->mScale.vz += plat->mScaleZAdjust;
+            break;
+        }
+
+        case PlatformCommandScaleX:
+        {
+            PLATFORM_ENABLE_SCALE();
+            unsigned short *pc = plat->mpScript;
+            short p = *pc++;
+            plat->mpScript = pc;
+            plat->mScaleXTimer = *pc++;
+            plat->mpScript = pc;
+            if (plat->mScaleXTimer != 0)
+                plat->mScaleXAdjust =
+                    (static_cast<int>(p) << 12) /
+                    static_cast<int>(static_cast<unsigned int>(plat->mScaleXTimer) * 100);
+            else
                 plat->mScaleXAdjust = (static_cast<int>(p) << 12) / 100;
+            item->mScale.vx += plat->mScaleXAdjust;
+            break;
         }
-        item->mScale.vx += plat->mScaleXAdjust;
-        item->mScale.vy += plat->mScaleYAdjust;
-        item->mScale.vz += plat->mScaleZAdjust;
-        break;
-    }
 
-    case PlatformCommandScaleX:
-    {
-        PLATFORM_ENABLE_SCALE();
-        unsigned short *pc = plat->mpScript;
-        short p = *pc++;
-        plat->mpScript = pc;
-        plat->mScaleXTimer = *pc++;
-        plat->mpScript = pc;
-        if (plat->mScaleXTimer != 0)
-            plat->mScaleXAdjust = (static_cast<int>(p) << 12) /
-                static_cast<int>(
-                    static_cast<unsigned int>(plat->mScaleXTimer) * 100);
-        else
-            plat->mScaleXAdjust = (static_cast<int>(p) << 12) / 100;
-        item->mScale.vx += plat->mScaleXAdjust;
-        break;
-    }
-
-    case PlatformCommandScaleY:
-    {
-        PLATFORM_ENABLE_SCALE();
-        unsigned short *pc = plat->mpScript;
-        short p = *pc++;
-        plat->mpScript = pc;
-        plat->mScaleYTimer = *pc++;
-        plat->mpScript = pc;
-        if (plat->mScaleYTimer != 0)
-            plat->mScaleYAdjust = (static_cast<int>(p) << 12) /
-                static_cast<int>(
-                    static_cast<unsigned int>(plat->mScaleYTimer) * 100);
-        else
-            plat->mScaleYAdjust = (static_cast<int>(p) << 12) / 100;
-        item->mScale.vy += plat->mScaleYAdjust;
-        break;
-    }
-
-    case PlatformCommandScaleZ:
-    {
-        PLATFORM_ENABLE_SCALE();
-        unsigned short *pc = plat->mpScript;
-        short p = *pc++;
-        plat->mpScript = pc;
-        plat->mScaleZTimer = *pc++;
-        plat->mpScript = pc;
-        if (plat->mScaleZTimer != 0)
-            plat->mScaleZAdjust = (static_cast<int>(p) << 12) /
-                static_cast<int>(
-                    static_cast<unsigned int>(plat->mScaleZTimer) * 100);
-        else
-            plat->mScaleZAdjust = (static_cast<int>(p) << 12) / 100;
-        item->mScale.vz += plat->mScaleZAdjust;
-        break;
-    }
-
-    case PlatformCommandSetBruceHealthAdjust:
-    {
-        unsigned short *pc = plat->mpScript;
-        plat->mBruceHealthAdjust = pc[0];
-        plat->mpScript = pc + 1;
-        break;
-    }
-
-    case PlatformCommandSetBoundingBox:
-    {
-        unsigned int flags = plat->mSpecificFlags;
-        unsigned short x = *plat->mpScript++;
-        unsigned short y = *plat->mpScript++;
-        unsigned short z = *plat->mpScript++;
-        plat->mSpecificFlags = flags | PlatformHasBoundingBox;
-        plat->mBoundingBox.vx = static_cast<unsigned int>(x) << 11;
-        plat->mBoundingBox.vy = static_cast<unsigned int>(y) << 11;
-        plat->mBoundingBox.vz = static_cast<unsigned int>(z) << 11;
-        break;
-    }
-
-    case PlatformCommandWaitUntilTrodUpon:
-        if (plat->mTrodUpon == 0)
+        case PlatformCommandScaleY:
         {
-            plat->mpScript = plat->mpScript - 1;
+            PLATFORM_ENABLE_SCALE();
+            unsigned short *pc = plat->mpScript;
+            short p = *pc++;
+            plat->mpScript = pc;
+            plat->mScaleYTimer = *pc++;
+            plat->mpScript = pc;
+            if (plat->mScaleYTimer != 0)
+                plat->mScaleYAdjust =
+                    (static_cast<int>(p) << 12) /
+                    static_cast<int>(static_cast<unsigned int>(plat->mScaleYTimer) * 100);
+            else
+                plat->mScaleYAdjust = (static_cast<int>(p) << 12) / 100;
+            item->mScale.vy += plat->mScaleYAdjust;
+            break;
+        }
+
+        case PlatformCommandScaleZ:
+        {
+            PLATFORM_ENABLE_SCALE();
+            unsigned short *pc = plat->mpScript;
+            short p = *pc++;
+            plat->mpScript = pc;
+            plat->mScaleZTimer = *pc++;
+            plat->mpScript = pc;
+            if (plat->mScaleZTimer != 0)
+                plat->mScaleZAdjust =
+                    (static_cast<int>(p) << 12) /
+                    static_cast<int>(static_cast<unsigned int>(plat->mScaleZTimer) * 100);
+            else
+                plat->mScaleZAdjust = (static_cast<int>(p) << 12) / 100;
+            item->mScale.vz += plat->mScaleZAdjust;
+            break;
+        }
+
+        case PlatformCommandSetBruceHealthAdjust:
+        {
+            unsigned short *pc = plat->mpScript;
+            plat->mBruceHealthAdjust = pc[0];
+            plat->mpScript = pc + 1;
+            break;
+        }
+
+        case PlatformCommandSetBoundingBox:
+        {
+            unsigned int flags = plat->mSpecificFlags;
+            unsigned short x = *plat->mpScript++;
+            unsigned short y = *plat->mpScript++;
+            unsigned short z = *plat->mpScript++;
+            plat->mSpecificFlags = flags | PlatformHasBoundingBox;
+            plat->mBoundingBox.vx = static_cast<unsigned int>(x) << 11;
+            plat->mBoundingBox.vy = static_cast<unsigned int>(y) << 11;
+            plat->mBoundingBox.vz = static_cast<unsigned int>(z) << 11;
+            break;
+        }
+
+        case PlatformCommandWaitUntilTrodUpon:
+            if (plat->mTrodUpon == 0)
+            {
+                plat->mpScript = plat->mpScript - 1;
+                return 0;
+            }
+            break;
+
+        case PlatformCommandMoveTo:
+        {
+            int *p_pos = PLATFORM_ALIGNED_SCRIPT(int, plat->mpScript);
+            CVector pos;
+            pos.vx = *p_pos++;
+            pos.vy = *p_pos++;
+            pos.vz = *p_pos++;
+            int shift = 12;
+            pos <<= shift;
+            plat->mpScript = reinterpret_cast<unsigned short *>(p_pos);
+            MoveTo(pos);
+            break;
+        }
+
+        case PlatformCommandMoveToNode:
+        {
+            unsigned short *pc = plat->mpScript;
+            unsigned short node = pc[0];
+            plat->mpScript = pc + 1;
+            if ((node & PlatformScriptVariableFlag) != 0)
+            {
+                node = GetVariable(node) & PlatformScriptWordMask;
+            }
+            CVector pos;
+            Trig_GetPosition(pos, node);
+            MoveTo(pos);
+            break;
+        }
+
+        case PlatformCommandMoveRelative:
+        {
+            int *p_pos = PLATFORM_ALIGNED_SCRIPT(int, plat->mpScript);
+            CVector pos;
+            pos.vx = *p_pos++;
+            pos.vy = *p_pos++;
+            pos.vz = *p_pos++;
+            int shift = 12;
+            pos <<= shift;
+            pos += PLATFORM_CONST_VECTOR_VIEW(item->mPos);
+            plat->mpScript = reinterpret_cast<unsigned short *>(p_pos);
+            MoveTo(pos);
+            break;
+        }
+
+        case PlatformCommandDie:
+        {
+            Die();
             return 0;
         }
-        break;
 
-    case PlatformCommandMoveTo:
-    {
-        int *p_pos = PLATFORM_ALIGNED_SCRIPT(
-            int, plat->mpScript);
-        CVector pos;
-        pos.vx = *p_pos++;
-        pos.vy = *p_pos++;
-        pos.vz = *p_pos++;
-        int shift = 12;
-        pos <<= shift;
-        plat->mpScript = reinterpret_cast<unsigned short *>(p_pos);
-        MoveTo(pos);
-        break;
-    }
-
-    case PlatformCommandMoveToNode:
-    {
-        unsigned short *pc = plat->mpScript;
-        unsigned short node = pc[0];
-        plat->mpScript = pc + 1;
-        if ((node & PlatformScriptVariableFlag) != 0)
+        case PlatformCommandShatter:
         {
-            node = GetVariable(node) & PlatformScriptWordMask;
+            item->mFlags |= PlatformItemShattered;
+            Die();
+            Shatter_Item(PLATFORM_SHATTER_ITEM_POINTER(this), 0, 0);
+            return 0;
         }
-        CVector pos;
-        Trig_GetPosition(pos, node);
-        MoveTo(pos);
-        break;
-    }
 
-    case PlatformCommandMoveRelative:
-    {
-        int *p_pos = PLATFORM_ALIGNED_SCRIPT(
-            int, plat->mpScript);
-        CVector pos;
-        pos.vx = *p_pos++;
-        pos.vy = *p_pos++;
-        pos.vz = *p_pos++;
-        int shift = 12;
-        pos <<= shift;
-        pos += PLATFORM_CONST_VECTOR_VIEW(item->mPos);
-        plat->mpScript = reinterpret_cast<unsigned short *>(p_pos);
-        MoveTo(pos);
-        break;
-    }
-
-    case PlatformCommandDie:
-    {
-        Die();
-        return 0;
-    }
-
-    case PlatformCommandShatter:
-    {
-        item->mFlags |= PlatformItemShattered;
-        Die();
-        Shatter_Item(
-            PLATFORM_SHATTER_ITEM_POINTER(
-                this),
-            0, 0);
-        return 0;
-    }
-
-    default:
-        return plat->CBaddy::ExecuteCommand(command);
+        default: return plat->CBaddy::ExecuteCommand(command);
     }
 #undef PLATFORM_ENABLE_SCALE
     return 1;
@@ -1405,74 +1256,67 @@ void CPlatform::SetVariable(unsigned short variable)
 
     switch (variable)
     {
-    case PlatformVariableApplyGravity:
-    {
-        u16 *script = mpScript;
-        u8 value = *reinterpret_cast<u8 *>(script);
-        mpScript = script + 1;
-        mApplyGravity = value;
-        break;
-    }
-    case PlatformVariableModelIndex:
-    {
-        u16 *script = mpScript;
-        u16 value = *script;
-        mpScript = script + 1;
-        mModel = value;
-        break;
-    }
-    case PlatformVariableModelChecksum:
-    {
-        unsigned int *p_checksum = PLATFORM_ALIGNED_SCRIPT(
-            unsigned int, mpScript);
-        unsigned int model = Spool_GetModel(
-            *p_checksum,
-            mRegion);
-        u16 flags = mFlags;
-        mModel = model;
-        mpScript = reinterpret_cast<u16 *>(p_checksum + 1);
-        flags &= 0xFFFE;
-        mFlags = flags;
-        break;
-    }
-    case PlatformVariableVelocity:
-    {
-        s16 x = GetScriptValue();
-        s16 y = GetScriptValue();
-        s16 z = GetScriptValue();
-        PlatformSet(mVel, 
-            static_cast<int>(x) << 12,
-            static_cast<int>(y) << 12,
-            static_cast<int>(z) << 12);
-        break;
-    }
-    case PlatformVariableAngles:
-    {
-        s16 x = GetScriptValue();
-        s16 y = GetScriptValue();
-        s16 z = GetScriptValue();
-        PlatformSet(mAngles, x, y, z);
-        break;
-    }
-    case PlatformVariableAngularVelocity:
-    {
-        s16 x = GetScriptValue();
-        s16 y = GetScriptValue();
-        s16 z = GetScriptValue();
-        PlatformSet(mAngVel, x, y, z);
-        break;
-    }
-    case PlatformVariableAngularAcceleration:
-    {
-        s16 x = GetScriptValue();
-        s16 y = GetScriptValue();
-        s16 z = GetScriptValue();
-        PlatformSet(mAngAcc, x, y, z);
-        break;
-    }
-    default:
-        CBaddy::SetVariable(variable);
-        break;
+        case PlatformVariableApplyGravity:
+        {
+            u16 *script = mpScript;
+            u8 value = *reinterpret_cast<u8 *>(script);
+            mpScript = script + 1;
+            mApplyGravity = value;
+            break;
+        }
+        case PlatformVariableModelIndex:
+        {
+            u16 *script = mpScript;
+            u16 value = *script;
+            mpScript = script + 1;
+            mModel = value;
+            break;
+        }
+        case PlatformVariableModelChecksum:
+        {
+            unsigned int *p_checksum = PLATFORM_ALIGNED_SCRIPT(unsigned int, mpScript);
+            unsigned int model = Spool_GetModel(*p_checksum, mRegion);
+            u16 flags = mFlags;
+            mModel = model;
+            mpScript = reinterpret_cast<u16 *>(p_checksum + 1);
+            flags &= 0xFFFE;
+            mFlags = flags;
+            break;
+        }
+        case PlatformVariableVelocity:
+        {
+            s16 x = GetScriptValue();
+            s16 y = GetScriptValue();
+            s16 z = GetScriptValue();
+            PlatformSet(mVel, static_cast<int>(x) << 12, static_cast<int>(y) << 12,
+                        static_cast<int>(z) << 12);
+            break;
+        }
+        case PlatformVariableAngles:
+        {
+            s16 x = GetScriptValue();
+            s16 y = GetScriptValue();
+            s16 z = GetScriptValue();
+            PlatformSet(mAngles, x, y, z);
+            break;
+        }
+        case PlatformVariableAngularVelocity:
+        {
+            s16 x = GetScriptValue();
+            s16 y = GetScriptValue();
+            s16 z = GetScriptValue();
+            PlatformSet(mAngVel, x, y, z);
+            break;
+        }
+        case PlatformVariableAngularAcceleration:
+        {
+            s16 x = GetScriptValue();
+            s16 y = GetScriptValue();
+            s16 z = GetScriptValue();
+            PlatformSet(mAngAcc, x, y, z);
+            break;
+        }
+        default: CBaddy::SetVariable(variable); break;
     }
 }
 
@@ -1532,8 +1376,7 @@ void Platform_HandleBounce(CBruce *pSkater)
     FP1 -= PlatformCollisionMargin;
     BP1 += PlatformCollisionMargin;
 
-    PlatformCItemOwner *pItem =
-        reinterpret_cast<PlatformCItemOwner *>(EnvironmentalObjectList);
+    PlatformCItemOwner *pItem = reinterpret_cast<PlatformCItemOwner *>(EnvironmentalObjectList);
     while (pItem != 0)
     {
         if (pItem->mFlags & PlatformItemEnvironmental)
@@ -1559,10 +1402,8 @@ void Platform_HandleBounce(CBruce *pSkater)
                             if (DP1 >= y + (static_cast<int>(pBox[3]) << 12) &&
                                 y + (static_cast<int>(pBox[2]) << 12) >= UP1)
                             {
-                                platform->Bounce(
-                                    reinterpret_cast<CBruce *>(MechList),
-                                    PLATFORM_CONST_VECTOR_VIEW(
-                                        pSkater->mVel));
+                                platform->Bounce(reinterpret_cast<CBruce *>(MechList),
+                                                 PLATFORM_CONST_VECTOR_VIEW(pSkater->mVel));
                             }
                         }
                     }

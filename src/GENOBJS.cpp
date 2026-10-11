@@ -80,8 +80,8 @@ typedef char GenObjs_ModelPoint_size_must_be_8[(sizeof(ModelPoint) == 8) ? 1 : -
 typedef char GenObjs_ModelBounds_size_must_be_12[(sizeof(ModelBounds) == 12) ? 1 : -1];
 typedef char GenObjs_ModelFace_size_must_be_44[(sizeof(ModelFace) == 44) ? 1 : -1];
 typedef char GenObjs_ModelFace2_size_must_be_20[(sizeof(ModelFace2) == 20) ? 1 : -1];
-typedef char GenObjs_OutputFaceHeader_size_must_be_4[
-    (sizeof(GenObjsOutputFaceHeader) == 4) ? 1 : -1];
+typedef char
+    GenObjs_OutputFaceHeader_size_must_be_4[(sizeof(GenObjsOutputFaceHeader) == 4) ? 1 : -1];
 
 /** Owner-local layout of a point in a generated rail string. */
 struct GenObjsRailPoint
@@ -168,18 +168,13 @@ struct GenObjsEditorOutModel
     GenObjsEditorOutModel *Next;
 };
 
-typedef char GenObjs_RailPoint_size_must_be_28[
-    (sizeof(GenObjsRailPoint) == 28) ? 1 : -1];
-typedef char GenObjs_RailString_layout_size_must_be_32[
-    (sizeof(GenObjsRailString) == 32) ? 1 : -1];
-typedef char GenObjs_RailInfo_size_must_be_12[
-    (sizeof(GenObjsRailInfo) == 12) ? 1 : -1];
-typedef char GenObjs_EditorInModel_size_must_be_68[
-    (sizeof(GenObjsEditorInModel) == 68) ? 1 : -1];
-typedef char GenObjs_EditorOutModel_size_must_be_128[
-    (sizeof(GenObjsEditorOutModel) == 128) ? 1 : -1];
-typedef char GenObjs_SDK_SVECTOR_size_must_be_8[
-    (sizeof(SVECTOR) == 8) ? 1 : -1];
+typedef char GenObjs_RailPoint_size_must_be_28[(sizeof(GenObjsRailPoint) == 28) ? 1 : -1];
+typedef char GenObjs_RailString_layout_size_must_be_32[(sizeof(GenObjsRailString) == 32) ? 1 : -1];
+typedef char GenObjs_RailInfo_size_must_be_12[(sizeof(GenObjsRailInfo) == 12) ? 1 : -1];
+typedef char GenObjs_EditorInModel_size_must_be_68[(sizeof(GenObjsEditorInModel) == 68) ? 1 : -1];
+typedef char
+    GenObjs_EditorOutModel_size_must_be_128[(sizeof(GenObjsEditorOutModel) == 128) ? 1 : -1];
+typedef char GenObjs_SDK_SVECTOR_size_must_be_8[(sizeof(SVECTOR) == 8) ? 1 : -1];
 
 /** Read MAIN.SYM's scalar POLYBUFFERSIZE without adding a synthetic import. */
 static inline int GenObjsPolyBufferSize(void)
@@ -274,8 +269,7 @@ public:
     bool Compare(RailPoint *point);
 };
 
-typedef char GenObjs_RailPoint_class_size_must_be_28[
-    (sizeof(RailPoint) == 28) ? 1 : -1];
+typedef char GenObjs_RailPoint_class_size_must_be_28[(sizeof(RailPoint) == 28) ? 1 : -1];
 
 /** Generated rail string with its original CClass base and linked-list fields. */
 class RailString : public CClass
@@ -298,18 +292,15 @@ public:
     virtual ~RailString();
 };
 
-typedef char GenObjs_RailString_size_must_be_32[
-    (sizeof(RailString) == 32) ? 1 : -1];
+typedef char GenObjs_RailString_size_must_be_32[(sizeof(RailString) == 32) ? 1 : -1];
 
 #include "RAILINFO.h"
 
 /** World-space directions for the editor's four static model lights. */
-Vector EditorOutModel::LightVect[4]
-    __attribute__((section(".data"))) = {};
+Vector EditorOutModel::LightVect[4] __attribute__((section(".data"))) = {};
 
 /** World-space positions for the editor's four static model lights. */
-Vector EditorOutModel::LightLoc[4]
-    __attribute__((section(".data"))) = {};
+Vector EditorOutModel::LightLoc[4] __attribute__((section(".data"))) = {};
 
 /** Rail-merge diagnostics recovered from the original small-data block. */
 static char s_From_empty[];
@@ -322,8 +313,8 @@ static char s_Added_string[];
 static char s_Merged_string[];
 
 /** Successful-merge prefix emitted before the merged rail contents. */
-static char s_Heigh_ho_Did_Merge[28]
-    __attribute__((section(".rdata"))) = "\nHeigh ho -- Did Merge: ";
+static char s_Heigh_ho_Did_Merge[28] __attribute__((section(".rdata"))) =
+    "\nHeigh ho -- Did Merge: ";
 
 // === Function implementations (address order) ===
 
@@ -347,10 +338,8 @@ void EditorInModel::InitPolyBuf(bool game_build)
     int buf_size = GenObjsPolyBufferSize();
     int num_entries = ((u32)buf_size << 1) / sizeof(ModelFace);
     EditorInModel::pPolyBufEntry =
-        (ModelFace *)reinterpret_cast<GenObjsDoubleBufferView *>(
-            DoubleBuffer)[0].Polys;
-    EditorInModel::pMaxBufEntry =
-        EditorInModel::pPolyBufEntry + num_entries;
+        (ModelFace *)reinterpret_cast<GenObjsDoubleBufferView *>(DoubleBuffer)[0].Polys;
+    EditorInModel::pMaxBufEntry = EditorInModel::pPolyBufEntry + num_entries;
 }
 
 /**
@@ -369,8 +358,7 @@ void EditorInModel::InitPolyBuf(bool game_build)
 
 ModelFace *EditorInModel::NewModelFace(void)
 {
-    if (EditorInModel::GameBuild != 0 &&
-        EditorInModel::pPolyBufEntry < EditorInModel::pMaxBufEntry)
+    if (EditorInModel::GameBuild != 0 && EditorInModel::pPolyBufEntry < EditorInModel::pMaxBufEntry)
     {
         EditorInModel::pPolyBufEntry++;
         return EditorInModel::pPolyBufEntry;
@@ -387,7 +375,9 @@ ModelFace *EditorInModel::NewModelFace(void)
  * @param self  Constructor receiver, represented by the proven owner-local layout.
  * @return `this` pointer (GCC 2.x ctor convention).
  */
-EditorInModel::EditorInModel() {}
+EditorInModel::EditorInModel()
+{
+}
 
 /**
  *
@@ -400,7 +390,6 @@ EditorInModel::~EditorInModel()
     GenObjsEditorInModel *model = (GenObjsEditorInModel *)this;
 
     KillModelInfo();
-
 }
 
 /**
@@ -520,8 +509,7 @@ void EditorInModel::SetData(SModel *pModel, int model_index)
     ModelFace *last_face = 0;
     SModel *sourceModel = modelInfo->mModel;
     unsigned char *pFace =
-        (unsigned char *)&sourceModel->Vertices[
-            sourceModel->NumVertices + sourceModel->NumNormals];
+        (unsigned char *)&sourceModel->Vertices[sourceModel->NumVertices + sourceModel->NumNormals];
     unsigned int NumFaces = sourceModel->NumFaces;
 
     for (int j = 0; j < (int)NumFaces; j++)
@@ -557,8 +545,7 @@ void EditorInModel::SetData(SModel *pModel, int model_index)
         pFace += face->outputSize;
 
         SVector *point = face->verts;
-        ModelPoint *verts =
-            (ModelPoint *)modelInfo->mModel->Vertices;
+        ModelPoint *verts = (ModelPoint *)modelInfo->mModel->Vertices;
         for (int i = 0; i < 4; i++)
         {
             int index = (u8)face->vertexNumber[i];
@@ -601,8 +588,7 @@ void EditorInModel::SetData(SModel *pModel, int model_index)
             }
 
             face->numVerts = 4;
-            if (point[3].vx == point[2].vx &&
-                point[3].vy == point[2].vy &&
+            if (point[3].vx == point[2].vx && point[3].vy == point[2].vy &&
                 point[3].vz == point[2].vz)
             {
                 face->numVerts = 3;
@@ -635,10 +621,16 @@ void EditorInModel::SetData(SModel *pModel, int model_index)
             }
 
             point[(u8)face->numVerts] = point[0];
-            int dir =
-                (point[1].vx - point[0].vx) * (point[2].vy - point[1].vy) -
-                (point[1].vy - point[0].vy) * (point[2].vx - point[1].vx);
-            if (dir < 0) { dir = 0; } else { dir = 2; }
+            int dir = (point[1].vx - point[0].vx) * (point[2].vy - point[1].vy) -
+                      (point[1].vy - point[0].vy) * (point[2].vx - point[1].vx);
+            if (dir < 0)
+            {
+                dir = 0;
+            }
+            else
+            {
+                dir = 2;
+            }
             face->orientation |= dir;
 
             for (int i = 0; i < face->numVerts; i++)
@@ -652,8 +644,7 @@ void EditorInModel::SetData(SModel *pModel, int model_index)
         }
     }
 
-    GenObjsRailInfo *railInfo =
-        (GenObjsRailInfo *)CClass::operator new(sizeof(GenObjsRailInfo));
+    GenObjsRailInfo *railInfo = (GenObjsRailInfo *)CClass::operator new(sizeof(GenObjsRailInfo));
     if (railInfo != 0)
     {
         railInfo = reinterpret_cast<GenObjsRailInfo *>(::new (railInfo) RailInfo());
@@ -755,14 +746,11 @@ void EditorOutModel::Init(void)
     {
         int i;
 
-        EditorOutModel::IntensityLookup =
-            (unsigned char *)Mem_New(0x400, 1, 1);
+        EditorOutModel::IntensityLookup = (unsigned char *)Mem_New(0x400, 1, 1);
         for (i = 0; i < 0x400; i++)
         {
-            int color =
-                (0x3ff - ((0x3ff - i) * EditorOutModel::FallOff) / 10) >> 2;
-            if (color < 0)
-                color = 0;
+            int color = (0x3ff - ((0x3ff - i) * EditorOutModel::FallOff) / 10) >> 2;
+            if (color < 0) color = 0;
             ((u8 *)EditorOutModel::IntensityLookup)[i] = (u8)color;
         }
     }
@@ -770,8 +758,7 @@ void EditorOutModel::Init(void)
     {
         int i;
 
-        EditorOutModel::MixLookup =
-            (unsigned char *)Mem_New(0x100, 1, 1);
+        EditorOutModel::MixLookup = (unsigned char *)Mem_New(0x100, 1, 1);
         for (i = 0; i < 0x100; i++)
         {
             ((u8 *)EditorOutModel::MixLookup)[i] =
@@ -784,8 +771,7 @@ void EditorOutModel::Init(void)
         int freeArea;
         ModelFace2 *faceBuf;
 
-        EditorOutModel::FaceBuf =
-            (ModelFace2 *)Mem_New(0x9c40, 0, 1);
+        EditorOutModel::FaceBuf = (ModelFace2 *)Mem_New(0x9c40, 0, 1);
         i = 0;
         freeArea = -9999;
         faceBuf = EditorOutModel::FaceBuf;
@@ -838,11 +824,9 @@ ModelFace2 *EditorOutModel::NewFace(void)
     int count = 2000;
     for (; count != 0; count--)
     {
-        if (EditorOutModel::FaceBuf[EditorOutModel::CurrentFace].area == -9999)
-            break;
+        if (EditorOutModel::FaceBuf[EditorOutModel::CurrentFace].area == -9999) break;
         EditorOutModel::CurrentFace++;
-        if (EditorOutModel::CurrentFace > 1999)
-            EditorOutModel::CurrentFace = 0;
+        if (EditorOutModel::CurrentFace > 1999) EditorOutModel::CurrentFace = 0;
     }
     face = &EditorOutModel::FaceBuf[EditorOutModel::CurrentFace++];
     face->alive = (void *)1;
@@ -945,7 +929,6 @@ EditorOutModel::~EditorOutModel()
             model->Faces = face;
         } while (face != 0);
     }
-
 }
 
 /**
@@ -961,9 +944,7 @@ void EditorOutModel::RestoreFaces(void)
 {
     ModelFace2 *face;
 
-    for (face = ((GenObjsEditorOutModel *)this)->Faces;
-         face != 0;
-         face = face->next)
+    for (face = ((GenObjsEditorOutModel *)this)->Faces; face != 0; face = face->next)
     {
         face->alive = (void *)1;
         face->area = -8888;
@@ -1028,16 +1009,13 @@ void EditorOutModel::RemoveSomeHiddenFaces(EditorOutModel *neighbor, int orienta
                 for (i = 0; i < 2; i++)
                 {
                     orientation[i] = (s8)face[i]->sourceFace->orientation;
-                    if (!(orientation[i] & 1))
-                        orientation[i] = 2 - orientation[i];
+                    if (!(orientation[i] & 1)) orientation[i] = 2 - orientation[i];
                     orientation[i] = (orientation[i] + model[i]->Rot) & 3;
-                    if (!(orientation[i] & 1))
-                        orientation[i] = 2 - orientation[i];
+                    if (!(orientation[i] & 1)) orientation[i] = 2 - orientation[i];
                     face[i]->orientation = (unsigned char)orientation[i];
                 }
 
-                if (orientation[1] == facing &&
-                    (orientation[0] & 2) != (facing & 2) &&
+                if (orientation[1] == facing && (orientation[0] & 2) != (facing & 2) &&
                     (orientation[0] & 1) == (facing & 1))
                 {
                     for (index = 0; index < 2; index++)
@@ -1061,34 +1039,33 @@ void EditorOutModel::RemoveSomeHiddenFaces(EditorOutModel *neighbor, int orienta
 
                             switch (orientation[index])
                             {
-                            case 0:
-                                fp->pt.vz = model[index]->X -
-                                            face[index]->sourceFace->verts[i].vz;
-                                fp->pt.vx = model[index]->Z -
-                                            face[index]->sourceFace->verts[i].vx;
-                                break;
-                            case 1:
-                                fp->pt.vx = model[index]->X -
-                                            face[index]->sourceFace->verts[i].vx;
-                                fp->pt.vz = model[index]->Z +
-                                            face[index]->sourceFace->verts[i].vz;
-                                break;
-                            case 2:
-                                fp->pt.vz = model[index]->X +
-                                            face[index]->sourceFace->verts[i].vz;
-                                fp->pt.vx = model[index]->Z +
-                                            face[index]->sourceFace->verts[i].vx;
-                                break;
-                            case 3:
-                                fp->pt.vx = model[index]->X +
-                                            face[index]->sourceFace->verts[i].vx;
-                                fp->pt.vz = model[index]->Z -
-                                            face[index]->sourceFace->verts[i].vz;
-                                break;
+                                case 0:
+                                    fp->pt.vz =
+                                        model[index]->X - face[index]->sourceFace->verts[i].vz;
+                                    fp->pt.vx =
+                                        model[index]->Z - face[index]->sourceFace->verts[i].vx;
+                                    break;
+                                case 1:
+                                    fp->pt.vx =
+                                        model[index]->X - face[index]->sourceFace->verts[i].vx;
+                                    fp->pt.vz =
+                                        model[index]->Z + face[index]->sourceFace->verts[i].vz;
+                                    break;
+                                case 2:
+                                    fp->pt.vz =
+                                        model[index]->X + face[index]->sourceFace->verts[i].vz;
+                                    fp->pt.vx =
+                                        model[index]->Z + face[index]->sourceFace->verts[i].vx;
+                                    break;
+                                case 3:
+                                    fp->pt.vx =
+                                        model[index]->X + face[index]->sourceFace->verts[i].vx;
+                                    fp->pt.vz =
+                                        model[index]->Z - face[index]->sourceFace->verts[i].vz;
+                                    break;
                             }
 
-                            fp->pt.vy = model[index]->Y +
-                                        face[index]->sourceFace->verts[i].vy;
+                            fp->pt.vy = model[index]->Y + face[index]->sourceFace->verts[i].vy;
                         }
 
                         fp->next = fp_list[index];
@@ -1100,29 +1077,25 @@ void EditorOutModel::RemoveSomeHiddenFaces(EditorOutModel *neighbor, int orienta
                             do
                             {
                                 next = fp->next;
-                                if (last_fp != 0)
-                                    fp->next = last_fp;
+                                if (last_fp != 0) fp->next = last_fp;
                                 last_fp = fp;
                                 fp = next;
                             } while (next != fp_list[index]);
                             next->next = last_fp;
                         }
 
-                        if (face[index]->area == -8888)
-                            face[index]->area = GetArea(fp_list[index]);
+                        if (face[index]->area == -8888) face[index]->area = GetArea(fp_list[index]);
                     }
 
                     sub_area = GetEmbeddedArea(fp_list[0], fp_list[1]);
 
                     orig_area = face1->area;
                     face1->area = orig_area - sub_area;
-                    if (face1->area < 301 || face1->area <= (orig_area >> 5))
-                        face1->alive = 0;
+                    if (face1->area < 301 || face1->area <= (orig_area >> 5)) face1->alive = 0;
 
                     orig_area = face2->area;
                     face2->area = orig_area - sub_area;
-                    if (face2->area < 301 || face2->area <= (orig_area >> 5))
-                        face2->alive = 0;
+                    if (face2->area < 301 || face2->area <= (orig_area >> 5)) face2->alive = 0;
                 }
             }
         }
@@ -1134,13 +1107,11 @@ void EditorOutModel::RemoveSomeHiddenFaces(EditorOutModel *neighbor, int orienta
 
         for (face1 = model1->Faces; face1 != 0; face1 = face1->next)
         {
-            if (face1->alive == 0)
-                continue;
+            if (face1->alive == 0) continue;
 
             for (face2 = model2->Faces; face2 != 0; face2 = face2->next)
             {
-                if (face2->alive == 0)
-                    continue;
+                if (face2->alive == 0) continue;
 
                 unsigned char facing = (unsigned char)orientation;
                 ModelFace2 *face[2];
@@ -1162,16 +1133,13 @@ void EditorOutModel::RemoveSomeHiddenFaces(EditorOutModel *neighbor, int orienta
                 for (i = 0; i < 2; i++)
                 {
                     orientation[i] = (s8)face[i]->sourceFace->orientation;
-                    if (!(orientation[i] & 1))
-                        orientation[i] = 2 - orientation[i];
+                    if (!(orientation[i] & 1)) orientation[i] = 2 - orientation[i];
                     orientation[i] = (orientation[i] + model[i]->Rot) & 3;
-                    if (!(orientation[i] & 1))
-                        orientation[i] = 2 - orientation[i];
+                    if (!(orientation[i] & 1)) orientation[i] = 2 - orientation[i];
                     face[i]->orientation = (unsigned char)orientation[i];
                 }
 
-                if (orientation[1] == facing &&
-                    (orientation[0] & 2) != (facing & 2) &&
+                if (orientation[1] == facing && (orientation[0] & 2) != (facing & 2) &&
                     (orientation[0] & 1) == (facing & 1))
                 {
                     for (index = 0; index < 2; index++)
@@ -1195,34 +1163,33 @@ void EditorOutModel::RemoveSomeHiddenFaces(EditorOutModel *neighbor, int orienta
 
                             switch (orientation[index])
                             {
-                            case 0:
-                                fp->pt.vz = model[index]->X -
-                                            face[index]->sourceFace->verts[i].vz;
-                                fp->pt.vx = model[index]->Z -
-                                            face[index]->sourceFace->verts[i].vx;
-                                break;
-                            case 1:
-                                fp->pt.vx = model[index]->X -
-                                            face[index]->sourceFace->verts[i].vx;
-                                fp->pt.vz = model[index]->Z +
-                                            face[index]->sourceFace->verts[i].vz;
-                                break;
-                            case 2:
-                                fp->pt.vz = model[index]->X +
-                                            face[index]->sourceFace->verts[i].vz;
-                                fp->pt.vx = model[index]->Z +
-                                            face[index]->sourceFace->verts[i].vx;
-                                break;
-                            case 3:
-                                fp->pt.vx = model[index]->X +
-                                            face[index]->sourceFace->verts[i].vx;
-                                fp->pt.vz = model[index]->Z -
-                                            face[index]->sourceFace->verts[i].vz;
-                                break;
+                                case 0:
+                                    fp->pt.vz =
+                                        model[index]->X - face[index]->sourceFace->verts[i].vz;
+                                    fp->pt.vx =
+                                        model[index]->Z - face[index]->sourceFace->verts[i].vx;
+                                    break;
+                                case 1:
+                                    fp->pt.vx =
+                                        model[index]->X - face[index]->sourceFace->verts[i].vx;
+                                    fp->pt.vz =
+                                        model[index]->Z + face[index]->sourceFace->verts[i].vz;
+                                    break;
+                                case 2:
+                                    fp->pt.vz =
+                                        model[index]->X + face[index]->sourceFace->verts[i].vz;
+                                    fp->pt.vx =
+                                        model[index]->Z + face[index]->sourceFace->verts[i].vx;
+                                    break;
+                                case 3:
+                                    fp->pt.vx =
+                                        model[index]->X + face[index]->sourceFace->verts[i].vx;
+                                    fp->pt.vz =
+                                        model[index]->Z - face[index]->sourceFace->verts[i].vz;
+                                    break;
                             }
 
-                            fp->pt.vy = model[index]->Y +
-                                        face[index]->sourceFace->verts[i].vy;
+                            fp->pt.vy = model[index]->Y + face[index]->sourceFace->verts[i].vy;
                         }
 
                         fp->next = fp_list[index];
@@ -1234,29 +1201,25 @@ void EditorOutModel::RemoveSomeHiddenFaces(EditorOutModel *neighbor, int orienta
                             do
                             {
                                 next = fp->next;
-                                if (last_fp != 0)
-                                    fp->next = last_fp;
+                                if (last_fp != 0) fp->next = last_fp;
                                 last_fp = fp;
                                 fp = next;
                             } while (next != fp_list[index]);
                             next->next = last_fp;
                         }
 
-                        if (face[index]->area == -8888)
-                            face[index]->area = GetArea(fp_list[index]);
+                        if (face[index]->area == -8888) face[index]->area = GetArea(fp_list[index]);
                     }
 
                     sub_area = GetEmbeddedArea(fp_list[0], fp_list[1]);
 
                     orig_area = face1->area;
                     face1->area = orig_area - sub_area;
-                    if (face1->area < 301 || face1->area <= (orig_area >> 5))
-                        face1->alive = 0;
+                    if (face1->area < 301 || face1->area <= (orig_area >> 5)) face1->alive = 0;
 
                     orig_area = face2->area;
                     face2->area = orig_area - sub_area;
-                    if (face2->area < 301 || face2->area <= (orig_area >> 5))
-                        face2->alive = 0;
+                    if (face2->area < 301 || face2->area <= (orig_area >> 5)) face2->alive = 0;
                 }
             }
         }
@@ -1287,12 +1250,10 @@ void EditorOutModel::RemoveAllHiddenFaces(void)
     int i;
 
     // Skip transparent/special models (info flags bit 0)
-    if ((model->SourceModel->flags & 1) != 0)
-        return;
+    if ((model->SourceModel->flags & 1) != 0) return;
 
     // Skip floor pieces (no hidden face removal needed)
-    if (IsAFloorPiece(model->SourceModel->mIndex) != 0)
-        return;
+    if (IsAFloorPiece(model->SourceModel->mIndex) != 0) return;
 
     i = 0;
     if (model->NumNeighbors != 0)
@@ -1303,8 +1264,7 @@ void EditorOutModel::RemoveAllHiddenFaces(void)
             // and at least one of the pair has hidden faces
             if (((model->Neighbors[i]->SourceModel->flags & 1) == 0) &&
                 (IsAFloorPiece(model->Neighbors[i]->SourceModel->mIndex) == 0) &&
-                ((model->FaceRemovalRequest != 0 ||
-                  model->Neighbors[i]->FaceRemovalRequest != 0)))
+                ((model->FaceRemovalRequest != 0 || model->Neighbors[i]->FaceRemovalRequest != 0)))
             {
 
                 // Select removal mode based on flags bit 3 and neighbor index
@@ -1361,38 +1321,32 @@ int EditorOutModel::SetModelDataSize(bool game_build)
     int size_of_faces = 0;
     model->NumFaces = 0;
     int size_to_faces = ((int)(vertexCount + normalCount) << 3) + 0x1c;
-    if (source_face == 0)
-        goto done;
+    if (source_face == 0) goto done;
 
 loop:
-{
-    int copy_it = 1;
-    if (game_build == 0)
-        goto skipCheck;
-    if (out_face == 0)
-        goto skipCheck;
-    if (out_face->sourceFace != source_face)
-        goto skipCheck;
     {
-        copy_it = out_face->alive != 0;
-        out_face = out_face->next;
+        int copy_it = 1;
+        if (game_build == 0) goto skipCheck;
+        if (out_face == 0) goto skipCheck;
+        if (out_face->sourceFace != source_face) goto skipCheck;
+        {
+            copy_it = out_face->alive != 0;
+            out_face = out_face->next;
+        }
+    skipCheck:
+        if (copy_it == 0) goto noInclude;
+        size_of_faces = size_of_faces + source_face->outputSize;
+        model->NumFaces = model->NumFaces + 1;
+    noInclude:
+        source_face = source_face->next;
     }
-skipCheck:
-    if (copy_it == 0)
-        goto noInclude;
-    size_of_faces = size_of_faces + source_face->outputSize;
-    model->NumFaces = model->NumFaces + 1;
-noInclude:
-    source_face = source_face->next;
-}
-    if (source_face != 0)
-        goto loop;
+    if (source_face != 0) goto loop;
 
 done:
-{
-    model->Size = size_to_faces + size_of_faces;
-    return model->Size;
-}
+    {
+        model->Size = size_to_faces + size_of_faces;
+        return model->Size;
+    }
 }
 
 /**
@@ -1484,8 +1438,7 @@ int EditorOutModel::CreateModelData(char *pData, bool game_build)
     self->TargetModel = (SModel *)pData;
 
     // Total copy size: header (0x1C) + (vertexCount + normalCount) × 8 bytes per SVECTOR
-    size_to_faces =
-        ((u32)self->NumVertices + (u32)self->NumNormals) * 8 + 0x1c;
+    size_to_faces = ((u32)self->NumVertices + (u32)self->NumNormals) * 8 + 0x1c;
     pModel = self->SourceModel->mModel;
     Mem_Copy(pData, pModel, size_to_faces);
 
@@ -1506,38 +1459,38 @@ int EditorOutModel::CreateModelData(char *pData, bool game_build)
 
     switch (self->Rot)
     {
-    case 0:
-        // 0°: no rotation, copy as-is
-        bounds->xmin = xmin;
-        bounds->xmax = xmax;
-        bounds->zmin = zmin;
-        bounds->zmax = zmax;
-        outbuf = self->TargetModel;
-        break;
-    case 1:
-        // 90° CW: X' = -Z, Z' = X
-        bounds->xmin = -zmax;
-        bounds->xmax = -zmin;
-        bounds->zmin = xmin;
-        bounds->zmax = xmax;
-        outbuf = self->TargetModel;
-        break;
-    case 2:
-        // 180°: negate both axes
-        bounds->xmin = -xmax;
-        bounds->xmax = -xmin;
-        bounds->zmin = -zmax;
-        bounds->zmax = -zmin;
-        outbuf = self->TargetModel;
-        break;
-    case 3:
-        // 270° CW: X' = Z, Z' = -X
-        bounds->xmin = zmin;
-        bounds->xmax = zmax;
-        bounds->zmin = -xmax;
-        bounds->zmax = -xmin;
-        outbuf = self->TargetModel;
-        break;
+        case 0:
+            // 0°: no rotation, copy as-is
+            bounds->xmin = xmin;
+            bounds->xmax = xmax;
+            bounds->zmin = zmin;
+            bounds->zmax = zmax;
+            outbuf = self->TargetModel;
+            break;
+        case 1:
+            // 90° CW: X' = -Z, Z' = X
+            bounds->xmin = -zmax;
+            bounds->xmax = -zmin;
+            bounds->zmin = xmin;
+            bounds->zmax = xmax;
+            outbuf = self->TargetModel;
+            break;
+        case 2:
+            // 180°: negate both axes
+            bounds->xmin = -xmax;
+            bounds->xmax = -xmin;
+            bounds->zmin = -zmax;
+            bounds->zmax = -zmin;
+            outbuf = self->TargetModel;
+            break;
+        case 3:
+            // 270° CW: X' = Z, Z' = -X
+            bounds->xmin = zmin;
+            bounds->xmax = zmax;
+            bounds->zmin = -xmax;
+            bounds->zmax = -xmin;
+            outbuf = self->TargetModel;
+            break;
     }
     // ================================================================
     // 3. Rotate vertex positions (X and Z) based on rotation
@@ -1554,22 +1507,22 @@ int EditorOutModel::CreateModelData(char *pData, bool game_build)
             z = vertex[i].vz;
             switch (self->Rot)
             {
-            case 0:
-                vertex[i].vx = x;
-                vertex[i].vz = z;
-                break;
-            case 1:
-                vertex[i].vx = -z;
-                vertex[i].vz = x;
-                break;
-            case 2:
-                vertex[i].vx = -x;
-                vertex[i].vz = -z;
-                break;
-            case 3:
-                vertex[i].vx = z;
-                vertex[i].vz = -x;
-                break;
+                case 0:
+                    vertex[i].vx = x;
+                    vertex[i].vz = z;
+                    break;
+                case 1:
+                    vertex[i].vx = -z;
+                    vertex[i].vz = x;
+                    break;
+                case 2:
+                    vertex[i].vx = -x;
+                    vertex[i].vz = -z;
+                    break;
+                case 3:
+                    vertex[i].vx = z;
+                    vertex[i].vz = -x;
+                    break;
             }
         }
     }
@@ -1589,22 +1542,22 @@ int EditorOutModel::CreateModelData(char *pData, bool game_build)
             z = normal[i].vz;
             switch (self->Rot)
             {
-            case 0:
-                normal[i].vx = x;
-                normal[i].vz = z;
-                break;
-            case 1:
-                normal[i].vx = -z;
-                normal[i].vz = x;
-                break;
-            case 2:
-                normal[i].vx = -x;
-                normal[i].vz = -z;
-                break;
-            case 3:
-                normal[i].vx = z;
-                normal[i].vz = -x;
-                break;
+                case 0:
+                    normal[i].vx = x;
+                    normal[i].vz = z;
+                    break;
+                case 1:
+                    normal[i].vx = -z;
+                    normal[i].vz = x;
+                    break;
+                case 2:
+                    normal[i].vx = -x;
+                    normal[i].vz = -z;
+                    break;
+                case 3:
+                    normal[i].vx = z;
+                    normal[i].vz = -x;
+                    break;
             }
         }
     }
@@ -1615,8 +1568,7 @@ int EditorOutModel::CreateModelData(char *pData, bool game_build)
     pFace = (char *)pModel + size_to_faces;
     test_face = (ModelFace2 *)self->Faces;
 
-    for (face = (ModelFace *)self->SourceModel->Faces; face != 0;
-         face = face->next)
+    for (face = (ModelFace *)self->SourceModel->Faces; face != 0; face = face->next)
     {
         copy_it = (void *)1;
         make_invisible = 0;
@@ -1666,16 +1618,12 @@ int EditorOutModel::CreateModelData(char *pData, bool game_build)
                     // dX = ((worldX + vertexX) - lightX) >> 1
                     // dZ = ((worldZ + vertexZ) - lightZ) >> 1
                     // dY = 0 (2D distance only)
-                    light.vx =
-                        ((int)self->X +
-                         (int)vertex[(u32)(u8)pData[vert + 4]].vx -
-                         LightLoc[lt].vx) >>
-                        1;
-                    light.vz =
-                        ((int)self->Z +
-                         (int)vertex[(u32)(u8)pData[vert + 4]].vz -
-                         LightLoc[lt].vz) >>
-                        1;
+                    light.vx = ((int)self->X + (int)vertex[(u32)(u8)pData[vert + 4]].vx -
+                                LightLoc[lt].vx) >>
+                               1;
+                    light.vz = ((int)self->Z + (int)vertex[(u32)(u8)pData[vert + 4]].vz -
+                                LightLoc[lt].vz) >>
+                               1;
                     light.vy = 0;
 
                     // GTE SQR: square the delta vector components
@@ -1692,8 +1640,7 @@ int EditorOutModel::CreateModelData(char *pData, bool game_build)
                     }
                     else
                     {
-                        add_color =
-                            (EditorOutModel::LightIntensity << 8) / r_squared;
+                        add_color = (EditorOutModel::LightIntensity << 8) / r_squared;
                     }
                     if (0x3ff < add_color)
                     {
@@ -1701,8 +1648,7 @@ int EditorOutModel::CreateModelData(char *pData, bool game_build)
                     }
 
                     // Accumulate contribution from this light
-                    add_color = (u32)*(u8 *)(EditorOutModel::IntensityLookup +
-                                            add_color);
+                    add_color = (u32) * (u8 *)(EditorOutModel::IntensityLookup + add_color);
                     color += add_color;
                 }
 
@@ -1712,8 +1658,7 @@ int EditorOutModel::CreateModelData(char *pData, bool game_build)
                     color = 0xff;
                 }
 
-                pColor[vert] =
-                    *(u8 *)(EditorOutModel::MixLookup + color);
+                pColor[vert] = *(u8 *)(EditorOutModel::MixLookup + color);
             }
 
             // Advance face write cursor by face data size
@@ -1743,10 +1688,8 @@ int EditorOutModel::CreateModelData(char *pData, bool game_build)
  * @param wire_model  Original API argument; unused by this implementation.
  * @param against  Side-orientation mask used when reapplying hidden flags.
  */
-void EditorOutModel::UnhideSharedFaces(
-    bool unhide,
-    EditorOutModel *wire_model,
-    unsigned char against)
+void EditorOutModel::UnhideSharedFaces(bool unhide, EditorOutModel *wire_model,
+                                       unsigned char against)
 {
     GenObjsEditorOutModel *self = (GenObjsEditorOutModel *)this;
     char *pFaceData;
@@ -1755,8 +1698,8 @@ void EditorOutModel::UnhideSharedFaces(
 
     if ((self->SourceModel->flags & 8) == 0)
     {
-        pFaceData = (char *)&self->TargetModel->Vertices[
-            self->TargetModel->NumVertices + self->TargetModel->NumNormals];
+        pFaceData = (char *)&self->TargetModel
+                        ->Vertices[self->TargetModel->NumVertices + self->TargetModel->NumNormals];
         face1 = self->SourceModel->Faces;
         face1_info = self->Faces;
 
@@ -1768,8 +1711,7 @@ void EditorOutModel::UnhideSharedFaces(
                     reinterpret_cast<GenObjsOutputFaceHeader *>(pFaceData);
                 if (face1_info != 0 && face1_info->sourceFace == face1)
                 {
-                    if (face1_info->alive == 0)
-                        outputFace->flags &= ~0x80;
+                    if (face1_info->alive == 0) outputFace->flags &= ~0x80;
                     face1_info = face1_info->next;
                 }
 
@@ -1792,15 +1734,13 @@ void EditorOutModel::UnhideSharedFaces(
                     is_outer_face = true;
                 }
 
-                if (is_hidden_face &&
-                    (face1_info->orientation & 1) == (against & 1) &&
+                if (is_hidden_face && (face1_info->orientation & 1) == (against & 1) &&
                     (face1_info->orientation & 2) != (against & 2))
                 {
                     outputFace->flags |= 0x80;
                 }
 
-                if (is_outer_face)
-                    face1_info = face1_info->next;
+                if (is_outer_face) face1_info = face1_info->next;
 
                 pFaceData += outputFace->size;
                 face1 = face1->next;
@@ -1842,16 +1782,11 @@ bool RailPoint::Compare(RailPoint *point)
     int dy = Pos.vy - point->Pos.vy;
     int dz = Pos.vz - point->Pos.vz;
 
-    if ((unsigned int)(dx + 6) >= 13)
-        goto fail;
-    if (dy < -6)
-        goto done;
-    if (dy >= 7)
-        goto fail;
-    if (dz < -6)
-        goto done;
-    if (dz >= 7)
-        goto fail;
+    if ((unsigned int)(dx + 6) >= 13) goto fail;
+    if (dy < -6) goto done;
+    if (dy >= 7) goto fail;
+    if (dz < -6) goto done;
+    if (dz >= 7) goto fail;
     return 1;
 fail:;
 done:
@@ -1902,7 +1837,6 @@ RailString::~RailString()
             point = next_point;
         } while (i < count);
     }
-
 }
 
 /**
@@ -1998,8 +1932,7 @@ void RailString::MakeCCW(void)
             GenObjsRailPoint *b = a->Next;
             cross = (a->Pos.vx - center.vx) * (b->Pos.vz - a->Pos.vz) -
                     (a->Pos.vz - center.vz) * (b->Pos.vx - a->Pos.vx);
-            if (cross > 0)
-                return;
+            if (cross > 0) return;
             a = b;
         } while (cross == 0);
 
@@ -2035,9 +1968,7 @@ void RailString::MakeCCW(void)
  * @param zoff  World-space Z offset.
  * @param rot  Quarter-turn rotation applied in the X/Z plane.
  */
-void RailString::CopyString(
-    RailString *from_,
-    int xoff, int yoff, int zoff, int rot)
+void RailString::CopyString(RailString *from_, int xoff, int yoff, int zoff, int rot)
 {
     GenObjsRailString *self = (GenObjsRailString *)this;
     GenObjsRailString *from = (GenObjsRailString *)from_;
@@ -2049,8 +1980,7 @@ void RailString::CopyString(
     self->IsLoop = from->IsLoop;
     source = from->PointList;
 
-    if (from->NumPoints <= 0)
-        goto done;
+    if (from->NumPoints <= 0) goto done;
 
     do
     {
@@ -2063,8 +1993,7 @@ void RailString::CopyString(
 
         // Link into list
         copy->Next = 0;
-        if (i != 0)
-            goto appendPrev;
+        if (i != 0) goto appendPrev;
         self->PointList = copy;
         goto afterLink;
     appendPrev:
@@ -2074,38 +2003,38 @@ void RailString::CopyString(
         // Rotate coordinates based on rotation parameter
         switch (rot)
         {
-        case 0:
-        {
-            u16 srcX = *(u16 *)&source->Pos.vx;
-            copy->Pos.vx = (s16)srcX;
-            u16 srcZ = *(u16 *)&source->Pos.vz;
-            copy->Pos.vz = (s16)srcZ;
-            break;
-        }
-        case 1:
-        {
-            u16 srcZ = *(u16 *)&source->Pos.vz;
-            copy->Pos.vx = -(s16)srcZ;
-            u16 srcX = *(u16 *)&source->Pos.vx;
-            copy->Pos.vz = (s16)srcX;
-            break;
-        }
-        case 2:
-        {
-            u16 srcX = *(u16 *)&source->Pos.vx;
-            copy->Pos.vx = -(s16)srcX;
-            u16 srcZ = *(u16 *)&source->Pos.vz;
-            copy->Pos.vz = -(s16)srcZ;
-            break;
-        }
-        case 3:
-        {
-            u16 srcZ = *(u16 *)&source->Pos.vz;
-            copy->Pos.vx = (s16)srcZ;
-            u16 srcX = *(u16 *)&source->Pos.vx;
-            copy->Pos.vz = -(s16)srcX;
-            break;
-        }
+            case 0:
+            {
+                u16 srcX = *(u16 *)&source->Pos.vx;
+                copy->Pos.vx = (s16)srcX;
+                u16 srcZ = *(u16 *)&source->Pos.vz;
+                copy->Pos.vz = (s16)srcZ;
+                break;
+            }
+            case 1:
+            {
+                u16 srcZ = *(u16 *)&source->Pos.vz;
+                copy->Pos.vx = -(s16)srcZ;
+                u16 srcX = *(u16 *)&source->Pos.vx;
+                copy->Pos.vz = (s16)srcX;
+                break;
+            }
+            case 2:
+            {
+                u16 srcX = *(u16 *)&source->Pos.vx;
+                copy->Pos.vx = -(s16)srcX;
+                u16 srcZ = *(u16 *)&source->Pos.vz;
+                copy->Pos.vz = -(s16)srcZ;
+                break;
+            }
+            case 3:
+            {
+                u16 srcZ = *(u16 *)&source->Pos.vz;
+                copy->Pos.vx = (s16)srcZ;
+                u16 srcX = *(u16 *)&source->Pos.vx;
+                copy->Pos.vz = -(s16)srcX;
+                break;
+            }
         }
         last_copy = copy;
         // Copy Y and add offsets
@@ -2129,8 +2058,7 @@ void RailString::CopyString(
             copy->Material = flags;
         }
         source = source->Next;
-        if (i >= from->NumPoints)
-            break;
+        if (i >= from->NumPoints) break;
     } while (1);
 
 done:
@@ -2174,10 +2102,11 @@ public:
     int NumPoints;
 };
 
-typedef char genobjs_assignable_rail_point_size_must_be_28[
-    (sizeof(GenObjsAssignableRailPoint) == 28) ? 1 : -1];
-typedef char genobjs_assignable_rail_string_size_must_be_32[
-    (sizeof(GenObjsAssignableRailString) == 32) ? 1 : -1];
+typedef char
+    genobjs_assignable_rail_point_size_must_be_28[(sizeof(GenObjsAssignableRailPoint) == 28) ? 1
+                                                                                             : -1];
+typedef char genobjs_assignable_rail_string_size_must_be_32
+    [(sizeof(GenObjsAssignableRailString) == 32) ? 1 : -1];
 
 /**
  * Merge a compatible rail string into this string.
@@ -2196,14 +2125,10 @@ typedef char genobjs_assignable_rail_string_size_must_be_32[
  * @param debugify     Emit diagnostic messages for invalid or successful merges.
  * @return One when a merge was performed; otherwise zero.
  */
-bool RailString::MergeString(
-    RailString *string_from,
-    bool debugify)
+bool RailString::MergeString(RailString *string_from, bool debugify)
 {
-    GenObjsAssignableRailPoint *from =
-        (GenObjsAssignableRailPoint *)string_from->PointList;
-    GenObjsAssignableRailPoint *to =
-        (GenObjsAssignableRailPoint *)PointList;
+    GenObjsAssignableRailPoint *from = (GenObjsAssignableRailPoint *)string_from->PointList;
+    GenObjsAssignableRailPoint *to = (GenObjsAssignableRailPoint *)PointList;
     GenObjsAssignableRailPoint *a;
     GenObjsAssignableRailPoint *b;
     GenObjsAssignableRailPoint *to_first;
@@ -2215,47 +2140,33 @@ bool RailString::MergeString(
 
     if (debugify)
     {
-        if (from == 0)
-            printf(s_From_empty);
-        if (to == 0)
-            printf(s_To_empty);
-        if (string_from->IsLoop == 0)
-            printf(s_from_not_loop);
-        if (IsLoop == 0)
-            printf(s_To_not_loop);
+        if (from == 0) printf(s_From_empty);
+        if (to == 0) printf(s_To_empty);
+        if (string_from->IsLoop == 0) printf(s_from_not_loop);
+        if (IsLoop == 0) printf(s_To_not_loop);
     }
 
-    if (from == 0 || to == 0)
-        return 0;
+    if (from == 0 || to == 0) return 0;
 
-    if (BoundsMin.vx - 6 > string_from->BoundsMax.vx)
-        return 0;
-    if (string_from->BoundsMin.vx > BoundsMax.vx + 6)
-        return 0;
-    if (BoundsMin.vy - 6 > string_from->BoundsMax.vy)
-        return 0;
-    if (string_from->BoundsMin.vy > BoundsMax.vy + 6)
-        return 0;
-    if (BoundsMin.vz - 6 > string_from->BoundsMax.vz)
-        return 0;
-    if (string_from->BoundsMin.vz > BoundsMax.vz + 6)
-        return 0;
+    if (BoundsMin.vx - 6 > string_from->BoundsMax.vx) return 0;
+    if (string_from->BoundsMin.vx > BoundsMax.vx + 6) return 0;
+    if (BoundsMin.vy - 6 > string_from->BoundsMax.vy) return 0;
+    if (string_from->BoundsMin.vy > BoundsMax.vy + 6) return 0;
+    if (BoundsMin.vz - 6 > string_from->BoundsMax.vz) return 0;
+    if (string_from->BoundsMin.vz > BoundsMax.vz + 6) return 0;
 
     if (IsLoop == 0)
     {
-        if (string_from->IsLoop != 0)
-            return 0;
+        if (string_from->IsLoop != 0) return 0;
 
         GenObjsAssignableRailPoint *from_last;
         GenObjsAssignableRailPoint *to_last;
 
         from_last = from;
-        while (from_last->Next != 0)
-            from_last = from_last->Next;
+        while (from_last->Next != 0) from_last = from_last->Next;
 
         to_last = to;
-        while (to_last->Next != 0)
-            to_last = to_last->Next;
+        while (to_last->Next != 0) to_last = to_last->Next;
 
         if (((RailPoint *)from)->Compare((RailPoint *)to) != 0 ||
             ((RailPoint *)from_last)->Compare((RailPoint *)to_last) != 0)
@@ -2325,8 +2236,7 @@ bool RailString::MergeString(
         }
     }
 
-    if (string_from->IsLoop == 0)
-        return 0;
+    if (string_from->IsLoop == 0) return 0;
 
     {
         int j;
@@ -2357,8 +2267,7 @@ bool RailString::MergeString(
             {
                 if (scanning)
                 {
-                    if (to_first == 0)
-                        to_first = a;
+                    if (to_first == 0) to_first = a;
                     to_last = a;
                 }
             }
@@ -2371,8 +2280,7 @@ bool RailString::MergeString(
         }
     }
 
-    if (to_first == to_last)
-        return 0;
+    if (to_first == to_last) return 0;
 
     {
         int j;
@@ -2422,15 +2330,13 @@ bool RailString::MergeString(
         }
     }
 
-    if (from_first == from_last)
-        return 0;
+    if (from_first == from_last) return 0;
 
     if (to_first == to_last)
     {
-        to_last = (GenObjsAssignableRailPoint *)CClass::operator new(
-            sizeof(GenObjsAssignableRailPoint));
-        if (to_last != 0)
-            to_last = (GenObjsAssignableRailPoint *)::new (to_last) RailPoint();
+        to_last =
+            (GenObjsAssignableRailPoint *)CClass::operator new(sizeof(GenObjsAssignableRailPoint));
+        if (to_last != 0) to_last = (GenObjsAssignableRailPoint *)::new (to_last) RailPoint();
         *to_last = *to_first;
         to_first->Next = to_last;
         to_first->IsDoubleLink = (void *)1;
@@ -2439,11 +2345,9 @@ bool RailString::MergeString(
 
     if (from_first == from_last)
     {
-        from_last = (GenObjsAssignableRailPoint *)CClass::operator new(
-            sizeof(GenObjsAssignableRailPoint));
-        if (from_last != 0)
-            from_last =
-                (GenObjsAssignableRailPoint *)::new (from_last) RailPoint();
+        from_last =
+            (GenObjsAssignableRailPoint *)CClass::operator new(sizeof(GenObjsAssignableRailPoint));
+        if (from_last != 0) from_last = (GenObjsAssignableRailPoint *)::new (from_last) RailPoint();
         *from_last = *from_first;
         from_first->Next = from_last;
         from_first->IsDoubleLink = (void *)1;
@@ -2487,8 +2391,7 @@ bool RailString::MergeString(
     PointList = (GenObjsRailPoint *)to_first;
     CountPoints();
 
-    if (debugify)
-        printf(s_Heigh_ho_Did_Merge);
+    if (debugify) printf(s_Heigh_ho_Did_Merge);
     return 1;
 }
 
@@ -2515,8 +2418,7 @@ RailString *RailString::SplitString(void)
     GenObjsAssignableRailPoint *kill;
     GenObjsRailString *new_string;
 
-    if (IsLoop == 0)
-        return 0;
+    if (IsLoop == 0) return 0;
 
     {
         int j;
@@ -2532,8 +2434,7 @@ RailString *RailString::SplitString(void)
         for (; j < (NumPoints * 2); j++)
         {
             void *is_double = 0;
-            GenObjsAssignableRailPoint *b =
-                (GenObjsAssignableRailPoint *)PointList;
+            GenObjsAssignableRailPoint *b = (GenObjsAssignableRailPoint *)PointList;
 
             if (a->IsDoubleLink == 0)
             {
@@ -2575,26 +2476,22 @@ RailString *RailString::SplitString(void)
         }
     }
 
-    if (first1 == 0)
-        return 0;
-    if (last1 == 0)
-        return 0;
+    if (first1 == 0) return 0;
+    if (last1 == 0) return 0;
 
     if (first1 == last1)
     {
-        last1 = (GenObjsAssignableRailPoint *)CClass::operator new(
-            sizeof(GenObjsAssignableRailPoint));
-        if (last1 != 0)
-            last1 = (GenObjsAssignableRailPoint *)::new (last1) RailPoint();
+        last1 =
+            (GenObjsAssignableRailPoint *)CClass::operator new(sizeof(GenObjsAssignableRailPoint));
+        if (last1 != 0) last1 = (GenObjsAssignableRailPoint *)::new (last1) RailPoint();
         *last1 = *first1;
         first1->Next = last1;
     }
     if (first2 == last2)
     {
-        last2 = (GenObjsAssignableRailPoint *)CClass::operator new(
-            sizeof(GenObjsAssignableRailPoint));
-        if (last2 != 0)
-            last2 = (GenObjsAssignableRailPoint *)::new (last2) RailPoint();
+        last2 =
+            (GenObjsAssignableRailPoint *)CClass::operator new(sizeof(GenObjsAssignableRailPoint));
+        if (last2 != 0) last2 = (GenObjsAssignableRailPoint *)::new (last2) RailPoint();
         *last2 = *first2;
         first2->Next = last2;
     }
@@ -2621,10 +2518,8 @@ RailString *RailString::SplitString(void)
         kill = next;
     }
 
-    new_string = (GenObjsRailString *)CClass::operator new(
-        sizeof(GenObjsRailString));
-    if (new_string != 0)
-        new_string = (GenObjsRailString *)::new (new_string) RailString();
+    new_string = (GenObjsRailString *)CClass::operator new(sizeof(GenObjsRailString));
+    if (new_string != 0) new_string = (GenObjsRailString *)::new (new_string) RailString();
 
     new_string->PointList = (GenObjsRailPoint *)first2;
     first2->Next = last1->Next;
@@ -2669,23 +2564,16 @@ int RailString::CountPoints(void)
     self->BoundsMax.vz = -10000;
     do
     {
-        if (point == 0)
-            break;
+        if (point == 0) break;
 
-        if (point->Pos.vx < self->BoundsMin.vx)
-            self->BoundsMin.vx = point->Pos.vx;
-        if (point->Pos.vx > self->BoundsMax.vx)
-            self->BoundsMax.vx = point->Pos.vx;
+        if (point->Pos.vx < self->BoundsMin.vx) self->BoundsMin.vx = point->Pos.vx;
+        if (point->Pos.vx > self->BoundsMax.vx) self->BoundsMax.vx = point->Pos.vx;
 
-        if (point->Pos.vy < self->BoundsMin.vy)
-            self->BoundsMin.vy = point->Pos.vy;
-        if (point->Pos.vy > self->BoundsMax.vy)
-            self->BoundsMax.vy = point->Pos.vy;
+        if (point->Pos.vy < self->BoundsMin.vy) self->BoundsMin.vy = point->Pos.vy;
+        if (point->Pos.vy > self->BoundsMax.vy) self->BoundsMax.vy = point->Pos.vy;
 
-        if (point->Pos.vz < self->BoundsMin.vz)
-            self->BoundsMin.vz = point->Pos.vz;
-        if (point->Pos.vz > self->BoundsMax.vz)
-            self->BoundsMax.vz = point->Pos.vz;
+        if (point->Pos.vz < self->BoundsMin.vz) self->BoundsMin.vz = point->Pos.vz;
+        if (point->Pos.vz > self->BoundsMax.vz) self->BoundsMax.vz = point->Pos.vz;
 
         self->NumPoints++;
         point = point->Next;
@@ -2737,10 +2625,8 @@ RailInfo::~RailInfo()
  */
 RailString *RailInfo::NewString()
 {
-    RailString *created = static_cast<RailString *>(
-        CClass::operator new(sizeof(RailString)));
-    if (created != 0)
-        created = ::new (created) RailString();
+    RailString *created = static_cast<RailString *>(CClass::operator new(sizeof(RailString)));
+    if (created != 0) created = ::new (created) RailString();
     CurrentString = created;
     if (StringList == 0)
     {
@@ -2748,8 +2634,7 @@ RailString *RailInfo::NewString()
         return created;
     }
     RailString *string = StringList;
-    while (string->Next != 0)
-        string = string->Next;
+    while (string->Next != 0) string = string->Next;
     return (string->Next = CurrentString);
 }
 
@@ -2843,8 +2728,7 @@ int RailInfo::CountPoints()
 void RailInfo::MergeAdd(RailString *string_to_merge, bool debugify)
 {
     GenObjsRailInfo *railInfo = reinterpret_cast<GenObjsRailInfo *>(this);
-    GenObjsRailString *new_string =
-        reinterpret_cast<GenObjsRailString *>(string_to_merge);
+    GenObjsRailString *new_string = reinterpret_cast<GenObjsRailString *>(string_to_merge);
     GenObjsRailString *merge_list = new_string;
 
     merge_list->Next = 0;
@@ -2859,8 +2743,7 @@ void RailInfo::MergeAdd(RailString *string_to_merge, bool debugify)
             GenObjsRailString *head = railInfo->StringList;
             if (head == 0)
             {
-                if (debugify)
-                    printf(s_Added_string);
+                if (debugify) printf(s_Added_string);
                 railInfo->StringList = merge_list;
                 merge_list->Next = 0;
                 break;
@@ -2871,20 +2754,18 @@ void RailInfo::MergeAdd(RailString *string_to_merge, bool debugify)
                 prev = 0;
                 while (string != 0)
                 {
-                    if (((RailString *)merge_list)->MergeString(
-                            (RailString *)string, debugify) != 0)
+                    if (((RailString *)merge_list)->MergeString((RailString *)string, debugify) !=
+                        0)
                     {
-                        if (debugify)
-                            printf(s_Merged_string);
+                        if (debugify) printf(s_Merged_string);
                         if (prev != 0)
                             prev->Next = string->Next;
                         else
                             railInfo->StringList = string->Next;
                         string->PointList = 0;
-                        if (string != 0)
-                            DestroyCClass(string);
-                        GenObjsRailString *branch = (GenObjsRailString *)
-                            ((RailString *)merge_list)->SplitString();
+                        if (string != 0) DestroyCClass(string);
+                        GenObjsRailString *branch =
+                            (GenObjsRailString *)((RailString *)merge_list)->SplitString();
                         if (branch != 0)
                         {
                             branch->Next = merge_list_next;
@@ -2896,8 +2777,7 @@ void RailInfo::MergeAdd(RailString *string_to_merge, bool debugify)
                     prev = string;
                     if (string->Next == 0)
                     {
-                        if (debugify)
-                            printf(s_Added_string);
+                        if (debugify) printf(s_Added_string);
                         repeat_merge = false;
                         string->Next = merge_list;
                         merge_list->Next = 0;
@@ -2912,34 +2792,23 @@ void RailInfo::MergeAdd(RailString *string_to_merge, bool debugify)
 }
 
 
-static char s_From_empty[12]
-    __attribute__((section(".sdata"))) = "From empty\n";
-static char s_To_empty[12]
-    __attribute__((section(".sdata"))) = "To empty\n";
-static char s_from_not_loop[16]
-    __attribute__((section(".sdata"))) = "from not loop\n";
-static char s_To_not_loop[16]
-    __attribute__((section(".sdata"))) = "To not loop\n";
-static char s_Added_string[16]
-    __attribute__((section(".sdata"))) = " Added string\n";
-static char s_Merged_string[16]
-    __attribute__((section(".sdata"))) = " Merged string\n";
+static char s_From_empty[12] __attribute__((section(".sdata"))) = "From empty\n";
+static char s_To_empty[12] __attribute__((section(".sdata"))) = "To empty\n";
+static char s_from_not_loop[16] __attribute__((section(".sdata"))) = "from not loop\n";
+static char s_To_not_loop[16] __attribute__((section(".sdata"))) = "To not loop\n";
+static char s_Added_string[16] __attribute__((section(".sdata"))) = " Added string\n";
+static char s_Merged_string[16] __attribute__((section(".sdata"))) = " Merged string\n";
 
 /** EditorOutModel's target-owned small-data state, in address order. */
-unsigned char *EditorOutModel::MixLookup
-    __attribute__((section(".sdata"))) = 0;
-unsigned char *EditorOutModel::IntensityLookup
-    __attribute__((section(".sdata"))) = 0;
+unsigned char *EditorOutModel::MixLookup __attribute__((section(".sdata"))) = 0;
+unsigned char *EditorOutModel::IntensityLookup __attribute__((section(".sdata"))) = 0;
 int EditorOutModel::FallOff __attribute__((section(".sdata"))) = 0;
 int EditorOutModel::LightIntensity __attribute__((section(".sdata"))) = 0;
 int EditorOutModel::DaMix __attribute__((section(".sdata"))) = 0;
 int EditorOutModel::CurrentFace __attribute__((section(".sdata"))) = 0;
-ModelFace2 *EditorOutModel::FaceBuf
-    __attribute__((section(".sdata"))) = 0;
+ModelFace2 *EditorOutModel::FaceBuf __attribute__((section(".sdata"))) = 0;
 
 /** EditorInModel's target-owned polygon-buffer state, in address order. */
 int EditorInModel::GameBuild __attribute__((section(".sdata"))) = 0;
-ModelFace *EditorInModel::pMaxBufEntry
-    __attribute__((section(".sdata"))) = 0;
-ModelFace *EditorInModel::pPolyBufEntry
-    __attribute__((section(".sdata"))) = 0;
+ModelFace *EditorInModel::pMaxBufEntry __attribute__((section(".sdata"))) = 0;
+ModelFace *EditorInModel::pPolyBufEntry __attribute__((section(".sdata"))) = 0;

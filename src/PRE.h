@@ -12,11 +12,17 @@
 
 /** Owns up to sixteen loaded PRE archives and their lookup names. */
 #ifdef PRE_POLYMORPHIC_LAYOUT
-struct PREManager : CClass {
+struct PREManager : CClass
+{
 #else
-struct PREManager {
+struct PREManager
+{
 #endif
-    enum { SlotCount = 16, NameLength = 16 };
+    enum
+    {
+        SlotCount = 16,
+        NameLength = 16
+    };
 
 #ifndef PRE_POLYMORPHIC_LAYOUT
     struct CClass CClass;
@@ -39,15 +45,11 @@ struct PREManager {
     int inPRE(char *pre_name);
 #ifndef PRE_POLYMORPHIC_LAYOUT
     /** Allocate manager storage through the original CClass allocator. */
-    static void *operator new(unsigned int size) throw() {
-        return ::CClass::operator new(size);
-    }
+    static void *operator new(unsigned int size) throw() { return ::CClass::operator new(size); }
 #endif
 #ifndef PRE_POLYMORPHIC_LAYOUT
     /** Release manager storage through the original CClass allocator. */
-    static void operator delete(void *p) {
-        ::CClass::operator delete(p);
-    }
+    static void operator delete(void *p) { ::CClass::operator delete(p); }
 #endif
 };
 

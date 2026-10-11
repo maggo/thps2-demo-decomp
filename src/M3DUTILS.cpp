@@ -13,7 +13,8 @@
 #include "PSXREGION.h"
 
 /** Owner-local animation and fixed-point constants recovered from this TU. */
-enum M3dUtilsConstants {
+enum M3dUtilsConstants
+{
     M3DUTILS_LOOP_WRAP = 1,
     M3DUTILS_ANIM_MIRRORED = 2,
     M3DUTILS_ITEM_USES_POSE_BUFFER = 4,
@@ -27,7 +28,8 @@ enum M3dUtilsConstants {
 };
 
 /** Sliding view of one animation directory row and its following metadata. */
-struct M3dUtilsAnimInfo {
+struct M3dUtilsAnimInfo
+{
     u8 reserved[4];
     s32 DataOffset;
     u16 NumFrames;
@@ -35,24 +37,25 @@ struct M3dUtilsAnimInfo {
 };
 
 /** Hook packet payload; the four-byte packet header precedes the hook array. */
-struct M3dUtilsHooksPacket {
+struct M3dUtilsHooksPacket
+{
     u8 header[4];
     SHook hooks[1];
 };
 
 /** Select the metadata window for an animation directory index. */
-static inline M3dUtilsAnimInfo *M3dUtils_GetAnimInfo(
-    unsigned int *pAnimFile, unsigned int Anim) {
+static inline M3dUtilsAnimInfo *M3dUtils_GetAnimInfo(unsigned int *pAnimFile, unsigned int Anim)
+{
     // Keeping offset + base in this order preserves the target's `addu`
     // operand order; byte-pointer, word-pointer and reversed typed-pointer
     // forms swap the operands in all four callers.
-    return reinterpret_cast<M3dUtilsAnimInfo *>(
-        Anim * M3DUTILS_ANIM_DIRECTORY_STRIDE +
-        reinterpret_cast<int>(pAnimFile));
+    return reinterpret_cast<M3dUtilsAnimInfo *>(Anim * M3DUTILS_ANIM_DIRECTORY_STRIDE +
+                                                reinterpret_cast<int>(pAnimFile));
 }
 
 /** CItem layout used by hook positioning and animation lookup. */
-struct M3dUtilsCItemOwner {
+struct M3dUtilsCItemOwner
+{
     u16 mFlags;
     u16 mInquiry;
     CVector mPos;
@@ -68,14 +71,17 @@ struct M3dUtilsCItemOwner {
 };
 
 /** CBody prefix, whose canonical size fixes the following CSuper offsets. */
-struct M3dUtilsCBodyOwner {
+struct M3dUtilsCBodyOwner
+{
     M3dUtilsCItemOwner CItem;
     u8 opaque_after_CItem[188];
 };
 
 /** CSuper animation slice used by hook and in-between calculations. */
-struct CSuper {
-    union {
+struct CSuper
+{
+    union
+    {
         M3dUtilsCBodyOwner CBody;
         Item ItemPrefix;
     };
@@ -91,7 +97,8 @@ struct CSuper {
 };
 
 /** Recover the complete animation-owner view from its ABI-level Item prefix. */
-static inline CSuper *M3dUtils_GetSuper(Item *pItem) {
+static inline CSuper *M3dUtils_GetSuper(Item *pItem)
+{
     return reinterpret_cast<CSuper *>(pItem);
 }
 
@@ -101,36 +108,28 @@ static inline CSuper *M3dUtils_GetSuper(Item *pItem) {
 SMatrix *Decomp_GetAnimTransform(CSuper *pSuper);
 
 /** Interpolate packed animation vectors into the owner's tween buffer. */
-void M3dUtils_InterpolateVectors(int NumVectors, int Interval,
-    unsigned int *pAnimFile, Item *pItem, int Part, int NumParts);
+void M3dUtils_InterpolateVectors(int NumVectors, int Interval, unsigned int *pAnimFile, Item *pItem,
+                                 int Part, int NumParts);
 
 #include "M3DMATHS.h"
 
 /** Fixed-point vector operations provided by VECTOR.cpp. */
 #include "CVECTOROPS.h"
 
-typedef char M3dUtils_SMatrix_size_must_be_24[
-    (sizeof(SMatrix) == 24) ? 1 : -1];
-typedef char M3dUtils_AnimInfo_size_must_be_12[
-    (sizeof(M3dUtilsAnimInfo) == 12) ? 1 : -1];
-typedef char M3dUtils_HooksPacket_size_must_be_12[
-    (sizeof(M3dUtilsHooksPacket) == 12) ? 1 : -1];
-typedef char M3dUtils_CItem_size_must_be_76[
-    (sizeof(M3dUtilsCItemOwner) == 76) ? 1 : -1];
-typedef char M3dUtils_CBody_size_must_be_264[
-    (sizeof(M3dUtilsCBodyOwner) == 264) ? 1 : -1];
-typedef char M3dUtils_MATRIX_size_must_be_32[
-    (sizeof(MATRIX) == 32) ? 1 : -1];
-typedef char M3dUtils_CSuper_transform_offset_must_be_324[
-    ((unsigned long)&(((CSuper *)0)->mTransform) == 324) ? 1 : -1];
-typedef char M3dUtils_CSuper_pose_buffer_offset_must_be_356[
-    ((unsigned long)&(((CSuper *)0)->mpPoseBuffer) == 356) ? 1 : -1];
-typedef char M3dUtils_CSuper_size_must_be_400[
-    (sizeof(CSuper) == 400) ? 1 : -1];
+typedef char M3dUtils_SMatrix_size_must_be_24[(sizeof(SMatrix) == 24) ? 1 : -1];
+typedef char M3dUtils_AnimInfo_size_must_be_12[(sizeof(M3dUtilsAnimInfo) == 12) ? 1 : -1];
+typedef char M3dUtils_HooksPacket_size_must_be_12[(sizeof(M3dUtilsHooksPacket) == 12) ? 1 : -1];
+typedef char M3dUtils_CItem_size_must_be_76[(sizeof(M3dUtilsCItemOwner) == 76) ? 1 : -1];
+typedef char M3dUtils_CBody_size_must_be_264[(sizeof(M3dUtilsCBodyOwner) == 264) ? 1 : -1];
+typedef char M3dUtils_MATRIX_size_must_be_32[(sizeof(MATRIX) == 32) ? 1 : -1];
+typedef char M3dUtils_CSuper_transform_offset_must_be_324
+    [((unsigned long)&(((CSuper *)0)->mTransform) == 324) ? 1 : -1];
+typedef char M3dUtils_CSuper_pose_buffer_offset_must_be_356
+    [((unsigned long)&(((CSuper *)0)->mpPoseBuffer) == 356) ? 1 : -1];
+typedef char M3dUtils_CSuper_size_must_be_400[(sizeof(CSuper) == 400) ? 1 : -1];
 
 /** Scratch transforms produced while interpolating up to thirty model parts. */
-SMatrix TweenBuffer[M3DUTILS_MAX_TWEEN_PARTS]
-    __attribute__((section(".data"))) = {};
+SMatrix TweenBuffer[M3DUTILS_MAX_TWEEN_PARTS] __attribute__((section(".data"))) = {};
 
 /**
  * Attach the hook array from a model packet to the item's active region.
@@ -138,13 +137,12 @@ SMatrix TweenBuffer[M3DUTILS_MAX_TWEEN_PARTS]
  * @param pSuper Item whose region owns the hooks.
  * @param pPacket Packet containing its hook-array payload.
  */
-void M3dUtils_ReadHooksPacket(CSuper *pSuper, void *pPacket) {
+void M3dUtils_ReadHooksPacket(CSuper *pSuper, void *pPacket)
+{
     // Keeping the packet cursor separate preserves the target load schedule;
     // folding it into the assignment changes seven of eight instructions.
-    SHook *pData =
-        static_cast<M3dUtilsHooksPacket *>(pPacket)->hooks;
-    PSXRegion[pSuper->CBody.CItem.mRegion].pHooks =
-        pData;
+    SHook *pData = static_cast<M3dUtilsHooksPacket *>(pPacket)->hooks;
+    PSXRegion[pSuper->CBody.CItem.mRegion].pHooks = pData;
 }
 
 
@@ -159,7 +157,8 @@ void M3dUtils_ReadHooksPacket(CSuper *pSuper, void *pPacket) {
  * @param pSuper Animated item that owns the hook.
  * @param Hook Index in the region's hook array.
  */
-void M3dUtils_GetHookPosition(VECTOR * pResult, CSuper * pSuper, int Hook) {
+void M3dUtils_GetHookPosition(VECTOR *pResult, CSuper *pSuper, int Hook)
+{
     u8 regionIdx = pSuper->CBody.CItem.mRegion;
     u16 Anim = pSuper->mAnim;
     SHook *pHook = &PSXRegion[regionIdx].pHooks[Hook];
@@ -167,7 +166,8 @@ void M3dUtils_GetHookPosition(VECTOR * pResult, CSuper * pSuper, int Hook) {
     unsigned int *pAnimFile = PSXRegion[regionIdx].pAnimFile;
 
     // Mirroring reverses the model's first basis vector for this transform.
-    if ((pSuper->mAnimFlags & M3DUTILS_ANIM_MIRRORED) != 0) {
+    if ((pSuper->mAnimFlags & M3DUTILS_ANIM_MIRRORED) != 0)
+    {
         pSuper->mTransform.m[0][0] = -pSuper->mTransform.m[0][0];
         pSuper->mTransform.m[1][0] = -pSuper->mTransform.m[1][0];
         pSuper->mTransform.m[2][0] = -pSuper->mTransform.m[2][0];
@@ -175,25 +175,29 @@ void M3dUtils_GetHookPosition(VECTOR * pResult, CSuper * pSuper, int Hook) {
 
     SMatrix *pAnimTransform;
     u16 superFlags = pSuper->CBody.CItem.mFlags;
-    if ((superFlags & M3DUTILS_ITEM_USES_POSE_BUFFER) != 0) {
+    if ((superFlags & M3DUTILS_ITEM_USES_POSE_BUFFER) != 0)
+    {
         pAnimTransform = &pSuper->mpPoseBuffer[Part];
-    } else {
+    }
+    else
+    {
         u16 parentBone = M3dUtils_GetAnimInfo(pAnimFile, Anim)->Interval;
 
-        if (parentBone != 0) {
+        if (parentBone != 0)
+        {
             u8 regionIdx2 = pSuper->CBody.CItem.mRegion;
             u16 numParts = PSXRegion[regionIdx2].NumParts;
-            M3dUtils_InterpolateVectors(
-                M3DUTILS_VECTORS_PER_PART, parentBone + 1, pAnimFile,
-                &pSuper->ItemPrefix, Part, numParts);
+            M3dUtils_InterpolateVectors(M3DUTILS_VECTORS_PER_PART, parentBone + 1, pAnimFile,
+                                        &pSuper->ItemPrefix, Part, numParts);
             pAnimTransform = &TweenBuffer[Part];
-        } else {
+        }
+        else
+        {
             pAnimTransform = &Decomp_GetAnimTransform(pSuper)[Part];
         }
     }
 
-    M3dAsm_TransformTwice(
-        &pHook->Offset, pAnimTransform, &pSuper->mTransform);
+    M3dAsm_TransformTwice(&pHook->Offset, pAnimTransform, &pSuper->mTransform);
 
     // The transform helper leaves the hook position in MAC1-MAC3.
     gte_stlvnl(pResult);
@@ -204,16 +208,17 @@ void M3dUtils_GetHookPosition(VECTOR * pResult, CSuper * pSuper, int Hook) {
         pResult->vy <<= M3DUTILS_FIXED_SHIFT;
         pResult->vz <<= M3DUTILS_FIXED_SHIFT;
 
-        pResult->vx = pSuper->CBody.CItem.mPos.vx +
-            ((pResult->vx - pSuper->CBody.CItem.mPos.vx) >> 4);
-        pResult->vy = pSuper->CBody.CItem.mPos.vy +
-            ((pResult->vy - pSuper->CBody.CItem.mPos.vy) >> 4);
-        pResult->vz = pSuper->CBody.CItem.mPos.vz +
-            ((pResult->vz - pSuper->CBody.CItem.mPos.vz) >> 4);
+        pResult->vx =
+            pSuper->CBody.CItem.mPos.vx + ((pResult->vx - pSuper->CBody.CItem.mPos.vx) >> 4);
+        pResult->vy =
+            pSuper->CBody.CItem.mPos.vy + ((pResult->vy - pSuper->CBody.CItem.mPos.vy) >> 4);
+        pResult->vz =
+            pSuper->CBody.CItem.mPos.vz + ((pResult->vz - pSuper->CBody.CItem.mPos.vz) >> 4);
     }
 
     // Restore the model matrix after the temporary mirror operation.
-    if ((pSuper->mAnimFlags & M3DUTILS_ANIM_MIRRORED) != 0) {
+    if ((pSuper->mAnimFlags & M3DUTILS_ANIM_MIRRORED) != 0)
+    {
         pSuper->mTransform.m[0][0] = -pSuper->mTransform.m[0][0];
         pSuper->mTransform.m[1][0] = -pSuper->mTransform.m[1][0];
         pSuper->mTransform.m[2][0] = -pSuper->mTransform.m[2][0];
@@ -232,7 +237,8 @@ void M3dUtils_GetHookPosition(VECTOR * pResult, CSuper * pSuper, int Hook) {
  * @param pHook Hook offset and owning part.
  */
 
-void M3dUtils_GetDynamicHookPosition(VECTOR * pResult, CSuper * pSuper, SHook * pHook) {
+void M3dUtils_GetDynamicHookPosition(VECTOR *pResult, CSuper *pSuper, SHook *pHook)
+{
     SMatrix *pAnimTransform;
     int Anim;
     int Part;
@@ -243,25 +249,29 @@ void M3dUtils_GetDynamicHookPosition(VECTOR * pResult, CSuper * pSuper, SHook * 
     Part = pHook->Part;
     Anim = pSuper->mAnim;
 
-    if (pSuper->CBody.CItem.mFlags & M3DUTILS_ITEM_USES_POSE_BUFFER) {
+    if (pSuper->CBody.CItem.mFlags & M3DUTILS_ITEM_USES_POSE_BUFFER)
+    {
         pAnimTransform = &pSuper->mpPoseBuffer[Part];
-    } else {
+    }
+    else
+    {
         // The named interval keeps the metadata load live across this branch;
         // repeating the typed expression reloads it.
         Interval = M3dUtils_GetAnimInfo(pAnimFile, Anim)->Interval;
-        if (Interval) {
-            M3dUtils_InterpolateVectors(
-                M3DUTILS_VECTORS_PER_PART, Interval + 1, pAnimFile,
-                &pSuper->ItemPrefix,
-                Part, PSXRegion[pSuper->CBody.CItem.mRegion].NumParts);
+        if (Interval)
+        {
+            M3dUtils_InterpolateVectors(M3DUTILS_VECTORS_PER_PART, Interval + 1, pAnimFile,
+                                        &pSuper->ItemPrefix, Part,
+                                        PSXRegion[pSuper->CBody.CItem.mRegion].NumParts);
             pAnimTransform = &TweenBuffer[Part];
-        } else {
+        }
+        else
+        {
             pAnimTransform = &Decomp_GetAnimTransform(pSuper)[Part];
         }
     }
 
-    M3dAsm_TransformTwice(
-        &pHook->Offset, pAnimTransform, &pSuper->mTransform);
+    M3dAsm_TransformTwice(&pHook->Offset, pAnimTransform, &pSuper->mTransform);
 
     // Store GTE results: MAC1/MAC2/MAC3 -> pResult vx/vy/vz.
     gte_stlvnl(pResult);
@@ -270,12 +280,9 @@ void M3dUtils_GetDynamicHookPosition(VECTOR * pResult, CSuper * pSuper, SHook * 
     pResult->vy <<= M3DUTILS_FIXED_SHIFT;
     pResult->vz <<= M3DUTILS_FIXED_SHIFT;
 
-    pResult->vx = pSuper->CBody.CItem.mPos.vx +
-        ((pResult->vx - pSuper->CBody.CItem.mPos.vx) >> 4);
-    pResult->vy = pSuper->CBody.CItem.mPos.vy +
-        ((pResult->vy - pSuper->CBody.CItem.mPos.vy) >> 4);
-    pResult->vz = pSuper->CBody.CItem.mPos.vz +
-        ((pResult->vz - pSuper->CBody.CItem.mPos.vz) >> 4);
+    pResult->vx = pSuper->CBody.CItem.mPos.vx + ((pResult->vx - pSuper->CBody.CItem.mPos.vx) >> 4);
+    pResult->vy = pSuper->CBody.CItem.mPos.vy + ((pResult->vy - pSuper->CBody.CItem.mPos.vy) >> 4);
+    pResult->vz = pSuper->CBody.CItem.mPos.vz + ((pResult->vz - pSuper->CBody.CItem.mPos.vz) >> 4);
 }
 
 
@@ -284,21 +291,18 @@ void M3dUtils_GetDynamicHookPosition(VECTOR * pResult, CSuper * pSuper, SHook * 
  *
  * @param pSuper Animated item whose pose is being prepared.
  */
-void M3dUtils_InBetween(CSuper * pSuper)
+void M3dUtils_InBetween(CSuper *pSuper)
 {
     u8 regionIdx = pSuper->CBody.CItem.mRegion;
     unsigned int *pAnimFile = PSXRegion[regionIdx].pAnimFile;
-    int Interval =
-        M3dUtils_GetAnimInfo(pAnimFile, pSuper->mAnim)->Interval;
+    int Interval = M3dUtils_GetAnimInfo(pAnimFile, pSuper->mAnim)->Interval;
     int nextInterval = Interval + 1;
 
     if (Interval != 0)
     {
         int NumParts = PSXRegion[regionIdx].NumParts;
-        M3dUtils_InterpolateVectors(
-            NumParts * M3DUTILS_VECTORS_PER_PART,
-            nextInterval, pAnimFile, &pSuper->ItemPrefix, 0,
-            NumParts);
+        M3dUtils_InterpolateVectors(NumParts * M3DUTILS_VECTORS_PER_PART, nextInterval, pAnimFile,
+                                    &pSuper->ItemPrefix, 0, NumParts);
     }
 }
 
@@ -317,8 +321,9 @@ void M3dUtils_InBetween(CSuper * pSuper)
  * @param NumParts Number of parts in each animation frame.
  */
 
-void M3dUtils_InterpolateVectors(int NumVectors, int Interval,
-    unsigned int *pAnimFile, Item *pItem, int Part, int NumParts) {
+void M3dUtils_InterpolateVectors(int NumVectors, int Interval, unsigned int *pAnimFile, Item *pItem,
+                                 int Part, int NumParts)
+{
     CSVector dAnim; // unused, but MAIN.SYM lists it and it sizes the 0x18 frame
     SMatrix *pAnims;
     int Alpha;
@@ -334,17 +339,21 @@ void M3dUtils_InterpolateVectors(int NumVectors, int Interval,
     Anim = M3dUtils_GetSuper(pItem)->mAnim;
     NumFrames = M3dUtils_GetAnimInfo(pAnimFile, Anim)->NumFrames;
     pAnims = reinterpret_cast<SMatrix *>(reinterpret_cast<u8 *>(pAnimFile) +
-        M3dUtils_GetAnimInfo(pAnimFile, Anim)->DataOffset);
+                                         M3dUtils_GetAnimInfo(pAnimFile, Anim)->DataOffset);
     Frame = M3dUtils_GetSuper(pItem)->mFrame;
     Frame0 = Frame - Frame % Interval;
     Frame1 = Frame0 + Interval;
 
-    if (Frame1 >= NumFrames) {
-        if (M3dUtils_GetSuper(pItem)->mLoopMode == M3DUTILS_LOOP_WRAP) {
+    if (Frame1 >= NumFrames)
+    {
+        if (M3dUtils_GetSuper(pItem)->mLoopMode == M3DUTILS_LOOP_WRAP)
+        {
             // Wrap around: Frame1 becomes zero.
             Frame1 = 0;
             Alpha = ((Frame - Frame0) << M3DUTILS_FIXED_SHIFT) / (NumFrames - Frame0);
-        } else {
+        }
+        else
+        {
             // Clamp back one key interval.
             Frame0 -= Interval;
             if (Frame0 < 0) Frame0 = 0;
@@ -354,27 +363,34 @@ void M3dUtils_InterpolateVectors(int NumVectors, int Interval,
             else
                 Alpha = ((Frame - Frame0) << M3DUTILS_FIXED_SHIFT) / (Frame1 - Frame0);
         }
-    } else {
+    }
+    else
+    {
         Alpha = ((Frame - Frame0) << M3DUTILS_FIXED_SHIFT) / (Frame1 - Frame0);
     }
 
     pTween = reinterpret_cast<CSVector *>(TweenBuffer) + Part * M3DUTILS_VECTORS_PER_PART;
     pAnim0 = reinterpret_cast<CSVector *>(&pAnims[(NumParts * Frame0) / Interval]) +
-        Part * M3DUTILS_VECTORS_PER_PART;
+             Part * M3DUTILS_VECTORS_PER_PART;
 
-    if (Alpha == 0) {
+    if (Alpha == 0)
+    {
         // An exact keyframe only needs a direct copy.
-        for (i = 0; i < NumVectors; i++) {
+        for (i = 0; i < NumVectors; i++)
+        {
             *pTween = *pAnim0++;
             pTween++;
         }
-    } else {
+    }
+    else
+    {
         CSVector *pAnim1 = reinterpret_cast<CSVector *>(&pAnims[(NumParts * Frame1) / Interval]) +
-            Part * M3DUTILS_VECTORS_PER_PART;
+                           Part * M3DUTILS_VECTORS_PER_PART;
 
         gte_lddp(Alpha);
 
-        for (i = 0; i < NumVectors; i++) {
+        for (i = 0; i < NumVectors; i++)
+        {
             int p0x = pAnim0->vx;
             int p0y = pAnim0->vy;
             int p0z = pAnim0->vz;
@@ -407,15 +423,15 @@ void M3dUtils_InterpolateVectors(int NumVectors, int Interval,
  * @param pAngles Receives the X, Y, and Z angles.
  * @param pMatrix Rotation matrix to decompose.
  */
-void M3dUtils_AnglesFromMatrix(SVECTOR *pAngles, MATRIX *pMatrix) {
+void M3dUtils_AnglesFromMatrix(SVECTOR *pAngles, MATRIX *pMatrix)
+{
     int r02 = pMatrix->m[0][2];
     int r22 = pMatrix->m[2][2];
     int r10 = pMatrix->m[1][0];
     int r11 = pMatrix->m[1][1];
     int r12 = pMatrix->m[1][2];
 
-    pAngles->vx = ratan2(
-        -r12, M3dMaths_SquareRoot0(r02 * r02 + r22 * r22));
+    pAngles->vx = ratan2(-r12, M3dMaths_SquareRoot0(r02 * r02 + r22 * r22));
     pAngles->vy = ratan2(r02, r22);
     pAngles->vz = ratan2(r10, r11);
 }
@@ -431,8 +447,7 @@ void M3dUtils_AnglesFromMatrix(SVECTOR *pAngles, MATRIX *pMatrix) {
  * lands in $v1 rather than $v0 only when the compiler sees one statement
  * here instead of three.
  */
-#define M3DUTILS_GTE_SQR_DELAYED() \
-    __asm__ volatile("nop\nnop\n.word 0x4AA00428")
+#define M3DUTILS_GTE_SQR_DELAYED() __asm__ volatile("nop\nnop\n.word 0x4AA00428")
 
 /**
  * Finds the nearest points on two line segments and returns their separation.
@@ -451,9 +466,10 @@ void M3dUtils_AnglesFromMatrix(SVECTOR *pAngles, MATRIX *pMatrix) {
  * @param t2 Receives the second segment's fixed-point parameter.
  * @return Distance between the two selected points.
  */
-int M3dUtils_LineLineClosestPoints(CVector *L1Start, CVector *L1End,
-    CVector *L2Start, CVector *L2End, CVector *PointL1, int *t1,
-    CVector *PointL2, int *t2) {
+int M3dUtils_LineLineClosestPoints(CVector *L1Start, CVector *L1End, CVector *L2Start,
+                                   CVector *L2End, CVector *PointL1, int *t1, CVector *PointL2,
+                                   int *t2)
+{
     CVector DL1;
     CVector DL2;
     CVector DStart;
@@ -483,12 +499,10 @@ int M3dUtils_LineLineClosestPoints(CVector *L1Start, CVector *L1End,
     }
 
     Shift = 0;
-    while (V.vx > M3DUTILS_GTE_SAFE_COMPONENT ||
-           V.vx < -M3DUTILS_GTE_SAFE_COMPONENT ||
-           V.vy > M3DUTILS_GTE_SAFE_COMPONENT ||
-           V.vy < -M3DUTILS_GTE_SAFE_COMPONENT ||
-           V.vz > M3DUTILS_GTE_SAFE_COMPONENT ||
-           V.vz < -M3DUTILS_GTE_SAFE_COMPONENT) {
+    while (V.vx > M3DUTILS_GTE_SAFE_COMPONENT || V.vx < -M3DUTILS_GTE_SAFE_COMPONENT ||
+           V.vy > M3DUTILS_GTE_SAFE_COMPONENT || V.vy < -M3DUTILS_GTE_SAFE_COMPONENT ||
+           V.vz > M3DUTILS_GTE_SAFE_COMPONENT || V.vz < -M3DUTILS_GTE_SAFE_COMPONENT)
+    {
         V >>= 1;
         Shift++;
     }
@@ -508,12 +522,11 @@ int M3dUtils_LineLineClosestPoints(CVector *L1Start, CVector *L1End,
 
     CrossProd >>= Shift;
     ExtraShift = 0;
-    while (CrossProd.vx > M3DUTILS_GTE_SAFE_COMPONENT ||
-           CrossProd.vx < -M3DUTILS_GTE_SAFE_COMPONENT ||
-           CrossProd.vy > M3DUTILS_GTE_SAFE_COMPONENT ||
-           CrossProd.vy < -M3DUTILS_GTE_SAFE_COMPONENT ||
-           CrossProd.vz > M3DUTILS_GTE_SAFE_COMPONENT ||
-           CrossProd.vz < -M3DUTILS_GTE_SAFE_COMPONENT) {
+    while (
+        CrossProd.vx > M3DUTILS_GTE_SAFE_COMPONENT || CrossProd.vx < -M3DUTILS_GTE_SAFE_COMPONENT ||
+        CrossProd.vy > M3DUTILS_GTE_SAFE_COMPONENT || CrossProd.vy < -M3DUTILS_GTE_SAFE_COMPONENT ||
+        CrossProd.vz > M3DUTILS_GTE_SAFE_COMPONENT || CrossProd.vz < -M3DUTILS_GTE_SAFE_COMPONENT)
+    {
         CrossProd >>= 1;
         ExtraShift++;
     }
@@ -522,22 +535,29 @@ int M3dUtils_LineLineClosestPoints(CVector *L1Start, CVector *L1End,
     VShifted.vx = V.vx >> ExtraShift;
     VShifted.vy = V.vy >> ExtraShift;
     VShifted.vz = V.vz >> ExtraShift;
-    Denominator = (SquaredVec.vx + SquaredVec.vy + SquaredVec.vz) >>
-                  (ExtraShift * 2);
+    Denominator = (SquaredVec.vx + SquaredVec.vy + SquaredVec.vz) >> (ExtraShift * 2);
     gte_ldsvrtrow0(&VShifted);
     gte_rtir_sf0();
     gte_stlvnl0(&Numerator);
 
-    if (Numerator < 0) {
+    if (Numerator < 0)
+    {
         *t1 = 0;
         *PointL1 = *L1Start;
-    } else if (Numerator >= Denominator) {
+    }
+    else if (Numerator >= Denominator)
+    {
         *t1 = M3DUTILS_FIXED_ONE;
         *PointL1 = *L1End;
-    } else {
-        if (Denominator > M3DUTILS_DIRECT_DIVIDE_LIMIT) {
+    }
+    else
+    {
+        if (Denominator > M3DUTILS_DIRECT_DIVIDE_LIMIT)
+        {
             *t1 = Numerator / (Denominator >> M3DUTILS_FIXED_SHIFT);
-        } else {
+        }
+        else
+        {
             *t1 = (Numerator << M3DUTILS_FIXED_SHIFT) / Denominator;
         }
 
@@ -558,12 +578,11 @@ int M3dUtils_LineLineClosestPoints(CVector *L1Start, CVector *L1End,
 
     CrossProd >>= Shift;
     ExtraShift = 0;
-    while (CrossProd.vx > M3DUTILS_GTE_SAFE_COMPONENT ||
-           CrossProd.vx < -M3DUTILS_GTE_SAFE_COMPONENT ||
-           CrossProd.vy > M3DUTILS_GTE_SAFE_COMPONENT ||
-           CrossProd.vy < -M3DUTILS_GTE_SAFE_COMPONENT ||
-           CrossProd.vz > M3DUTILS_GTE_SAFE_COMPONENT ||
-           CrossProd.vz < -M3DUTILS_GTE_SAFE_COMPONENT) {
+    while (
+        CrossProd.vx > M3DUTILS_GTE_SAFE_COMPONENT || CrossProd.vx < -M3DUTILS_GTE_SAFE_COMPONENT ||
+        CrossProd.vy > M3DUTILS_GTE_SAFE_COMPONENT || CrossProd.vy < -M3DUTILS_GTE_SAFE_COMPONENT ||
+        CrossProd.vz > M3DUTILS_GTE_SAFE_COMPONENT || CrossProd.vz < -M3DUTILS_GTE_SAFE_COMPONENT)
+    {
         CrossProd >>= 1;
         ExtraShift++;
     }
@@ -572,22 +591,29 @@ int M3dUtils_LineLineClosestPoints(CVector *L1Start, CVector *L1End,
     VShifted.vx = V.vx >> ExtraShift;
     VShifted.vy = V.vy >> ExtraShift;
     VShifted.vz = V.vz >> ExtraShift;
-    Denominator = (SquaredVec.vx + SquaredVec.vy + SquaredVec.vz) >>
-                  (ExtraShift * 2);
+    Denominator = (SquaredVec.vx + SquaredVec.vy + SquaredVec.vz) >> (ExtraShift * 2);
     gte_ldsvrtrow0(&VShifted);
     gte_rtir_sf0();
     gte_stlvnl0(&Numerator);
 
-    if (Numerator < 0) {
+    if (Numerator < 0)
+    {
         *t2 = 0;
         *PointL2 = *L2Start;
-    } else if (Numerator >= Denominator) {
+    }
+    else if (Numerator >= Denominator)
+    {
         *t2 = M3DUTILS_FIXED_ONE;
         *PointL2 = *L2End;
-    } else {
-        if (Denominator > M3DUTILS_DIRECT_DIVIDE_LIMIT) {
+    }
+    else
+    {
+        if (Denominator > M3DUTILS_DIRECT_DIVIDE_LIMIT)
+        {
             *t2 = Numerator / (Denominator >> M3DUTILS_FIXED_SHIFT);
-        } else {
+        }
+        else
+        {
             *t2 = (Numerator << M3DUTILS_FIXED_SHIFT) / Denominator;
         }
 
@@ -606,8 +632,7 @@ int M3dUtils_LineLineClosestPoints(CVector *L1Start, CVector *L1End,
         gte_stlvnl(&SquaredVec);
     }
 
-    return M3dMaths_SquareRoot0(
-        SquaredVec.vx + SquaredVec.vy + SquaredVec.vz);
+    return M3dMaths_SquareRoot0(SquaredVec.vx + SquaredVec.vy + SquaredVec.vz);
 }
 
 /**
@@ -615,16 +640,15 @@ int M3dUtils_LineLineClosestPoints(CVector *L1Start, CVector *L1End,
  *
  * @param pV Vector to normalize in place.
  */
-void M3dUtils_NormaliseVector(CVector * pV) {
+void M3dUtils_NormaliseVector(CVector *pV)
+{
     CVector VSqd;
     int Magnitude;
 
-    while (pV->vx > M3DUTILS_GTE_SAFE_COMPONENT ||
-           pV->vx < -M3DUTILS_GTE_SAFE_COMPONENT ||
-           pV->vy > M3DUTILS_GTE_SAFE_COMPONENT ||
-           pV->vy < -M3DUTILS_GTE_SAFE_COMPONENT ||
-           pV->vz > M3DUTILS_GTE_SAFE_COMPONENT ||
-           pV->vz < -M3DUTILS_GTE_SAFE_COMPONENT) {
+    while (pV->vx > M3DUTILS_GTE_SAFE_COMPONENT || pV->vx < -M3DUTILS_GTE_SAFE_COMPONENT ||
+           pV->vy > M3DUTILS_GTE_SAFE_COMPONENT || pV->vy < -M3DUTILS_GTE_SAFE_COMPONENT ||
+           pV->vz > M3DUTILS_GTE_SAFE_COMPONENT || pV->vz < -M3DUTILS_GTE_SAFE_COMPONENT)
+    {
         *pV >>= 1;
     }
 
@@ -634,11 +658,14 @@ void M3dUtils_NormaliseVector(CVector * pV) {
 
     Magnitude = M3dMaths_SquareRoot0(VSqd.vx + VSqd.vy + VSqd.vz);
 
-    if (Magnitude != 0) {
+    if (Magnitude != 0)
+    {
         pV->vx = (pV->vx << M3DUTILS_FIXED_SHIFT) / Magnitude;
         pV->vy = (pV->vy << M3DUTILS_FIXED_SHIFT) / Magnitude;
         pV->vz = (pV->vz << M3DUTILS_FIXED_SHIFT) / Magnitude;
-    } else {
+    }
+    else
+    {
         pV->vx = M3DUTILS_FIXED_ONE;
         pV->vy = 0;
         pV->vz = 0;

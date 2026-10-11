@@ -36,8 +36,7 @@ struct SZone
     Item **Ptr[M3dZoneGridDimension][M3dZoneGridDimension];
 };
 
-typedef char M3dZone_zone_size_must_be_1632[
-    (sizeof(SZone) == 1632) ? 1 : -1];
+typedef char M3dZone_zone_size_must_be_1632[(sizeof(SZone) == 1632) ? 1 : -1];
 
 #define M3DCOLIJMASKS_ABSOLUTE_DECLARATION
 #define M3DCOLIJMASKS_WITHIN_C_LINKAGE
@@ -59,7 +58,7 @@ void M3dColij_LineToItemZoned(Item **itemList, SLineInfo *lineInfo);
 int M3dColij_GetLineInfo(SLineInfo *lineInfo);
 
 /** Primary collision zone, populated when an environment is loaded. */
-SZone Zones[1] __attribute__((section(".data"))) = {{0}};
+SZone Zones[1] __attribute__((section(".data"))) = { { 0 } };
 
 /**
  * Clear one zone's active flag and spatial collision grid.
@@ -165,8 +164,7 @@ int M3dZone_LineToItemNotSCached(SLineInfo *pInfo, int CheckEnviroObs)
     }
     if (CheckEnviroObs)
     {
-        M3dColij_LineToItem(
-            reinterpret_cast<Item *>(EnvironmentalObjectList), pInfo);
+        M3dColij_LineToItem(reinterpret_cast<Item *>(EnvironmentalObjectList), pInfo);
     }
 
     {
@@ -190,10 +188,8 @@ int M3dZone_LineToItemNotSCached(SLineInfo *pInfo, int CheckEnviroObs)
             zH = Zones[EnvIndex].zMax;
             l = Zones[EnvIndex].ZoneWidth;
 
-            if (((x0 >= xL) || (x1 >= xL)) &&
-                ((x0 <= xH) || (x1 <= xH)) &&
-                ((z0 >= zL) || (z1 >= zL)) &&
-                ((z0 <= zH) || (z1 <= zH)))
+            if (((x0 >= xL) || (x1 >= xL)) && ((x0 <= xH) || (x1 <= xH)) &&
+                ((z0 >= zL) || (z1 >= zL)) && ((z0 <= zH) || (z1 <= zH)))
             {
                 if ((x0 == x1) && (z0 == z1))
                 {
@@ -213,58 +209,50 @@ int M3dZone_LineToItemNotSCached(SLineInfo *pInfo, int CheckEnviroObs)
                 {
                     if (x0 < xL)
                     {
-                        z0 = (z0 < z1)
-                                 ? z0 + M3dMaths_MulDiv64(xL - x0, z1 - z0, x1 - x0)
-                                 : z1 + M3dMaths_MulDiv64(x1 - xL, z0 - z1, x1 - x0);
+                        z0 = (z0 < z1) ? z0 + M3dMaths_MulDiv64(xL - x0, z1 - z0, x1 - x0)
+                                       : z1 + M3dMaths_MulDiv64(x1 - xL, z0 - z1, x1 - x0);
                         x0 = xL;
                     }
                     if (x1 < xL)
                     {
-                        z1 = (z1 < z0)
-                                 ? z1 + M3dMaths_MulDiv64(xL - x1, z0 - z1, x0 - x1)
-                                 : z0 + M3dMaths_MulDiv64(x0 - xL, z1 - z0, x0 - x1);
+                        z1 = (z1 < z0) ? z1 + M3dMaths_MulDiv64(xL - x1, z0 - z1, x0 - x1)
+                                       : z0 + M3dMaths_MulDiv64(x0 - xL, z1 - z0, x0 - x1);
                         x1 = xL;
                     }
                     if (x0 > xH)
                     {
-                        z0 = (z1 < z0)
-                                 ? z1 + M3dMaths_MulDiv64(xH - x1, z0 - z1, x0 - x1)
-                                 : z0 + M3dMaths_MulDiv64(x0 - xH, z1 - z0, x0 - x1);
+                        z0 = (z1 < z0) ? z1 + M3dMaths_MulDiv64(xH - x1, z0 - z1, x0 - x1)
+                                       : z0 + M3dMaths_MulDiv64(x0 - xH, z1 - z0, x0 - x1);
                         x0 = xH;
                     }
                     if (x1 > xH)
                     {
-                        z1 = (z0 < z1)
-                                 ? z0 + M3dMaths_MulDiv64(xH - x0, z1 - z0, x1 - x0)
-                                 : z1 + M3dMaths_MulDiv64(x1 - xH, z0 - z1, x1 - x0);
+                        z1 = (z0 < z1) ? z0 + M3dMaths_MulDiv64(xH - x0, z1 - z0, x1 - x0)
+                                       : z1 + M3dMaths_MulDiv64(x1 - xH, z0 - z1, x1 - x0);
                         x1 = xH;
                     }
                     if (z0 < zL)
                     {
-                        x0 = (x0 < x1)
-                                 ? x0 + M3dMaths_MulDiv64(zL - z0, x1 - x0, z1 - z0)
-                                 : x1 + M3dMaths_MulDiv64(z1 - zL, x0 - x1, z1 - z0);
+                        x0 = (x0 < x1) ? x0 + M3dMaths_MulDiv64(zL - z0, x1 - x0, z1 - z0)
+                                       : x1 + M3dMaths_MulDiv64(z1 - zL, x0 - x1, z1 - z0);
                         z0 = zL;
                     }
                     if (z1 < zL)
                     {
-                        x1 = (x1 < x0)
-                                 ? x1 + M3dMaths_MulDiv64(zL - z1, x0 - x1, z0 - z1)
-                                 : x0 + M3dMaths_MulDiv64(z0 - zL, x1 - x0, z0 - z1);
+                        x1 = (x1 < x0) ? x1 + M3dMaths_MulDiv64(zL - z1, x0 - x1, z0 - z1)
+                                       : x0 + M3dMaths_MulDiv64(z0 - zL, x1 - x0, z0 - z1);
                         z1 = zL;
                     }
                     if (z0 > zH)
                     {
-                        x0 = (x1 < x0)
-                                 ? x1 + M3dMaths_MulDiv64(zH - z1, x0 - x1, z0 - z1)
-                                 : x0 + M3dMaths_MulDiv64(z0 - zH, x1 - x0, z0 - z1);
+                        x0 = (x1 < x0) ? x1 + M3dMaths_MulDiv64(zH - z1, x0 - x1, z0 - z1)
+                                       : x0 + M3dMaths_MulDiv64(z0 - zH, x1 - x0, z0 - z1);
                         z0 = zH;
                     }
                     if (z1 > zH)
                     {
-                        x1 = (x0 < x1)
-                                 ? x0 + M3dMaths_MulDiv64(zH - z0, x1 - x0, z1 - z0)
-                                 : x1 + M3dMaths_MulDiv64(z1 - zH, x0 - x1, z1 - z0);
+                        x1 = (x0 < x1) ? x0 + M3dMaths_MulDiv64(zH - z0, x1 - x0, z1 - z0)
+                                       : x1 + M3dMaths_MulDiv64(z1 - zH, x0 - x1, z1 - z0);
                         z1 = zH;
                     }
 
@@ -320,14 +308,11 @@ int M3dZone_LineToItemNotSCached(SLineInfo *pInfo, int CheckEnviroObs)
 
                     X = X0;
                     Z = Z0;
-                    d = ((x0 < x1) ? qh - h : -qh) +
-                        ((z0 < z1) ? w - qw : qw);
-                    while (((X != X1) || (Z != Z1)) &&
-                           (X >= 0) && (X < Zones[EnvIndex].Width) &&
+                    d = ((x0 < x1) ? qh - h : -qh) + ((z0 < z1) ? w - qw : qw);
+                    while (((X != X1) || (Z != Z1)) && (X >= 0) && (X < Zones[EnvIndex].Width) &&
                            (Z >= 0) && (Z < Zones[EnvIndex].Height))
                     {
-                        M3dColij_LineToItemZoned(
-                            Zones[EnvIndex].Ptr[X][Z], pInfo);
+                        M3dColij_LineToItemZoned(Zones[EnvIndex].Ptr[X][Z], pInfo);
                         if (d >= 0)
                         {
                             d -= h;
@@ -340,8 +325,8 @@ int M3dZone_LineToItemNotSCached(SLineInfo *pInfo, int CheckEnviroObs)
                         }
                     }
 
-                    if ((X < 0) || (X >= Zones[EnvIndex].Width) ||
-                        (Z < 0) || (Z >= Zones[EnvIndex].Height))
+                    if ((X < 0) || (X >= Zones[EnvIndex].Width) || (Z < 0) ||
+                        (Z >= Zones[EnvIndex].Height))
                     {
                         goto next_zone;
                     }
@@ -379,8 +364,7 @@ void M3dZone_SetZone(int EnvIndex, unsigned int *pPack)
     Zones[EnvIndex].Height = *((unsigned short *)pPack)++;
     Zones[EnvIndex].Flags = 1;
     Zones[EnvIndex].ZoneWidth =
-        (Zones[EnvIndex].xMax - Zones[EnvIndex].xMin) /
-        Zones[EnvIndex].Width;
+        (Zones[EnvIndex].xMax - Zones[EnvIndex].xMin) / Zones[EnvIndex].Width;
 
     int Z;
     for (Z = 0; Z < Zones[EnvIndex].Height; Z++)
@@ -398,8 +382,7 @@ void M3dZone_SetZone(int EnvIndex, unsigned int *pPack)
             while (count-- > 0)
             {
                 *pPack = reinterpret_cast<unsigned int>(
-                    pPSX + (*pPack * M3dZonePackedItemWords +
-                            M3dZonePackedItemPositionWords));
+                    pPSX + (*pPack * M3dZonePackedItemWords + M3dZonePackedItemPositionWords));
                 pPack++;
             }
             pPack++;

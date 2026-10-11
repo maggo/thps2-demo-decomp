@@ -11,7 +11,8 @@
 #endif
 
 #if defined(__cplusplus) && !defined(SAVEACTION_WITHIN_C_LINKAGE)
-extern "C" {
+extern "C"
+{
 #endif
 
 extern ESaveAction GSaveAction SAVEACTION_DECL_ATTR;

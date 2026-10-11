@@ -19,13 +19,17 @@
 #include "UTILS.h"
 
 /** Return caller-owned storage for an ordinary placement construction. */
-inline void *operator new(unsigned int, void *storage) { return storage; }
+inline void *operator new(unsigned int, void *storage)
+{
+    return storage;
+}
 
 struct Slice;
 
 #include "IMAGEBASE.h"
 
-struct SlicedImage2 : Image {
+struct SlicedImage2 : Image
+{
     Slice *SliceTab;
     short W;
     short H;
@@ -41,11 +45,13 @@ struct SlicedImage2 : Image {
     unsigned short Clut;
 };
 
-struct Sprite2 : SlicedImage2 {
+struct Sprite2 : SlicedImage2
+{
 };
 
 /** Rotatable sprite prefix returned by the IMAGE-owned constructor. */
-struct RotateSprite : Sprite2 {
+struct RotateSprite : Sprite2
+{
     unsigned char AspectType;
 
     /** Build a rotatable sprite from a bitmap file. */
@@ -57,8 +63,7 @@ struct RotateSprite : Sprite2 {
 typedef char text_effect_Image_size_must_be_28[(sizeof(Image) == 28) ? 1 : -1];
 typedef char text_effect_SlicedImage2_size_must_be_60[(sizeof(SlicedImage2) == 60) ? 1 : -1];
 typedef char text_effect_Sprite2_size_must_be_60[(sizeof(Sprite2) == 60) ? 1 : -1];
-typedef char text_effect_RotateSprite_size_must_be_64[
-    (sizeof(RotateSprite) == 64) ? 1 : -1];
+typedef char text_effect_RotateSprite_size_must_be_64[(sizeof(RotateSprite) == 64) ? 1 : -1];
 typedef char text_effect_Font_size_must_be_80[(sizeof(Font) == 80) ? 1 : -1];
 
 // === Forward type declarations ===
@@ -67,7 +72,8 @@ typedef char text_effect_Font_size_must_be_80[(sizeof(Font) == 80) ? 1 : -1];
 /**
  * Virtual dispatch table shared by the image and sprite hierarchy.
  */
-struct Sprite2VTable {
+struct Sprite2VTable
+{
     int reserved[2];
     void (*destroy)(Sprite2 *sprite, int flags);
     void (*drawImage)(Sprite2 *sprite, int x, int y);
@@ -75,9 +81,7 @@ struct Sprite2VTable {
     void (*draw)(Sprite2 *sprite, int x, int y, int drawFirst);
 };
 
-typedef char trick_text_effect_size_must_be_24[
-    (sizeof(TrickTextEffect) == 24) ? 1 : -1
-];
+typedef char trick_text_effect_size_must_be_24[(sizeof(TrickTextEffect) == 24) ? 1 : -1];
 
 // === Extern "C" global variable declarations ===
 /*
@@ -86,8 +90,7 @@ typedef char trick_text_effect_size_must_be_24[
  * `.comm` records that PSYLINK allocates in `.sbss` and exports -- fabricating
  * bytes and XDEFs the original never had.
  */
-Sprite2 *FallingTextEffect::mpBloodSprite
-    __attribute__((section(".sdata"))) = 0;
+Sprite2 *FallingTextEffect::mpBloodSprite __attribute__((section(".sdata"))) = 0;
 
 
 // === Function implementations (address order) ===
@@ -178,8 +181,7 @@ void TextEffect::getScreenPos(int *pX, int *pY)
  * @param pG Green component.
  * @param pB Blue component.
  */
-void TextEffect::getColor(
-    unsigned char *pR, unsigned char *pG, unsigned char *pB)
+void TextEffect::getColor(unsigned char *pR, unsigned char *pG, unsigned char *pB)
 {
 }
 
@@ -344,11 +346,11 @@ void FallingTextEffect::PostEffect(int oldX, int oldY, int ScreenX, int ScreenY)
                 SetClippingBox2(0, 0, 512, 240);
 
                 mpBloodSprite->Scale = 0x2000;
-                ((Sprite2VTable *)*(int **)mpBloodSprite)->draw(
-                    mpBloodSprite,
-                    clipX - mTextEffectInfo[mCharCount & CharacterMask].bloodOffsetX,
-                    clipY - mTextEffectInfo[mCharCount & CharacterMask].bloodOffsetY,
-                    mTextEffectInfo[mCharCount & CharacterMask].bloodRotation);
+                ((Sprite2VTable *)*(int **)mpBloodSprite)
+                    ->draw(mpBloodSprite,
+                           clipX - mTextEffectInfo[mCharCount & CharacterMask].bloodOffsetX,
+                           clipY - mTextEffectInfo[mCharCount & CharacterMask].bloodOffsetY,
+                           mTextEffectInfo[mCharCount & CharacterMask].bloodRotation);
 
                 clipW = 16;
                 clipH = (ScreenY - oldY) >> FixedPointShift;
@@ -381,8 +383,7 @@ void FallingTextEffect::PostEffect(int oldX, int oldY, int ScreenX, int ScreenY)
  */
 void FallingTextEffect::getScreenPos(int *pX, int *pY)
 {
-    if (mEnabled == 0)
-        return;
+    if (mEnabled == 0) return;
 
     int gravity = -mTextEffectInfo[mCharCount & CharacterMask].waitTime;
     int gravShifted;
@@ -395,8 +396,7 @@ void FallingTextEffect::getScreenPos(int *pX, int *pY)
     {
         int newPos = *pY + gravShifted;
         limit = mOffscreenY << 12;
-        if (newPos >= limit)
-            goto clamp;
+        if (newPos >= limit) goto clamp;
         *pY = newPos;
     }
 
@@ -421,7 +421,7 @@ done:
  * @param pG Green component.
  * @param pB Blue component.
  */
-void FallingTextEffect::getColor(unsigned char * pR, unsigned char * pG, unsigned char * pB)
+void FallingTextEffect::getColor(unsigned char *pR, unsigned char *pG, unsigned char *pB)
 {
     if (mEnabled != 0)
     {
@@ -534,12 +534,10 @@ void FallingTextEffect::drawBloodyFrame(int x, int y, int width)
  */
 void FallingTextEffect::InitSprite()
 {
-    RotateSprite *sprite = (RotateSprite *)::CClass::operator new(
-        sizeof(RotateSprite));
+    RotateSprite *sprite = (RotateSprite *)::CClass::operator new(sizeof(RotateSprite));
     if (sprite != 0)
     {
-        sprite = ::new (sprite) RotateSprite(
-            "s2blood.bmp", 1, 0x20, 0x20);
+        sprite = ::new (sprite) RotateSprite("s2blood.bmp", 1, 0x20, 0x20);
     }
     mpBloodSprite = sprite;
     sprite->Shaded = (void *)1;
@@ -558,8 +556,7 @@ void FallingTextEffect::FreeSprite()
 {
     if (mpBloodSprite != 0)
     {
-        ((Sprite2VTable *)*(int **)mpBloodSprite)
-            ->destroy(mpBloodSprite, 3);
+        ((Sprite2VTable *)*(int **)mpBloodSprite)->destroy(mpBloodSprite, 3);
     }
     mpBloodSprite = 0;
 }
@@ -605,82 +602,77 @@ void TrickTextEffect::bind(Font *pFont)
     if (mEnabled != 0)
     {
         int Steady = 0xbc0;
-        if (GNumberOfPlayers > 1)
-            Steady = 0x940;
+        if (GNumberOfPlayers > 1) Steady = 0x940;
         int Grown = Steady;
-        if (GNumberOfPlayers == 1)
-            Grown = 0x1000;
+        if (GNumberOfPlayers == 1) Grown = 0x1000;
 
         switch (mTrickState)
         {
-        case Bailing:
-        {
-            int A = mBailStartSize;
-            int B = Steady;
-            int Pos = mTrickTime;
-            int Duration = 10;
-            pFont->Scale = A + ((B - A) * Pos) / Duration;
-            if (mTrickTime == Duration)
+            case Bailing:
             {
-                mTrickTime = 0;
-                mTrickState = BailComplete;
+                int A = mBailStartSize;
+                int B = Steady;
+                int Pos = mTrickTime;
+                int Duration = 10;
+                pFont->Scale = A + ((B - A) * Pos) / Duration;
+                if (mTrickTime == Duration)
+                {
+                    mTrickTime = 0;
+                    mTrickState = BailComplete;
+                }
+                break;
             }
-            break;
-        }
-        case Growing:
-        {
-            int B = Grown;
-            int Pos = mTrickTime;
-            int Duration = 5;
-            pFont->Scale = 0x3c0 + ((B - 0x3c0) * Pos) / Duration;
-            if (mTrickTime == Duration)
+            case Growing:
             {
-                mTrickTime = 0;
-                mTrickState = Settling;
+                int B = Grown;
+                int Pos = mTrickTime;
+                int Duration = 5;
+                pFont->Scale = 0x3c0 + ((B - 0x3c0) * Pos) / Duration;
+                if (mTrickTime == Duration)
+                {
+                    mTrickTime = 0;
+                    mTrickState = Settling;
+                }
+                break;
             }
-            break;
-        }
-        case Settling:
-        {
-            int A = Grown;
-            int B = Steady;
-            int Pos = mTrickTime;
-            int Duration = 5;
-            pFont->Scale = A + ((B - A) * Pos) / Duration;
-            if (mTrickTime == Duration)
+            case Settling:
             {
-                mTrickTime = 0;
-                mTrickState = Holding;
+                int A = Grown;
+                int B = Steady;
+                int Pos = mTrickTime;
+                int Duration = 5;
+                pFont->Scale = A + ((B - A) * Pos) / Duration;
+                if (mTrickTime == Duration)
+                {
+                    mTrickTime = 0;
+                    mTrickState = Holding;
+                }
+                break;
             }
-            break;
-        }
-        case Holding:
-            pFont->Scale = Steady;
-            if (mTrickTime == 0x1e)
+            case Holding:
+                pFont->Scale = Steady;
+                if (mTrickTime == 0x1e)
+                {
+                    mTrickTime = 0;
+                    mTrickState = Shrinking;
+                }
+                break;
+            case Shrinking:
             {
-                mTrickTime = 0;
-                mTrickState = Shrinking;
+                int A = Steady;
+                int Pos = mTrickTime;
+                int Duration = 10;
+                pFont->Scale = A + ((0 - A) * Pos) / Duration;
+                if (mTrickTime == Duration)
+                {
+                    mTrickTime = 0;
+                    mTrickState = Complete;
+                }
+                break;
             }
-            break;
-        case Shrinking:
-        {
-            int A = Steady;
-            int Pos = mTrickTime;
-            int Duration = 10;
-            pFont->Scale = A + ((0 - A) * Pos) / Duration;
-            if (mTrickTime == Duration)
-            {
-                mTrickTime = 0;
-                mTrickState = Complete;
-            }
-            break;
-        }
-        case Complete:
-            pFont->Scale = 0;
-            break;
-        case Idle:
-        default:
-            break;
+            case Complete: pFont->Scale = 0; break;
+            case Idle:
+            default: break;
         }
         mScale = pFont->Scale;
     }
@@ -735,12 +727,10 @@ void TrickTextEffect::update()
  * @param pG Green component.
  * @param pB Blue component.
  */
-void TrickTextEffect::getColor(unsigned char * pR, unsigned char * pG, unsigned char * pB)
+void TrickTextEffect::getColor(unsigned char *pR, unsigned char *pG, unsigned char *pB)
 {
-    if (mEnabled == 0)
-        return;
-    if ((u32)(mTrickState - Bailing) >= 2)
-        return;
+    if (mEnabled == 0) return;
+    if ((u32)(mTrickState - Bailing) >= 2) return;
     if (mTrickState == BailComplete)
     {
         mTrickTime = 10;

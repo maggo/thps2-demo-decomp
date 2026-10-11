@@ -8,7 +8,8 @@
 #include "LEVELGEN.h"
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 // Primitive types
@@ -90,8 +91,8 @@ struct Item;
 #endif
 
 /** Construct one source editor model in caller-provided storage. */
-extern "C" GENOBJS_EDITOR_IN_MODEL_CONSTRUCTOR_TYPE *__13EditorInModel(
-    GENOBJS_EDITOR_IN_MODEL_CONSTRUCTOR_TYPE *model);
+extern "C" GENOBJS_EDITOR_IN_MODEL_CONSTRUCTOR_TYPE *
+__13EditorInModel(GENOBJS_EDITOR_IN_MODEL_CONSTRUCTOR_TYPE *model);
 
 #undef GENOBJS_EDITOR_IN_MODEL_CONSTRUCTOR_TYPE
 #undef GENOBJS_DECLARE_EDITOR_IN_MODEL_CONSTRUCTOR_ABI
@@ -105,13 +106,11 @@ extern "C" GENOBJS_EDITOR_IN_MODEL_CONSTRUCTOR_TYPE *__13EditorInModel(
 /** Initialize the editor polygon pool through its lowered target ABI. */
 extern "C" void InitPolyBuf__13EditorInModelb(int gameBuild);
 /** Measure generated model data through LEVELGEN's lowered target ABI view. */
-extern "C" int SetModelDataSize__14EditorOutModelb(
-    GENOBJS_LEVELGEN_EDITOR_OUT_MODEL_TYPE *model, void *gameBuild);
+extern "C" int SetModelDataSize__14EditorOutModelb(GENOBJS_LEVELGEN_EDITOR_OUT_MODEL_TYPE *model,
+                                                   void *gameBuild);
 /** Serialize generated model data through LEVELGEN's lowered target ABI view. */
-extern "C" int CreateModelData__14EditorOutModelPcb(
-    GENOBJS_LEVELGEN_EDITOR_OUT_MODEL_TYPE *model,
-    char *data,
-    void *gameBuild);
+extern "C" int CreateModelData__14EditorOutModelPcb(GENOBJS_LEVELGEN_EDITOR_OUT_MODEL_TYPE *model,
+                                                    char *data, void *gameBuild);
 
 #undef GENOBJS_LEVELGEN_EDITOR_OUT_MODEL_TYPE
 #undef GENOBJS_DECLARE_LEVELGEN_EDITOR_METHOD_ABI

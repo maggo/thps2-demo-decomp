@@ -6,8 +6,7 @@
  * Cross-owner consumers retain their target-proven absolute-address import
  * view of that word.
  */
-#if defined(POLYBUFFERSIZE_OWNER_DECLARATION) && \
-    defined(POLYBUFFERSIZE_ABSOLUTE_DECLARATION)
+#if defined(POLYBUFFERSIZE_OWNER_DECLARATION) && defined(POLYBUFFERSIZE_ABSOLUTE_DECLARATION)
 #error "Select only one POLYBUFFERSIZE declaration view"
 #elif defined(POLYBUFFERSIZE_OWNER_DECLARATION)
 #define POLYBUFFERSIZE_DECL_ATTR

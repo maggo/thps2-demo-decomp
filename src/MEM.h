@@ -10,19 +10,18 @@ struct SBlockHeader
     SBlockHeader *Next;
 };
 
-typedef char SBlockHeader_size_must_be_8[
-    (sizeof(SBlockHeader) == 8) ? 1 : -1];
+typedef char SBlockHeader_size_must_be_8[(sizeof(SBlockHeader) == 8) ? 1 : -1];
 
 extern "C"
 {
-    extern int Mem_NumNew;
-    extern int Mem_NumDelete;
-    extern unsigned int HeapDefs[2][2];
+extern int Mem_NumNew;
+extern int Mem_NumDelete;
+extern unsigned int HeapDefs[2][2];
 #define LOWMEMORY_OWNER_DECLARATION
 #include "LOWMEMORY.h"
-    extern int ReturnAddress;
-    extern int Used[2];
-    extern SBlockHeader *FirstFreeBlock[2];
+extern int ReturnAddress;
+extern int Used[2];
+extern SBlockHeader *FirstFreeBlock[2];
 }
 
 void AddToFreeList(SBlockHeader *pNewFreeBlock, int Heap);
@@ -68,10 +67,8 @@ int Mem_GetBlockSize(void *p);
  * selector is intentionally re-entrant so callers can retain the declaration
  * order and address class proven for their translation unit.
  */
-#if defined(MEM_HEAP_SCALARS_DECLARATION) || \
-    defined(MEM_HEAP_SCALARS_ABSOLUTE_DECLARATION)
-#if defined(MEM_HEAP_SCALARS_DECLARATION) && \
-    defined(MEM_HEAP_SCALARS_ABSOLUTE_DECLARATION)
+#if defined(MEM_HEAP_SCALARS_DECLARATION) || defined(MEM_HEAP_SCALARS_ABSOLUTE_DECLARATION)
+#if defined(MEM_HEAP_SCALARS_DECLARATION) && defined(MEM_HEAP_SCALARS_ABSOLUTE_DECLARATION)
 #error "Select only one MEM heap-scalar declaration view"
 #elif defined(MEM_HEAP_SCALARS_ABSOLUTE_DECLARATION)
 #define MEM_HEAP_SCALAR_DECL_ATTR __attribute__((section(".data")))

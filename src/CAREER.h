@@ -5,25 +5,25 @@
 #define CAREER_HIGH_SCORE_LAYOUT_WAS_IMPLIED
 #endif
 
-#if defined(CAREER_HIGH_SCORE_LAYOUT) && \
-    !defined(CAREER_HIGH_SCORE_LAYOUT_EMITTED)
+#if defined(CAREER_HIGH_SCORE_LAYOUT) && !defined(CAREER_HIGH_SCORE_LAYOUT_EMITTED)
 #define CAREER_HIGH_SCORE_LAYOUT_EMITTED
 
 /** One named entry in a level's high-score table. */
-struct SHighScore {
+struct SHighScore
+{
     char Name[4];
     char Skater;
     int Score;
 };
 
-typedef char SHighScore_size_must_be_12[
-    (sizeof(struct SHighScore) == 12) ? 1 : -1];
-typedef char SHighScore_Name_offset_must_be_0[
-    ((unsigned long)&(((struct SHighScore *)0)->Name) == 0) ? 1 : -1];
-typedef char SHighScore_Skater_offset_must_be_4[
-    ((unsigned long)&(((struct SHighScore *)0)->Skater) == 4) ? 1 : -1];
-typedef char SHighScore_Score_offset_must_be_8[
-    ((unsigned long)&(((struct SHighScore *)0)->Score) == 8) ? 1 : -1];
+typedef char SHighScore_size_must_be_12[(sizeof(struct SHighScore) == 12) ? 1 : -1];
+typedef char
+    SHighScore_Name_offset_must_be_0[((unsigned long)&(((struct SHighScore *)0)->Name) == 0) ? 1
+                                                                                             : -1];
+typedef char SHighScore_Skater_offset_must_be_4
+    [((unsigned long)&(((struct SHighScore *)0)->Skater) == 4) ? 1 : -1];
+typedef char SHighScore_Score_offset_must_be_8
+    [((unsigned long)&(((struct SHighScore *)0)->Score) == 8) ? 1 : -1];
 
 #endif // CAREER_HIGH_SCORE_LAYOUT
 
@@ -73,7 +73,8 @@ int Career_LevelTapes(int Level);
 
 #include "SOPTIONS.h"
 
-struct SCareer {
+struct SCareer
+{
     int Version;
     int MaxTapes;
     struct SCharacterProgress CharacterProgress[14];
@@ -109,7 +110,8 @@ struct SCareer {
 #define CAREER_OWNER_LAYOUT_EMITTED
 
 /** Level fields used when counting career goals and medals. */
-struct SLevelCareerView {
+struct SLevelCareerView
+{
     char pad_00[12];
     void *isCompetition;
     char pad_10[48];
@@ -118,29 +120,30 @@ struct SLevelCareerView {
 };
 
 /** Strided view beginning at each level's high-score field. */
-struct SLevelHiScoreView {
+struct SLevelHiScoreView
+{
     int HiScore;
     char pad_04[112];
 };
 
 /** Strided view beginning at each level's competition marker. */
-struct SLevelCompetitionView {
+struct SLevelCompetitionView
+{
     void *isCompetition;
     char pad_04[112];
 };
 
 /** Read one high-score field while retaining the target's interior base. */
 #define CAREER_LEVEL_HIGH_SCORE(levels, index) \
-    (reinterpret_cast<SLevelHiScoreView *>(&(levels)[0].HiScore) \
-         [index].HiScore)
+    (reinterpret_cast<SLevelHiScoreView *>(&(levels)[0].HiScore)[index].HiScore)
 
 /** Read one competition marker while retaining the target's interior base. */
 #define CAREER_LEVEL_IS_COMPETITION(levels, index) \
-    (reinterpret_cast<SLevelCompetitionView *>( \
-         &(levels)[0].isCompetition)[index].isCompetition)
+    (reinterpret_cast<SLevelCompetitionView *>(&(levels)[0].isCompetition)[index].isCompetition)
 
 /** Skater fields updated when career goals are awarded. */
-struct CBruceCareerView {
+struct CBruceCareerView
+{
     char pad_0000[0xda8];
     int mSkaterType;
     char pad_0dac[0x394];
@@ -152,7 +155,8 @@ struct CBruceCareerView {
 #include "SOPTIONS.h"
 
 /** Complete persistent career-save layout. */
-struct SCareerOwner {
+struct SCareerOwner
+{
     int Version;
     int MaxTapes;
     struct SCharacterProgress CharacterProgress[14];
@@ -167,20 +171,15 @@ struct SCareerOwner {
     struct SOptions Options;
 };
 
-typedef char SLevelCareerView_size_must_be_116[
-    (sizeof(SLevelCareerView) == 0x74) ? 1 : -1];
-typedef char SLevelHiScoreView_size_must_be_116[
-    (sizeof(SLevelHiScoreView) == 0x74) ? 1 : -1];
-typedef char SLevelCompetitionView_size_must_be_116[
-    (sizeof(SLevelCompetitionView) == 0x74) ? 1 : -1];
-typedef char CBruceCareerView_size_must_be_4420[
-    (sizeof(CBruceCareerView) == 0x1144) ? 1 : -1];
-typedef char CareerOwner_SCharacterProgress_size_must_be_32[
-    (sizeof(SCharacterProgress) == 0x20) ? 1 : -1];
-typedef char CareerOwner_SOptions_size_must_be_416[
-    (sizeof(SOptions) == 0x1a0) ? 1 : -1];
-typedef char SCareerOwner_size_must_be_2420[
-    (sizeof(SCareerOwner) == 0x974) ? 1 : -1];
+typedef char SLevelCareerView_size_must_be_116[(sizeof(SLevelCareerView) == 0x74) ? 1 : -1];
+typedef char SLevelHiScoreView_size_must_be_116[(sizeof(SLevelHiScoreView) == 0x74) ? 1 : -1];
+typedef char
+    SLevelCompetitionView_size_must_be_116[(sizeof(SLevelCompetitionView) == 0x74) ? 1 : -1];
+typedef char CBruceCareerView_size_must_be_4420[(sizeof(CBruceCareerView) == 0x1144) ? 1 : -1];
+typedef char
+    CareerOwner_SCharacterProgress_size_must_be_32[(sizeof(SCharacterProgress) == 0x20) ? 1 : -1];
+typedef char CareerOwner_SOptions_size_must_be_416[(sizeof(SOptions) == 0x1a0) ? 1 : -1];
+typedef char SCareerOwner_size_must_be_2420[(sizeof(SCareerOwner) == 0x974) ? 1 : -1];
 
 #endif // CAREER_OWNER_LAYOUT
 #endif // CAREER_HIGH_SCORE_LAYOUT_ONLY

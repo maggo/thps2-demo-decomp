@@ -20,14 +20,14 @@ typedef int undefined4;
 typedef unsigned long ulong;
 typedef unsigned char undefined3[3];
 
-struct SONG_POS {
+struct SONG_POS
+{
     int group;
     int channel;
     int sector;
 };
 
-typedef char Redbook_SongPos_size_must_be_12[
-    sizeof(SONG_POS) == 12 ? 1 : -1];
+typedef char Redbook_SongPos_size_must_be_12[sizeof(SONG_POS) == 12 ? 1 : -1];
 
 // === Variables (gp-relative in this TU) ===
 #define REDBOOKSTATE_GP_RELATIVE_DECLARATIONS

@@ -8,7 +8,8 @@ struct Texture;
 struct SRibbonPoint;
 
 /** A special-display bit rendered as a chain of textured ribbon points. */
-struct CTexturedRibbon : CSpecialDisplay {
+struct CTexturedRibbon : CSpecialDisplay
+{
     unsigned char mTrail;
     Texture *mpTex;
     unsigned char mDontDisplay;

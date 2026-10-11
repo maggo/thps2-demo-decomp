@@ -6,7 +6,8 @@
 #endif
 
 /** Common render state shared by IMAGE's textured image classes. */
-struct Image {
+struct Image
+{
     CClass CClass;
     void *Transparent;
     void *Shaded;

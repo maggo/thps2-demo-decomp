@@ -7,8 +7,7 @@
  * target-proven unsized word-base view and PLAYERSELECT declares the table
  * before its owner-local SStats layout is complete.
  */
-#if defined(STATSTABLE_WORD_BASE_DECLARATION) && \
-    defined(STATSTABLE_UNSIZED_STATS_DECLARATION)
+#if defined(STATSTABLE_WORD_BASE_DECLARATION) && defined(STATSTABLE_UNSIZED_STATS_DECLARATION)
 #error "Select only one Stats declaration view"
 #elif defined(STATSTABLE_WORD_BASE_DECLARATION)
 #define STATSTABLE_DECL_TYPE int

@@ -24,13 +24,15 @@ struct CMedal;
 struct CPowerUp;
 struct SLight;
 
-enum MedalPowerUpType {
+enum MedalPowerUpType
+{
     MedalPowerUpGold = 0x664,
     MedalPowerUpSilver = 0x665,
     MedalPowerUpBronze = 0x666
 };
 
-enum MedalCreationConstant {
+enum MedalCreationConstant
+{
     MedalItemVisible = 0x200,
     MedalInfiniteLifetime = 0xFFFF,
     MedalWobbleSpeed = 80
@@ -39,7 +41,8 @@ enum MedalCreationConstant {
 #include "SCAMERA.h"
 
 /** Power-up fields initialized after the shared CPowerUp constructor returns. */
-struct CPowerUp : CBody {
+struct CPowerUp : CBody
+{
     void *mpGlow;
     unsigned short mGlowRadiusOrg;
     unsigned short mGlowRadiusAmp;
@@ -59,13 +62,14 @@ struct CPowerUp : CBody {
     unsigned int mTimer;
 
     /** Initialize a power-up in caller-provided CItem storage. */
-    CPowerUp(unsigned short powerUpType, const CVector &position,
-             const CVector &velocity, unsigned int flags, int lifetime);
+    CPowerUp(unsigned short powerUpType, const CVector &position, const CVector &velocity,
+             unsigned int flags, int lifetime);
     virtual ~CPowerUp();
 };
 
 /** Medal-specific state following the 264-byte CBody base. */
-struct CMedal : CBody {
+struct CMedal : CBody
+{
     unsigned char mHasNode;
     unsigned char mIs3d;
     unsigned char mDropping;
@@ -101,26 +105,25 @@ CPowerUp *Medal_Create(EMedalType t, int x, int y, int z, int Size, int yvel);
 #include "ZEROVECTOR.h"
 
 /** Read one packed word for the scalar GTE transfer macros. */
-#define MEDAL_PACKED_WORD(value, index) \
-    (reinterpret_cast<int *>(&(value))[index])
+#define MEDAL_PACKED_WORD(value, index) (reinterpret_cast<int *>(&(value))[index])
 
 /**
  * Cool white light used by the medal pickup model.
  */
 SLight Medal_DefaultLight __attribute__((section(".data"))) = {
     {
-        {0, 4096, 0},
-        {0, -4096, 0},
-        {0, 0, 4096},
+        { 0, 4096, 0 },
+        { 0, -4096, 0 },
+        { 0, 0, 4096 },
     },
     0,
     {
-        {2944, 0, 0},
-        {0, 2944, 0},
-        {0, 0, 2944},
+        { 2944, 0, 0 },
+        { 0, 2944, 0 },
+        { 0, 0, 2944 },
     },
     0,
-    {64, 64, 64},
+    { 64, 64, 64 },
 };
 
 /**
@@ -155,8 +158,7 @@ void CMedal::DoPhysics()
     int sinIdx = (angle & 0xFFF) << 1;
     short sinVal = trigTable[sinIdx];
     int product = static_cast<int>(speed) * static_cast<int>(sinVal);
-    if (product < 0)
-        product += 0xFFF;
+    if (product < 0) product += 0xFFF;
     int yDelta = (product >> 12) << 12;
     int curY = mPos.vy;
     u16 angleStep = mWobbleSpeed;
@@ -236,9 +238,8 @@ make_gold:
     Medal = static_cast<CPowerUp *>(CItem::operator new(sizeof(CPowerUp)));
     if (Medal != 0)
     {
-        Medal = ::new (Medal) CPowerUp(
-            MedalPowerUpGold, MedalPos, ZeroVector, 0,
-            MedalInfiniteLifetime);
+        Medal = ::new (Medal)
+            CPowerUp(MedalPowerUpGold, MedalPos, ZeroVector, 0, MedalInfiniteLifetime);
     }
     goto init_medal;
 
@@ -246,9 +247,8 @@ make_silver:
     Medal = static_cast<CPowerUp *>(CItem::operator new(sizeof(CPowerUp)));
     if (Medal != 0)
     {
-        Medal = ::new (Medal) CPowerUp(
-            MedalPowerUpSilver, MedalPos, ZeroVector, 0,
-            MedalInfiniteLifetime);
+        Medal = ::new (Medal)
+            CPowerUp(MedalPowerUpSilver, MedalPos, ZeroVector, 0, MedalInfiniteLifetime);
     }
     goto init_medal;
 
@@ -256,9 +256,8 @@ make_bronze:
     Medal = static_cast<CPowerUp *>(CItem::operator new(sizeof(CPowerUp)));
     if (Medal != 0)
     {
-        Medal = ::new (Medal) CPowerUp(
-            MedalPowerUpBronze, MedalPos, ZeroVector, 0,
-            MedalInfiniteLifetime);
+        Medal = ::new (Medal)
+            CPowerUp(MedalPowerUpBronze, MedalPos, ZeroVector, 0, MedalInfiniteLifetime);
     }
 
 init_medal:

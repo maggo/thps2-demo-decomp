@@ -11,16 +11,14 @@ int M3dMaths_MulDiv64(int value, int multiplier, int divisor);
 void M3dMaths_CopyMat(unsigned short *source, unsigned short *destination);
 
 /** Transpose the rotation words from one matrix into another. */
-void M3dMaths_TransposeMat(
-    unsigned short *source, unsigned short *destination);
+void M3dMaths_TransposeMat(unsigned short *source, unsigned short *destination);
 
 /** Transform the vector currently loaded in the GTE by a rotation matrix. */
 void M3dMaths_TransformLastVec(unsigned short *matrix);
 
 #endif // M3DMATHS_H
 
-#if defined(M3DMATHS_TYPED_API) && \
-    !defined(M3DMATHS_TYPED_API_DECLARATIONS)
+#if defined(M3DMATHS_TYPED_API) && !defined(M3DMATHS_TYPED_API_DECLARATIONS)
 
 #ifndef _LIBGTE_H_
 #error "M3DMATHS_TYPED_API requires <LIBGTE.H> first"

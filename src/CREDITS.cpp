@@ -8,7 +8,7 @@
 #include "SLIGHT.h"
 
 /** Per-credit-stream counters initialized to their first entries. */
-int SCROLL_COUNT[2] = {1, 1};
+int SCROLL_COUNT[2] = { 1, 1 };
 
 /** Filename of the credits music stream. */
 static char CreditsMusicFilename[] = "music.txt";
@@ -24,18 +24,18 @@ static char CreditsFontFilename[] = "credits.fnt";
  */
 SLight Skater_CreditLight = {
     {
-        {0, 4096, 0},
-        {0, -4096, 0},
-        {4096, 0, 0},
+        { 0, 4096, 0 },
+        { 0, -4096, 0 },
+        { 4096, 0, 0 },
     },
     0,
     {
-        {1020, 704, 3520},
-        {644, 704, 3520},
-        {416, 704, 3520},
+        { 1020, 704, 3520 },
+        { 644, 704, 3520 },
+        { 416, 704, 3520 },
     },
     0,
-    {1024, 1024, 1024},
+    { 1024, 1024, 1024 },
 };
 
 /** Fixed-point depth used by the credit-skater projection. */

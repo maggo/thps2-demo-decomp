@@ -35,23 +35,25 @@ struct tag_S_Pal;
 #include "TEXTURE.h"
 
 /** Variable-length face packet prefix consumed by the shatter traversal. */
-struct ShatterFace {
+struct ShatterFace
+{
     unsigned short Flags;
     unsigned short PacketSize;
     unsigned char VertexNums[4];
     unsigned int ColourInfo;
     unsigned short NormalOffset;
     unsigned short ShatterFlags;
-    union {
+    union
+    {
         Texture Embedded;
         Texture *Reference;
     } Material;
 };
 
-typedef char Shatter_face_prefix_must_be_16[
-    ((int)&((ShatterFace *)0)->Material == 16) ? 1 : -1];
+typedef char Shatter_face_prefix_must_be_16[((int)&((ShatterFace *)0)->Material == 16) ? 1 : -1];
 
-struct CBit {
+struct CBit
+{
     CBit *mPrevious;
     CBit *mNext;
     short mAge;
@@ -78,7 +80,8 @@ struct CBit {
 #include "CCHUNKBIT.h"
 
 /** Common deleting-destructor prefix used by bit-owned effect objects. */
-struct ShatterObjectVtable {
+struct ShatterObjectVtable
+{
     void (*Reserved0)(void *object);
     void (*Reserved1)(void *object);
     void (*destroy)(void *object, int flags);
@@ -92,25 +95,23 @@ struct ShatterObjectVtable {
 
 #include "CSMOKETRAIL.h"
 
-typedef char Shatter_smoke_trail_size_must_be_100[
-    (sizeof(CSmokeTrail) == 100) ? 1 : -1];
-typedef char Shatter_bit_size_must_be_72[
-    (sizeof(CBit) == 72) ? 1 : -1];
-typedef char Shatter_chunk_bit_size_must_be_192[
-    (sizeof(CChunkBit) == 192) ? 1 : -1];
+typedef char Shatter_smoke_trail_size_must_be_100[(sizeof(CSmokeTrail) == 100) ? 1 : -1];
+typedef char Shatter_bit_size_must_be_72[(sizeof(CBit) == 72) ? 1 : -1];
+typedef char Shatter_chunk_bit_size_must_be_192[(sizeof(CChunkBit) == 192) ? 1 : -1];
 
 // CShatterBit — Phase F1.6: retired from `extern "C"` mangled-name shims.
-struct CShatterBit : public CChunkBit {
+struct CShatterBit : public CChunkBit
+{
     struct CSVector mAngVel;
     struct CSmokeTrail *mpSmokeTrail;
 
-    CShatterBit(const CSVector &a, const CSVector &b, const CSVector &c,
-                const CVector &pos, int Smoke);
+    CShatterBit(const CSVector &a, const CSVector &b, const CSVector &c, const CVector &pos,
+                int Smoke);
     ~CShatterBit();
     /** Releases shatter-bit storage through the CBit allocator. */
     static void operator delete(void *p) { CBit::operator delete(p); }
     void Move();
-    void SetPos(const CVector & pos);
+    void SetPos(const CVector &pos);
 };
 
 // === External function declarations ===
@@ -131,8 +132,7 @@ static int ShatterSound = 0;
  * ASPSX preparation step expose these local definitions before their uses.
  */
 static CVector ShatterSoundPos __attribute__((section(".sbss")));
-static CVector ShatterCentre
-    __attribute__((section(".sbss"), aligned(16)));
+static CVector ShatterCentre __attribute__((section(".sbss"), aligned(16)));
 static int VRAMClut __attribute__((section(".sbss")));
 static int VRAMTPage __attribute__((section(".sbss")));
 static u8 AverageR __attribute__((section(".sbss")));
@@ -150,11 +150,11 @@ static u8 AverageB __attribute__((section(".sbss")));
 #include "GLEVEL.h"
 
 // === Free function declarations ===
-static void Split(const CVector &a, const CVector &b, const CVector &c,
-                  int au, int av, int bu, int bv, int cu, int cv,
-                  unsigned int TextureWindow, int n);
+static void Split(const CVector &a, const CVector &b, const CVector &c, int au, int av, int bu,
+                  int bv, int cu, int cv, unsigned int TextureWindow, int n);
 static void TransformVertex(CVector &a, SVECTOR *pVertices, unsigned char *pVertexNums, int Vertex);
-static void CalcRGB(int IsGouraud, unsigned int ColourInfo, int NumVertices, unsigned int * pColourTable);
+static void CalcRGB(int IsGouraud, unsigned int ColourInfo, int NumVertices,
+                    unsigned int *pColourTable);
 void Shatter_Glass(int n, const CVector &p0, const CVector &p1, const CVector &p2,
                    const CVector &Normal, u8 r, u8 g, u8 b);
 
@@ -179,25 +179,29 @@ static inline void SetSVec(CSVector *p, short x, short y, short z)
     p->vz = z;
 }
 
-CShatterBit::CShatterBit(const CSVector &a, const CSVector &b,
-                         const CSVector &c, const CVector &pos, int Smoke)
+CShatterBit::CShatterBit(const CSVector &a, const CSVector &b, const CSVector &c,
+                         const CVector &pos, int Smoke)
     : CChunkBit(a, b, c)
 {
     _vf = (ShatterObjectVtable *)&__vt_11CShatterBit;
-    if (Rnd(2) != 0) {
+    if (Rnd(2) != 0)
+    {
         int v = Rnd(160) + 80;
         SetSVec(&mAngVel, (short)v, 0, 0);
-    } else {
+    }
+    else
+    {
         int v = Rnd(160) + 80;
         SetSVec(&mAngVel, 0, (short)v, 0);
     }
     mLifetime = (unsigned short)(Rnd(30) + 45);
     this->SetPos(pos);
     CalculateWorldCoords();
-    if (Rnd(2) != 0) {
-        CSmokeTrail *Smoke = static_cast<CSmokeTrail *>(
-            CBit::operator new(sizeof(CSmokeTrail)));
-        if (Smoke != 0) {
+    if (Rnd(2) != 0)
+    {
+        CSmokeTrail *Smoke = static_cast<CSmokeTrail *>(CBit::operator new(sizeof(CSmokeTrail)));
+        if (Smoke != 0)
+        {
             Smoke = ::new (Smoke) CSmokeTrail(mPos, 4, 128, 128, 128);
         }
         mpSmokeTrail = Smoke;
@@ -220,7 +224,8 @@ CShatterBit::~CShatterBit()
 {
     _vf = (ShatterObjectVtable *)&__vt_11CShatterBit;
     CSmokeTrail *child = mpSmokeTrail;
-    if (child != 0) {
+    if (child != 0)
+    {
         child->_vf->destroy(child, 3);
     }
 }
@@ -235,16 +240,19 @@ CShatterBit::~CShatterBit()
  *
  * @param pos  Position vector.
  */
-void CShatterBit::SetPos(const CVector & pos)
+void CShatterBit::SetPos(const CVector &pos)
 {
     CBit::SetPos(pos);
 
     CVector d = pos - ShatterCentre;
     int Len = d.Length();
-    if (Len != 0) {
+    if (Len != 0)
+    {
         int Norm;
         mVel = ((Norm = Rnd(48)) * d) / Len;
-    } else {
+    }
+    else
+    {
         Die();
     }
 
@@ -257,16 +265,19 @@ void CShatterBit::SetPos(const CVector & pos)
     int falloff = Rnd(175) << 12;
     mVel.vy -= falloff;
 
-    if (Rnd(20) == 0) {
+    if (Rnd(20) == 0)
+    {
         int shift = 1;
         mVel <<= shift;
     }
 
-    if (mVel.vy > 0) {
+    if (mVel.vy > 0)
+    {
         mVel.vy = 0;
     }
 
-    if (mpSmokeTrail != 0) {
+    if (mpSmokeTrail != 0)
+    {
         mpSmokeTrail->SetPos(mPos);
     }
 }
@@ -292,15 +303,19 @@ void CShatterBit::Move()
     mVel.vy = gravity;
     mAngles += mAngVel;
     CSmokeTrail *ribbon = mpSmokeTrail;
-    if (ribbon != 0) {
+    if (ribbon != 0)
+    {
         ribbon->SetPos(*pos);
     }
     CalculateWorldCoords();
     u16 life = this->mLifetime;
-    if (life != 0) {
+    if (life != 0)
+    {
         life = life - 1;
         this->mLifetime = life;
-    } else {
+    }
+    else
+    {
         Die();
     }
 }
@@ -315,14 +330,16 @@ void CShatterBit::Move()
  * Recursively split a triangle and spawn a textured shatter chunk for each
  * final fragment.
  */
-static void Split(const CVector &a, const CVector &b, const CVector &c,
-                  int au, int av, int bu, int bv, int cu, int cv,
-                  unsigned int TextureWindow, int n) {
-    if (LowMemory != 0) {
+static void Split(const CVector &a, const CVector &b, const CVector &c, int au, int av, int bu,
+                  int bv, int cu, int cv, unsigned int TextureWindow, int n)
+{
+    if (LowMemory != 0)
+    {
         return;
     }
 
-    if (n != 0) {
+    if (n != 0)
+    {
         CVector p;
         int pu;
         int pv;
@@ -337,41 +354,42 @@ static void Split(const CVector &a, const CVector &b, const CVector &c,
 
         p = a - c;
         Len = p.Length();
-        if (MaxLen < Len) {
+        if (MaxLen < Len)
+        {
             MaxLen = Len;
             Side = 1;
         }
 
         p = a - b;
         Len = p.Length();
-        if (MaxLen < Len)
-            Side = 2;
+        if (MaxLen < Len) Side = 2;
 
         Gamma = Rnd(9);
-        switch (Side) {
-        case 0:
-            p = b + (((c - b) * Gamma) >> 3);
-            pu = bu + (((cu - bu) * Gamma) >> 3);
-            pv = bv + (((cv - bv) * Gamma) >> 3);
-            Split(a, b, p, au, av, bu, bv, pu, pv, TextureWindow, n - 1);
-            Split(a, c, p, au, av, cu, cv, pu, pv, TextureWindow, n - 1);
-            break;
+        switch (Side)
+        {
+            case 0:
+                p = b + (((c - b) * Gamma) >> 3);
+                pu = bu + (((cu - bu) * Gamma) >> 3);
+                pv = bv + (((cv - bv) * Gamma) >> 3);
+                Split(a, b, p, au, av, bu, bv, pu, pv, TextureWindow, n - 1);
+                Split(a, c, p, au, av, cu, cv, pu, pv, TextureWindow, n - 1);
+                break;
 
-        case 1:
-            p = a + (((c - a) * Gamma) >> 3);
-            pu = au + (((cu - au) * Gamma) >> 3);
-            pv = av + (((cv - av) * Gamma) >> 3);
-            Split(b, a, p, bu, bv, au, av, pu, pv, TextureWindow, n - 1);
-            Split(b, c, p, bu, bv, cu, cv, pu, pv, TextureWindow, n - 1);
-            break;
+            case 1:
+                p = a + (((c - a) * Gamma) >> 3);
+                pu = au + (((cu - au) * Gamma) >> 3);
+                pv = av + (((cv - av) * Gamma) >> 3);
+                Split(b, a, p, bu, bv, au, av, pu, pv, TextureWindow, n - 1);
+                Split(b, c, p, bu, bv, cu, cv, pu, pv, TextureWindow, n - 1);
+                break;
 
-        case 2:
-            p = a + (((b - a) * Gamma) >> 3);
-            pu = au + (((bu - au) * Gamma) >> 3);
-            pv = av + (((bv - av) * Gamma) >> 3);
-            Split(c, a, p, cu, cv, au, av, pu, pv, TextureWindow, n - 1);
-            Split(c, b, p, cu, cv, bu, bv, pu, pv, TextureWindow, n - 1);
-            break;
+            case 2:
+                p = a + (((b - a) * Gamma) >> 3);
+                pu = au + (((bu - au) * Gamma) >> 3);
+                pv = av + (((bv - av) * Gamma) >> 3);
+                Split(c, a, p, cu, cv, au, av, pu, pv, TextureWindow, n - 1);
+                Split(c, b, p, cu, cv, bu, bv, pu, pv, TextureWindow, n - 1);
+                break;
         }
         return;
     }
@@ -404,16 +422,14 @@ static void Split(const CVector &a, const CVector &b, const CVector &c,
     Centre <<= 12;
 
     UseCacheForBits = 0;
-    CShatterBit *pBit = static_cast<CShatterBit *>(
-        CBit::operator new(sizeof(CShatterBit)));
-    if (pBit != 0) {
+    CShatterBit *pBit = static_cast<CShatterBit *>(CBit::operator new(sizeof(CShatterBit)));
+    if (pBit != 0)
+    {
         pBit = ::new (pBit) CShatterBit(OffA, OffB, OffC, Centre, 0);
     }
     UseCacheForBits = 1;
     pBit->SetRGB(AverageR, AverageG, AverageB);
-    pBit->SetUVs(
-        (u16)VRAMClut, (u16)VRAMTPage,
-        (u8)au, (u8)av, (u8)bu, (u8)bv, (u8)cu, (u8)cv);
+    pBit->SetUVs((u16)VRAMClut, (u16)VRAMTPage, (u8)au, (u8)av, (u8)bu, (u8)bv, (u8)cu, (u8)cv);
     pBit->mTexWin = TextureWindow;
 }
 
@@ -455,8 +471,11 @@ static void TransformVertex(CVector &a, SVECTOR *pVertices, unsigned char *pVert
  * @param NumVertices Three for triangles, four for quads.
  * @param pColourTable Region colour table used by Gouraud faces.
  */
-static void CalcRGB(int IsGouraud, unsigned int ColourInfo, int NumVertices, unsigned int * pColourTable) {
-    if (IsGouraud != 0) {
+static void CalcRGB(int IsGouraud, unsigned int ColourInfo, int NumVertices,
+                    unsigned int *pColourTable)
+{
+    if (IsGouraud != 0)
+    {
         unsigned int Col0 = pColourTable[ColourInfo & 0xff];
         unsigned int Col1 = pColourTable[(ColourInfo >> 8) & 0xff];
         unsigned int Col2 = pColourTable[(ColourInfo >> 16) & 0xff];
@@ -465,7 +484,8 @@ static void CalcRGB(int IsGouraud, unsigned int ColourInfo, int NumVertices, uns
         int TotalGreen = ((Col0 >> 8) & 0xff) + ((Col1 >> 8) & 0xff) + ((Col2 >> 8) & 0xff);
         int TotalBlue = ((Col0 >> 16) & 0xff) + ((Col1 >> 16) & 0xff) + ((Col2 >> 16) & 0xff);
 
-        if (NumVertices == 4) {
+        if (NumVertices == 4)
+        {
             unsigned int Col3 = pColourTable[ColourInfo >> 24];
             TotalRed += Col3 & 0xff;
             TotalGreen += (Col3 >> 8) & 0xff;
@@ -473,12 +493,16 @@ static void CalcRGB(int IsGouraud, unsigned int ColourInfo, int NumVertices, uns
             AverageR = TotalRed / 4;
             AverageG = TotalGreen / 4;
             AverageB = TotalBlue / 4;
-        } else {
+        }
+        else
+        {
             AverageR = TotalRed / 3;
             AverageG = TotalGreen / 3;
             AverageB = TotalBlue / 3;
         }
-    } else {
+    }
+    else
+    {
         AverageR = ColourInfo;
         AverageG = ColourInfo >> 8;
         AverageB = ColourInfo >> 16;
@@ -502,7 +526,9 @@ static void CalcRGB(int IsGouraud, unsigned int ColourInfo, int NumVertices, uns
  * @param TryToShatter  Whether geometry should be emitted after flag handling.
  * @return 0 when flag-gated, 1 for a processed face, or 2 for glass shatter.
  */
-int Shatter_Face(Item * pItem, unsigned int * pFace, int NumSplits, int MakeFlash, int UseFlags, int ModifyFlags, int TryToShatter) {
+int Shatter_Face(Item *pItem, unsigned int *pFace, int NumSplits, int MakeFlash, int UseFlags,
+                 int ModifyFlags, int TryToShatter)
+{
     SModel *pModel;
     SVECTOR *pVertices, *pNormals;
     unsigned char *pVertexNums;
@@ -517,32 +543,40 @@ int Shatter_Face(Item * pItem, unsigned int * pFace, int NumSplits, int MakeFlas
     pNormals = pVertices + pModel->NumVertices;
     pVertexNums = face->VertexNums;
 
-    if (UseFlags) {
-        if (!(face->ShatterFlags & 8)) {
+    if (UseFlags)
+    {
+        if (!(face->ShatterFlags & 8))
+        {
             return 0;
         }
 
-        if (ModifyFlags) {
+        if (ModifyFlags)
+        {
             face->ShatterFlags |= 1;
             face->ShatterFlags &= ~8;
             face->Flags &= ~0x80;
             face->Flags &= ~0x100;
 
-            if (!TryToShatter) {
-                if ((face->Flags & 0x40) || !(face->Flags & 1)) {
+            if (!TryToShatter)
+            {
+                if ((face->Flags & 0x40) || !(face->Flags & 1))
+                {
                     face->Flags &= ~0x40;
                 }
             }
         }
     }
 
-    if (!TryToShatter) {
+    if (!TryToShatter)
+    {
         return 1;
     }
 
-    if (face->Flags & 1) {
+    if (face->Flags & 1)
+    {
         pTexture = &face->Material.Embedded;
-        if (!(face->Flags & 2)) {
+        if (!(face->Flags & 2))
+        {
             pTexture = face->Material.Reference;
         }
         int clut = pTexture->clut;
@@ -551,11 +585,9 @@ int Shatter_Face(Item * pItem, unsigned int * pFace, int NumSplits, int MakeFlas
         VRAMTPage = tpage;
     }
 
-    pNormal = (CSVector *)((unsigned char *)pNormals +
-        (face->NormalOffset & 0xfff8));
+    pNormal = (CSVector *)((unsigned char *)pNormals + (face->NormalOffset & 0xfff8));
 
-    M3dMaths_RotMatrixYXZ(
-        reinterpret_cast<SVECTOR *>(&pItem->Angles), &Transform);
+    M3dMaths_RotMatrixYXZ(reinterpret_cast<SVECTOR *>(&pItem->Angles), &Transform);
     SetRotMatrix(&Transform);
     M3dAsm_SetTransVector(&pItem->Position);
 
@@ -565,15 +597,17 @@ int Shatter_Face(Item * pItem, unsigned int * pFace, int NumSplits, int MakeFlas
 
     retval = 1;
 
-    if (face->Flags & 0x10) {
-        CalcRGB(face->Flags & 0x800, face->ColourInfo, 3,
-                PSXRegion[pItem->Region].pColourTable);
+    if (face->Flags & 0x10)
+    {
+        CalcRGB(face->Flags & 0x800, face->ColourInfo, 3, PSXRegion[pItem->Region].pColourTable);
         ShatterCentre.vx = (((a.vx >> 12) + (b.vx >> 12) + (c.vx >> 12)) / 3) << 12;
         ShatterCentre.vy = (((a.vy >> 12) + (b.vy >> 12) + (c.vy >> 12)) / 3) << 12;
         ShatterCentre.vz = (((a.vz >> 12) + (b.vz >> 12) + (c.vz >> 12)) / 3) << 12;
 
-        if ((face->Flags & 0x40) || !(face->Flags & 1)) {
-            if (!LowMemory) {
+        if ((face->Flags & 0x40) || !(face->Flags & 1))
+        {
+            if (!LowMemory)
+            {
                 CVector norm;
                 int nx = pNormal->vx;
                 int ny = pNormal->vy;
@@ -584,33 +618,38 @@ int Shatter_Face(Item * pItem, unsigned int * pFace, int NumSplits, int MakeFlas
                 Shatter_Glass(15, a, b, c, norm, AverageR, AverageG, AverageB);
                 retval = 2;
             }
-            if (ModifyFlags) {
+            if (ModifyFlags)
+            {
                 face->Flags &= ~0x40;
             }
-        } else {
+        }
+        else
+        {
             unsigned int TextureWindow = 0;
-            if (face->Flags & 0x20) {
+            if (face->Flags & 0x20)
+            {
                 TextureWindow = pTexture->TexWin;
             }
-            if (!LowMemory) {
-                Split(a, b, c,
-                      pTexture->u0, pTexture->v0,
-                      pTexture->u1, pTexture->v1,
-                      pTexture->u2, pTexture->v2,
-                      TextureWindow, NumSplits);
+            if (!LowMemory)
+            {
+                Split(a, b, c, pTexture->u0, pTexture->v0, pTexture->u1, pTexture->v1, pTexture->u2,
+                      pTexture->v2, TextureWindow, NumSplits);
             }
         }
-    } else {
+    }
+    else
+    {
         CVector d;
         TransformVertex(d, pVertices, pVertexNums, 3);
-        CalcRGB(face->Flags & 0x800, face->ColourInfo, 4,
-                PSXRegion[pItem->Region].pColourTable);
+        CalcRGB(face->Flags & 0x800, face->ColourInfo, 4, PSXRegion[pItem->Region].pColourTable);
         ShatterCentre.vx = (((a.vx >> 12) + (b.vx >> 12) + (c.vx >> 12) + (d.vx >> 12)) >> 2) << 12;
         ShatterCentre.vy = (((a.vy >> 12) + (b.vy >> 12) + (c.vy >> 12) + (d.vy >> 12)) >> 2) << 12;
         ShatterCentre.vz = (((a.vz >> 12) + (b.vz >> 12) + (c.vz >> 12) + (d.vz >> 12)) >> 2) << 12;
 
-        if ((face->Flags & 0x40) || !(face->Flags & 1)) {
-            if (!LowMemory) {
+        if ((face->Flags & 0x40) || !(face->Flags & 1))
+        {
+            if (!LowMemory)
+            {
                 CVector norm;
                 int nx = pNormal->vx;
                 int ny = pNormal->vy;
@@ -621,25 +660,24 @@ int Shatter_Face(Item * pItem, unsigned int * pFace, int NumSplits, int MakeFlas
                 Shatter_Glass(30, a, b, c, norm, AverageR, AverageB, AverageB);
                 retval = 2;
             }
-            if (ModifyFlags) {
+            if (ModifyFlags)
+            {
                 face->Flags &= ~0x40;
             }
-        } else {
+        }
+        else
+        {
             unsigned int TextureWindow = 0;
-            if (face->Flags & 0x20) {
+            if (face->Flags & 0x20)
+            {
                 TextureWindow = pTexture->TexWin;
             }
-            if (!LowMemory) {
-                Split(a, b, c,
-                      pTexture->u0, pTexture->v0,
-                      pTexture->u1, pTexture->v1,
-                      pTexture->u2, pTexture->v2,
-                      TextureWindow, NumSplits);
-                Split(b, c, d,
-                      pTexture->u1, pTexture->v1,
-                      pTexture->u2, pTexture->v2,
-                      pTexture->u3, pTexture->v3,
-                      TextureWindow, NumSplits);
+            if (!LowMemory)
+            {
+                Split(a, b, c, pTexture->u0, pTexture->v0, pTexture->u1, pTexture->v1, pTexture->u2,
+                      pTexture->v2, TextureWindow, NumSplits);
+                Split(b, c, d, pTexture->u1, pTexture->v1, pTexture->u2, pTexture->v2, pTexture->u3,
+                      pTexture->v3, TextureWindow, NumSplits);
             }
         }
     }
@@ -659,7 +697,8 @@ int Shatter_Face(Item * pItem, unsigned int * pFace, int NumSplits, int MakeFlas
  * @param ModifyFlags Nonzero to persist the consumed face state.
  * @return 0
  */
-int Shatter_Item(Item * pItem, int UseFlags, int ModifyFlags) {
+int Shatter_Item(Item *pItem, int UseFlags, int ModifyFlags)
+{
     int num;
     int i;
     int Shattered;
@@ -679,20 +718,18 @@ int Shatter_Item(Item * pItem, int UseFlags, int ModifyFlags) {
     {
         do
         {
-            comeback = Shatter_Face(pItem, (unsigned int *)pFace, Rnd(5) == 0, 0, UseFlags, ModifyFlags, num < 6);
+            comeback = Shatter_Face(pItem, (unsigned int *)pFace, Rnd(5) == 0, 0, UseFlags,
+                                    ModifyFlags, num < 6);
             if (comeback != 0)
             {
                 Shattered = 1;
-                if (comeback == 1)
-                    num++;
+                if (comeback == 1) num++;
             }
             i++;
-            pFace = (ShatterFace *)((unsigned char *)pFace +
-                                    (pFace->PacketSize & 0xfffc));
+            pFace = (ShatterFace *)((unsigned char *)pFace + (pFace->PacketSize & 0xfffc));
         } while (i < NumFaces);
     }
-    if ((ModifyFlags != 0) && (Shattered != 0))
-        pItem->Flags |= 1;
+    if ((ModifyFlags != 0) && (Shattered != 0)) pItem->Flags |= 1;
     return Shattered;
 }
 
@@ -714,7 +751,8 @@ int Shatter_Item(Item * pItem, int UseFlags, int ModifyFlags) {
  * @param b Blue shard colour component.
  */
 void Shatter_Glass(int n, const CVector &p0, const CVector &p1, const CVector &p2,
-                   const CVector &Normal, u8 r, u8 g, u8 b) {
+                   const CVector &Normal, u8 r, u8 g, u8 b)
+{
     CVector middle = (p1 + p2) >> 1;
 
     SLineInfo ColInfo;
@@ -729,14 +767,16 @@ void Shatter_Glass(int n, const CVector &p0, const CVector &p1, const CVector &p
     M3dColij_InitLineInfo(&ColInfo);
     M3dZone_LineToItem(&ColInfo, 1);
     GroundY = 0x7fffffff;
-    if (ColInfo.pItem != 0) {
+    if (ColInfo.pItem != 0)
+    {
         GroundY = ColInfo.Position.vy;
     }
 
     CVector u = (p2 - p0) >> 12;
     CVector v = (p1 - p0) >> 12;
 
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < n; i++)
+    {
         int alpha = Rnd(0x1000);
         int beta = Rnd(0x1000);
         CVector p = ((alpha * u) + (beta * v)) >> 12;
@@ -746,20 +786,23 @@ void Shatter_Glass(int n, const CVector &p0, const CVector &p1, const CVector &p
         Utils_CalcUnit(a, a);
         a = (a * Rnd(40)) + (Normal * Rnd(40));
 
-        if (ReplaySoundLockout == 0) {
-            CGlassBit *glass = static_cast<CGlassBit *>(
-                CBit::operator new(BIT_GLASS_STORAGE_SIZE));
-            if (glass != 0) {
-                CGlassBit_Construct(glass, p, a, GroundY,
-                                    r, g, b, 100, 100, 100);
+        if (ReplaySoundLockout == 0)
+        {
+            CGlassBit *glass = static_cast<CGlassBit *>(CBit::operator new(BIT_GLASS_STORAGE_SIZE));
+            if (glass != 0)
+            {
+                CGlassBit_Construct(glass, p, a, GroundY, r, g, b, 100, 100, 100);
             }
         }
     }
 
-    if (ShatterSound == 0) {
+    if (ShatterSound == 0)
+    {
         ShatterSoundPos = middle;
         ShatterSound = 1;
-    } else {
+    }
+    else
+    {
         CVector CamPos;
         CamPos.vx = MikeCamera[Camera_CurrentMikeCamera].Position.vx;
         CamPos.vy = MikeCamera[Camera_CurrentMikeCamera].Position.vy;
@@ -768,7 +811,8 @@ void Shatter_Glass(int n, const CVector &p0, const CVector &p1, const CVector &p
         CamPos <<= shift;
         unsigned int centreDistance = Utils_CrapDist(CamPos, middle);
         unsigned int previousDistance = Utils_CrapDist(CamPos, ShatterSoundPos);
-        if (centreDistance < previousDistance) {
+        if (centreDistance < previousDistance)
+        {
             ShatterSoundPos = middle;
         }
     }
@@ -783,11 +827,14 @@ void Shatter_Glass(int n, const CVector &p0, const CVector &p1, const CVector &p
  * Demangled: Shatter_MaybeMakeGlassShatterSound(void)
  *
  */
-void Shatter_MaybeMakeGlassShatterSound(void) {
-    if (ShatterSound) {
+void Shatter_MaybeMakeGlassShatterSound(void)
+{
+    if (ShatterSound)
+    {
         int level = GLevel;
         int sound = 0x3A;
-        if (level != 1 && level != 4) {
+        if (level != 1 && level != 4)
+        {
             sound = 0x2A;
         }
         SFX_PlayX(sound, 0x2000, 0);
@@ -796,7 +843,8 @@ void Shatter_MaybeMakeGlassShatterSound(void) {
 }
 
 
-struct ShatterInit {
+struct ShatterInit
+{
     ShatterInit() {}
 };
 static ShatterInit shatterInit;

@@ -43,8 +43,7 @@ public:
     /** Restore the base item dispatch table before destruction. */
     ~CItem();
     /** Start an RGB flash for the requested duration. */
-    void Flash(int frames, unsigned char r, unsigned char g,
-               unsigned char b);
+    void Flash(int frames, unsigned char r, unsigned char g, unsigned char b);
     /** Advance or finish the active RGB flash. */
     void FlashUpdate();
     /** Resolve and store the model region for an item asset. */
@@ -56,7 +55,6 @@ public:
 };
 
 typedef char CItem_size_must_be_76[(sizeof(CItem) == 76) ? 1 : -1];
-typedef char CItem_vtable_offset_must_be_72[
-    ((unsigned long)&(((CItem *)0)->_vf) == 72) ? 1 : -1];
+typedef char CItem_vtable_offset_must_be_72[((unsigned long)&(((CItem *)0)->_vf) == 72) ? 1 : -1];
 
 #endif // CITEM_INC_H

@@ -29,8 +29,7 @@ inline void *operator new(unsigned int, void *storage)
 }
 
 /** Read one packed 32-bit word for a scalar GTE transfer macro. */
-#define TAPES_PACKED_WORD(value, index) \
-    (reinterpret_cast<const int *>(&(value))[index])
+#define TAPES_PACKED_WORD(value, index) (reinterpret_cast<const int *>(&(value))[index])
 
 struct CBody;
 struct CTapeGlowLayout;
@@ -89,14 +88,10 @@ struct CTape : CBody
     static int mOkayToDisplayTitle;
 
     /** Constructs one tape pickup and attaches it to the power-up list. */
-    CTape(unsigned short PowerupType, const CVector &Pos,
-          const CVector &Pos2, int Size1, int Size2,
+    CTape(unsigned short PowerupType, const CVector &Pos, const CVector &Pos2, int Size1, int Size2,
           const CVector &Vel, unsigned int Flags, int Lifetime);
     /** Allocates tape storage through the original CItem allocator. */
-    static void *operator new(unsigned int size) throw()
-    {
-        return ::CItem::operator new(size);
-    }
+    static void *operator new(unsigned int size) throw() { return ::CItem::operator new(size); }
     /** Destroys this tape and its owned glow state. */
     virtual ~CTape();
     /** Releases tape storage through the original CItem allocator. */
@@ -116,41 +111,38 @@ struct CTape : CBody
     /** Advances this tape's hover rotation and wobble. */
     void DoPhysics();
 
-    CTapeGlowLayout *mpGlow;        // 0x108
-    u16 mGlowRadiusOrg;             // 0x10c
-    u16 mGlowRadiusAmp;             // 0x10e
-    STapeMessage *mMessageTable;    // 0x110
-    int mSessionTapeNum;            // 0x114
-    int mTapeNum;                   // 0x118
-    int mTextX;                     // 0x11c
-    int mTextY;                     // 0x120
-    int mSize;                      // 0x124
-    int mSize1;                     // 0x128
-    int mSize2;                     // 0x12c
-    CVector mVec1;                  // 0x130
-    CVector mVec2;                  // 0x13c
-    u8 mHasNode;                    // 0x148
-    u8 mIs3d;                       // 0x149
-    u8 mDropping;                   // 0x14a
-    u8 mDropForever;                // 0x14b
-    u8 mHoverHeight;                // 0x14c
-    u16 mNodeIndex;                 // 0x14e
-    int mGroundY;                   // 0x150
-    CVector mOrgPos;                // 0x154
-    u16 mT;                         // 0x160
-    u16 mMaxWobbleAmplitude;        // 0x162
-    u16 mWobbleAmplitude;           // 0x164
-    u16 mWobbleSpeed;               // 0x166
-    u16 mLifetime;                  // 0x168
-    u32 mTimer;                     // 0x16c
+    CTapeGlowLayout *mpGlow; // 0x108
+    u16 mGlowRadiusOrg; // 0x10c
+    u16 mGlowRadiusAmp; // 0x10e
+    STapeMessage *mMessageTable; // 0x110
+    int mSessionTapeNum; // 0x114
+    int mTapeNum; // 0x118
+    int mTextX; // 0x11c
+    int mTextY; // 0x120
+    int mSize; // 0x124
+    int mSize1; // 0x128
+    int mSize2; // 0x12c
+    CVector mVec1; // 0x130
+    CVector mVec2; // 0x13c
+    u8 mHasNode; // 0x148
+    u8 mIs3d; // 0x149
+    u8 mDropping; // 0x14a
+    u8 mDropForever; // 0x14b
+    u8 mHoverHeight; // 0x14c
+    u16 mNodeIndex; // 0x14e
+    int mGroundY; // 0x150
+    CVector mOrgPos; // 0x154
+    u16 mT; // 0x160
+    u16 mMaxWobbleAmplitude; // 0x162
+    u16 mWobbleAmplitude; // 0x164
+    u16 mWobbleSpeed; // 0x166
+    u16 mLifetime; // 0x168
+    u32 mTimer; // 0x16c
 };
 
-typedef char tapes_bit_size_must_be_72[
-    (sizeof(CTapeBitLayout) == 0x48) ? 1 : -1];
-typedef char tapes_owner_size_must_be_368[
-    (sizeof(CTape) == 0x170) ? 1 : -1];
-typedef char tapes_glow_vtable_prefix_size_must_be_12[
-    (sizeof(CTapeGlowVTable) == 12) ? 1 : -1];
+typedef char tapes_bit_size_must_be_72[(sizeof(CTapeBitLayout) == 0x48) ? 1 : -1];
+typedef char tapes_owner_size_must_be_368[(sizeof(CTape) == 0x170) ? 1 : -1];
+typedef char tapes_glow_vtable_prefix_size_must_be_12[(sizeof(CTapeGlowVTable) == 12) ? 1 : -1];
 
 /** Power-up type values handled by the tape owner. */
 enum TapePowerUpType
@@ -200,40 +192,36 @@ enum TapeConstant
  * compiler's constant pooling and the pointer relationships in MAIN.SYM.
  */
 STapeMessage TapeMessage[30] = {
-    {0, "Great run! Earn more tapes", "by completing the five",
-     "challenges in each level."},
-    {1, "New level! You've unlocked", "the SCHOOL. ", 0},
-    {1, "NEW DECK now available.", "Stats increased! ", 0},
-    {0, "Collect 1 more tape to", "visit the MALL. ", 0},
-    {1, "Congratulations! You've", "unlocked the MALL. ", 0},
-    {0, "Just two more tapes earns", "an invite to COMPETITION #1. ", 0},
-    {1, "NEW DECK now available.", "Stats increased! ", 0},
-    {1, "New level! Head to the SKATEPARK",
-     "to enter the Windy City Slam. ", 0},
-    {0, "4 more tapes for a trip", "to the DOWNHILL JAM.", 0},
-    {1, "NEW DECK now available.", "Stats increased! ", 0},
-    {0, "Just 2 more tapes to unlock", "the next level... ", 0},
-    {0, "One more tape and you're", "off to the DOWNHILL JAM.", 0},
-    {1, "New level! You've unlocked", "the DOWNHILL JAM. ", 0},
-    {0, "Five more tapes and it's a", "road trip to BURNSIDE.", 0},
-    {1, "NEW DECK now available.", "Stats increased! ", 0},
-    {0, "2 more tapes and you'll be", "airing it out over BURNSIDE.", 0},
-    {0, "Just 1 more tape earns a trip", "to Portland. BURNSIDE awaits.", 0},
-    {1, "Congratulations! You've", "unlocked BURNSIDE! ", 0},
-    {0, "Rumors of a top secret", "competition abound. 7 to go.", 0},
-    {0, "Location of secret ramp unknown.", "6 more tapes should help.", 0},
-    {1, "NEW DECK now available. ", "Stats increased! ", 0},
-    {0, "The truth is out there", "at 4 more tapes.", 0},
-    {0, "Transmissions coming from the", "Southwest. 3 more tapes to go.", 0},
-    {1, "The FINAL DECK is now ", "available. Stats at maximum! ", 0},
-    {0, "Almost there! Just 1 more tape",
-     "earns a secret competition invite!", 0},
-    {1, "Congratulations! Prepare", "yourself for ROSWELL.", 0},
-    {0, "Only 3 tapes remain", "in the entire game!", 0},
-    {0, "The law is on to you and",
-     "moving fast. Just 2 tapes left\x85 ", 0},
-    {0, "The cops are closing in.", "Stay alert. Only 1 tape to go\x85 ", 0},
-    {1, "You're busted!", "OFFICER DICK has arrived!", 0},
+    { 0, "Great run! Earn more tapes", "by completing the five", "challenges in each level." },
+    { 1, "New level! You've unlocked", "the SCHOOL. ", 0 },
+    { 1, "NEW DECK now available.", "Stats increased! ", 0 },
+    { 0, "Collect 1 more tape to", "visit the MALL. ", 0 },
+    { 1, "Congratulations! You've", "unlocked the MALL. ", 0 },
+    { 0, "Just two more tapes earns", "an invite to COMPETITION #1. ", 0 },
+    { 1, "NEW DECK now available.", "Stats increased! ", 0 },
+    { 1, "New level! Head to the SKATEPARK", "to enter the Windy City Slam. ", 0 },
+    { 0, "4 more tapes for a trip", "to the DOWNHILL JAM.", 0 },
+    { 1, "NEW DECK now available.", "Stats increased! ", 0 },
+    { 0, "Just 2 more tapes to unlock", "the next level... ", 0 },
+    { 0, "One more tape and you're", "off to the DOWNHILL JAM.", 0 },
+    { 1, "New level! You've unlocked", "the DOWNHILL JAM. ", 0 },
+    { 0, "Five more tapes and it's a", "road trip to BURNSIDE.", 0 },
+    { 1, "NEW DECK now available.", "Stats increased! ", 0 },
+    { 0, "2 more tapes and you'll be", "airing it out over BURNSIDE.", 0 },
+    { 0, "Just 1 more tape earns a trip", "to Portland. BURNSIDE awaits.", 0 },
+    { 1, "Congratulations! You've", "unlocked BURNSIDE! ", 0 },
+    { 0, "Rumors of a top secret", "competition abound. 7 to go.", 0 },
+    { 0, "Location of secret ramp unknown.", "6 more tapes should help.", 0 },
+    { 1, "NEW DECK now available. ", "Stats increased! ", 0 },
+    { 0, "The truth is out there", "at 4 more tapes.", 0 },
+    { 0, "Transmissions coming from the", "Southwest. 3 more tapes to go.", 0 },
+    { 1, "The FINAL DECK is now ", "available. Stats at maximum! ", 0 },
+    { 0, "Almost there! Just 1 more tape", "earns a secret competition invite!", 0 },
+    { 1, "Congratulations! Prepare", "yourself for ROSWELL.", 0 },
+    { 0, "Only 3 tapes remain", "in the entire game!", 0 },
+    { 0, "The law is on to you and", "moving fast. Just 2 tapes left\x85 ", 0 },
+    { 0, "The cops are closing in.", "Stay alert. Only 1 tape to go\x85 ", 0 },
+    { 1, "You're busted!", "OFFICER DICK has arrived!", 0 },
 };
 
 // === Function implementations (address order) ===
@@ -270,10 +258,8 @@ int CTape::DisplayContinueButton()
  * @param Flags Reserved construction flags.
  * @param Lifetime Initial lifetime counter.
  */
-CTape::CTape(
-    unsigned short PowerupType, const CVector &Pos, const CVector &Pos2,
-    int Size1, int Size2, const CVector &Vel, unsigned int Flags,
-    int Lifetime)
+CTape::CTape(unsigned short PowerupType, const CVector &Pos, const CVector &Pos2, int Size1,
+             int Size2, const CVector &Vel, unsigned int Flags, int Lifetime)
 {
     (void)Flags;
 
@@ -308,74 +294,65 @@ CTape::CTape(
 
     switch (mType)
     {
-    case TapePowerUpMedalA:
-        InitItem("skmedals");
-        mIs3d = 1;
-        mModel =
-            Spool_GetModel(0x54636518, CurrentMedalsFileRegion);
-        break;
+        case TapePowerUpMedalA:
+            InitItem("skmedals");
+            mIs3d = 1;
+            mModel = Spool_GetModel(0x54636518, CurrentMedalsFileRegion);
+            break;
 
-    case TapePowerUpMedalB:
-        InitItem("skmedals");
-        mIs3d = 1;
-        mModel =
-            Spool_GetModel(0xba6d0434, CurrentMedalsFileRegion);
-        break;
+        case TapePowerUpMedalB:
+            InitItem("skmedals");
+            mIs3d = 1;
+            mModel = Spool_GetModel(0xba6d0434, CurrentMedalsFileRegion);
+            break;
 
-    case TapePowerUpMedalC:
-        InitItem("skmedals");
-        mIs3d = 1;
-        mModel =
-            Spool_GetModel(0x2364558e, CurrentMedalsFileRegion);
-        break;
+        case TapePowerUpMedalC:
+            InitItem("skmedals");
+            mIs3d = 1;
+            mModel = Spool_GetModel(0x2364558e, CurrentMedalsFileRegion);
+            break;
 
-    case TapePowerUpSecretTape:
-    case TapePowerUpSpecial18:
-        mMessageTable = TapeMessage;
-        mAngVel.vy = 150;
-        mIs3d = 1;
-        mModel =
-            Spool_GetModel(0x7c1b2c4a, CurrentItemsFileRegion);
-        break;
+        case TapePowerUpSecretTape:
+        case TapePowerUpSpecial18:
+            mMessageTable = TapeMessage;
+            mAngVel.vy = 150;
+            mIs3d = 1;
+            mModel = Spool_GetModel(0x7c1b2c4a, CurrentItemsFileRegion);
+            break;
     }
 
     if (GGame != 1)
     {
         switch (mType)
         {
-        case TapePowerUpLetterK:
-        case TapePowerUpLetterS:
-        case TapePowerUpLetterA:
-        case TapePowerUpLetterE:
-        case TapePowerUpLetterT:
-        case TapePowerUpSecretTape:
-            mLifetime = 1;
-            break;
+            case TapePowerUpLetterK:
+            case TapePowerUpLetterS:
+            case TapePowerUpLetterA:
+            case TapePowerUpLetterE:
+            case TapePowerUpLetterT:
+            case TapePowerUpSecretTape: mLifetime = 1; break;
         }
     }
     else
     {
         switch (mType)
         {
-        case TapePowerUpLetterK:
-        case TapePowerUpLetterS:
-        case TapePowerUpLetterA:
-        case TapePowerUpLetterE:
-        case TapePowerUpLetterT:
-            if (Career_Got(2) != 0)
-                mLifetime = 1;
-            break;
+            case TapePowerUpLetterK:
+            case TapePowerUpLetterS:
+            case TapePowerUpLetterA:
+            case TapePowerUpLetterE:
+            case TapePowerUpLetterT:
+                if (Career_Got(2) != 0) mLifetime = 1;
+                break;
 
-        case TapePowerUpSecretTape:
-            if (Career_Got(3) != 0)
-                mLifetime = 1;
-            break;
+            case TapePowerUpSecretTape:
+                if (Career_Got(3) != 0) mLifetime = 1;
+                break;
         }
     }
 
     AttachTo(&PowerUpList);
-    if (mIs3d == 0)
-        DontDisplay();
+    if (mIs3d == 0) DontDisplay();
 }
 
 /**
@@ -434,13 +411,10 @@ void CTape::DoPhysics()
     mPos = mOrgPos;
     u16 angle = mT;
     u16 speed = mWobbleAmplitude;
-    short sinVal =
-        table[(angle & TapeTrigAngleMask) * TapeTrigEntryStride];
+    short sinVal = table[(angle & TapeTrigAngleMask) * TapeTrigEntryStride];
     int product = speed * sinVal;
-    if (product < 0)
-        product += TapeTrigAngleMask;
-    int yDelta =
-        (product >> TapeFixedFractionBits) << TapeFixedFractionBits;
+    if (product < 0) product += TapeTrigAngleMask;
+    int yDelta = (product >> TapeFixedFractionBits) << TapeFixedFractionBits;
     int curY = mPos.vy;
     u16 angleStep = mWobbleSpeed;
     mPos.vy = curY + yDelta;
@@ -470,17 +444,14 @@ void CTape::AI(int tape_no)
     if (mTimer > 60)
     {
         int temptime = mTimer - 60;
-        CVector pos_offset =
-            ((mVec2 - mVec1) * temptime) / 20;
+        CVector pos_offset = ((mVec2 - mVec1) * temptime) / 20;
 
         int size_offset = (mSize2 - mSize1) * temptime / 20;
         if (temptime < 20)
         {
             mOrgPos = pos_offset + mVec1;
             mSize = size_offset + mSize1;
-            mWobbleAmplitude =
-                mMaxWobbleAmplitude -
-                (mMaxWobbleAmplitude * temptime / 20);
+            mWobbleAmplitude = mMaxWobbleAmplitude - (mMaxWobbleAmplitude * temptime / 20);
         }
         else
         {
@@ -526,106 +497,103 @@ void CTape::AI(int tape_no)
 
     for (int i = 0; i < 5; i++)
     {
-        if (messages[i] != 0)
-            message_count++;
+        if (messages[i] != 0) message_count++;
     }
 
     int message_no = 0;
     for (int i = 0; i < mSessionTapeNum; i++)
     {
-        if (messages[i] != 0)
-            message_no++;
+        if (messages[i] != 0) message_no++;
     }
 
-    if (message_no * 20 + 80 < mTimer &&
-        messages[mSessionTapeNum] != 0)
+    if (message_no * 20 + 80 < mTimer && messages[mSessionTapeNum] != 0)
     {
         switch (message_count)
         {
-        case 1:
-            mTextX = 130;
-            mTextY = 120;
-            break;
-
-        case 2:
-            switch (message_no)
-            {
-            case 0:
-                mTextX = 130;
-                mTextY = 85;
-                break;
-            case 1:
-                mTextX = 130;
-                mTextY = 155;
-                break;
-            }
-            break;
-
-        case 3:
-            switch (message_no)
-            {
-            case 0:
-                mTextX = 130;
-                mTextY = 64;
-                break;
             case 1:
                 mTextX = 130;
                 mTextY = 120;
                 break;
-            case 2:
-                mTextX = 130;
-                mTextY = 176;
-                break;
-            }
-            break;
 
-        case 4:
-            switch (message_no)
-            {
-            case 0:
-                mTextX = 130;
-                mTextY = 50;
-                break;
-            case 1:
-                mTextX = 150;
-                mTextY = 92;
-                break;
             case 2:
-                mTextX = 130;
-                mTextY = 134;
+                switch (message_no)
+                {
+                    case 0:
+                        mTextX = 130;
+                        mTextY = 85;
+                        break;
+                    case 1:
+                        mTextX = 130;
+                        mTextY = 155;
+                        break;
+                }
                 break;
-            case 3:
-                mTextX = 150;
-                mTextY = 176;
-                break;
-            }
-            break;
 
-        case 5:
-            switch (message_no)
-            {
-            case 0:
-                mTextX = 130;
-                mTextY = 50;
-                break;
-            case 1:
-                mTextX = 150;
-                mTextY = 85;
-                break;
-            case 2:
-                mTextX = 130;
-                mTextY = 120;
-                break;
             case 3:
-                mTextX = 150;
-                mTextY = 155;
+                switch (message_no)
+                {
+                    case 0:
+                        mTextX = 130;
+                        mTextY = 64;
+                        break;
+                    case 1:
+                        mTextX = 130;
+                        mTextY = 120;
+                        break;
+                    case 2:
+                        mTextX = 130;
+                        mTextY = 176;
+                        break;
+                }
                 break;
+
             case 4:
-                mTextX = 130;
-                mTextY = 190;
+                switch (message_no)
+                {
+                    case 0:
+                        mTextX = 130;
+                        mTextY = 50;
+                        break;
+                    case 1:
+                        mTextX = 150;
+                        mTextY = 92;
+                        break;
+                    case 2:
+                        mTextX = 130;
+                        mTextY = 134;
+                        break;
+                    case 3:
+                        mTextX = 150;
+                        mTextY = 176;
+                        break;
+                }
                 break;
-            }
-            break;
+
+            case 5:
+                switch (message_no)
+                {
+                    case 0:
+                        mTextX = 130;
+                        mTextY = 50;
+                        break;
+                    case 1:
+                        mTextX = 150;
+                        mTextY = 85;
+                        break;
+                    case 2:
+                        mTextX = 130;
+                        mTextY = 120;
+                        break;
+                    case 3:
+                        mTextX = 150;
+                        mTextY = 155;
+                        break;
+                    case 4:
+                        mTextX = 130;
+                        mTextY = 190;
+                        break;
+                }
+                break;
         }
 
         Mess_SetTextJustify(1);
@@ -634,42 +602,23 @@ void CTape::AI(int tape_no)
 
         if (messages[mSessionTapeNum]->Line2 == 0)
         {
-            Mess_DrawText(
-                mTextX, mTextY,
-                messages[mSessionTapeNum]->Line1,
-                0, 0, 0x100, 0);
+            Mess_DrawText(mTextX, mTextY, messages[mSessionTapeNum]->Line1, 0, 0, 0x100, 0);
         }
         else if (messages[mSessionTapeNum]->Line3 == 0)
         {
-            Mess_DrawText(
-                mTextX, mTextY - 8,
-                messages[mSessionTapeNum]->Line1,
-                0, 0, 0x100, 0);
-            Mess_DrawText(
-                mTextX, mTextY + 8,
-                messages[mSessionTapeNum]->Line2,
-                0, 0, 0x100, 0);
+            Mess_DrawText(mTextX, mTextY - 8, messages[mSessionTapeNum]->Line1, 0, 0, 0x100, 0);
+            Mess_DrawText(mTextX, mTextY + 8, messages[mSessionTapeNum]->Line2, 0, 0, 0x100, 0);
         }
         else
         {
-            Mess_DrawText(
-                mTextX, mTextY - 16,
-                messages[mSessionTapeNum]->Line1,
-                0, 0, 0x100, 0);
-            Mess_DrawText(
-                mTextX, mTextY,
-                messages[mSessionTapeNum]->Line2,
-                0, 0, 0x100, 0);
-            Mess_DrawText(
-                mTextX, mTextY + 16,
-                messages[mSessionTapeNum]->Line3,
-                0, 0, 0x100, 0);
+            Mess_DrawText(mTextX, mTextY - 16, messages[mSessionTapeNum]->Line1, 0, 0, 0x100, 0);
+            Mess_DrawText(mTextX, mTextY, messages[mSessionTapeNum]->Line2, 0, 0, 0x100, 0);
+            Mess_DrawText(mTextX, mTextY + 16, messages[mSessionTapeNum]->Line3, 0, 0, 0x100, 0);
         }
     }
 
     DoPhysics();
-    if (mIs3d == 0)
-        CreateBit();
+    if (mIs3d == 0) CreateBit();
 }
 
 /**
@@ -706,12 +655,9 @@ CTape *Tape_Create(int x, int y, int z, int Size, int x2, int y2, int z2, int Si
     gte_mvmva(0, 0, 0, 3, 0);
     gte_stlvnl(&vec2);
 
-    TapePos.vx = vec2.vx +
-        (pCurrentCamera->Position.vx << TapeFixedFractionBits);
-    TapePos.vy = vec2.vy +
-        (pCurrentCamera->Position.vy << TapeFixedFractionBits);
-    TapePos.vz = vec2.vz +
-        (pCurrentCamera->Position.vz << TapeFixedFractionBits);
+    TapePos.vx = vec2.vx + (pCurrentCamera->Position.vx << TapeFixedFractionBits);
+    TapePos.vy = vec2.vy + (pCurrentCamera->Position.vy << TapeFixedFractionBits);
+    TapePos.vz = vec2.vz + (pCurrentCamera->Position.vz << TapeFixedFractionBits);
 
     vec.vx = static_cast<short>(x2);
     vec.vy = static_cast<short>(y2);
@@ -730,16 +676,12 @@ CTape *Tape_Create(int x, int y, int z, int Size, int x2, int y2, int z2, int Si
     gte_mvmva(0, 0, 0, 3, 0);
     gte_stlvnl(&vec2);
 
-    TapePos2.vx = vec2.vx +
-        (pCurrentCamera->Position.vx << TapeFixedFractionBits);
-    TapePos2.vy = vec2.vy +
-        (pCurrentCamera->Position.vy << TapeFixedFractionBits);
-    TapePos2.vz = vec2.vz +
-        (pCurrentCamera->Position.vz << TapeFixedFractionBits);
+    TapePos2.vx = vec2.vx + (pCurrentCamera->Position.vx << TapeFixedFractionBits);
+    TapePos2.vy = vec2.vy + (pCurrentCamera->Position.vy << TapeFixedFractionBits);
+    TapePos2.vz = vec2.vz + (pCurrentCamera->Position.vz << TapeFixedFractionBits);
 
-    CTape *Tape = new CTape(
-        TapePowerUpSpecial18, TapePos, TapePos2, Size, Size2,
-        ZeroVector, 0, TapeInfiniteLifetime);
+    CTape *Tape = new CTape(TapePowerUpSpecial18, TapePos, TapePos2, Size, Size2, ZeroVector, 0,
+                            TapeInfiniteLifetime);
 
     Tape->mWobbleAmplitude = 10;
     Tape->mMaxWobbleAmplitude = 10;

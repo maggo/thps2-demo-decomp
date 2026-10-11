@@ -47,8 +47,7 @@ struct CCamera
     void Shake(const CVector &position, EShakeType magnitude);
 };
 
-typedef char Baddy_CCamera_size_check[
-    (sizeof(CCamera) == 1668) ? 1 : -1];
+typedef char Baddy_CCamera_size_check[(sizeof(CCamera) == 1668) ? 1 : -1];
 
 #include "CVECTOROPS.h"
 
@@ -67,7 +66,8 @@ typedef char Baddy_CCamera_size_check[
 #include "VIDEO.h"
 
 /** Owner-local prefix needed for the goal-counter video-mode guard. */
-struct SVideoInfo {
+struct SVideoInfo
+{
     enum EVideoMode VideoMode;
 };
 
@@ -80,7 +80,8 @@ static inline void Baddy_ClearVector(CVector &vector)
 }
 
 /** Method-bearing owner-local view of the original inline CSVector type. */
-struct BaddyCSVector : CSVector {
+struct BaddyCSVector : CSVector
+{
     /** Assign all three fixed-point vector components. */
     void Set(int x, int y, int z)
     {
@@ -123,7 +124,8 @@ static inline CVector &Baddy_ZeroVector()
 #include "SFXV.h"
 
 /** Target-complete transient-bit base used by the weather-line consumer. */
-struct CBit {
+struct CBit
+{
     CBit *mPrevious;
     CBit *mNext;
     short mAge;
@@ -146,7 +148,8 @@ struct CBit {
 };
 
 /** Exact-size spark storage used only for construction in this owner. */
-struct CSpark {
+struct CSpark
+{
     unsigned char opaque[BIT_SPARK_STORAGE_SIZE];
 
     /** Construct one transient spark. */
@@ -160,22 +163,14 @@ struct CSpark {
 #include "SLINESEG.h"
 #include "CGPOLYLINE.h"
 
-typedef char Baddy_SLineSeg_size_must_be_16[
-    (sizeof(struct SLineSeg) == 16) ? 1 : -1];
-typedef char Baddy_CBit_size_must_be_72[
-    (sizeof(CBit) == 72) ? 1 : -1];
-typedef char Baddy_CSpecialDisplay_size_must_be_72[
-    (sizeof(CSpecialDisplay) == 72) ? 1 : -1];
-typedef char Baddy_CTexturedRibbon_size_must_be_108[
-    (sizeof(CTexturedRibbon) == 108) ? 1 : -1];
-typedef char Baddy_SWidthWobble_size_must_be_8[
-    (sizeof(SWidthWobble) == 8) ? 1 : -1];
-typedef char Baddy_CSmokeJet_size_must_be_364[
-    (sizeof(CSmokeJet) == 364) ? 1 : -1];
-typedef char Baddy_CGPolyLine_size_must_be_100[
-    (sizeof(CGPolyLine) == 100) ? 1 : -1];
-typedef char Baddy_SRainEntry_size_must_be_16[
-    (sizeof(SRainEntry) == 16) ? 1 : -1];
+typedef char Baddy_SLineSeg_size_must_be_16[(sizeof(struct SLineSeg) == 16) ? 1 : -1];
+typedef char Baddy_CBit_size_must_be_72[(sizeof(CBit) == 72) ? 1 : -1];
+typedef char Baddy_CSpecialDisplay_size_must_be_72[(sizeof(CSpecialDisplay) == 72) ? 1 : -1];
+typedef char Baddy_CTexturedRibbon_size_must_be_108[(sizeof(CTexturedRibbon) == 108) ? 1 : -1];
+typedef char Baddy_SWidthWobble_size_must_be_8[(sizeof(SWidthWobble) == 8) ? 1 : -1];
+typedef char Baddy_CSmokeJet_size_must_be_364[(sizeof(CSmokeJet) == 364) ? 1 : -1];
+typedef char Baddy_CGPolyLine_size_must_be_100[(sizeof(CGPolyLine) == 100) ? 1 : -1];
+typedef char Baddy_SRainEntry_size_must_be_16[(sizeof(SRainEntry) == 16) ? 1 : -1];
 
 // === Function implementations (address order) ===
 
@@ -258,8 +253,8 @@ void CBaddy::SendDeathPulse()
 {
     ushort node;
 
-    if ((mDeathPulseSent == '\0') &&
-        (mNode != (u16)0xffff)) {
+    if ((mDeathPulseSent == '\0') && (mNode != (u16)0xffff))
+    {
         node = mNode;
         mDeathPulseSent = '\x01';
         Trig_SendPulse((ushort *)(OffsetList[node] + 3));
@@ -287,8 +282,7 @@ void CBaddy::SkipToEndif()
         mpScript = scriptPtr + 1;
         if (token == endif_cmd)
         {
-            if (conditionals == 0)
-                return;
+            if (conditionals == 0) return;
             conditionals--;
         }
         else
@@ -314,8 +308,7 @@ void CBaddy::ParseScript(u16 *p_script)
 {
     mpScript = p_script;
     u16 cmd = *p_script;
-    if (cmd == 0x4100)
-        goto end_mark;
+    if (cmd == 0x4100) goto end_mark;
     do
     {
         u16 *scriptPtr = mpScript;
@@ -325,8 +318,7 @@ void CBaddy::ParseScript(u16 *p_script)
         if (command & 0x4000)
         {
             int result = ExecuteCommand(command);
-            if (result == 0)
-                goto ret0;
+            if (result == 0) goto ret0;
             goto loop_cont;
         }
         {
@@ -336,15 +328,13 @@ void CBaddy::ParseScript(u16 *p_script)
                 SetVariable(command);
             }
         }
-    loop_cont:
-        ;
+    loop_cont:;
         u16 *scriptPtr2 = mpScript;
         cmd = *scriptPtr2;
     } while (cmd != 0x4100);
 end_mark:
     mDoScript = 0;
-ret0:
-    ;
+ret0:;
 }
 
 /**
@@ -612,31 +602,29 @@ int CBaddy::ExecuteCommand(unsigned short command)
 
     {
     command_42A0:
-    {
-        unsigned short type = *mpScript++;
-        if (type & 0x2000)
         {
-            type = GetVariable(type);
-        }
+            unsigned short type = *mpScript++;
+            if (type & 0x2000)
+            {
+                type = GetVariable(type);
+            }
 
-        unsigned int flags = *mpScript++;
-        int lifetime = *mpScript++;
-        int gravity = *mpScript++;
-        CPowerUp *p_powerup = PowerUp_Create(
-            type, *(const CVector *)&mPos,
-            flags, lifetime, Baddy_ZeroVector());
-        if (p_powerup)
-        {
-            p_powerup->SetGravity(gravity << 12, 5);
+            unsigned int flags = *mpScript++;
+            int lifetime = *mpScript++;
+            int gravity = *mpScript++;
+            CPowerUp *p_powerup =
+                PowerUp_Create(type, *(const CVector *)&mPos, flags, lifetime, Baddy_ZeroVector());
+            if (p_powerup)
+            {
+                p_powerup->SetGravity(gravity << 12, 5);
+            }
+            return 1;
         }
-        return 1;
-    }
 
     command_429E:
         if (mpCreatedByPlayer != 0)
         {
-            if ((CBody *)mpCreatedByPlayer ==
-                MechList)
+            if ((CBody *)mpCreatedByPlayer == MechList)
             {
                 CurrentWaterLevel = mPos.vy;
                 goto command_default;
@@ -652,82 +640,75 @@ int CBaddy::ExecuteCommand(unsigned short command)
         CurrentWaterDamage = *mpScript++;
         goto command_default;
 
-    {
-        CVector pos;
-
-    command_429A:
-    {
-        unsigned short node = *mpScript++;
-        if (node & 0x2000)
         {
-            node = GetVariable(node);
-        }
-        Trig_GetPosition(pos, node);
-        goto process_position;
-    }
+            CVector pos;
 
-    command_42A6:
-        pos = *(const CVector *)&mPos;
+        command_429A:
+            {
+                unsigned short node = *mpScript++;
+                if (node & 0x2000)
+                {
+                    node = GetVariable(node);
+                }
+                Trig_GetPosition(pos, node);
+                goto process_position;
+            }
 
-    process_position:
-        switch (*mpScript++)
-        {
-        case 0:
-        case 1:
-            break;
-        case 2:
-            GetScriptValue();
-            mpScript += 2;
-            goto command_default;
+        command_42A6:
+            pos = *(const CVector *)&mPos;
+
+        process_position:
+            switch (*mpScript++)
+            {
+                case 0:
+                case 1: break;
+                case 2:
+                    GetScriptValue();
+                    mpScript += 2;
+                    goto command_default;
+            }
+            return 1;
         }
-        return 1;
-    }
 
     command_4227:
-    {
-        unsigned short interval = *mpScript++;
-        if (interval)
         {
-            mComplexSurfaceInterval = (unsigned char)interval;
-            mComplexSurfaceTimer = 0;
-            mSpecificFlags |= 2;
+            unsigned short interval = *mpScript++;
+            if (interval)
+            {
+                mComplexSurfaceInterval = (unsigned char)interval;
+                mComplexSurfaceTimer = 0;
+                mSpecificFlags |= 2;
+                goto command_default;
+            }
+            mSpecificFlags &= ~2U;
             goto command_default;
         }
-        mSpecificFlags &= ~2U;
-        goto command_default;
-    }
 
     command_4298:
-    {
-        unsigned short shake = *mpScript++;
-        if (shake & 0x2000)
         {
-            shake = GetVariable(shake);
-        }
+            unsigned short shake = *mpScript++;
+            if (shake & 0x2000)
+            {
+                shake = GetVariable(shake);
+            }
 
-        if (CameraList == 0)
-        {
+            if (CameraList == 0)
+            {
+                return 1;
+            }
+            if (shake == 0)
+            {
+                ((CCamera *)CameraList)->Shake(*(const CVector *)&mPos, CAMERASHAKE_SMALL);
+                return 1;
+            }
+            if (shake == 1)
+            {
+                ((CCamera *)CameraList)->Shake(*(const CVector *)&mPos, CAMERASHAKE_MEDIUM);
+                return 1;
+            }
+            ((CCamera *)CameraList)->Shake(*(const CVector *)&mPos, CAMERASHAKE_BIG);
             return 1;
         }
-        if (shake == 0)
-        {
-            ((CCamera *)CameraList)->Shake(
-                *(const CVector *)&mPos,
-                CAMERASHAKE_SMALL);
-            return 1;
-        }
-        if (shake == 1)
-        {
-            ((CCamera *)CameraList)->Shake(
-                *(const CVector *)&mPos,
-                CAMERASHAKE_MEDIUM);
-            return 1;
-        }
-        ((CCamera *)CameraList)->Shake(
-            *(const CVector *)&mPos,
-            CAMERASHAKE_BIG);
-        return 1;
-    }
 
     command_4296:
         SFX_MIDIFadeIn(*mpScript++);
@@ -742,13 +723,12 @@ int CBaddy::ExecuteCommand(unsigned short command)
         return 1;
 
     command_4293:
-    {
-        unsigned int *p_checksum = (unsigned int *)
-            (((unsigned int)mpScript + 3) & ~3U);
-        printf("ignoring script cmd: setting fmv checksum %x\n", p_checksum);
-        mpScript = (unsigned short *)(p_checksum + 1);
-        goto command_default;
-    }
+        {
+            unsigned int *p_checksum = (unsigned int *)(((unsigned int)mpScript + 3) & ~3U);
+            printf("ignoring script cmd: setting fmv checksum %x\n", p_checksum);
+            mpScript = (unsigned short *)(p_checksum + 1);
+            goto command_default;
+        }
 
     command_4294:
         printf("ignoring script cmd: starting fmv\n");
@@ -759,278 +739,273 @@ int CBaddy::ExecuteCommand(unsigned short command)
         return 1;
 
     command_42B1_42B2:
-    {
-        unsigned short node = *mpScript++;
-        if (node & 0x2000)
         {
-            node = GetVariable(node);
+            unsigned short node = *mpScript++;
+            if (node & 0x2000)
+            {
+                node = GetVariable(node);
+            }
+            unsigned short *p_links = Trig_GetLinksPointer(node);
+            if (command == 0x42B1)
+            {
+                SendSignalToLinks(p_links);
+            }
+            else
+            {
+                Trig_SendPulse(p_links);
+            }
+            return 1;
         }
-        unsigned short *p_links = Trig_GetLinksPointer(node);
-        if (command == 0x42B1)
-        {
-            SendSignalToLinks(p_links);
-        }
-        else
-        {
-            Trig_SendPulse(p_links);
-        }
-        return 1;
-    }
 
     command_42B3_42B4:
-    {
-        unsigned short node = *mpScript++;
-        if (node & 0x2000)
         {
-            node = GetVariable(node);
+            unsigned short node = *mpScript++;
+            if (node & 0x2000)
+            {
+                node = GetVariable(node);
+            }
+            if (command == 0x42B3)
+            {
+                SendSignalToNode(BaddyList, node);
+                SendSignalToNode(EnvironmentalObjectList, node);
+            }
+            else
+            {
+                Trig_SendPulseToNode(node);
+            }
+            return 1;
         }
-        if (command == 0x42B3)
-        {
-            SendSignalToNode(BaddyList, node);
-            SendSignalToNode(EnvironmentalObjectList, node);
-        }
-        else
-        {
-            Trig_SendPulseToNode(node);
-        }
-        return 1;
-    }
 
     command_42C0:
-    {
-        unsigned short goal = *mpScript++;
-        if ((GGame == 1) && !Career_Got(1) &&
-            ((GVInfo1.VideoMode ^ VIDEO_PLAYBACK) != 0))
         {
-            Panel_GoalCounter(goal);
+            unsigned short goal = *mpScript++;
+            if ((GGame == 1) && !Career_Got(1) && ((GVInfo1.VideoMode ^ VIDEO_PLAYBACK) != 0))
+            {
+                Panel_GoalCounter(goal);
+            }
+            return 1;
         }
-        return 1;
-    }
 
     command_42B0:
-    {
-        char *p_string = (char *)mpScript;
-        while (*p_string)
         {
-            ++p_string;
+            char *p_string = (char *)mpScript;
+            while (*p_string)
+            {
+                ++p_string;
+            }
+            if ((unsigned int)p_string & 1)
+            {
+                mpScript = (unsigned short *)(p_string + 1);
+            }
+            else
+            {
+                mpScript = (unsigned short *)(p_string + 2);
+            }
+            return 1;
         }
-        if ((unsigned int)p_string & 1)
-        {
-            mpScript = (unsigned short *)(p_string + 1);
-        }
-        else
-        {
-            mpScript = (unsigned short *)(p_string + 2);
-        }
-        return 1;
-    }
 
     command_4226:
-        Baddy_ClearVector(
-            reinterpret_cast<CVector &>(mVel));
+        Baddy_ClearVector(reinterpret_cast<CVector &>(mVel));
         goto command_default;
 
     command_4200:
-    {
-        InitItem(
-            (char *)mpScript);
-        char *p_string = (char *)mpScript;
-        while (*p_string)
         {
-            ++p_string;
+            InitItem((char *)mpScript);
+            char *p_string = (char *)mpScript;
+            while (*p_string)
+            {
+                ++p_string;
+            }
+            if ((unsigned int)p_string & 1)
+            {
+                mpScript = (unsigned short *)(p_string + 1);
+            }
+            else
+            {
+                mpScript = (unsigned short *)(p_string + 2);
+            }
+            return 1;
         }
-        if ((unsigned int)p_string & 1)
-        {
-            mpScript = (unsigned short *)(p_string + 1);
-        }
-        else
-        {
-            mpScript = (unsigned short *)(p_string + 2);
-        }
-        return 1;
-    }
 
     command_4106:
-    {
-        CVector dummy;
-        unsigned short node = *mpScript++;
-        if (node & 0x2000)
         {
-            node = GetVariable(node);
+            CVector dummy;
+            unsigned short node = *mpScript++;
+            if (node & 0x2000)
+            {
+                node = GetVariable(node);
+            }
+            unsigned short *pNode = Trig_GetPosition(dummy, node);
+            mpScript = pNode + 3;
+            return 1;
         }
-        unsigned short *pNode = Trig_GetPosition(dummy, node);
-        mpScript = pNode + 3;
-        return 1;
-    }
 
     command_4104:
-    {
-        unsigned short label = *mpScript++;
-        mpScriptLabel[label] = mpScript;
-        goto command_default;
-    }
+        {
+            unsigned short label = *mpScript++;
+            mpScriptLabel[label] = mpScript;
+            goto command_default;
+        }
 
     command_4105:
-    {
-        unsigned short *p_return = mpScript;
-        while (*mpScript != 0x4100)
         {
-            unsigned short script_command = *mpScript++;
-            if (script_command == 0x4104)
+            unsigned short *p_return = mpScript;
+            while (*mpScript != 0x4100)
             {
-                unsigned short label = *mpScript++;
-                mpScriptLabel[label] = mpScript;
+                unsigned short script_command = *mpScript++;
+                if (script_command == 0x4104)
+                {
+                    unsigned short label = *mpScript++;
+                    mpScriptLabel[label] = mpScript;
+                }
             }
+            mpScript = p_return;
+            goto command_default;
         }
-        mpScript = p_return;
-        goto command_default;
-    }
 
     command_4101:
-    {
-        unsigned short label = *mpScript++;
-        mpScript = mpScriptLabel[label];
-        goto command_default;
-    }
+        {
+            unsigned short label = *mpScript++;
+            mpScript = mpScriptLabel[label];
+            goto command_default;
+        }
 
     command_4102:
-    {
-        unsigned short label = *mpScript++;
-        mpScript = mpScriptLabel[label];
-        return 0;
-    }
+        {
+            unsigned short label = *mpScript++;
+            mpScript = mpScriptLabel[label];
+            return 0;
+        }
 
     command_4116:
-    {
-        unsigned int flags = *mpScript++;
-        if ((mSpecificFlags & flags) == 0)
         {
-            goto command_default;
+            unsigned int flags = *mpScript++;
+            if ((mSpecificFlags & flags) == 0)
+            {
+                goto command_default;
+            }
+            goto skip_to_endif;
         }
-        goto skip_to_endif;
-    }
 
     command_4115:
-    {
-        unsigned int flags = *mpScript++;
-        if ((mSpecificFlags & flags) == flags)
         {
-            goto command_default;
+            unsigned int flags = *mpScript++;
+            if ((mSpecificFlags & flags) == flags)
+            {
+                goto command_default;
+            }
+            goto skip_to_endif;
         }
-        goto skip_to_endif;
-    }
 
     command_4110_4111:
-    {
-        unsigned short dummy_script[8];
-        int dummy_script_index = 0;
-        int var_id = *mpScript++;
-        unsigned short *p_start = mpScript;
-        int v0 = GetVariable(var_id);
-        unsigned short *p_after = mpScript;
-        if (p_start != p_after)
         {
-            unsigned short *p_end = p_after;
-            unsigned short *p_copy = dummy_script;
-            do
+            unsigned short dummy_script[8];
+            int dummy_script_index = 0;
+            int var_id = *mpScript++;
+            unsigned short *p_start = mpScript;
+            int v0 = GetVariable(var_id);
+            unsigned short *p_after = mpScript;
+            if (p_start != p_after)
             {
-                *p_copy++ = *p_start++;
-                ++dummy_script_index;
+                unsigned short *p_end = p_after;
+                unsigned short *p_copy = dummy_script;
+                do
+                {
+                    *p_copy++ = *p_start++;
+                    ++dummy_script_index;
+                } while (p_start != p_end);
             }
-            while (p_start != p_end);
-        }
 
-        int v1 = *p_after;
-        mpScript = p_after + 1;
-        if (v1 & 0x2000)
-        {
-            v1 = GetVariable(v1);
-        }
-        dummy_script[dummy_script_index] =
-            (command == 0x4110) ? v0 + v1 : v0 - v1;
+            int v1 = *p_after;
+            mpScript = p_after + 1;
+            if (v1 & 0x2000)
+            {
+                v1 = GetVariable(v1);
+            }
+            dummy_script[dummy_script_index] = (command == 0x4110) ? v0 + v1 : v0 - v1;
 
-        p_start = mpScript;
-        mpScript = dummy_script;
-        SetVariable(var_id);
-        mpScript = p_start;
-        goto command_default;
-    }
+            p_start = mpScript;
+            mpScript = dummy_script;
+            SetVariable(var_id);
+            mpScript = p_start;
+            goto command_default;
+        }
 
     command_4112:
-    {
-        int v0 = *mpScript++;
-        if (v0 & 0x2000)
         {
-            v0 = GetVariable(v0);
-        }
+            int v0 = *mpScript++;
+            if (v0 & 0x2000)
+            {
+                v0 = GetVariable(v0);
+            }
 
-        int v1 = *mpScript++;
-        if (v1 & 0x2000)
-        {
-            v1 = GetVariable(v1);
-        }
+            int v1 = *mpScript++;
+            if (v1 & 0x2000)
+            {
+                v1 = GetVariable(v1);
+            }
 
-        if (v1 < v0)
-        {
-            goto command_default;
+            if (v1 < v0)
+            {
+                goto command_default;
+            }
+            goto skip_to_endif;
         }
-        goto skip_to_endif;
-    }
 
     command_4113:
-    {
-        int v0 = *mpScript++;
-        if (v0 & 0x2000)
         {
-            v0 = GetVariable(v0);
-        }
+            int v0 = *mpScript++;
+            if (v0 & 0x2000)
+            {
+                v0 = GetVariable(v0);
+            }
 
-        int v1 = *mpScript++;
-        if (v1 & 0x2000)
-        {
-            v1 = GetVariable(v1);
-        }
+            int v1 = *mpScript++;
+            if (v1 & 0x2000)
+            {
+                v1 = GetVariable(v1);
+            }
 
-        if (v0 < v1)
-        {
-            goto command_default;
+            if (v0 < v1)
+            {
+                goto command_default;
+            }
+            goto skip_to_endif;
         }
-        goto skip_to_endif;
-    }
 
     command_4114:
-    {
-        int v0 = *mpScript++;
-        if (v0 & 0x2000)
         {
-            v0 = GetVariable(v0);
-        }
+            int v0 = *mpScript++;
+            if (v0 & 0x2000)
+            {
+                v0 = GetVariable(v0);
+            }
 
-        int v1 = *mpScript++;
-        if (v1 & 0x2000)
-        {
-            v1 = GetVariable(v1);
-        }
+            int v1 = *mpScript++;
+            if (v1 & 0x2000)
+            {
+                v1 = GetVariable(v1);
+            }
 
-        if (v0 == v1)
-        {
-            goto command_default;
+            if (v0 == v1)
+            {
+                goto command_default;
+            }
         }
-    }
 
     skip_to_endif:
         SkipToEndif();
         return 1;
 
     command_4280:
-    {
-        mWaitTimer = *mpScript++;
-        if (mWaitTimer & 0x2000)
         {
-            mWaitTimer = GetVariable(mWaitTimer);
+            mWaitTimer = *mpScript++;
+            if (mWaitTimer & 0x2000)
+            {
+                mWaitTimer = GetVariable(mWaitTimer);
+            }
+            return 0;
         }
-        return 0;
-    }
 
     command_4281:
         if (mInputFlagsCopy & 1)
@@ -1048,17 +1023,15 @@ int CBaddy::ExecuteCommand(unsigned short command)
         return 0;
 
     command_4201:
-    {
-        int anim = *mpScript++;
-        int direction = *mpScript++;
-        CycleAnim(
-            anim, direction);
-        return 1;
-    }
+        {
+            int anim = *mpScript++;
+            int direction = *mpScript++;
+            CycleAnim(anim, direction);
+            return 1;
+        }
 
     command_4202:
-        RunAnim(
-            *mpScript++, 0, -1, -1);
+        RunAnim(*mpScript++, 0, -1, -1);
         return 1;
 
     command_4203:
@@ -1070,63 +1043,55 @@ int CBaddy::ExecuteCommand(unsigned short command)
         goto command_default;
 
     command_4205:
-    {
-        Die();
-        return 1;
-    }
+        {
+            Die();
+            return 1;
+        }
 
     command_4290:
         SFX_PlayX((short)*mpScript++, 0x2000, 0);
         return 1;
 
     command_4291:
-        SFX_PlayPos(
-            (short)*mpScript++,
-            *(const CVector *)&mPos, 0);
+        SFX_PlayPos((short)*mpScript++, *(const CVector *)&mPos, 0);
         return 1;
 
     command_4292:
-    {
-        unsigned short sparks = *mpScript++;
-        if (BitCount >= 200)
         {
-            return 1;
-        }
-
-        Bit_SetSparkTrajectory(
-            *(const CSVector *)&mAngles);
-        BaddyCSVector cone;
-        cone.Set(0x200, 0x1000, 0);
-        Bit_SetSparkTrajectoryCone(*(const CSVector *)&cone);
-        Bit_SetSparkSize(1);
-        Bit_SetSparkRGB(0x80, 0x80, 0x80);
-        Bit_SetSparkFadeRGB(4, 4, 4);
-
-        UseCacheForBits = 0;
-        for (int i = 0; i < sparks; ++i)
-        {
-            if (Mem_GetFree(1) > 10000)
+            unsigned short sparks = *mpScript++;
+            if (BitCount >= 200)
             {
-                CSpark *spark = static_cast<CSpark *>(
-                    CBit::operator new(BIT_SPARK_STORAGE_SIZE));
-                if (spark)
+                return 1;
+            }
+
+            Bit_SetSparkTrajectory(*(const CSVector *)&mAngles);
+            BaddyCSVector cone;
+            cone.Set(0x200, 0x1000, 0);
+            Bit_SetSparkTrajectoryCone(*(const CSVector *)&cone);
+            Bit_SetSparkSize(1);
+            Bit_SetSparkRGB(0x80, 0x80, 0x80);
+            Bit_SetSparkFadeRGB(4, 4, 4);
+
+            UseCacheForBits = 0;
+            for (int i = 0; i < sparks; ++i)
+            {
+                if (Mem_GetFree(1) > 10000)
                 {
-                    ::new (spark) CSpark(
-                        *(CVector *)&mPos,
-                        0x20, 0x2000, 0x20);
+                    CSpark *spark =
+                        static_cast<CSpark *>(CBit::operator new(BIT_SPARK_STORAGE_SIZE));
+                    if (spark)
+                    {
+                        ::new (spark) CSpark(*(CVector *)&mPos, 0x20, 0x2000, 0x20);
+                    }
                 }
             }
+            UseCacheForBits = 1;
+            goto command_default;
         }
-        UseCacheForBits = 1;
-        goto command_default;
-    }
 
     command_429C:
-        Flash_Screen(
-            (unsigned char)mpScript[0],
-            (unsigned char)mpScript[1],
-            (unsigned char)mpScript[2],
-            mpScript[3], 0, mpScript[4]);
+        Flash_Screen((unsigned char)mpScript[0], (unsigned char)mpScript[1],
+                     (unsigned char)mpScript[2], mpScript[3], 0, mpScript[4]);
         mpScript += 5;
         goto command_default;
 
@@ -1168,153 +1133,148 @@ void CBaddy::SetVariable(unsigned short variable)
 {
     switch (variable)
     {
-    case 0x2135:
-    {
-        unsigned int *p_checksum =
-            (unsigned int *)(((int)mpScript + 3) & ~3);
-        unsigned int val = *p_checksum;
-        mpScript = (u16 *)(p_checksum + 1);
-        mDeadChecksum = val;
-        break;
-    }
-    case 0x212f:
-    {
-        unsigned int *p_checksum =
-            (unsigned int *)(((int)mpScript + 3) & ~3);
-        u16 model = Spool_GetModel(
-            *p_checksum, mRegion);
-        mModel = model;
-        mpScript = (u16 *)(p_checksum + 1);
-        break;
-    }
-    case 0x2140:
-    {
-        int val = GetScriptValue();
-        mPos.vx = (val << 16) >> 4;
-        break;
-    }
-    case 0x2141:
-    {
-        int val = GetScriptValue();
-        mPos.vy = (val << 16) >> 4;
-        break;
-    }
-    case 0x2142:
-    {
-        int val = GetScriptValue();
-        mPos.vz = (val << 16) >> 4;
-        break;
-    }
-    case 0x2131:
-    {
-        u16 *scriptPtr = mpScript;
-        u16 val = *scriptPtr;
-        mpScript = scriptPtr + 1;
-        if (val != 0)
+        case 0x2135:
         {
-            mFlags =
-                mFlags | 8;
+            unsigned int *p_checksum = (unsigned int *)(((int)mpScript + 3) & ~3);
+            unsigned int val = *p_checksum;
+            mpScript = (u16 *)(p_checksum + 1);
+            mDeadChecksum = val;
+            break;
         }
-        else
+        case 0x212f:
         {
-            mFlags =
-                mFlags & 0xFFF7;
+            unsigned int *p_checksum = (unsigned int *)(((int)mpScript + 3) & ~3);
+            u16 model = Spool_GetModel(*p_checksum, mRegion);
+            mModel = model;
+            mpScript = (u16 *)(p_checksum + 1);
+            break;
         }
-        break;
-    }
-    case 0x212e:
-    {
-        u16 *scriptPtr = mpScript;
-        u16 val = *scriptPtr;
-        mpScript = scriptPtr + 1;
-        mVerticalCompliance = val;
-        break;
-    }
-    case 0x212c:
-    {
-        u16 *scriptPtr = mpScript;
-        u8 val = *(u8 *)scriptPtr;
-        mpScript = scriptPtr + 1;
-        mInputSignal = val;
-        break;
-    }
-    case 0x212d:
-    {
-        u16 *scriptPtr = mpScript;
-        u8 val = *(u8 *)scriptPtr;
-        mpScript = scriptPtr + 1;
-        mHit = val;
-        break;
-    }
-    case 0x2100:
-    {
-        u16 *scriptPtr = mpScript;
-        u16 val = *scriptPtr;
-        mpScript = scriptPtr + 1;
-        mHealth = val;
-        break;
-    }
-    case 0x2101:
-    {
-        u16 *scriptPtr = mpScript;
-        u16 val = *scriptPtr;
-        mpScript = scriptPtr + 1;
-        mRMinor = val;
-        break;
-    }
-    case 0x2125:
-    {
-        u16 *p = mpScript;
-        u16 idx = *p;
-        p++;
-        mpScript = p;
-        u16 val2 = *p;
-        p++;
-        mBaddyAttributes[idx] = val2;
-        mpScript = p;
-        break;
-    }
-    case 0x2114:
-    {
-        u16 *scriptPtr = mpScript;
-        u16 val = *scriptPtr;
-        mpScript = scriptPtr + 1;
-        mPattern = val;
-        break;
-    }
-    case 0x2115:
-    {
-        u16 *scriptPtr = mpScript;
-        u16 val = *scriptPtr;
-        mpScript = scriptPtr + 1;
-        mSubPattern = val;
-        break;
-    }
-    case 0x2120:
-    {
-        u16 *scriptPtr = mpScript;
-        u16 idx = *scriptPtr;
-        mpScript = scriptPtr + 1;
-        u16 val = GetScriptValue();
-        mRegister[idx & 0xFF] = val;
-        break;
-    }
-    case 0x2121:
-    {
-        u16 *scriptPtr = mpScript;
-        short val = *(short *)scriptPtr;
-        mpScript = scriptPtr + 1;
-        mAnimSpeed = (int)val;
-        break;
-    }
-    case 0x2122:
-    {
-        u16 *scriptPtr = mpScript;
-        u16 val = *scriptPtr;
-        mpScript = scriptPtr + 1;
-        mGroundToOrigin = (s16)val;
-        break;
-    }
+        case 0x2140:
+        {
+            int val = GetScriptValue();
+            mPos.vx = (val << 16) >> 4;
+            break;
+        }
+        case 0x2141:
+        {
+            int val = GetScriptValue();
+            mPos.vy = (val << 16) >> 4;
+            break;
+        }
+        case 0x2142:
+        {
+            int val = GetScriptValue();
+            mPos.vz = (val << 16) >> 4;
+            break;
+        }
+        case 0x2131:
+        {
+            u16 *scriptPtr = mpScript;
+            u16 val = *scriptPtr;
+            mpScript = scriptPtr + 1;
+            if (val != 0)
+            {
+                mFlags = mFlags | 8;
+            }
+            else
+            {
+                mFlags = mFlags & 0xFFF7;
+            }
+            break;
+        }
+        case 0x212e:
+        {
+            u16 *scriptPtr = mpScript;
+            u16 val = *scriptPtr;
+            mpScript = scriptPtr + 1;
+            mVerticalCompliance = val;
+            break;
+        }
+        case 0x212c:
+        {
+            u16 *scriptPtr = mpScript;
+            u8 val = *(u8 *)scriptPtr;
+            mpScript = scriptPtr + 1;
+            mInputSignal = val;
+            break;
+        }
+        case 0x212d:
+        {
+            u16 *scriptPtr = mpScript;
+            u8 val = *(u8 *)scriptPtr;
+            mpScript = scriptPtr + 1;
+            mHit = val;
+            break;
+        }
+        case 0x2100:
+        {
+            u16 *scriptPtr = mpScript;
+            u16 val = *scriptPtr;
+            mpScript = scriptPtr + 1;
+            mHealth = val;
+            break;
+        }
+        case 0x2101:
+        {
+            u16 *scriptPtr = mpScript;
+            u16 val = *scriptPtr;
+            mpScript = scriptPtr + 1;
+            mRMinor = val;
+            break;
+        }
+        case 0x2125:
+        {
+            u16 *p = mpScript;
+            u16 idx = *p;
+            p++;
+            mpScript = p;
+            u16 val2 = *p;
+            p++;
+            mBaddyAttributes[idx] = val2;
+            mpScript = p;
+            break;
+        }
+        case 0x2114:
+        {
+            u16 *scriptPtr = mpScript;
+            u16 val = *scriptPtr;
+            mpScript = scriptPtr + 1;
+            mPattern = val;
+            break;
+        }
+        case 0x2115:
+        {
+            u16 *scriptPtr = mpScript;
+            u16 val = *scriptPtr;
+            mpScript = scriptPtr + 1;
+            mSubPattern = val;
+            break;
+        }
+        case 0x2120:
+        {
+            u16 *scriptPtr = mpScript;
+            u16 idx = *scriptPtr;
+            mpScript = scriptPtr + 1;
+            u16 val = GetScriptValue();
+            mRegister[idx & 0xFF] = val;
+            break;
+        }
+        case 0x2121:
+        {
+            u16 *scriptPtr = mpScript;
+            short val = *(short *)scriptPtr;
+            mpScript = scriptPtr + 1;
+            mAnimSpeed = (int)val;
+            break;
+        }
+        case 0x2122:
+        {
+            u16 *scriptPtr = mpScript;
+            u16 val = *scriptPtr;
+            mpScript = scriptPtr + 1;
+            mGroundToOrigin = (s16)val;
+            break;
+        }
     }
 }
 
@@ -1334,131 +1294,107 @@ short CBaddy::GetVariable(unsigned short variable)
 
     switch (variable)
     {
-    case 0x2136:
-        value = *(short *)GameFMV_CurrentFrame;
-        break;
+        case 0x2136: value = *(short *)GameFMV_CurrentFrame; break;
 
-    case 0x2132:
-        if (MechList != 0)
-        {
-            unsigned int dist = Utils_XZDist(
-                *reinterpret_cast<const CVector *>(
-                    &mPos),
-                *reinterpret_cast<const CVector *>(
-                    &MechList->mPos));
-            if (dist >= 0x2000)
+        case 0x2132:
+            if (MechList != 0)
             {
-                dist = 0x1FFF;
+                unsigned int dist =
+                    Utils_XZDist(*reinterpret_cast<const CVector *>(&mPos),
+                                 *reinterpret_cast<const CVector *>(&MechList->mPos));
+                if (dist >= 0x2000)
+                {
+                    dist = 0x1FFF;
+                }
+                value = (unsigned short)dist;
+                break;
             }
-            value = (unsigned short)dist;
+            return 0x1FFF;
+
+        case 0x2133:
+            if (MechList != 0)
+            {
+                CVector eye_pos = reinterpret_cast<const CVector &>(mPos);
+                eye_pos.vy -= this->mOriginToEye << 12;
+                return (short)Utils_LineOfSight(
+                    eye_pos, *reinterpret_cast<const CVector *>(&MechList->mPos));
+            }
+            return 0;
+
+        case 0x212E: value = this->mVerticalCompliance; break;
+
+        case 0x212C: value = this->mInputSignal; break;
+
+        case 0x212D: value = this->mHit; break;
+
+        case 0x2140: value = (short)(mPos.vx >> 12); break;
+
+        case 0x2141: value = (short)(mPos.vy >> 12); break;
+
+        case 0x2142: value = (short)(mPos.vz >> 12); break;
+
+        case 0x2150:
+            if (MechList != 0)
+            {
+                return (short)(MechList->mPos.vx >> 12);
+            }
+            return 0;
+
+        case 0x2151:
+            if (MechList != 0)
+            {
+                return (short)(MechList->mPos.vy >> 12);
+            }
+            return 0;
+
+        case 0x2152:
+            if (MechList != 0)
+            {
+                return (short)(MechList->mPos.vz >> 12);
+            }
+            return 0;
+
+        case 0x2100: value = mHealth; break;
+
+        case 0x2129:
+        {
+            unsigned short *script = this->mpScript;
+            unsigned short limit = *script;
+            this->mpScript = script + 1;
+            value = (short)Rnd(limit);
             break;
         }
-        return 0x1FFF;
 
-    case 0x2133:
-        if (MechList != 0)
+        case 0x2120:
         {
-            CVector eye_pos = reinterpret_cast<const CVector &>(
-                mPos);
-            eye_pos.vy -= this->mOriginToEye << 12;
-            return (short)Utils_LineOfSight(
-                eye_pos,
-                *reinterpret_cast<const CVector *>(
-                    &MechList->mPos));
-        }
-        return 0;
-
-    case 0x212E:
-        value = this->mVerticalCompliance;
-        break;
-
-    case 0x212C:
-        value = this->mInputSignal;
-        break;
-
-    case 0x212D:
-        value = this->mHit;
-        break;
-
-    case 0x2140:
-        value = (short)(mPos.vx >> 12);
-        break;
-
-    case 0x2141:
-        value = (short)(mPos.vy >> 12);
-        break;
-
-    case 0x2142:
-        value = (short)(mPos.vz >> 12);
-        break;
-
-    case 0x2150:
-        if (MechList != 0)
-        {
-            return (short)(MechList->mPos.vx >> 12);
-        }
-        return 0;
-
-    case 0x2151:
-        if (MechList != 0)
-        {
-            return (short)(MechList->mPos.vy >> 12);
-        }
-        return 0;
-
-    case 0x2152:
-        if (MechList != 0)
-        {
-            return (short)(MechList->mPos.vz >> 12);
-        }
-        return 0;
-
-    case 0x2100:
-        value = mHealth;
-        break;
-
-    case 0x2129:
-    {
-        unsigned short *script = this->mpScript;
-        unsigned short limit = *script;
-        this->mpScript = script + 1;
-        value = (short)Rnd(limit);
-        break;
-    }
-
-    case 0x2120:
-    {
-        unsigned short *script = this->mpScript;
-        unsigned char index = *(unsigned char *)script;
-        this->mpScript = script + 1;
-        value = this->mRegister[index];
-        break;
-    }
-
-    case 0x212A:
-        value = mNode;
-        break;
-
-    case 0x212B:
-    {
-        unsigned short *script = this->mpScript;
-        unsigned short node = *script;
-        this->mpScript = script + 1;
-        if (node & 0x2000)
-        {
-            node = GetVariable(node) & 0xFFFF;
+            unsigned short *script = this->mpScript;
+            unsigned char index = *(unsigned char *)script;
+            this->mpScript = script + 1;
+            value = this->mRegister[index];
+            break;
         }
 
-        unsigned short *p_links = Trig_GetLinksPointer(node);
-        if (p_links[0] != 0)
-        {
-            return (short)p_links[1];
-        }
-        return 0;
-    }
+        case 0x212A: value = mNode; break;
 
-    default:
-        return 0;
+        case 0x212B:
+        {
+            unsigned short *script = this->mpScript;
+            unsigned short node = *script;
+            this->mpScript = script + 1;
+            if (node & 0x2000)
+            {
+                node = GetVariable(node) & 0xFFFF;
+            }
+
+            unsigned short *p_links = Trig_GetLinksPointer(node);
+            if (p_links[0] != 0)
+            {
+                return (short)p_links[1];
+            }
+            return 0;
+        }
+
+        default: return 0;
     }
 
     return value;
@@ -1545,7 +1481,6 @@ CScriptOnlyBaddy::~CScriptOnlyBaddy()
             Mem_Delete(mpWeather);
         }
     }
-
 }
 
 /**
@@ -1584,16 +1519,12 @@ void CScriptOnlyBaddy::AI()
         Die();
     }
 
-    if (mLoopingSoundUpdate != -1 &&
-        TTime % mLoopingSoundUpdate == 0)
+    if (mLoopingSoundUpdate != -1 && TTime % mLoopingSoundUpdate == 0)
     {
         int t = SFXLEVEL;
         unsigned int sound = mLoopingSound;
         SFXLEVEL = t * mLoopingSoundVol / 100;
-        SFX_ModifyPos(
-            sound,
-            *(const CVector *)&mPos,
-            0);
+        SFX_ModifyPos(sound, *(const CVector *)&mPos, 0);
         SFXLEVEL = t;
     }
 
@@ -1625,19 +1556,13 @@ void CScriptOnlyBaddy::AI()
                     offset.vx = randomX;
                     offset.vy = randomY;
                     offset.vz = randomZ;
-                    pos = reinterpret_cast<const CVector &>(
-                              MechList
-                                  ->mPos) +
-                          offset;
+                    pos = reinterpret_cast<const CVector &>(MechList->mPos) + offset;
                 }
 
                 p_entry->p_line->mStart = pos;
                 SLineSeg *segment = p_entry->p_line->mSegs;
-                CVector offset =
-                    (pos - p_entry->vel) +
-                    (reinterpret_cast<const CVector &>(
-                         CameraList->mVel) >>
-                     1);
+                CVector offset = (pos - p_entry->vel) +
+                                 (reinterpret_cast<const CVector &>(CameraList->mVel) >> 1);
                 segment->End = offset;
 
                 i++;
@@ -1680,214 +1605,184 @@ int CScriptOnlyBaddy::ExecuteCommand(unsigned short command)
 
     switch (command)
     {
-    case 0x4507:
-    {
-        if (mLoopingSound != 0)
+        case 0x4507:
         {
-            SFX_Stop(mLoopingSound);
-        }
-
-        unsigned short *script = mpScript;
-        unsigned short sound = *script;
-        mpScript = script + 1;
-        unsigned int handle = SFX_PlayX(sound, 0x2000, 0);
-        int volume = SFX_v;
-        mLoopingSound = handle;
-        mLoopingSoundUpdate = -1;
-        mLoopingSoundVol = volume;
-        break;
-    }
-
-    case 0x4508:
-    {
-        if (mLoopingSound != 0)
-        {
-            SFX_Stop(mLoopingSound);
-        }
-
-        unsigned short sound = *mpScript++;
-        mLoopingSoundUpdate = *mpScript++;
-        unsigned int handle = SFX_PlayPos(
-            sound,
-            *(const CVector *)&mPos,
-            0);
-        int volume = SFX_v;
-        mLoopingSound = handle;
-        mLoopingSoundVol = volume;
-        break;
-    }
-
-    case 0x4509:
-        if (mLoopingSound != 0)
-        {
-            SFX_Stop(mLoopingSound);
-        }
-        mLoopingSound = 0;
-        break;
-
-    case 0x4506:
-        if (MechList != 0)
-        {
-            mPos =
-                MechList->mPos;
-        }
-        break;
-
-    case 0x4700:
-    {
-        unsigned short *script = mpScript;
-        unsigned short enabled = *script;
-        mpScript = script + 1;
-        if (enabled != 0)
-        {
-            mSpecificFlags |= 0x100;
-        }
-        else
-        {
-            mSpecificFlags &= ~0x100;
-        }
-        break;
-    }
-
-    case 0x4504:
-        mpScript += 4;
-        // Fall through: this variant skips four leading script parameters.
-    case 0x429B:
-    {
-        CSmokeJet *smoke = static_cast<CSmokeJet *>(
-            CBit::operator new(sizeof(CSmokeJet)));
-        if (smoke != 0)
-        {
-            unsigned short *script = mpScript;
-            smoke = ::new (smoke) CSmokeJet(
-                reinterpret_cast<const CVector &>(
-                    mPos),
-                reinterpret_cast<const CSVector &>(
-                    mAngles),
-                script[0],
-                0xFFFF,
-                script[1],
-                script[2],
-                script[3],
-                script[4],
-                *((unsigned char *)script + 10),
-                0xCCE0187C);
-        }
-
-        mpSmokeJet = smoke;
-        smoke->mProtected = 1;
-        mpScript += 6;
-        break;
-    }
-
-    case 0x42A1:
-    {
-        CSmokeJet *smoke = static_cast<CSmokeJet *>(
-            CBit::operator new(sizeof(CSmokeJet)));
-        if (smoke != 0)
-        {
-            unsigned short *script = mpScript;
-            smoke = ::new (smoke) CSmokeJet(
-                reinterpret_cast<const CVector &>(
-                    mPos),
-                reinterpret_cast<const CSVector &>(
-                    mAngles),
-                script[0],
-                0xFFFF,
-                script[1],
-                script[2],
-                script[3],
-                script[4],
-                *((unsigned char *)script + 10),
-                0x68B7B136);
-        }
-
-        mpSmokeJet = smoke;
-        mpScript += 6;
-        break;
-    }
-
-    case 0x429F:
-    {
-        CSmokeJet *smoke = mpSmokeJet;
-        if (smoke != 0)
-        {
-            void (*destroy)(void *, int) = smoke->_vf->Destroy;
-            destroy(smoke, 3);
-        }
-        mpSmokeJet = 0;
-        break;
-    }
-
-    case 0x4503:
-    {
-        mWeatherData = GetScriptValue();
-        SRainEntry *weather = (SRainEntry *)Mem_New(
-            (unsigned int)mWeatherData << 4, 0, 1);
-        CBody *mech = MechList;
-        unsigned int weatherCount = mWeatherData;
-        mpWeather = weather;
-        UseCacheForBits = 0;
-
-        origin = reinterpret_cast<const CVector &>(mech->mPos);
-        i = 0;
-        if (weatherCount != 0)
-        {
-            do
+            if (mLoopingSound != 0)
             {
-                p_entry = &mpWeather[i];
+                SFX_Stop(mLoopingSound);
+            }
 
-                int offsetX = (Rnd(0x960) - 0x4B0) << 12;
-                int offsetY = (Rnd(0x190) - 0x4B0) << 12;
-                int offsetZ = (Rnd(0x960) - 0x4B0) << 12;
-                offset.vx = offsetX;
-                offset.vy = offsetY;
-                offset.vz = offsetZ;
-                offset += origin;
-
-                int velocityX = (Rnd(0x10) - 8) << 12;
-                int velocityY = (Rnd(0x30) + 0x30) << 12;
-                int velocityZ = (Rnd(0x10) - 8) << 12;
-                p_entry->vel.vx = velocityX;
-                p_entry->vel.vy = velocityY;
-                p_entry->vel.vz = velocityZ;
-
-                p_droplet = static_cast<CGPolyLine *>(
-                    CBit::operator new(sizeof(CGPolyLine)));
-                if (p_droplet != 0)
-                {
-                    p_droplet = ::new (p_droplet) CGPolyLine(1);
-                }
-
-                p_entry->p_line = p_droplet;
-                p_droplet->mProtected = 1;
-                p_droplet->mStart = offset;
-
-                SLineSeg *segment = p_droplet->mSegs;
-                segment->End =
-                    (offset - p_entry->vel) +
-                    (reinterpret_cast<const CVector &>(
-                         CameraList->mVel) >>
-                     1);
-
-                p_droplet->mStartR = 0x40;
-                p_droplet->mStartG = 0x40;
-                p_droplet->mStartB = 0x50;
-                p_droplet->mSegs->r = 0x10;
-                p_droplet->mSegs->g = 0x10;
-                p_droplet->mSegs->b = 0x20;
-                p_droplet->SetSemiTransparent();
-
-                i++;
-            } while (i < mWeatherData);
+            unsigned short *script = mpScript;
+            unsigned short sound = *script;
+            mpScript = script + 1;
+            unsigned int handle = SFX_PlayX(sound, 0x2000, 0);
+            int volume = SFX_v;
+            mLoopingSound = handle;
+            mLoopingSoundUpdate = -1;
+            mLoopingSoundVol = volume;
+            break;
         }
 
-        UseCacheForBits = 1;
-        break;
-    }
+        case 0x4508:
+        {
+            if (mLoopingSound != 0)
+            {
+                SFX_Stop(mLoopingSound);
+            }
 
-    default:
-        return CBaddy::ExecuteCommand(command);
+            unsigned short sound = *mpScript++;
+            mLoopingSoundUpdate = *mpScript++;
+            unsigned int handle = SFX_PlayPos(sound, *(const CVector *)&mPos, 0);
+            int volume = SFX_v;
+            mLoopingSound = handle;
+            mLoopingSoundVol = volume;
+            break;
+        }
+
+        case 0x4509:
+            if (mLoopingSound != 0)
+            {
+                SFX_Stop(mLoopingSound);
+            }
+            mLoopingSound = 0;
+            break;
+
+        case 0x4506:
+            if (MechList != 0)
+            {
+                mPos = MechList->mPos;
+            }
+            break;
+
+        case 0x4700:
+        {
+            unsigned short *script = mpScript;
+            unsigned short enabled = *script;
+            mpScript = script + 1;
+            if (enabled != 0)
+            {
+                mSpecificFlags |= 0x100;
+            }
+            else
+            {
+                mSpecificFlags &= ~0x100;
+            }
+            break;
+        }
+
+        case 0x4504:
+            mpScript += 4;
+            // Fall through: this variant skips four leading script parameters.
+        case 0x429B:
+        {
+            CSmokeJet *smoke = static_cast<CSmokeJet *>(CBit::operator new(sizeof(CSmokeJet)));
+            if (smoke != 0)
+            {
+                unsigned short *script = mpScript;
+                smoke = ::new (smoke) CSmokeJet(
+                    reinterpret_cast<const CVector &>(mPos),
+                    reinterpret_cast<const CSVector &>(mAngles), script[0], 0xFFFF, script[1],
+                    script[2], script[3], script[4], *((unsigned char *)script + 10), 0xCCE0187C);
+            }
+
+            mpSmokeJet = smoke;
+            smoke->mProtected = 1;
+            mpScript += 6;
+            break;
+        }
+
+        case 0x42A1:
+        {
+            CSmokeJet *smoke = static_cast<CSmokeJet *>(CBit::operator new(sizeof(CSmokeJet)));
+            if (smoke != 0)
+            {
+                unsigned short *script = mpScript;
+                smoke = ::new (smoke) CSmokeJet(
+                    reinterpret_cast<const CVector &>(mPos),
+                    reinterpret_cast<const CSVector &>(mAngles), script[0], 0xFFFF, script[1],
+                    script[2], script[3], script[4], *((unsigned char *)script + 10), 0x68B7B136);
+            }
+
+            mpSmokeJet = smoke;
+            mpScript += 6;
+            break;
+        }
+
+        case 0x429F:
+        {
+            CSmokeJet *smoke = mpSmokeJet;
+            if (smoke != 0)
+            {
+                void (*destroy)(void *, int) = smoke->_vf->Destroy;
+                destroy(smoke, 3);
+            }
+            mpSmokeJet = 0;
+            break;
+        }
+
+        case 0x4503:
+        {
+            mWeatherData = GetScriptValue();
+            SRainEntry *weather = (SRainEntry *)Mem_New((unsigned int)mWeatherData << 4, 0, 1);
+            CBody *mech = MechList;
+            unsigned int weatherCount = mWeatherData;
+            mpWeather = weather;
+            UseCacheForBits = 0;
+
+            origin = reinterpret_cast<const CVector &>(mech->mPos);
+            i = 0;
+            if (weatherCount != 0)
+            {
+                do
+                {
+                    p_entry = &mpWeather[i];
+
+                    int offsetX = (Rnd(0x960) - 0x4B0) << 12;
+                    int offsetY = (Rnd(0x190) - 0x4B0) << 12;
+                    int offsetZ = (Rnd(0x960) - 0x4B0) << 12;
+                    offset.vx = offsetX;
+                    offset.vy = offsetY;
+                    offset.vz = offsetZ;
+                    offset += origin;
+
+                    int velocityX = (Rnd(0x10) - 8) << 12;
+                    int velocityY = (Rnd(0x30) + 0x30) << 12;
+                    int velocityZ = (Rnd(0x10) - 8) << 12;
+                    p_entry->vel.vx = velocityX;
+                    p_entry->vel.vy = velocityY;
+                    p_entry->vel.vz = velocityZ;
+
+                    p_droplet = static_cast<CGPolyLine *>(CBit::operator new(sizeof(CGPolyLine)));
+                    if (p_droplet != 0)
+                    {
+                        p_droplet = ::new (p_droplet) CGPolyLine(1);
+                    }
+
+                    p_entry->p_line = p_droplet;
+                    p_droplet->mProtected = 1;
+                    p_droplet->mStart = offset;
+
+                    SLineSeg *segment = p_droplet->mSegs;
+                    segment->End = (offset - p_entry->vel) +
+                                   (reinterpret_cast<const CVector &>(CameraList->mVel) >> 1);
+
+                    p_droplet->mStartR = 0x40;
+                    p_droplet->mStartG = 0x40;
+                    p_droplet->mStartB = 0x50;
+                    p_droplet->mSegs->r = 0x10;
+                    p_droplet->mSegs->g = 0x10;
+                    p_droplet->mSegs->b = 0x20;
+                    p_droplet->SetSemiTransparent();
+
+                    i++;
+                } while (i < mWeatherData);
+            }
+
+            UseCacheForBits = 1;
+            break;
+        }
+
+        default: return CBaddy::ExecuteCommand(command);
     }
 
     return 1;

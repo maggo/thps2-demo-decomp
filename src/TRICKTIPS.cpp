@@ -10,12 +10,14 @@
 #include "STATS.h"
 
 /** First-field view needed for the playback-mode guards. */
-struct SVideoInfo {
+struct SVideoInfo
+{
     int VideoMode;
 };
 
 /** Proven CBruce counter slice used by the monitor. */
-struct TrickTipsSkater {
+struct TrickTipsSkater
+{
     char pad_0000[0xec0];
     int mNumGrinds;
     char pad_0ec4[0x120];
@@ -33,7 +35,8 @@ struct TrickTipsSkater {
     int mBigAirs;
 };
 
-enum TrickTipsConstant {
+enum TrickTipsConstant
+{
     TrickTipsPlaybackVideoMode = 2,
     TrickTipsDescriptorCount = 26,
     TrickTipsPanelX = 20,
@@ -47,10 +50,8 @@ enum TrickTipsConstant {
     TrickTipsReminderDelay = 600
 };
 
-typedef char TrickTips_Skater_prefix_must_be_4116[
-    (sizeof(TrickTipsSkater) == 4116) ? 1 : -1];
-typedef char TrickTips_Monitor_size_must_be_276[
-    (sizeof(CTrickTipMonitor) == 276) ? 1 : -1];
+typedef char TrickTips_Skater_prefix_must_be_4116[(sizeof(TrickTipsSkater) == 4116) ? 1 : -1];
+typedef char TrickTips_Monitor_size_must_be_276[(sizeof(CTrickTipMonitor) == 276) ? 1 : -1];
 
 #define CAREER_LAYOUT_DECLARATIONS
 #include "CAREER.h"
@@ -70,28 +71,24 @@ static inline TrickTipsSkater *TrickTips_AsSkater(CBruce *skater)
 #include "MECHLIST.h"
 
 /** Deferred owner-local destructor bodies referenced by the two vtables. */
-extern "C" {
-static inline void __DOT__16CTrickTipMonitor(
-    CTrickTipMonitor *self, int __in_chrg);
-static inline void __DOT__6CClass_80073FD8(
-    CClass *self, int __in_chrg);
+extern "C"
+{
+static inline void __DOT__16CTrickTipMonitor(CTrickTipMonitor *self, int __in_chrg);
+static inline void __DOT__6CClass_80073FD8(CClass *self, int __in_chrg);
 }
 
 /** Restore the private base vtable and optionally release the object. */
 inline void __DOT__6CClass_80073FD8(CClass *self, int __in_chrg)
 {
     self->vtable = &__vt_16CTrickTipMonitor;
-    if (__in_chrg & 1)
-        CClass::operator delete(self);
+    if (__in_chrg & 1) CClass::operator delete(self);
 }
 
 /** Destroy the complete monitor through its recovered owner-local vtable. */
-inline void __DOT__16CTrickTipMonitor(
-    CTrickTipMonitor *self, int __in_chrg)
+inline void __DOT__16CTrickTipMonitor(CTrickTipMonitor *self, int __in_chrg)
 {
     self->CClass.vtable = &__vt_16CTrickTipMonitor;
-    if (__in_chrg & 1)
-        CClass::operator delete(self);
+    if (__in_chrg & 1) CClass::operator delete(self);
 }
 
 /**
@@ -115,57 +112,42 @@ struct TrickTipLongTextBlock
     char SpinVertTricks[0x14];
 };
 
-typedef char TrickTipLongTextBlock_size_must_be_0xE8[
-    (sizeof(TrickTipLongTextBlock) == 0xe8) ? 1 : -1];
+typedef char
+    TrickTipLongTextBlock_size_must_be_0xE8[(sizeof(TrickTipLongTextBlock) == 0xe8) ? 1 : -1];
 
-static TrickTipLongTextBlock TrickTipLongText
-    __attribute__((section(".rdata"), aligned(4))) = {
-    "DONT HOLD FORWARD",
-    "LAND STRAIGHT TO",
-    "FINISH YOUR TRICKS",
-    "RELEASE X TO JUMP (OLLIE)",
-    "HOLD JUMP LONGER",
-    "THE TOP OF RAMPS",
-    "GET OVER POOL LIP",
-    "RIGHT TO BALANCE",
-    "PRESS JUMP WHILE",
-    "GRINDING TO OLLIE OUT",
-    "SPIN VERT TRICKS",
+static TrickTipLongTextBlock TrickTipLongText __attribute__((section(".rdata"), aligned(4))) = {
+    "DONT HOLD FORWARD", "LAND STRAIGHT TO",      "FINISH YOUR TRICKS", "RELEASE X TO JUMP (OLLIE)",
+    "HOLD JUMP LONGER",  "THE TOP OF RAMPS",      "GET OVER POOL LIP",  "RIGHT TO BALANCE",
+    "PRESS JUMP WHILE",  "GRINDING TO OLLIE OUT", "SPIN VERT TRICKS",
 };
 
 /** Labels prepended to trick-tip and reminder messages. */
-static char TrickTipLabel[] __attribute__((section(".sdata"), aligned(4))) =
-    "TIP: ";
+static char TrickTipLabel[] __attribute__((section(".sdata"), aligned(4))) = "TIP: ";
 char *TEXT_TIP __attribute__((section(".sdata"))) = TrickTipLabel;
-static char TrickTipRememberLabel[]
-    __attribute__((section(".sdata"), aligned(4))) = "REMEMBER: ";
-char *TEXT_REMEMBER __attribute__((section(".sdata"))) =
-    TrickTipRememberLabel;
+static char TrickTipRememberLabel[] __attribute__((section(".sdata"), aligned(4))) = "REMEMBER: ";
+char *TEXT_REMEMBER __attribute__((section(".sdata"))) = TrickTipRememberLabel;
 
 /**
  * Complete-object vtable installed by the static monitor constructor.
  */
-int __vt_16CTrickTipMonitor_complete
-    __attribute__((section(".sdata"), aligned(8))) = 0;
+int __vt_16CTrickTipMonitor_complete __attribute__((section(".sdata"), aligned(8))) = 0;
 struct TrickTipMonitorCompleteVtableTailLayout
 {
     void *reserved;
     void (*destroy)(CTrickTipMonitor *, int);
     void *unused;
 };
-static TrickTipMonitorCompleteVtableTailLayout
-    TrickTipMonitorCompleteVtableTail
+static TrickTipMonitorCompleteVtableTailLayout TrickTipMonitorCompleteVtableTail
     __attribute__((section(".sdata"), aligned(4))) = {
-    0,
-    &__DOT__16CTrickTipMonitor,
-    0,
-};
+        0,
+        &__DOT__16CTrickTipMonitor,
+        0,
+    };
 
 /**
  * Destruction-phase vtable installed before the CClass base destructor.
  */
-int __vt_16CTrickTipMonitor
-    __attribute__((section(".sdata"), aligned(4))) = 0;
+int __vt_16CTrickTipMonitor __attribute__((section(".sdata"), aligned(4))) = 0;
 struct TrickTipMonitorVtableTailLayout
 {
     void *reserved;
@@ -173,9 +155,9 @@ struct TrickTipMonitorVtableTailLayout
 };
 static TrickTipMonitorVtableTailLayout TrickTipMonitorVtableTail
     __attribute__((section(".sdata"), aligned(4))) = {
-    0,
-    &__DOT__6CClass_80073FD8,
-};
+        0,
+        &__DOT__6CClass_80073FD8,
+    };
 
 /**
  * Short trick-tip lines emitted in small data by the original owner.
@@ -244,128 +226,73 @@ struct TrickTipSmallTextBlock
     char Handplant[0x0c];
 };
 
-typedef char TrickTipSmallTextBlock_size_must_be_0x32C[
-    (sizeof(TrickTipSmallTextBlock) == 0x32c) ? 1 : -1];
-typedef char CTrickTipText_size_must_be_0x14[
-    (sizeof(CTrickTipText) == 0x14) ? 1 : -1];
+typedef char
+    TrickTipSmallTextBlock_size_must_be_0x32C[(sizeof(TrickTipSmallTextBlock) == 0x32c) ? 1 : -1];
+typedef char CTrickTipText_size_must_be_0x14[(sizeof(CTrickTipText) == 0x14) ? 1 : -1];
 
-static TrickTipSmallTextBlock TrickTipSmallText
-    __attribute__((section(".sdata"), aligned(4))) = {
-    "HOLD JUMP TO",
-    "CROUCH AND",
-    "GO FASTER",
-    "UNLESS YOU WANT",
-    "TO LEAVE RAMPS",
-    "AVOID BAILING",
-    "BEFORE LANDING",
-    "TO OLLIE HIGHER",
-    "RELEASE JUMP AT",
-    "FOR BIG AIR",
-    "HOLD FORWARD TO",
-    "PRESS GRIND",
-    "BUTTON NEAR",
-    "RAILS AND LIPS",
-    "USE LEFT AND",
-    "WHILE GRINDING",
-    "LANDING TRICKS",
-    "INCREASES YOUR",
-    "TOP SPEED",
-    "VARY YOUR",
-    "TRICKS FOR",
-    "HIGHER SCORES",
-    "LOOK FOR GAPS",
-    "TO JUMP FOR",
-    "EXTRA POINTS",
-    "GRIND EVERY",
-    "LIP AND EDGE",
-    "SCORE POINTS",
-    "TO FILL YOUR",
-    "SPECIAL BAR",
-    "540 OR 720 FOR",
-    "HUGE MULTIPIERS",
-    "ATTEMPT SPECIAL",
-    "TRICKS WHEN",
-    "POWERED UP",
-    "EARN TAPES",
-    "BY COMPLETING",
-    "LEVEL GOALS",
-    "TAPES UNLOCK",
-    "NEW LEVELS",
-    "AND DECKS",
-    "TAP UP",
-    "THEN JUMP",
-    "TO NOLLIE",
-    "DOUBLE TAP UP",
-    "TO FASTPLANT",
-    "USE FASTPLANTS",
-    "TO LAUNCH TO",
-    "HIGH LEDGES",
-    "USE R1 AND L1",
-    "TO SPIN FASTER",
-    "OLLIE INTO WALL",
-    "AND HIT GRIND",
-    "TO WALLRIDE",
-    "HOLD UP AND",
-    "GRIND TO DO A",
-    "HANDPLANT",
+static TrickTipSmallTextBlock TrickTipSmallText __attribute__((section(".sdata"), aligned(4))) = {
+    "HOLD JUMP TO",    "CROUCH AND",      "GO FASTER",       "UNLESS YOU WANT", "TO LEAVE RAMPS",
+    "AVOID BAILING",   "BEFORE LANDING",  "TO OLLIE HIGHER", "RELEASE JUMP AT", "FOR BIG AIR",
+    "HOLD FORWARD TO", "PRESS GRIND",     "BUTTON NEAR",     "RAILS AND LIPS",  "USE LEFT AND",
+    "WHILE GRINDING",  "LANDING TRICKS",  "INCREASES YOUR",  "TOP SPEED",       "VARY YOUR",
+    "TRICKS FOR",      "HIGHER SCORES",   "LOOK FOR GAPS",   "TO JUMP FOR",     "EXTRA POINTS",
+    "GRIND EVERY",     "LIP AND EDGE",    "SCORE POINTS",    "TO FILL YOUR",    "SPECIAL BAR",
+    "540 OR 720 FOR",  "HUGE MULTIPIERS", "ATTEMPT SPECIAL", "TRICKS WHEN",     "POWERED UP",
+    "EARN TAPES",      "BY COMPLETING",   "LEVEL GOALS",     "TAPES UNLOCK",    "NEW LEVELS",
+    "AND DECKS",       "TAP UP",          "THEN JUMP",       "TO NOLLIE",       "DOUBLE TAP UP",
+    "TO FASTPLANT",    "USE FASTPLANTS",  "TO LAUNCH TO",    "HIGH LEDGES",     "USE R1 AND L1",
+    "TO SPIN FASTER",  "OLLIE INTO WALL", "AND HIT GRIND",   "TO WALLRIDE",     "HOLD UP AND",
+    "GRIND TO DO A",   "HANDPLANT",
 };
 
 /**
  * Target-owned trick-tip descriptors and their recovered message lines.
  */
-static CTrickTipText TRICKTIP[27]
-    __attribute__((section(".rdata"), aligned(4))) = {
-    { START_TIP, 2, TrickTipSmallText.HoldJumpTo,
-      TrickTipSmallText.CrouchAnd, TrickTipSmallText.GoFaster },
-    { ANYTIME_TIP, 2, TrickTipLongText.DontHoldForward,
-      TrickTipSmallText.UnlessYouWant, TrickTipSmallText.ToLeaveRamps },
-    { BAIL_TIP, 2, TrickTipLongText.LandStraightTo,
-      TrickTipSmallText.AvoidBailing, 0 },
-    { BAIL_TIP, 2, TrickTipLongText.FinishYourTricks,
-      TrickTipSmallText.BeforeLanding, 0 },
+static CTrickTipText TRICKTIP[27] __attribute__((section(".rdata"), aligned(4))) = {
+    { START_TIP, 2, TrickTipSmallText.HoldJumpTo, TrickTipSmallText.CrouchAnd,
+      TrickTipSmallText.GoFaster },
+    { ANYTIME_TIP, 2, TrickTipLongText.DontHoldForward, TrickTipSmallText.UnlessYouWant,
+      TrickTipSmallText.ToLeaveRamps },
+    { BAIL_TIP, 2, TrickTipLongText.LandStraightTo, TrickTipSmallText.AvoidBailing, 0 },
+    { BAIL_TIP, 2, TrickTipLongText.FinishYourTricks, TrickTipSmallText.BeforeLanding, 0 },
     { ANYTIME_TIP, 2, TrickTipLongText.ReleaseXToJump, 0, 0 },
-    { ANYTIME_TIP, 2, TrickTipLongText.HoldJumpLonger,
-      TrickTipSmallText.ToOllieHigher, 0 },
-    { ANYTIME_TIP, 2, TrickTipSmallText.ReleaseJumpAt,
-      TrickTipLongText.TheTopOfRamps, TrickTipSmallText.ForBigAir },
-    { ANYTIME_TIP, 2, TrickTipSmallText.HoldForwardTo,
-      TrickTipLongText.GetOverPoolLip, 0 },
-    { START_TIP, 2, TrickTipSmallText.PressGrind,
-      TrickTipSmallText.ButtonNear, TrickTipSmallText.RailsAndLips },
-    { BAIL_TIP, 2, TrickTipSmallText.UseLeftAnd,
-      TrickTipLongText.RightToBalance, TrickTipSmallText.WhileGrinding },
-    { ANYTIME_TIP, 2, TrickTipLongText.PressJumpWhile,
-      TrickTipLongText.GrindingToOllieOut, 0 },
-    { START_TIP, 2, TrickTipSmallText.LandingTricks,
-      TrickTipSmallText.IncreasesYour, TrickTipSmallText.TopSpeed },
-    { START_TIP, 2, TrickTipSmallText.VaryYour,
-      TrickTipSmallText.TricksFor, TrickTipSmallText.HigherScores },
-    { START_TIP, 2, TrickTipSmallText.LookForGaps,
-      TrickTipSmallText.ToJumpFor, TrickTipSmallText.ExtraPoints },
-    { START_TIP, 2, TrickTipSmallText.GrindEvery,
-      TrickTipSmallText.LipAndEdge, 0 },
-    { START_TIP, 2, TrickTipSmallText.ScorePoints,
-      TrickTipSmallText.ToFillYour, TrickTipSmallText.SpecialBar },
-    { START_TIP, 2, TrickTipLongText.SpinVertTricks,
-      TrickTipSmallText.Line540Or720For, TrickTipSmallText.HugeMultipiers },
-    { START_TIP, 2, TrickTipSmallText.AttemptSpecial,
-      TrickTipSmallText.TricksWhen, TrickTipSmallText.PoweredUp },
-    { START_TIP, 2, TrickTipSmallText.EarnTapes,
-      TrickTipSmallText.ByCompleting, TrickTipSmallText.LevelGoals },
-    { START_TIP, 2, TrickTipSmallText.TapesUnlock,
-      TrickTipSmallText.NewLevels, TrickTipSmallText.AndDecks },
-    { START_TIP, 1, TrickTipSmallText.TapUp,
-      TrickTipSmallText.ThenJump, TrickTipSmallText.ToNollie },
-    { START_TIP, 2, TrickTipSmallText.DoubleTapUp,
-      TrickTipSmallText.ThenJump, TrickTipSmallText.ToFastplant },
-    { START_TIP, 2, TrickTipSmallText.UseFastplants,
-      TrickTipSmallText.ToLaunchTo, TrickTipSmallText.HighLedges },
-    { START_TIP, 1, TrickTipSmallText.UseR1AndL1,
-      TrickTipSmallText.ToSpinFaster, 0 },
-    { START_TIP, 2, TrickTipSmallText.OllieIntoWall,
-      TrickTipSmallText.AndHitGrind, TrickTipSmallText.ToWallride },
-    { START_TIP, 2, TrickTipSmallText.HoldUpAnd,
-      TrickTipSmallText.GrindToDoA, TrickTipSmallText.Handplant },
+    { ANYTIME_TIP, 2, TrickTipLongText.HoldJumpLonger, TrickTipSmallText.ToOllieHigher, 0 },
+    { ANYTIME_TIP, 2, TrickTipSmallText.ReleaseJumpAt, TrickTipLongText.TheTopOfRamps,
+      TrickTipSmallText.ForBigAir },
+    { ANYTIME_TIP, 2, TrickTipSmallText.HoldForwardTo, TrickTipLongText.GetOverPoolLip, 0 },
+    { START_TIP, 2, TrickTipSmallText.PressGrind, TrickTipSmallText.ButtonNear,
+      TrickTipSmallText.RailsAndLips },
+    { BAIL_TIP, 2, TrickTipSmallText.UseLeftAnd, TrickTipLongText.RightToBalance,
+      TrickTipSmallText.WhileGrinding },
+    { ANYTIME_TIP, 2, TrickTipLongText.PressJumpWhile, TrickTipLongText.GrindingToOllieOut, 0 },
+    { START_TIP, 2, TrickTipSmallText.LandingTricks, TrickTipSmallText.IncreasesYour,
+      TrickTipSmallText.TopSpeed },
+    { START_TIP, 2, TrickTipSmallText.VaryYour, TrickTipSmallText.TricksFor,
+      TrickTipSmallText.HigherScores },
+    { START_TIP, 2, TrickTipSmallText.LookForGaps, TrickTipSmallText.ToJumpFor,
+      TrickTipSmallText.ExtraPoints },
+    { START_TIP, 2, TrickTipSmallText.GrindEvery, TrickTipSmallText.LipAndEdge, 0 },
+    { START_TIP, 2, TrickTipSmallText.ScorePoints, TrickTipSmallText.ToFillYour,
+      TrickTipSmallText.SpecialBar },
+    { START_TIP, 2, TrickTipLongText.SpinVertTricks, TrickTipSmallText.Line540Or720For,
+      TrickTipSmallText.HugeMultipiers },
+    { START_TIP, 2, TrickTipSmallText.AttemptSpecial, TrickTipSmallText.TricksWhen,
+      TrickTipSmallText.PoweredUp },
+    { START_TIP, 2, TrickTipSmallText.EarnTapes, TrickTipSmallText.ByCompleting,
+      TrickTipSmallText.LevelGoals },
+    { START_TIP, 2, TrickTipSmallText.TapesUnlock, TrickTipSmallText.NewLevels,
+      TrickTipSmallText.AndDecks },
+    { START_TIP, 1, TrickTipSmallText.TapUp, TrickTipSmallText.ThenJump,
+      TrickTipSmallText.ToNollie },
+    { START_TIP, 2, TrickTipSmallText.DoubleTapUp, TrickTipSmallText.ThenJump,
+      TrickTipSmallText.ToFastplant },
+    { START_TIP, 2, TrickTipSmallText.UseFastplants, TrickTipSmallText.ToLaunchTo,
+      TrickTipSmallText.HighLedges },
+    { START_TIP, 1, TrickTipSmallText.UseR1AndL1, TrickTipSmallText.ToSpinFaster, 0 },
+    { START_TIP, 2, TrickTipSmallText.OllieIntoWall, TrickTipSmallText.AndHitGrind,
+      TrickTipSmallText.ToWallride },
+    { START_TIP, 2, TrickTipSmallText.HoldUpAnd, TrickTipSmallText.GrindToDoA,
+      TrickTipSmallText.Handplant },
     { START_TIP, 2, 0, 0, 0 },
 };
 
@@ -377,20 +304,13 @@ static CTrickTipText TRICKTIP[27]
 struct TrickTipMonitorStorage : CTrickTipMonitor
 {
     /** Install the complete-object vtable during static construction. */
-    TrickTipMonitorStorage()
-    {
-    CClass.vtable = &__vt_16CTrickTipMonitor_complete;
-    }
+    TrickTipMonitorStorage() { CClass.vtable = &__vt_16CTrickTipMonitor_complete; }
 
     /** Restore the destruction-phase vtable before static teardown. */
-    ~TrickTipMonitorStorage()
-    {
-    CClass.vtable = &__vt_16CTrickTipMonitor;
-    }
+    ~TrickTipMonitorStorage() { CClass.vtable = &__vt_16CTrickTipMonitor; }
 };
 
-static TrickTipMonitorStorage TrickTipMonitor
-    __attribute__((section(".bss")));
+static TrickTipMonitorStorage TrickTipMonitor __attribute__((section(".bss")));
 
 // === Function implementations (address order) ===
 
@@ -403,55 +323,53 @@ static TrickTipMonitorStorage TrickTipMonitor
  *
  * Draws the active trick-tip text panel and clears it when its timer expires.
  */
-void TrickTips_Display(void) {
+void TrickTips_Display(void)
+{
     unsigned short xpos = TrickTipsPanelX;
 
-    if (TrickTipMonitor.mTipLine1 != 0) {
-        if (static_cast<unsigned short>(
-                TrickTipsDisplayFrames - TrickTipMonitor.mTipTimer) <
-            TrickTipsSlideFrames) {
-            xpos -= (TrickTipsSlideFrames - static_cast<unsigned short>(
-                TrickTipsDisplayFrames - TrickTipMonitor.mTipTimer)) *
+    if (TrickTipMonitor.mTipLine1 != 0)
+    {
+        if (static_cast<unsigned short>(TrickTipsDisplayFrames - TrickTipMonitor.mTipTimer) <
+            TrickTipsSlideFrames)
+        {
+            xpos -=
+                (TrickTipsSlideFrames -
+                 static_cast<unsigned short>(TrickTipsDisplayFrames - TrickTipMonitor.mTipTimer)) *
                 TrickTipsSlideDistance;
         }
 
-        if (TrickTipMonitor.mTipTimer < TrickTipsSlideFrames) {
-            xpos -= (TrickTipsSlideFrames - TrickTipMonitor.mTipTimer) *
-                TrickTipsSlideDistance;
+        if (TrickTipMonitor.mTipTimer < TrickTipsSlideFrames)
+        {
+            xpos -= (TrickTipsSlideFrames - TrickTipMonitor.mTipTimer) * TrickTipsSlideDistance;
         }
 
         Mess_SetTextJustify(1);
         Mess_SetRGB(0x80, 0x80, 0, 0);
         Mess_SetScale(TrickTipsTextScale);
-        Mess_DrawPanelText(
-            xpos, TrickTipsPanelY, TrickTipMonitor.mTipLine1,
-            0, 0, TrickTipsFireScale);
+        Mess_DrawPanelText(xpos, TrickTipsPanelY, TrickTipMonitor.mTipLine1, 0, 0,
+                           TrickTipsFireScale);
 
-        if (TrickTipMonitor.mTipLine2 != 0) {
-            Mess_DrawPanelText(
-                xpos, (Mess_GetScale() / 11) + TrickTipsPanelY,
-                TrickTipMonitor.mTipLine2,
-                0, 0, TrickTipsFireScale);
+        if (TrickTipMonitor.mTipLine2 != 0)
+        {
+            Mess_DrawPanelText(xpos, (Mess_GetScale() / 11) + TrickTipsPanelY,
+                               TrickTipMonitor.mTipLine2, 0, 0, TrickTipsFireScale);
         }
 
-        if (TrickTipMonitor.mTipLine3 != 0) {
-            Mess_DrawPanelText(
-                xpos, ((Mess_GetScale() / 11) * 2) +
-                      TrickTipsPanelY,
-                TrickTipMonitor.mTipLine3,
-                0, 0, TrickTipsFireScale);
+        if (TrickTipMonitor.mTipLine3 != 0)
+        {
+            Mess_DrawPanelText(xpos, ((Mess_GetScale() / 11) * 2) + TrickTipsPanelY,
+                               TrickTipMonitor.mTipLine3, 0, 0, TrickTipsFireScale);
         }
 
-        if (TrickTipMonitor.mTipLine4 != 0) {
-            Mess_DrawPanelText(
-                xpos, ((Mess_GetScale() / 11) * 3) +
-                      TrickTipsPanelY,
-                TrickTipMonitor.mTipLine4,
-                0, 0, TrickTipsFireScale);
+        if (TrickTipMonitor.mTipLine4 != 0)
+        {
+            Mess_DrawPanelText(xpos, ((Mess_GetScale() / 11) * 3) + TrickTipsPanelY,
+                               TrickTipMonitor.mTipLine4, 0, 0, TrickTipsFireScale);
         }
 
         TrickTipMonitor.mTipTimer--;
-        if (TrickTipMonitor.mTipTimer == 0) {
+        if (TrickTipMonitor.mTipTimer == 0)
+        {
             TrickTipMonitor.mTipLine4 = 0;
             TrickTipMonitor.mTipLine3 = 0;
             TrickTipMonitor.mTipLine2 = 0;
@@ -468,7 +386,8 @@ void TrickTips_Display(void) {
  * Mangled:   TrickTips_Init__Fv
  * Demangled: TrickTips_Init(void)
  */
-void TrickTips_Init(void) {
+void TrickTips_Init(void)
+{
     CTrickTipMonitor &monitor = TrickTipMonitor;
     monitor.mTimer = 0;
     monitor.mLastTipTime = 0;
@@ -534,11 +453,8 @@ void TrickTips_Update(void)
 {
     CTrickTipMonitor &monitor = TrickTipMonitor;
 
-    if (!Levels[GLevel].isCompetition &&
-        GVInfo1.VideoMode != TrickTipsPlaybackVideoMode &&
-        GVInfo2.VideoMode != TrickTipsPlaybackVideoMode &&
-        DemoTimer &&
-        GGame == 1)
+    if (!Levels[GLevel].isCompetition && GVInfo1.VideoMode != TrickTipsPlaybackVideoMode &&
+        GVInfo2.VideoMode != TrickTipsPlaybackVideoMode && DemoTimer && GGame == 1)
     {
         monitor.pSkater = reinterpret_cast<CBruce *>(MechList);
 
@@ -552,7 +468,8 @@ void TrickTips_Update(void)
                 if (TRICKTIP[i].mOccurance == 0)
                 {
                     if (((GCareer.Options.TrickTipUsed[TrickTips_GetBank(i)] >>
-                          (i - TrickTips_GetBank(i) * 32)) & 1) == 0)
+                          (i - TrickTips_GetBank(i) * 32)) &
+                         1) == 0)
                     {
                         tip = i;
                         goto tip_search_complete;
@@ -563,10 +480,8 @@ void TrickTips_Update(void)
             tip = -1;
 
         tip_search_complete:
-            if (tip >= 0 &&
-                (monitor.mTimer == 0 ||
-                 monitor.mLastTipTime + TrickTipsReminderDelay <=
-                 monitor.mTimer))
+            if (tip >= 0 && (monitor.mTimer == 0 ||
+                             monitor.mLastTipTime + TrickTipsReminderDelay <= monitor.mTimer))
             {
                 int tip_mask;
                 int tip_used;
@@ -583,8 +498,7 @@ void TrickTips_Update(void)
                 }
 
                 if (GCareer.Options.TrickTipsEnabled &&
-                    ((Levels[GLevel].TrickTipMask[tip_bank] >>
-                      (tip - tip_bank * 32)) & 1) == 0)
+                    ((Levels[GLevel].TrickTipMask[tip_bank] >> (tip - tip_bank * 32)) & 1) == 0)
                 {
                     tip_mask = GCareer.Options.TrickTipMask[tip_bank];
                     tip_used = GCareer.Options.TrickTipUsed[tip_bank];
@@ -616,28 +530,22 @@ void TrickTips_Update(void)
         monitor.mTimer++;
         monitor.mJumpTimer++;
 
-        if (monitor.mOldTricks <
-            TrickTips_AsSkater(monitor.pSkater)->mTricks)
+        if (monitor.mOldTricks < TrickTips_AsSkater(monitor.pSkater)->mTricks)
         {
-            monitor.mOldTricks =
-                TrickTips_AsSkater(monitor.pSkater)->mTricks;
+            monitor.mOldTricks = TrickTips_AsSkater(monitor.pSkater)->mTricks;
         }
 
-        if (monitor.mOldGrinds <
-            TrickTips_AsSkater(monitor.pSkater)->mNumGrinds)
+        if (monitor.mOldGrinds < TrickTips_AsSkater(monitor.pSkater)->mNumGrinds)
         {
-            monitor.mOldGrinds =
-                TrickTips_AsSkater(monitor.pSkater)->mNumGrinds;
+            monitor.mOldGrinds = TrickTips_AsSkater(monitor.pSkater)->mNumGrinds;
             monitor.mGrindCounter++;
             GCareer.Options.TrickTipUsed[0] |= 0x100;
             GCareer.Options.TrickTipMask[0] |= 0x100;
         }
 
-        if (monitor.mOldJumps <
-            TrickTips_AsSkater(monitor.pSkater)->mJumps)
+        if (monitor.mOldJumps < TrickTips_AsSkater(monitor.pSkater)->mJumps)
         {
-            monitor.mOldJumps =
-                TrickTips_AsSkater(monitor.pSkater)->mJumps;
+            monitor.mOldJumps = TrickTips_AsSkater(monitor.pSkater)->mJumps;
             monitor.mJumpTimer = 0;
             monitor.mJumpCounter++;
         }
@@ -659,10 +567,8 @@ void TrickTips_Update(void)
         if (monitor.mHoldingForwardCounter > TrickTipsHoldingForwardFrames)
         {
             if ((monitor.mTimer == 0 ||
-                 monitor.mLastTipTime + TrickTipsReminderDelay <=
-                 monitor.mTimer) &&
-                (monitor.mLastTipTime = monitor.mTimer,
-                 GCareer.Options.TrickTipsEnabled) &&
+                 monitor.mLastTipTime + TrickTipsReminderDelay <= monitor.mTimer) &&
+                (monitor.mLastTipTime = monitor.mTimer, GCareer.Options.TrickTipsEnabled) &&
                 ((Levels[GLevel].TrickTipMask[0] >> 1) & 1) == 0)
             {
                 int tip_mask = GCareer.Options.TrickTipMask[0] & (1 << 1);
@@ -691,11 +597,9 @@ void TrickTips_Update(void)
             monitor.mHoldingForwardCounter = 0;
         }
 
-        if (monitor.mOldAirPolyBreaks <
-            TrickTips_AsSkater(monitor.pSkater)->mAirPolyBreaks)
+        if (monitor.mOldAirPolyBreaks < TrickTips_AsSkater(monitor.pSkater)->mAirPolyBreaks)
         {
-            monitor.mOldAirPolyBreaks =
-                TrickTips_AsSkater(monitor.pSkater)->mAirPolyBreaks;
+            monitor.mOldAirPolyBreaks = TrickTips_AsSkater(monitor.pSkater)->mAirPolyBreaks;
             monitor.mAirPolyBreakCounter++;
 
             if (monitor.mAirPolyBreakCounter >= 3)
@@ -704,16 +608,12 @@ void TrickTips_Update(void)
 
                 if (monitor.mBigAirCounter < 3 &&
                     (monitor.mTimer == 0 ||
-                     monitor.mLastTipTime + TrickTipsReminderDelay <=
-                     monitor.mTimer) &&
-                    (monitor.mLastTipTime = monitor.mTimer,
-                     GCareer.Options.TrickTipsEnabled) &&
+                     monitor.mLastTipTime + TrickTipsReminderDelay <= monitor.mTimer) &&
+                    (monitor.mLastTipTime = monitor.mTimer, GCareer.Options.TrickTipsEnabled) &&
                     ((Levels[GLevel].TrickTipMask[0] >> 6) & 1) == 0)
                 {
-                    int tip_mask =
-                        GCareer.Options.TrickTipMask[0] & (1 << 6);
-                    int tip_used =
-                        GCareer.Options.TrickTipUsed[0] & (1 << 6);
+                    int tip_mask = GCareer.Options.TrickTipMask[0] & (1 << 6);
+                    int tip_used = GCareer.Options.TrickTipUsed[0] & (1 << 6);
 
                     GCareer.Options.TrickTipUsed[0] |= 1 << 6;
                     if (tip_mask == 0)
@@ -737,42 +637,32 @@ void TrickTips_Update(void)
             }
         }
 
-        if (monitor.mOldAirPolys <
-            TrickTips_AsSkater(monitor.pSkater)->mAirPolys)
+        if (monitor.mOldAirPolys < TrickTips_AsSkater(monitor.pSkater)->mAirPolys)
         {
-            monitor.mOldAirPolys =
-                TrickTips_AsSkater(monitor.pSkater)->mAirPolys;
+            monitor.mOldAirPolys = TrickTips_AsSkater(monitor.pSkater)->mAirPolys;
             monitor.mAirPolyCounter++;
         }
 
-        if (monitor.mOldBigAirs <
-            TrickTips_AsSkater(monitor.pSkater)->mBigAirs)
+        if (monitor.mOldBigAirs < TrickTips_AsSkater(monitor.pSkater)->mBigAirs)
         {
-            monitor.mOldBigAirs =
-                TrickTips_AsSkater(monitor.pSkater)->mBigAirs;
+            monitor.mOldBigAirs = TrickTips_AsSkater(monitor.pSkater)->mBigAirs;
             monitor.mBigAirCounter++;
         }
 
-        if (monitor.mOldWeakJumps <
-            TrickTips_AsSkater(monitor.pSkater)->mWeakJumps)
+        if (monitor.mOldWeakJumps < TrickTips_AsSkater(monitor.pSkater)->mWeakJumps)
         {
-            monitor.mOldWeakJumps =
-                TrickTips_AsSkater(monitor.pSkater)->mWeakJumps;
+            monitor.mOldWeakJumps = TrickTips_AsSkater(monitor.pSkater)->mWeakJumps;
             monitor.mWeakJumpCounter++;
 
             if (monitor.mWeakJumpCounter >= 5)
             {
                 if ((monitor.mTimer == 0 ||
-                     monitor.mLastTipTime + TrickTipsReminderDelay <=
-                     monitor.mTimer) &&
-                    (monitor.mLastTipTime = monitor.mTimer,
-                     GCareer.Options.TrickTipsEnabled) &&
+                     monitor.mLastTipTime + TrickTipsReminderDelay <= monitor.mTimer) &&
+                    (monitor.mLastTipTime = monitor.mTimer, GCareer.Options.TrickTipsEnabled) &&
                     ((Levels[GLevel].TrickTipMask[0] >> 5) & 1) == 0)
                 {
-                    int tip_mask =
-                        GCareer.Options.TrickTipMask[0] & (1 << 5);
-                    int tip_used =
-                        GCareer.Options.TrickTipUsed[0] & (1 << 5);
+                    int tip_mask = GCareer.Options.TrickTipMask[0] & (1 << 5);
+                    int tip_used = GCareer.Options.TrickTipUsed[0] & (1 << 5);
 
                     GCareer.Options.TrickTipUsed[0] |= 1 << 5;
                     if (tip_mask == 0)
@@ -798,26 +688,20 @@ void TrickTips_Update(void)
             }
         }
 
-        if (monitor.mOldBails <
-            TrickTips_AsSkater(monitor.pSkater)->mBails)
+        if (monitor.mOldBails < TrickTips_AsSkater(monitor.pSkater)->mBails)
         {
-            monitor.mOldBails =
-                TrickTips_AsSkater(monitor.pSkater)->mBails;
+            monitor.mOldBails = TrickTips_AsSkater(monitor.pSkater)->mBails;
             monitor.mBailCounter++;
 
             if (monitor.mBailCounter >= 3)
             {
                 if ((monitor.mTimer == 0 ||
-                     monitor.mLastTipTime + TrickTipsReminderDelay <=
-                     monitor.mTimer) &&
-                    (monitor.mLastTipTime = monitor.mTimer,
-                     GCareer.Options.TrickTipsEnabled) &&
+                     monitor.mLastTipTime + TrickTipsReminderDelay <= monitor.mTimer) &&
+                    (monitor.mLastTipTime = monitor.mTimer, GCareer.Options.TrickTipsEnabled) &&
                     ((Levels[GLevel].TrickTipMask[0] >> 3) & 1) == 0)
                 {
-                    int tip_mask =
-                        GCareer.Options.TrickTipMask[0] & (1 << 3);
-                    int tip_used =
-                        GCareer.Options.TrickTipUsed[0] & (1 << 3);
+                    int tip_mask = GCareer.Options.TrickTipMask[0] & (1 << 3);
+                    int tip_used = GCareer.Options.TrickTipUsed[0] & (1 << 3);
 
                     GCareer.Options.TrickTipUsed[0] |= 1 << 3;
                     if (tip_mask == 0)
@@ -853,16 +737,12 @@ void TrickTips_Update(void)
             if (monitor.mPerpendicularBailCounter >= 3)
             {
                 if ((monitor.mTimer == 0 ||
-                     monitor.mLastTipTime + TrickTipsReminderDelay <=
-                     monitor.mTimer) &&
-                    (monitor.mLastTipTime = monitor.mTimer,
-                     GCareer.Options.TrickTipsEnabled) &&
+                     monitor.mLastTipTime + TrickTipsReminderDelay <= monitor.mTimer) &&
+                    (monitor.mLastTipTime = monitor.mTimer, GCareer.Options.TrickTipsEnabled) &&
                     ((Levels[GLevel].TrickTipMask[0] >> 2) & 1) == 0)
                 {
-                    int tip_mask =
-                        GCareer.Options.TrickTipMask[0] & (1 << 2);
-                    int tip_used =
-                        GCareer.Options.TrickTipUsed[0] & (1 << 2);
+                    int tip_mask = GCareer.Options.TrickTipMask[0] & (1 << 2);
+                    int tip_used = GCareer.Options.TrickTipUsed[0] & (1 << 2);
 
                     GCareer.Options.TrickTipUsed[0] |= 1 << 2;
                     if (tip_mask == 0)
@@ -888,26 +768,20 @@ void TrickTips_Update(void)
             }
         }
 
-        if (monitor.mOldRailBails <
-            TrickTips_AsSkater(monitor.pSkater)->mRailBails)
+        if (monitor.mOldRailBails < TrickTips_AsSkater(monitor.pSkater)->mRailBails)
         {
-            monitor.mOldRailBails =
-                TrickTips_AsSkater(monitor.pSkater)->mRailBails;
+            monitor.mOldRailBails = TrickTips_AsSkater(monitor.pSkater)->mRailBails;
             monitor.mRailBailCounter++;
 
             if (monitor.mRailBailCounter >= 3)
             {
                 if ((monitor.mTimer == 0 ||
-                     monitor.mLastTipTime + TrickTipsReminderDelay <=
-                     monitor.mTimer) &&
-                    (monitor.mLastTipTime = monitor.mTimer,
-                     GCareer.Options.TrickTipsEnabled) &&
+                     monitor.mLastTipTime + TrickTipsReminderDelay <= monitor.mTimer) &&
+                    (monitor.mLastTipTime = monitor.mTimer, GCareer.Options.TrickTipsEnabled) &&
                     ((Levels[GLevel].TrickTipMask[0] >> 9) & 1) == 0)
                 {
-                    int tip_mask =
-                        GCareer.Options.TrickTipMask[0] & (1 << 9);
-                    int tip_used =
-                        GCareer.Options.TrickTipUsed[0] & (1 << 9);
+                    int tip_mask = GCareer.Options.TrickTipMask[0] & (1 << 9);
+                    int tip_used = GCareer.Options.TrickTipUsed[0] & (1 << 9);
 
                     GCareer.Options.TrickTipUsed[0] |= 1 << 9;
                     if (tip_mask == 0)

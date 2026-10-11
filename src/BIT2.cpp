@@ -20,7 +20,8 @@ struct SAnimFrame;
 #include "CNONRENDEREDBIT.h"
 
 /** Textured particle state shared with the motion-blur effect. */
-struct CFT4Bit : CBit {
+struct CFT4Bit : CBit
+{
     short mTransDecay;
     short mScaleDecay;
     unsigned int mCodeBGR;
@@ -38,7 +39,8 @@ struct CFT4Bit : CBit {
 };
 
 /** Rotation and render-priority state of a flat textured particle. */
-struct CFlatBit : CFT4Bit {
+struct CFlatBit : CFT4Bit
+{
     short mAngle;
     short mAngVel;
     short mAngAcc;
@@ -59,7 +61,8 @@ struct CFlatBit : CFT4Bit {
 
 #include "CGPOLYLINE.h"
 
-struct CSmokeGenerator : CNonRenderedBit {
+struct CSmokeGenerator : CNonRenderedBit
+{
     int mPuffs;
     unsigned char mR;
     unsigned char mG;
@@ -78,32 +81,32 @@ struct CSmokeGenerator : CNonRenderedBit {
 #include "CGLINE.h"
 
 /** Proven prefix of CItem needed to read a body's position. */
-struct CItemPositionPrefix {
+struct CItemPositionPrefix
+{
     unsigned short mFlags;
     unsigned short mInquiry;
     CVector mPos;
 };
 
 /** Proven prefix of CBody containing its embedded item state. */
-struct CBodyPositionPrefix {
+struct CBodyPositionPrefix
+{
     CItemPositionPrefix CItem;
 };
 
 typedef char Bit2_CBit_size_must_be_72[(sizeof(CBit) == 72) ? 1 : -1];
-typedef char Bit2_CNonRenderedBit_size_must_be_72[
-    (sizeof(CNonRenderedBit) == 72) ? 1 : -1];
+typedef char Bit2_CNonRenderedBit_size_must_be_72[(sizeof(CNonRenderedBit) == 72) ? 1 : -1];
 typedef char Bit2_CFT4Bit_size_must_be_96[(sizeof(CFT4Bit) == 96) ? 1 : -1];
 typedef char Bit2_CFlatBit_size_must_be_112[(sizeof(CFlatBit) == 112) ? 1 : -1];
-typedef char Bit2_CMotionBlur_size_must_be_112[
-    (sizeof(CMotionBlur) == 112) ? 1 : -1];
+typedef char Bit2_CMotionBlur_size_must_be_112[(sizeof(CMotionBlur) == 112) ? 1 : -1];
 typedef char Bit2_SLineSeg_size_must_be_16[(sizeof(SLineSeg) == 16) ? 1 : -1];
 typedef char Bit2_CPolyLine_size_must_be_96[(sizeof(CPolyLine) == 96) ? 1 : -1];
 typedef char Bit2_CGPolyLine_size_must_be_100[(sizeof(CGPolyLine) == 100) ? 1 : -1];
 typedef char Bit2_CGLine_size_must_be_104[(sizeof(CGLine) == 104) ? 1 : -1];
-typedef char Bit2_CItem_position_prefix_size_must_be_16[
-    (sizeof(CItemPositionPrefix) == 16) ? 1 : -1];
-typedef char Bit2_CBody_position_prefix_size_must_be_16[
-    (sizeof(CBodyPositionPrefix) == 16) ? 1 : -1];
+typedef char
+    Bit2_CItem_position_prefix_size_must_be_16[(sizeof(CItemPositionPrefix) == 16) ? 1 : -1];
+typedef char
+    Bit2_CBody_position_prefix_size_must_be_16[(sizeof(CBodyPositionPrefix) == 16) ? 1 : -1];
 
 /** Absolute-addressed list heads and the shared zero vector used by BIT2. */
 #define BITSTATE_DECLARE_POLY_LINE_LIST
@@ -129,7 +132,8 @@ typedef char Bit2_CBody_position_prefix_size_must_be_16[
  * The owner-local base layout supplies the recovered field types without
  * importing unrelated generated aggregate declarations.
  */
-struct CGrindSpark : CGLine {
+struct CGrindSpark : CGLine
+{
     CVector mOldPos;
     CBody *mpParent;
 
@@ -166,8 +170,7 @@ namespace Bit2AddressViewOwners
 {
 extern "C"
 {
-static char s_Smoke[8]
-    __attribute__((section(".sdata"))) = "Smoke";
+static char s_Smoke[8] __attribute__((section(".sdata"))) = "Smoke";
 }
 }
 
@@ -182,8 +185,7 @@ static char s_Smoke[8]
  * instead of an absolute lui/addiu pair.
  */
 /** Addressable destructor entries used by this owner's five manual vtables. */
-static inline void Bit2_SetSegmentSemiTransparent(
-    int index, SLineSeg *segments)
+static inline void Bit2_SetSegmentSemiTransparent(int index, SLineSeg *segments)
 {
     segments[index].code |= 2;
 }
@@ -200,13 +202,15 @@ static inline void Bit2_SetSegmentSemiTransparent(
  * @param numsegs  Number of line segments to allocate and initialize.
  * @return `this` pointer (GCC 2.x ctor convention).
  */
-CPolyLine::CPolyLine(int numsegs) {
+CPolyLine::CPolyLine(int numsegs)
+{
     int blockSize;
     int i;
     mSegs = static_cast<SLineSeg *>(Mem_New(numsegs << 4, 0, 1));
     blockSize = Mem_GetBlockSize(mSegs);
     TotalBitUsage += 4 + blockSize;
-    for (i = 0; i < numsegs; i++) {
+    for (i = 0; i < numsegs; i++)
+    {
         *(unsigned int *)&mSegs[i].r = 0x40FFFFFFu;
         mSegs[i].End = Bit2_ZeroVector();
     }
@@ -223,7 +227,8 @@ CPolyLine::CPolyLine(int numsegs) {
  *            Purpose: release the segment buffer, detach from the polyline list, and chain to the base destructor.
  *
  */
-CPolyLine::~CPolyLine() {
+CPolyLine::~CPolyLine()
+{
     SLineSeg *segments;
     CPolyLine **listHead;
     int blockSize;
@@ -251,8 +256,10 @@ CPolyLine::~CPolyLine() {
  *            Marks every packed segment command as semitransparent.
  *
  */
-void CPolyLine::SetSemiTransparent() {
-    for (int i = 0; i < mNumSegs; i++) {
+void CPolyLine::SetSemiTransparent()
+{
+    for (int i = 0; i < mNumSegs; i++)
+    {
         Bit2_SetSegmentSemiTransparent(i, mSegs);
     }
 }
@@ -268,13 +275,15 @@ void CPolyLine::SetSemiTransparent() {
  * @param numsegs  Number of generated line segments to allocate and initialize.
  * @return `this` pointer (GCC 2.x ctor convention).
  */
-CGPolyLine::CGPolyLine(int numsegs) {
+CGPolyLine::CGPolyLine(int numsegs)
+{
     int blockSize;
     int i;
     mSegs = static_cast<SLineSeg *>(Mem_New(numsegs << 4, 0, 1));
     blockSize = Mem_GetBlockSize(mSegs);
     TotalBitUsage += 4 + blockSize;
-    for (i = 0; i < numsegs; i++) {
+    for (i = 0; i < numsegs; i++)
+    {
         *(unsigned int *)&mSegs[i].r = 0x50FFFFFFu;
         mSegs[i].End = Bit2_ZeroVector();
     }
@@ -295,7 +304,8 @@ CGPolyLine::CGPolyLine(int numsegs) {
  *            Purpose: release the segment buffer, detach from the generated polyline list, and chain to the base destructor.
  *
  */
-CGPolyLine::~CGPolyLine() {
+CGPolyLine::~CGPolyLine()
+{
     SLineSeg *segments;
     CGPolyLine **listHead;
     int blockSize;
@@ -324,8 +334,10 @@ CGPolyLine::~CGPolyLine() {
  *            semitransparent.
  *
  */
-void CGPolyLine::SetSemiTransparent() {
-    for (int i = 0; i < mNumSegs; i++) {
+void CGPolyLine::SetSemiTransparent()
+{
+    for (int i = 0; i < mNumSegs; i++)
+    {
         Bit2_SetSegmentSemiTransparent(i, mSegs);
     }
     mCode = mCode | 2;
@@ -362,22 +374,22 @@ void CSmokeGenerator::Move()
     CVector *upvelPtr = &upvel;
     upvelPtr->vy = 0;
     upvelPtr->vz = 0;
-    if (count > 0) {
+    if (count > 0)
+    {
         int defaultAge = 100;
         int loopCount;
-        do {
+        do
+        {
             int r = Rnd(mVRandom);
             int yoff = mVBase + r;
             yoff = -yoff;
             upvel.vy = yoff << 12;
-            CMotionBlur *foo = static_cast<CMotionBlur *>(
-                CBit::operator new(sizeof(CMotionBlur)));
-            if (foo != 0) {
+            CMotionBlur *foo = static_cast<CMotionBlur *>(CBit::operator new(sizeof(CMotionBlur)));
+            if (foo != 0)
+            {
                 int r2 = Rnd(mScaleRandom);
                 int animLen = mScaleBase + r2;
-                foo = Bit2_ConstructMotionBlur(
-                    foo, &mPos, &upvel,
-                    s_Smoke, animLen, 0, 10);
+                foo = Bit2_ConstructMotionBlur(foo, &mPos, &upvel, s_Smoke, animLen, 0, 10);
             }
             foo->mFrigDeltaZ = defaultAge;
             int randFrame = Rnd(0x1000);
@@ -395,8 +407,10 @@ void CSmokeGenerator::Move()
     age = age + 1;
     mAge = static_cast<short>(age);
     short sAge = static_cast<short>(age);
-    if (sAge == maxAge) {
-        if (static_cast<unsigned short>(sAge) != 0xffff) {
+    if (sAge == maxAge)
+    {
+        if (static_cast<unsigned short>(sAge) != 0xffff)
+        {
             Die();
         }
     }
@@ -412,7 +426,8 @@ void CSmokeGenerator::Move()
  *            Constructor: calls CBit parent, sets colors, vtable, attaches to GLineList (absolute address)
  *
  */
-CGLine::CGLine() {
+CGLine::CGLine()
+{
     mCodeBGR0 = 0x50808080;
     mPadBGR1 = 0x55808080;
     AttachTo(&GLineList);
@@ -427,7 +442,8 @@ CGLine::CGLine() {
  *            Destructor: sets vtable, calls DeleteFrom, calls parent ~CBit(flag=0), conditionally deletes
  *
  */
-CGLine::~CGLine() {
+CGLine::~CGLine()
+{
     DeleteFrom(&GLineList);
 }
 
@@ -450,10 +466,13 @@ CGrindSpark::CGrindSpark(CBody *pParent, CVector &pos, int vel, int gravity, int
 {
 
     int vel2;
-    if (vel < 0) {
+    if (vel < 0)
+    {
         int magnitude = -vel;
         vel2 = -((magnitude >> 1) + Rnd(magnitude));
-    } else {
+    }
+    else
+    {
         vel2 = (vel >> 1) + Rnd(vel);
     }
     Bit_CalculateSparkVelocity(mVel, vel2);
@@ -537,7 +556,8 @@ void CGrindSpark::Move()
     mVel.vy = ny;
     mVel.vz = nz;
 
-    if (++mAge >= mLifetime) {
+    if (++mAge >= mLifetime)
+    {
         Die();
     }
 }

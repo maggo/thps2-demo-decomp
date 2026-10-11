@@ -7,7 +7,8 @@ struct CBruce;
  * Pointer-only natural interface for ordinary services owned by POWERUP.cpp.
  * Concrete CPowerUp storage remains in each owner's proven layout.
  */
-struct CPowerUp {
+struct CPowerUp
+{
     /** Set vertical acceleration and damping. */
     void SetGravity(int gravity, int friction);
     /** Associate this power-up with a trigger node. */

@@ -5,8 +5,7 @@
  * EDITORPIECES physically owns the active unavailable-piece replacement in
  * initialized small data. Consumers retain the target's absolute view.
  */
-#if defined(NOTINDEMOPIECE_OWNER_DECLARATION) && \
-    defined(NOTINDEMOPIECE_ABSOLUTE_DECLARATION)
+#if defined(NOTINDEMOPIECE_OWNER_DECLARATION) && defined(NOTINDEMOPIECE_ABSOLUTE_DECLARATION)
 #error "Select only one NotInDemoPiece declaration view"
 #elif defined(NOTINDEMOPIECE_OWNER_DECLARATION)
 #define NOTINDEMOPIECE_DECL_ATTR
@@ -17,8 +16,7 @@
 #endif
 
 /** Theme-specific replacement used for pieces unavailable in the demo. */
-extern int NotInDemoPiece
-    NOTINDEMOPIECE_DECL_ATTR;
+extern int NotInDemoPiece NOTINDEMOPIECE_DECL_ATTR;
 
 #undef NOTINDEMOPIECE_DECL_ATTR
 #undef NOTINDEMOPIECE_ABSOLUTE_DECLARATION

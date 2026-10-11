@@ -1,7 +1,8 @@
 #ifndef HIRES_H
 #define HIRES_H
 
-enum {
+enum
+{
     HiresSkaterRegionCount = 14,
 };
 

@@ -5,8 +5,7 @@
  * FRONT physically owns the demo countdown word in small data. Consumers
  * address it absolutely, so each inclusion must select the proven view.
  */
-#if defined(DEMOTIMER_OWNER_DECLARATION) && \
-    defined(DEMOTIMER_ABSOLUTE_DECLARATION)
+#if defined(DEMOTIMER_OWNER_DECLARATION) && defined(DEMOTIMER_ABSOLUTE_DECLARATION)
 #error "Select only one DemoTimer declaration view"
 #elif defined(DEMOTIMER_OWNER_DECLARATION)
 #define DEMOTIMER_DECL_ATTR
