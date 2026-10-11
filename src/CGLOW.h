@@ -44,7 +44,6 @@ struct CGlow : CBit {
     void SetRadialRGB(
         int Spoke, unsigned char r, unsigned char g, unsigned char b);
     /** Release glow storage through the CBit allocator. */
-    static void operator delete(void *p) { CBit::operator delete(p); }
 };
 
 #endif // CGLOW_INC_H

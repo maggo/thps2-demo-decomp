@@ -1,3 +1,8 @@
+// STATS.cpp -- Skater biography text shown by the skater-selection front end.
+// Original: STATS.CPP
+//
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
+
 #include "STATS.h"
 
 /** Tony Hawk biography lines displayed by the skater-selection front end. */

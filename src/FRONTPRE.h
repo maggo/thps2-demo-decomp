@@ -15,8 +15,14 @@ struct _FrontPreInfo {
 };
 
 /** Loads and fades in the PRE archive needed by a front-end screen. */
-struct FrontPreLoader {
+struct FrontPreLoader
+#ifdef FRONTPRE_POLYMORPHIC_LAYOUT
+    : CClass
+#endif
+{
+#ifndef FRONTPRE_POLYMORPHIC_LAYOUT
     struct CClass CClass;
+#endif
     char mFileName[FrontPreFileNameLength];
     int mSpoolID;
     int mTimeout;
@@ -24,10 +30,16 @@ struct FrontPreLoader {
     int mActive;
 
     FrontPreLoader();
+#ifdef FRONTPRE_POLYMORPHIC_LAYOUT
+    virtual
+#endif
     ~FrontPreLoader();
     int BeginLoad(int whichScreen);
     int DoneLoading();
 };
+
+/** Front-end screen -> PRE archive table (FRONTPRE.cpp). */
+extern _FrontPreInfo preInfo[FrontPreInfoCount];
 
 typedef char FrontPreInfo_size_must_be_8[
     (sizeof(_FrontPreInfo) == 8) ? 1 : -1];
@@ -56,24 +68,3 @@ typedef char FrontPreLoaderStorage_size_must_be_52[
     (sizeof(FrontPreLoaderStorage) == sizeof(FrontPreLoader)) ? 1 : -1];
 
 #endif // FRONTPRE_H
-
-#ifdef FRONTPRE_DECLARE_PRE_INFO_OWNER_VIEW
-/**
- * Four-byte owner declaration used to form the table's GP-relative address.
- * Typed access remains in FRONTPRE.cpp because the recovered table has two
- * eight-byte records while this compiler view controls the common's extent.
- */
-extern int preInfo;
-
-#undef FRONTPRE_DECLARE_PRE_INFO_OWNER_VIEW
-#endif
-
-#ifdef FRONTPRE_DECLARE_FILENAME_FORMAT_ABSOLUTE_VIEW
-/**
- * Absolute-address view of the owner's four-byte PRE filename format string.
- * Its incomplete extent keeps BeginLoad from selecting a GP-relative access.
- */
-extern char FrontPre_preManagerAddr[];
-
-#undef FRONTPRE_DECLARE_FILENAME_FORMAT_ABSOLUTE_VIEW
-#endif

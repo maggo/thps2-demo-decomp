@@ -1,4 +1,9 @@
-// Model-animation interpolation and attachment-point helpers.
+// M3DUTILS.cpp -- Model-animation interpolation and attachment-point helpers.
+// Original: M3DUTILS.CPP
+// Functions: 8
+// Address range: 0x800927EC - 0x8009376C
+//
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 #include "M3DUTILS.h"
 #include <INLINE_C.H>
@@ -284,16 +289,12 @@ void M3dUtils_InBetween(CSuper * pSuper)
 {
     u8 regionIdx = pSuper->CBody.CItem.mRegion;
     unsigned int *pAnimFile = PSXRegion[regionIdx].pAnimFile;
-    register int Interval asm("$3") =
+    int Interval =
         M3dUtils_GetAnimInfo(pAnimFile, pSuper->mAnim)->Interval;
+    int nextInterval = Interval + 1;
 
     if (Interval != 0)
     {
-        // These two allocations preserve the compiler's original call setup.
-        // Ordinary locals were measured at six to eight instruction or
-        // relocation mismatches, so this narrow legacy annotation remains.
-        register int nextInterval asm("$5") = Interval + 1;
-        asm volatile("" : "+r"(nextInterval));
         int NumParts = PSXRegion[regionIdx].NumParts;
         M3dUtils_InterpolateVectors(
             NumParts * M3DUTILS_VECTORS_PER_PART,
@@ -319,158 +320,83 @@ void M3dUtils_InBetween(CSuper * pSuper)
 
 void M3dUtils_InterpolateVectors(int NumVectors, int Interval,
     unsigned int *pAnimFile, Item *pItem, int Part, int NumParts) {
-    CSVector dAnim;
-    // The remaining allocations and empty constraints reproduce the register
-    // lifetimes recorded for this old compiler. Each was independently tested;
-    // removing one changes otherwise truthful interpolation code generation.
-    register CSuper *pSuper asm("$7") = M3dUtils_GetSuper(pItem);
-    register int Frame asm("$10") = pSuper->mFrame;
-    int remainder = Frame % Interval;
-    int vectorCount = NumVectors;
-    register int Frame0 asm("$8") = Frame - remainder;
-    register int part asm("$12") = Part;
-    register int nParts asm("$13") = NumParts;
-    asm volatile("" : "+r"(pSuper), "+r"(Frame), "+r"(remainder), "+r"(vectorCount));
-    asm volatile("" : "+r"(Frame0), "+r"(part), "+r"(nParts));
-    register int Anim asm("$2") = pSuper->mAnim;
-    asm volatile("" : "+r"(Anim));
-    register int Frame1 asm("$9") = Frame0 + Interval;
-    M3dUtilsAnimInfo *pAnimInfo = M3dUtils_GetAnimInfo(pAnimFile, Anim);
-    int Alpha;
+    CSVector dAnim; // unused, but MAIN.SYM lists it and it sizes the 0x18 frame
     SMatrix *pAnims;
-    {
-        register int dataOffset asm("$3") = pAnimInfo->DataOffset;
-        int NumFrames = pAnimInfo->NumFrames;
-        asm volatile("" : "+r"(dataOffset));
-        pAnims = reinterpret_cast<SMatrix *>(
-            reinterpret_cast<u8 *>(pAnimFile) + dataOffset);
+    int Alpha;
+    int Frame0;
+    int Frame1;
+    int Frame;
+    int NumFrames;
+    int i;
+    int Anim;
+    CSVector *pTween;
+    CSVector *pAnim0;
 
-        int num;
-        register int denom asm("$3");
-        register int lt asm("$4") = Frame1 < NumFrames;
-        if (!lt) {
-            u8 loopMode = pSuper->mLoopMode;
-            if (loopMode == M3DUTILS_LOOP_WRAP) {
-                // Wrap around: Frame1 becomes zero.
-                num = Frame - Frame0;
-                Frame1 = 0;
-                num <<= M3DUTILS_FIXED_SHIFT;
-                denom = NumFrames - Frame0;
-                Alpha = num / denom;
-                goto have_factor;
-            }
-            // Clamp back one key interval
+    Anim = M3dUtils_GetSuper(pItem)->mAnim;
+    NumFrames = M3dUtils_GetAnimInfo(pAnimFile, Anim)->NumFrames;
+    pAnims = reinterpret_cast<SMatrix *>(reinterpret_cast<u8 *>(pAnimFile) +
+        M3dUtils_GetAnimInfo(pAnimFile, Anim)->DataOffset);
+    Frame = M3dUtils_GetSuper(pItem)->mFrame;
+    Frame0 = Frame - Frame % Interval;
+    Frame1 = Frame0 + Interval;
+
+    if (Frame1 >= NumFrames) {
+        if (M3dUtils_GetSuper(pItem)->mLoopMode == M3DUTILS_LOOP_WRAP) {
+            // Wrap around: Frame1 becomes zero.
+            Frame1 = 0;
+            Alpha = ((Frame - Frame0) << M3DUTILS_FIXED_SHIFT) / (NumFrames - Frame0);
+        } else {
+            // Clamp back one key interval.
             Frame0 -= Interval;
             if (Frame0 < 0) Frame0 = 0;
             Frame1 -= Interval;
-            if (Frame1 == 0) {
-                register int zero asm("$0");
-                Alpha = zero;
-                goto have_factor;
-            }
+            if (Frame1 == 0)
+                Alpha = 0;
+            else
+                Alpha = ((Frame - Frame0) << M3DUTILS_FIXED_SHIFT) / (Frame1 - Frame0);
         }
-        num = Frame - Frame0;
-        num <<= M3DUTILS_FIXED_SHIFT;
-        denom = Frame1 - Frame0;
-        Alpha = num / denom;
-have_factor:;
+    } else {
+        Alpha = ((Frame - Frame0) << M3DUTILS_FIXED_SHIFT) / (Frame1 - Frame0);
     }
 
-    // Compute the first source-frame index.
-    register int frameIndex0 asm("$4") = (nParts * Frame0) / Interval;
-
-    // Select the destination and first source vector.
-    register int partTimes3 asm("$2") = part * 2 + part;
-    register int partOffset asm("$7") = partTimes3 << 3;
-    u8 *tweenBase = reinterpret_cast<u8 *>(TweenBuffer);
-    CSVector *pTween = reinterpret_cast<CSVector *>(tweenBase + partOffset);
-    register int animOffset0 asm("$2") =
-        (frameIndex0 * 2 + frameIndex0) << 3;
-    u8 *animBase = reinterpret_cast<u8 *>(pAnims);
-    register CSVector *pAnim0 asm("$14") =
-        reinterpret_cast<CSVector *>(animBase + animOffset0 + partOffset);
+    pTween = reinterpret_cast<CSVector *>(TweenBuffer) + Part * M3DUTILS_VECTORS_PER_PART;
+    pAnim0 = reinterpret_cast<CSVector *>(&pAnims[(NumParts * Frame0) / Interval]) +
+        Part * M3DUTILS_VECTORS_PER_PART;
 
     if (Alpha == 0) {
         // An exact keyframe only needs a direct copy.
-        int i = 0;
-        if (vectorCount > 0) {
-            do {
-                *pTween = *pAnim0;
-                pAnim0++;
-                i++;
-                pTween++;
-            } while (i < vectorCount);
-            // Keep the live values that surround the source copy loop visible
-            // to the old compiler so its loop counter stays in $t3.
-            asm volatile("" : : "r"(tweenBase), "r"(frameIndex0), "r"(Interval),
-                                "r"(pAnims), "r"(partOffset), "r"(Frame0), "r"(Frame1),
-                                "r"(Alpha));
+        for (i = 0; i < NumVectors; i++) {
+            *pTween = *pAnim0++;
+            pTween++;
         }
     } else {
-        // Otherwise select the second source frame and blend both vectors.
-        register int frameIndex1 asm("$3") = (nParts * Frame1) / Interval;
-        register int animOffset1 asm("$2") =
-            (frameIndex1 * 2 + frameIndex1) << 3;
-        register CSVector *pAnim1 asm("$15") =
-            reinterpret_cast<CSVector *>(animBase + animOffset1 + partOffset);
+        CSVector *pAnim1 = reinterpret_cast<CSVector *>(&pAnims[(NumParts * Frame1) / Interval]) +
+            Part * M3DUTILS_VECTORS_PER_PART;
 
-        // Load the interpolation factor into GTE IR0.
         gte_lddp(Alpha);
 
-        int i = 0;
-        if (vectorCount > 0) {
-            register s16 *pAnim1z asm("$13") = &pAnim1->vz;
-            register s16 *pAnim0z asm("$12") = &pAnim0->vz;
-            do {
-                // Load three components from both frames.
-                int p0x = pAnim0->vx;
-                int p1x = pAnim1->vx;
-                int p0y = pAnim0z[-1];
-                int p0z = pAnim0z[0];
-                asm volatile("" : "+r"(p0x), "+r"(p1x), "+r"(p0y), "+r"(p0z));
-                int p1y = pAnim1z[-1];
-                int p1z = pAnim1z[0];
-                asm volatile("" : "+r"(p1y), "+r"(p1z));
-
-                register int dx asm("$4") = p1x - p0x;
-                register int dy asm("$2") = p1y - p0y;
-                register int dz asm("$3") = p1z - p0z;
-
-                // Load base values into MAC1-3 and deltas into IR1-3. A
-                // CVector plus gte_ldlvnl either makes gcc 2.91 ICE or costs
-                // 126 real and six relocation mismatches in this loop.
-                asm volatile("mtc2 %0, $25" : : "r"(p0x));
-                asm volatile("mtc2 %0, $26" : : "r"(p0y));
-                asm volatile("mtc2 %0, $27" : : "r"(p0z));
-                gte_ldir1(dx);
-                gte_ldir2(dy);
-                gte_ldir3(dz);
-                // GPL sf=1: MAC = (MAC << 12) + IR * IR0, result >> 12.
-                gte_gpl12();
-
-                pAnim0z += 3;
-                pAnim0++;
-                pAnim1z += 3;
-                pAnim1++;
-
-                // Read interpolated results from GTE MAC1-3. Storing through
-                // a temporary CVector with gte_stmac_v costs 38 real and ten
-                // relocation mismatches, so the scalar transfers stay here.
-                register int r0 asm("$8");
-                register int r1 asm("$9");
-                register int r2 asm("$10");
-                asm volatile("mfc2 %0, $25" : "=r"(r0));
-                asm volatile("mfc2 %0, $26" : "=r"(r1));
-                asm volatile("mfc2 %0, $27" : "=r"(r2));
-
-                pTween->vx = r0;
-                pTween->vy = r1;
-                pTween->vz = r2;
-                asm volatile("" : : : "memory");
-
-                i++;
-                pTween++;
-            } while (i < vectorCount);
+        for (i = 0; i < NumVectors; i++) {
+            int p0x = pAnim0->vx;
+            int p0y = pAnim0->vy;
+            int p0z = pAnim0->vz;
+            int dx = pAnim1->vx - p0x;
+            int dy = pAnim1->vy - p0y;
+            int dz = pAnim1->vz - p0z;
+            gte_ldmac1(p0x);
+            gte_ldmac2(p0y);
+            gte_ldmac3(p0z);
+            gte_ldir1(dx);
+            gte_ldir2(dy);
+            gte_ldir3(dz);
+            // GPL sf=1: MAC = (MAC << 12) + IR * IR0, result >> 12.
+            gte_gpl12();
+            pAnim0++;
+            pAnim1++;
+            // Reads MAC1-3 back through fixed $t0-$t2 (one statement, like
+            // Psy-Q's gte_stsv); the clobbers keep every loop pointer out of
+            // $t0-$t2 and are what puts i/pTween in $t3/$t8.
+            gte_stmac_sv(pTween);
+            pTween++;
         }
     }
 }

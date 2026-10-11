@@ -1,5 +1,12 @@
-// Front-end PRE archive loading and fade presentation.
+// FRONTPRE.cpp -- Front-end PRE archive loading and fade presentation.
+// Original: FRONTPRE.CPP
+// Functions: 4
+// Address range: 0x8006B1E4 - 0x8006B53C
+//
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#define FRONTPRE_POLYMORPHIC_LAYOUT
+#include "CCLASS_POLY.h"
 #define DB_BUFFER_LAYOUT
 #include "DB.h"
 #undef DB_BUFFER_LAYOUT
@@ -10,48 +17,11 @@
 #include <LIBGTE.H>
 #include <LIBGPU.H>
 
-// C++ forbids taking a destructor's address, so the manual vtable slot retains
-// an owner-local addressable view of the natural destructor symbol.
-void FrontPreLoaderDestructorSlot(FrontPreLoader *, int)
-    asm("_._14FrontPreLoader");
-// GCC 2.x emits a private copy of `CClass::~CClass` last in every owner that
-// derives from CClass.  `MAIN.SYM` records 25 such `_._6CClass` copies, all
-// file-local, so this owner defines its own instead of importing another
-// object's copy at a different address.
-extern "C" {
-static void __DOT__6CClass_8006B53C(CClass *, int);
-
-/** Front-end PRE filename format stored immediately before the loader tables. */
-namespace FrontPreAddressViewOwners
-{
-static char FrontPre_preManagerAddr[4]
-    __attribute__((section(".sdata"))) = "%s";
-}
-
-/**
- * FrontPreLoader's dispatch table and the local CClass base table.
- *
- * The public table is split into its four-byte target XDEF anchor and
- * owner-local tail words so GCC retains the constructor's original
- * gp-relative address formation under this TU's -G8 threshold.
- */
-int __vt_14FrontPreLoader
-    __attribute__((section(".sdata"))) = 0;
-static int FrontPreLoaderVtableReserved
-    __attribute__((section(".sdata"))) = 0;
-static void (*FrontPreLoaderVtableDestructor)(FrontPreLoader *, int)
-    __attribute__((section(".sdata"))) = FrontPreLoaderDestructorSlot;
-static int FrontPreLoaderVtableEnd
-    __attribute__((section(".sdata"))) = 0;
-
-static int DAT_800daae0
-    __attribute__((section(".sdata"))) = 0;
-static int FrontPreLoaderBaseVtableReserved
-    __attribute__((section(".sdata"))) = 0;
-static void (*FrontPreLoaderBaseVtableDestructor)(CClass *, int)
-    __attribute__((section(".sdata"))) = __DOT__6CClass_8006B53C;
-
-}
+/** Front-end screen -> PRE archive table (terminated by a null record). */
+_FrontPreInfo preInfo[FrontPreInfoCount] = {
+    { 1, "player.pre" },
+    { 0, 0 },
+};
 
 #define SPOOLER_ABSOLUTE_MANAGER_DECLARATION
 #include "SPOOLER.h"
@@ -67,40 +37,23 @@ enum {
     FrontPreScreenHeight = 240,
 };
 
-#define FRONTPRE_DECLARE_PRE_INFO_OWNER_VIEW
-#include "FRONTPRE.h"
-
-#define FRONTPRE_DECLARE_FILENAME_FORMAT_ABSOLUTE_VIEW
-#include "FRONTPRE.h"
-
 // DB owns this small-data pointer, but FRONTPRE addresses it absolutely.
 #include "PDOUBLEBUFFER.h"
 
 #include "PREMGR.h"
-
-/** Return the typed view of the front-end PRE selection table. */
-static inline _FrontPreInfo *GetFrontPreInfoTable()
-{
-    return reinterpret_cast<_FrontPreInfo *>(&preInfo);
-}
 
 /**
  * Initialize an inactive loader with its short front-end timeout.
  */
 FrontPreLoader::FrontPreLoader()
 {
-    CClass.vtable = &__vt_14FrontPreLoader;
     mActive = 0;
     mTimeout = FrontPreInitialTimeout;
     mFade = 0;
 }
 
-/**
- * Restore the composed CClass dispatch table before destruction.
- */
 FrontPreLoader::~FrontPreLoader()
 {
-    CClass.vtable = &DAT_800daae0;
 }
 
 /**
@@ -117,7 +70,7 @@ int FrontPreLoader::BeginLoad(int whichScreen)
         return 1;
     }
 
-    _FrontPreInfo *pInfo = GetFrontPreInfoTable();
+    _FrontPreInfo *pInfo = preInfo;
     while (*pInfo->pFileName != '\0')
     {
         if (whichScreen == pInfo->whichScreen)
@@ -132,7 +85,7 @@ int FrontPreLoader::BeginLoad(int whichScreen)
 
     {
         mActive = 1;
-        sprintf(mFileName, FrontPre_preManagerAddr, pInfo->pFileName);
+        sprintf(mFileName, "%s", pInfo->pFileName);
 
         Spooler::SpoolMgr->Reset();
         mSpoolID = Spooler::SpoolMgr->AddFile(mFileName, 0);
@@ -193,19 +146,4 @@ int FrontPreLoader::DoneLoading()
         return 1;
     }
     return 0;
-}
-
-/**
- * Restore the owner-local CClass table and optionally release the object.
- *
- * GCC emitted this private base-destructor copy last in the owner's text, so
- * its definition remains at the end of the translation unit.
- */
-static void __DOT__6CClass_8006B53C(CClass *_this, int __in_chrg)
-{
-    _this->vtable = &DAT_800daae0;
-    if (__in_chrg & 1)
-    {
-        CClass::operator delete(_this);
-    }
 }

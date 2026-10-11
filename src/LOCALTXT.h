@@ -1,15 +1,6 @@
 // LOCALTXT.h -- Localized frontend text owned by localtxt.obj.
 
-#if !defined(LOCALTXT_LAYOUT_ONLY) && !defined(LOCALTXT_LAYOUT)
-#define LOCALTXT_LAYOUT
-#define LOCALTXT_LAYOUT_WAS_IMPLIED
-#endif
-
-#if defined(LOCALTXT_LAYOUT_ONLY) && !defined(LOCALTXT_LAYOUT)
-#error "LOCALTXT_LAYOUT_ONLY requires LOCALTXT_LAYOUT"
-#endif
-
-#if defined(LOCALTXT_LAYOUT) && !defined(LOCALTXT_LAYOUT_EMITTED)
+#ifndef LOCALTXT_LAYOUT_EMITTED
 #define LOCALTXT_LAYOUT_EMITTED
 
 /**
@@ -184,9 +175,7 @@ struct LocalText {
     char *pAPickup;
 };
 
-#endif // LOCALTXT_LAYOUT && !LOCALTXT_LAYOUT_EMITTED
-
-#if !defined(LOCALTXT_LAYOUT_ONLY)
+#endif // !LOCALTXT_LAYOUT_EMITTED
 
 #ifndef LOCALTXT_INC_H
 #define LOCALTXT_INC_H
@@ -206,10 +195,3 @@ typedef char LocalText_size_must_be_652[(sizeof(LocalText) == 652) ? 1 : -1];
 extern "C" LocalText GameText;
 
 #endif // LOCALTXT_INC_H
-
-#endif // !LOCALTXT_LAYOUT_ONLY
-
-#ifdef LOCALTXT_LAYOUT_WAS_IMPLIED
-#undef LOCALTXT_LAYOUT
-#undef LOCALTXT_LAYOUT_WAS_IMPLIED
-#endif

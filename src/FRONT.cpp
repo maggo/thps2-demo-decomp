@@ -1,8 +1,30 @@
 // FRONT.cpp -- Front-end menus, pause flow, and level-loading coordination.
-// Compiled with the original GCC 2.91.66 PSX toolchain.
+// Original: FRONT.CPP
+// Functions: 48
+// Address range: 0x80025F94 - 0x8002D678
+//
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 #include <STDDEF.H>
 #include <LIBGTE.H>
+
+/* FRONT zero-state declarations retain owner order. */
+extern int BackOut;
+extern int StartScreen;
+extern int DemoTimer;
+extern int Cheat_AllTapes;
+extern int GHorseSounded;
+extern int GHorseScale;
+extern int GCompoSounded;
+extern int NextHorseMode;
+extern int NextHorsePlayer;
+extern int NextHorseScore;
+extern int NextHorseRestart;
+extern int NextHorseLetters[2];
+struct SONG_POS;
+extern "C" SONG_POS Paused_SongPos;
+
+#include "CCLASS_POLY.h"
 #define FRONT_OWNER_DECLARATIONS
 #include "FRONT.h"
 #undef FRONT_OWNER_DECLARATIONS
@@ -206,6 +228,7 @@ struct SFrontBackground {
 
 
 #include "globals.h"
+#define CMENU_POLYMORPHIC_LAYOUT
 #include "CMENU.h"
 #include "FONTTOOLS.h"
 #include "TEXTEFFECTS.h"
@@ -396,11 +419,8 @@ typedef char Front_CMenu_size_must_be_384[
     (sizeof(CMenu) == 0x180) ? 1 : -1];
 
 /**
- * Original seven-word virtual table emitted beside FRONT's CMenu methods.
- *
- * GCC 2.x does not permit taking a C++ destructor's address directly, so the
- * two destructor slots use ABI declarations while ordinary CMenu methods stay
- * expressed as C++ members.
+ * Deleting-destructor prefix used by the composed tape view in this owner.
+ * CMenu itself uses its compiler-emitted virtual table.
  */
 struct FrontCMenuVTable
 {
@@ -413,13 +433,6 @@ struct FrontCMenuVTable
     void (*destroyClass)(CClass *self, int flags);
 };
 
-void Front_CMenuDestructorAbi(CMenu *, int) asm("_._5CMenu");
-extern "C" {
-static void __DOT__6CClass_8002D678(CClass *, int);
-}
-#define FRONT_CMENU_VTABLE_ABI_TYPE FrontCMenuVTable
-#define FRONT_DECLARE_CMENU_VTABLE_ADDRESS_VIEWS
-#include "FRONT.h"
 
 typedef char Front_CMenu_vtable_size_must_be_28[
     (sizeof(FrontCMenuVTable) == 28) ? 1 : -1];
@@ -427,8 +440,7 @@ typedef char Front_CMenu_vtable_size_must_be_28[
 /** Invoke the deleting-destructor slot shared by front-end menu objects. */
 static inline void Front_DestroyMenu(CMenu *menu)
 {
-    reinterpret_cast<FrontCMenuVTable *>(menu->CClass.vtable)
-        ->destroyMenu(menu, 3);
+    delete menu;
 }
 
 /** Invoke the same deleting-destructor prefix on a collected tape. */
@@ -544,67 +556,70 @@ typedef char Front_SDoubleBuffer_size_must_be_at_least_136[
 typedef char Front_SFrontBackground_size_must_be_36[
     (sizeof(SFrontBackground) == 36) ? 1 : -1];
 /*
- * FRONT's initialized small-data prefix.  MAIN.SYM and the executable place
- * this contribution at 0x800D8BF8-0x800D8F18; keeping the declarations in
- * address order also preserves the string targets used by FrontBackgrounds.
+ * Declare the initialized small-data prefix before its users. String arrays
+ * with unknown extent keep their original absolute address formation with
+ * the compiler's -G12 threshold. Definitions follow the functions in owner
+ * order, ahead of the compiler-emitted CMenu tables and zero-state tail.
  */
-int GHorseContinue __attribute__((section(".sdata"))) = 0;
-int MIDILEVEL __attribute__((section(".sdata"))) = 0x4000;
-int SFXLEVEL __attribute__((section(".sdata"))) = 0x4000;
-int XALEVEL __attribute__((section(".sdata"))) = 0x7f;
+/** Front-end loading-screen entrypoint. */
+void LoadingScreen_Main(void) {}
+
+extern int GHorseContinue __attribute__((section(".sdata")));
+extern int MIDILEVEL __attribute__((section(".sdata")));
+extern int SFXLEVEL __attribute__((section(".sdata")));
+extern int XALEVEL __attribute__((section(".sdata")));
 #define FRONTTIMERS_TITLE_TIMEOUT_OWNER_DECLARATION
 #include "FRONTTIMERS.h"
-int TitleTimeout __attribute__((section(".sdata"))) = 0x14;
-int GRollCredits __attribute__((section(".sdata"))) = 0;
-int GHighScoreLineIndex __attribute__((section(".sdata"))) = -1;
-int GHighScoreInitialCursorPos __attribute__((section(".sdata"))) = 0;
-int GSoftResetEnabled __attribute__((section(".sdata"))) = 1;
-EPausedStatus Status __attribute__((section(".sdata"))) = STATUS_NORMAL;
-static int DemoFlashTimer __attribute__((section(".sdata"))) = 0x30;
-static char DemoString[]
-    __attribute__((section(".sdata"), aligned(4))) = "demo mode";
-static char HorseLabel1[]
-    __attribute__((section(".sdata"), aligned(4))) = "PLAYER 1";
-static char HorseLabel2[]
-    __attribute__((section(".sdata"), aligned(4))) = "PLAYER 2";
-int CurrentFrontBackground __attribute__((section(".sdata"))) = 0;
+extern int TitleTimeout __attribute__((section(".sdata")));
+extern int GRollCredits __attribute__((section(".sdata")));
+extern int GHighScoreLineIndex __attribute__((section(".sdata")));
+extern int GHighScoreInitialCursorPos __attribute__((section(".sdata")));
+extern int GSoftResetEnabled __attribute__((section(".sdata")));
+extern EPausedStatus Status __attribute__((section(".sdata")));
+namespace { extern "C++" {
+extern int DemoFlashTimer __attribute__((section(".sdata")));
+extern char DemoString[]
+    __attribute__((section(".sdata"), aligned(4)));
+extern char HorseLabel1[]
+    __attribute__((section(".sdata"), aligned(4)));
+extern char HorseLabel2[]
+    __attribute__((section(".sdata"), aligned(4)));
+} }
+extern int CurrentFrontBackground __attribute__((section(".sdata")));
 
-static char FrontRoofLib[] __attribute__((section(".sdata"), aligned(4))) =
-    "roof_lib";
-static char FrontRoofEnv[] __attribute__((section(".sdata"), aligned(4))) =
-    "roof_1";
-static char FrontRoofSizes[] __attribute__((section(".sdata"), aligned(4))) =
-    "roofback";
-static char FrontSewerLib[] __attribute__((section(".sdata"), aligned(4))) =
-    "sewr_lib";
-static char FrontSewerEnv[] __attribute__((section(".sdata"), aligned(4))) =
-    "sewr_4";
-static char FrontSewerSizes[] __attribute__((section(".sdata"), aligned(4))) =
-    "sewrback";
-static char FrontNoBackground[] __attribute__((section(".sdata"), aligned(4))) =
-    "";
+namespace { extern "C++" {
+extern char FrontRoofLib[] __attribute__((section(".sdata"), aligned(4)));
+extern char FrontRoofEnv[] __attribute__((section(".sdata"), aligned(4)));
+extern char FrontRoofSizes[] __attribute__((section(".sdata"), aligned(4)));
+extern char FrontSewerLib[] __attribute__((section(".sdata"), aligned(4)));
+extern char FrontSewerEnv[] __attribute__((section(".sdata"), aligned(4)));
+extern char FrontSewerSizes[] __attribute__((section(".sdata"), aligned(4)));
+extern char FrontNoBackground[] __attribute__((section(".sdata"), aligned(4)));
+} }
 
-const unsigned int *pSizeData __attribute__((section(".sdata"))) = 0;
-int GamePaused __attribute__((section(".sdata"))) = 0;
+extern const unsigned int *pSizeData __attribute__((section(".sdata")));
+extern int GamePaused __attribute__((section(".sdata")));
 
-static int WobbleAmplitude __attribute__((section(".sdata"))) = 0;
-static int WobbleT __attribute__((section(".sdata"))) = 0;
-static int UpDownAutoRepeatTimer __attribute__((section(".sdata"))) = 0;
+namespace { extern "C++" {
+extern int WobbleAmplitude __attribute__((section(".sdata")));
+extern int WobbleT __attribute__((section(".sdata")));
+extern int UpDownAutoRepeatTimer __attribute__((section(".sdata")));
+} }
 
 #define FRONTTIMERS_LEFT_RIGHT_TIMER_OWNER_DECLARATION
 #include "FRONTTIMERS.h"
-int LeftRightAutoRepeatTimer __attribute__((section(".sdata"))) = 0;
-SAnimFrame *ButtonsAnim __attribute__((section(".sdata"))) = 0;
-int VoiceLevelGotFocus __attribute__((section(".sdata"))) = 0;
+extern int LeftRightAutoRepeatTimer __attribute__((section(".sdata")));
+extern SAnimFrame *ButtonsAnim __attribute__((section(".sdata")));
+extern int VoiceLevelGotFocus __attribute__((section(".sdata")));
 
-CMenu *pYesNoMenu __attribute__((section(".sdata"))) = 0;
-CMenu *pESMenu __attribute__((section(".sdata"))) = 0;
-CMenu *pVSMenu __attribute__((section(".sdata"))) = 0;
-CMenu *pVS2Menu __attribute__((section(".sdata"))) = 0;
-CMenu *pVS3Menu __attribute__((section(".sdata"))) = 0;
-CMenu *pEHMenu __attribute__((section(".sdata"))) = 0;
-CMenu *pERMMenu __attribute__((section(".sdata"))) = 0;
-CMenu *pSoundMenu __attribute__((section(".sdata"))) = 0;
+extern CMenu *pYesNoMenu __attribute__((section(".sdata")));
+extern CMenu *pESMenu __attribute__((section(".sdata")));
+extern CMenu *pVSMenu __attribute__((section(".sdata")));
+extern CMenu *pVS2Menu __attribute__((section(".sdata")));
+extern CMenu *pVS3Menu __attribute__((section(".sdata")));
+extern CMenu *pEHMenu __attribute__((section(".sdata")));
+extern CMenu *pERMMenu __attribute__((section(".sdata")));
+extern CMenu *pSoundMenu __attribute__((section(".sdata")));
 
 /*
  * Target-named owners export the canonical data symbols.  Objects larger
@@ -615,43 +630,56 @@ namespace FrontAddressViewOwners
 {
 extern "C"
 {
-static RECT Db_SkyColorBak[]
-    __attribute__((section(".sdata"))) = {
-        {0, 0, 512, 511},
-    };
+namespace { extern "C++" {
+extern RECT Db_SkyColorBak[]
+    __attribute__((section(".sdata")));
+} }
 }
 }
 
-static int GaugeOn __attribute__((section(".sdata"))) = 0;
-static unsigned int TotalProgress __attribute__((section(".sdata"))) = 0;
-static unsigned int TotalSize __attribute__((section(".sdata"))) = 0;
-static FrontLoadingGaugeState FrontLoadingGauge
-    __attribute__((section(".sdata"))) = {
-        {106, 200, 300, 12},
-        {108, 201, 296, 10},
-        {0, 0, 0, 0},
-        {108, 201, 0, 10},
-    };
+namespace { extern "C++" {
+extern int GaugeOn __attribute__((section(".sdata")));
+extern unsigned int TotalProgress __attribute__((section(".sdata")));
+extern unsigned int TotalSize __attribute__((section(".sdata")));
+extern FrontLoadingGaugeState FrontLoadingGauge
+    __attribute__((section(".sdata")));
+} }
 
 extern "C"
 {
-    static CMenu *pPausedMenu __attribute__((section(".sdata"))) = 0;
-    static CMenu *pRestartsMenu __attribute__((section(".sdata"))) = 0;
+    namespace { extern "C++" {
+extern CMenu *pPausedMenu __attribute__((section(".sdata")));
+} }
+    namespace { extern "C++" {
+extern CMenu *pRestartsMenu __attribute__((section(".sdata")));
+} }
 
     namespace FrontAddressViewOwners
     {
-    static char GrafLabel1[]
-        __attribute__((section(".sdata"), aligned(4))) = "TAGS";
-    static char GrafLabel2[]
-        __attribute__((section(".sdata"), aligned(4))) = "STEALS";
-    static char GrafLabel3[]
-        __attribute__((section(".sdata"), aligned(4))) = "HIGH";
-    static char GrafLabel4[]
-        __attribute__((section(".sdata"), aligned(4))) = "WINS";
-    static char GrafLabel5[]
-        __attribute__((section(".sdata"), aligned(4))) = "LOSSES";
-    static char GrafLabel6[]
-        __attribute__((section(".sdata"), aligned(4))) = "STREAK";
+    namespace { extern "C++" {
+extern char GrafLabel1[]
+        __attribute__((section(".sdata"), aligned(4)));
+} }
+    namespace { extern "C++" {
+extern char GrafLabel2[]
+        __attribute__((section(".sdata"), aligned(4)));
+} }
+    namespace { extern "C++" {
+extern char GrafLabel3[]
+        __attribute__((section(".sdata"), aligned(4)));
+} }
+    namespace { extern "C++" {
+extern char GrafLabel4[]
+        __attribute__((section(".sdata"), aligned(4)));
+} }
+    namespace { extern "C++" {
+extern char GrafLabel5[]
+        __attribute__((section(".sdata"), aligned(4)));
+} }
+    namespace { extern "C++" {
+extern char GrafLabel6[]
+        __attribute__((section(".sdata"), aligned(4)));
+} }
     }
 
     /**
@@ -691,102 +719,177 @@ extern "C"
 
     namespace FrontAddressViewOwners
     {
-    static char GrafFmt[4]
-        __attribute__((section(".sdata"), aligned(4))) = "%d";
+    namespace { extern "C++" {
+extern char GrafFmt[]
+        __attribute__((section(".sdata"), aligned(4)));
+} }
     }
-    static char Front_GrafPlayer1Match[16]
-        __attribute__((section(".sdata"), aligned(4))) = "PLAYER 1 MATCH";
-    static char Front_GrafPlayer2Match[16]
-        __attribute__((section(".sdata"), aligned(4))) = "PLAYER 2 MATCH";
-    static char Front_GrafSeparator[4]
-        __attribute__((section(".sdata"), aligned(4))) = "_";
-    static char Front_GrafStringFormat[4]
-        __attribute__((section(".sdata"), aligned(4))) = "%s";
-    static char Front_GrafTimeUp[12]
-        __attribute__((section(".sdata"), aligned(4))) = "TIME IS UP!";
-    static char Front_GrafGameOver[12]
-        __attribute__((section(".sdata"), aligned(4))) = "GAME OVER";
-    static char Front_GrafCountFormat[12]
-        __attribute__((section(".sdata"), aligned(4))) = "%ld of %ld";
-    static char Front_GrafLongFormat[4]
-        __attribute__((section(".sdata"), aligned(4))) = "%ld";
-    static char Front_GrafTrickFont[16]
-        __attribute__((section(".sdata"), aligned(4))) = "s2tricks.fnt";
-    static char Front_GrafPasscodeFormat[16]
-        __attribute__((section(".sdata"), aligned(4))) = "PASSCODE : %s";
-    static char Front_GrafTie[4]
-        __attribute__((section(".sdata"), aligned(4))) = "TIE";
-    static char Front_GrafPlayer2Wins[16]
-        __attribute__((section(".sdata"), aligned(4))) = "PLAYER TWO WINS";
-    static char Front_GrafPlayer1Wins[16]
-        __attribute__((section(".sdata"), aligned(4))) = "PLAYER ONE WINS";
-    static char Front_GrafScoreSetFormat[16]
-        __attribute__((section(".sdata"), aligned(4))) = "SCORE SET AT %d";
-    static char Front_GrafGoingForFormat[16]
-        __attribute__((section(".sdata"), aligned(4))) = "GOING FOR %d";
-    static char Front_GrafYouScoredFormat[16]
-        __attribute__((section(".sdata"), aligned(4))) = "YOU SCORED %d";
-    static char Front_GrafPush[8]
-        __attribute__((section(".sdata"), aligned(4))) = "PUSH";
-    static char Front_GrafYouAreAn[12]
-        __attribute__((section(".sdata"), aligned(4))) = "YOU ARE AN";
-    static char Front_GrafYouAreA[12]
-        __attribute__((section(".sdata"), aligned(4))) = "YOU ARE A";
-    static char Front_GrafSwitch[8]
-        __attribute__((section(".sdata"), aligned(4))) = "SWITCH";
-    static char Front_GrafPlayer1ScoreFormat[16]
-        __attribute__((section(".sdata"), aligned(4))) = "PLAYER ONE %d";
-    static char Front_GrafPlayer2ScoreFormat[16]
-        __attribute__((section(".sdata"), aligned(4))) = "PLAYER TWO %d";
-    static char Front_GrafDraw[8]
-        __attribute__((section(".sdata"), aligned(4))) = "DRAW";
-    static char Front_GrafGameStateFormat[12]
-        __attribute__((section(".sdata"), aligned(4))) = "gs = %d\n";
+    namespace { extern "C++" {
+extern char Front_GrafPlayer1Match[]
+        __attribute__((section(".sdata"), aligned(4)));
+} }
+    namespace { extern "C++" {
+extern char Front_GrafPlayer2Match[]
+        __attribute__((section(".sdata"), aligned(4)));
+} }
+    namespace { extern "C++" {
+extern char Front_GrafSeparator[4]
+        __attribute__((section(".sdata"), aligned(4)));
+} }
+    namespace { extern "C++" {
+extern char Front_GrafStringFormat[4]
+        __attribute__((section(".sdata"), aligned(4)));
+} }
+    namespace { extern "C++" {
+extern char Front_GrafTimeUp[]
+        __attribute__((section(".sdata"), aligned(4)));
+} }
+    namespace { extern "C++" {
+extern char Front_GrafGameOver[]
+        __attribute__((section(".sdata"), aligned(4)));
+} }
+    namespace { extern "C++" {
+extern char Front_GrafCountFormat[]
+        __attribute__((section(".sdata"), aligned(4)));
+} }
+    namespace { extern "C++" {
+extern char Front_GrafLongFormat[4]
+        __attribute__((section(".sdata"), aligned(4)));
+} }
+    namespace { extern "C++" {
+extern char Front_GrafTrickFont[]
+        __attribute__((section(".sdata"), aligned(4)));
+} }
+    namespace { extern "C++" {
+extern char Front_GrafPasscodeFormat[]
+        __attribute__((section(".sdata"), aligned(4)));
+} }
+    namespace { extern "C++" {
+extern char Front_GrafTie[4]
+        __attribute__((section(".sdata"), aligned(4)));
+} }
+    namespace { extern "C++" {
+extern char Front_GrafPlayer2Wins[]
+        __attribute__((section(".sdata"), aligned(4)));
+} }
+    namespace { extern "C++" {
+extern char Front_GrafPlayer1Wins[]
+        __attribute__((section(".sdata"), aligned(4)));
+} }
+    namespace { extern "C++" {
+extern char Front_GrafScoreSetFormat[]
+        __attribute__((section(".sdata"), aligned(4)));
+} }
+    namespace { extern "C++" {
+extern char Front_GrafGoingForFormat[]
+        __attribute__((section(".sdata"), aligned(4)));
+} }
+    namespace { extern "C++" {
+extern char Front_GrafYouScoredFormat[]
+        __attribute__((section(".sdata"), aligned(4)));
+} }
+    namespace { extern "C++" {
+extern char Front_GrafPush[8]
+        __attribute__((section(".sdata"), aligned(4)));
+} }
+    namespace { extern "C++" {
+extern char Front_GrafYouAreAn[]
+        __attribute__((section(".sdata"), aligned(4)));
+} }
+    namespace { extern "C++" {
+extern char Front_GrafYouAreA[]
+        __attribute__((section(".sdata"), aligned(4)));
+} }
+    namespace { extern "C++" {
+extern char Front_GrafSwitch[8]
+        __attribute__((section(".sdata"), aligned(4)));
+} }
+    namespace { extern "C++" {
+extern char Front_GrafPlayer1ScoreFormat[]
+        __attribute__((section(".sdata"), aligned(4)));
+} }
+    namespace { extern "C++" {
+extern char Front_GrafPlayer2ScoreFormat[]
+        __attribute__((section(".sdata"), aligned(4)));
+} }
+    namespace { extern "C++" {
+extern char Front_GrafDraw[8]
+        __attribute__((section(".sdata"), aligned(4)));
+} }
+    namespace { extern "C++" {
+extern char Front_GrafGameStateFormat[]
+        __attribute__((section(".sdata"), aligned(4)));
+} }
 
     namespace FrontAddressViewOwners
     {
-    static char _restart_comp_string[]
-        __attribute__((section(".sdata"), aligned(4))) = "RE_START_FRIG";
+    namespace { extern "C++" {
+extern char _restart_comp_string[]
+        __attribute__((section(".sdata"), aligned(4)));
+} }
     }
 }
 
-static int StartSelectPressed asm("StartSelectPressed.98")
-    __attribute__((section(".sdata"))) = 0;
-static unsigned int VblanksWhenStartSelectFirstPressed
-    asm("VblanksWhenStartSelectFirstPressed.99")
-    __attribute__((section(".sdata"))) = 0;
-static char FrontEditorPrefix[]
-    __attribute__((section(".sdata"), aligned(4))) = "de_";
+namespace { extern "C++" {
+extern int StartSelectPressed
+    __attribute__((section(".sdata")));
+extern unsigned int VblanksWhenStartSelectFirstPressed
+    __attribute__((section(".sdata")));
+extern char FrontEditorPrefix[]
+    __attribute__((section(".sdata"), aligned(4)));
+} }
 
 extern "C"
 {
     namespace FrontAddressViewOwners
     {
-    static char s_s2demo2_bmp_800d8e78[]
-        __attribute__((section(".sdata"), aligned(4))) = "s2demo2.bmp";
-    static char s_skate2_vab_800d8e84[]
-        __attribute__((section(".sdata"), aligned(4))) = "skate2.vab";
-    static char s_scorep_bmp_800d8e90[]
-        __attribute__((section(".sdata"), aligned(4))) = "scorep.bmp";
-    static char s_special_bmp_800d8e9c[]
-        __attribute__((section(".sdata"), aligned(4))) = "special.bmp";
-    static char s_spec_bar_bmp_800d8ea8[]
-        __attribute__((section(".sdata"), aligned(4))) = "spec_bar.bmp";
-    static char s_paused_bmp_800d8eb8[]
-        __attribute__((section(".sdata"), aligned(4))) = "paused.bmp";
-    static char DAT_800d8ec4[]
-        __attribute__((section(".sdata"), aligned(4))) = "bits";
-    static char s_items_800d8ecc[]
-        __attribute__((section(".sdata"), aligned(4))) = "items";
-    static char s_SkMedals_800d8ed4[]
-        __attribute__((section(".sdata"), aligned(4))) = "SkMedals";
-    static char s_sk2anim_800d8ee0[]
-        __attribute__((section(".sdata"), aligned(4))) = "sk2anim";
-    static char s_SkEd_d_800d8ee8[]
-        __attribute__((section(".sdata"), aligned(4))) = "SkEd%d";
+    namespace { extern "C++" {
+extern char s_S2Demo2Bmp[]
+        __attribute__((section(".sdata"), aligned(4)));
+} }
+    namespace { extern "C++" {
+extern char s_Skate2Vab[]
+        __attribute__((section(".sdata"), aligned(4)));
+} }
+    namespace { extern "C++" {
+extern char s_ScorepBmp[]
+        __attribute__((section(".sdata"), aligned(4)));
+} }
+    namespace { extern "C++" {
+extern char s_SpecialBmp[]
+        __attribute__((section(".sdata"), aligned(4)));
+} }
+    namespace { extern "C++" {
+extern char s_SpecBarBmp[]
+        __attribute__((section(".sdata"), aligned(4)));
+} }
+    namespace { extern "C++" {
+extern char s_PausedBmp[]
+        __attribute__((section(".sdata"), aligned(4)));
+} }
+    namespace { extern "C++" {
+extern char s_Bits[]
+        __attribute__((section(".sdata"), aligned(4)));
+} }
+    namespace { extern "C++" {
+extern char s_Items[]
+        __attribute__((section(".sdata"), aligned(4)));
+} }
+    namespace { extern "C++" {
+extern char s_SkMedals[]
+        __attribute__((section(".sdata"), aligned(4)));
+} }
+    namespace { extern "C++" {
+extern char s_Sk2Anim[]
+        __attribute__((section(".sdata"), aligned(4)));
+} }
+    namespace { extern "C++" {
+extern char s_SkEdThemeFmt[]
+        __attribute__((section(".sdata"), aligned(4)));
+} }
     }
     /*
-     * The derived DAT_* aliases currently point at unrelated target addresses,
+     * The derived owner-local aliases currently point at unrelated target addresses,
      * so retain their proven bytes under owner-local names without publishing
      * misleading native-link definitions.
      */
@@ -796,22 +899,32 @@ extern "C"
     };
     namespace FrontAddressViewOwners
     {
-    static FrontEditorLevelSuffixBytes DAT_800d8ef0
-        __attribute__((section(".sdata"))) = {{'a', 'c', 'k', '\0'}};
+    namespace { extern "C++" {
+extern FrontEditorLevelSuffixBytes s_AckSuffix
+        __attribute__((section(".sdata")));
+} }
     }
     namespace FrontAddressViewOwners
     {
-    static char s_s2prmpt1_bmp_800d8ef4[]
-        __attribute__((section(".sdata"), aligned(4))) = "s2prmpt1.bmp";
-    static char s_to_continue_800d8f04[]
-        __attribute__((section(".sdata"), aligned(4))) = "to continue";
+    namespace { extern "C++" {
+extern char s_S2Prmpt1Bmp[]
+        __attribute__((section(".sdata"), aligned(4)));
+} }
+    namespace { extern "C++" {
+extern char s_ToContinue[]
+        __attribute__((section(".sdata"), aligned(4)));
+} }
     }
     namespace FrontAddressViewOwners
     {
-    static int DAT_800d8f10
-        __attribute__((section(".sdata"))) = 0x00cb00a3;
-    static int DAT_800d8f14
-        __attribute__((section(".sdata"))) = 0x002300ba;
+    namespace { extern "C++" {
+extern int s_PromptClipRectLo
+        __attribute__((section(".sdata")));
+} }
+    namespace { extern "C++" {
+extern int s_PromptClipRectHi
+        __attribute__((section(".sdata")));
+} }
     }
 }
 
@@ -821,40 +934,27 @@ extern "C"
  * 0x800D8F18-0x800D8F90.  Keeping the vtable and globals together preserves
  * their original owner, offsets, and export surface.
  */
-namespace FrontCMenuVTableOwner
-{
-FrontCMenuVTable __vt_5CMenu
-    __attribute__((section(".sdata"))) = {
-        0,
-        0,
-        Front_CMenuDestructorAbi,
-        0,
-        0,
-        0,
-        __DOT__6CClass_8002D678,
-    };
-}
-int BackOut = 0;
-int StartScreen = 0;
-int DemoTimer = 0;
-int Cheat_AllTapes = 0;
-int GHorseSounded = 0;
-int GHorseScale = 0;
-int GCompoSounded = 0;
-int NextHorseMode = 0;
-int NextHorsePlayer = 0;
-int NextHorseScore = 0;
-int NextHorseRestart = 0;
-int NextHorseLetters[2] = {0, 0};
+int BackOut;
+int StartScreen;
+int DemoTimer;
+int Cheat_AllTapes;
+int GHorseSounded;
+int GHorseScale;
+int GCompoSounded;
+int NextHorseMode;
+int NextHorsePlayer;
+int NextHorseScore;
+int NextHorseRestart;
+int NextHorseLetters[2];
 SONG_POS Paused_SongPos
-    __attribute__((section(".sdata"))) = {0, 0, 0};
-int Front_OnTime = 0;
-int StatsMode = 0;
-int GStart1 = 0;
-int GStart2 = 0;
-unsigned int JudgeTimer = 0;
-unsigned int LadderTimer = 0;
-unsigned int WinLoseTimer = 0;
+    __attribute__((section(".sdata")));
+int Front_OnTime;
+int StatsMode;
+int GStart1;
+int GStart2;
+unsigned int JudgeTimer;
+unsigned int LadderTimer;
+unsigned int WinLoseTimer;
 
 typedef char Front_GrafFmt_size_must_be_292[
     (sizeof(FrontDisplayStringPool) == 292) ? 1 : -1];
@@ -996,11 +1096,9 @@ static inline char *Front_LoadingSpritesText()
  * tail pad.
  */
 #include "GTAPE.h"
-CTape *GTape[5] __attribute__((section(".data"))) = {};
-unsigned char GHorseFallingText[sizeof(FallingTextEffect)]
-    __attribute__((section(".data"))) = {};
-SFrontBackground FrontBackgrounds[3]
-    __attribute__((section(".data"))) = {
+CTape *GTape[5] = {};
+FallingTextEffect GHorseFallingText;
+SFrontBackground FrontBackgrounds[3] = {
         {
             FrontRoofLib,
             FrontRoofEnv,
@@ -1026,27 +1124,22 @@ SFrontBackground FrontBackgrounds[3]
             0,
         },
     };
-SSaveGame LastGameState __attribute__((section(".data"))) = {};
-SSaveGame StartupGameState __attribute__((section(".data"))) = {};
+SSaveGame LastGameState = {};
+SSaveGame StartupGameState = {};
 #define DEMONAME_OWNER_DECLARATION
 #include "DEMONAME.h"
-char DemoName[30] __attribute__((section(".data"))) = {};
-int StatsLeft[8] __attribute__((section(".data"))) = {};
-int StatsRight[8] __attribute__((section(".data"))) = {};
-char soundBuf[24] __attribute__((section(".data"))) = {};
-char musicBuf[24] __attribute__((section(".data"))) = {};
+char DemoName[30] = {};
+int StatsLeft[8] = {};
+int StatsRight[8] = {};
+char soundBuf[24] = {};
+char musicBuf[24] = {};
 
 /**
- * Recover the target-proven class identity from FRONT's inert global storage.
- *
- * Keeping the storage itself trivial prevents GCC 2.x from inventing
- * `_GLOBAL_.I/D.GHorseContinue`; the target names the two lifecycle wrappers
- * after `LoadingScreen_Main`, so those wrappers remain explicit below.
+ * Return the compiler-managed global HORSE text effect.
  */
 static inline FallingTextEffect &Front_HorseFallingText()
 {
-    return *reinterpret_cast<FallingTextEffect *>(
-        GHorseFallingText);
+    return GHorseFallingText;
 }
 
 // === Free function declarations ===
@@ -1080,13 +1173,6 @@ static int musicVol;
 
 // === External globals (absolute) — additional ===
 // 0x800B73B8 is GameText+0x1C0, not a standalone CommonMenuStr object.
-extern char GrafLabel1[];                                // 0x800D8D08 — graffiti stat label 1
-extern char GrafLabel2[];                                // 0x800D8D10 — graffiti stat label 2
-extern char GrafLabel3[];                                // 0x800D8D18 — graffiti stat label 3
-extern char GrafLabel4[];                                // 0x800D8D20 — graffiti stat label 4
-extern char GrafLabel5[];                                // 0x800D8D28 — graffiti stat label 5
-extern char GrafLabel6[];                                // 0x800D8D30 — graffiti stat label 6
-extern char GrafFmt[];                                  // 0x800D8D38 — graffiti stat format pool
 struct FrontSinCos
 {
     short Sin;
@@ -1095,7 +1181,6 @@ struct FrontSinCos
 #define RCOSSIN_DECL_TYPE FrontSinCos
 #define RCOSSIN_SCALAR_VIEW
 #include "RCOSSIN.h"
-extern RECT Db_SkyColorBak[];                            // 0x800D8CD0 — sky color backup
 
 // === External function declarations (for Front_Update) ===
 #define FRONT_MEMCARD_API
@@ -1125,11 +1210,6 @@ void Competition_WinLoseLogic(EPausedStatus &, int &);
 void Competition_EndGameLogic(EPausedStatus &, int &);
 
 // === External globals (absolute) for Front_Update ===
-// front.obj owns int[2] NextHorseLetters at 0x800D8F60; no NextHorseLetters_abs alias is needed.
-// main.obj owns int GameFrozen at 0x800D9638; no GameFrozen_abs alias is needed.
-// main.obj owns int TTime at 0x800D9620; no TTime_abs alias is needed.
-// No GBailsList absolute-view alias is needed in FRONT.
-// rfront.obj owns struct SVideoRestart GVideoRestart at 0x800B5138; no GVideoRestart_abs alias is needed.
 // 0x800C8EB0 is FaceCache+0x798, not a standalone MechPlayers object.
 // 0x800B5110 is GPreferences+0x190, not a standalone HighScoreTable object.
 #include "RESTARTNAMETABLES.h"
@@ -1176,27 +1256,16 @@ inline Font::Font(const Font &source)
     OldB = source.OldB;
 }
 
-extern char DAT_800d8ec4[];
-extern char s_items_800d8ecc[];
-extern char s_sk2anim_800d8ee0[];
-extern char s_SkEd_d_800d8ee8[];
-extern FrontEditorLevelSuffixBytes DAT_800d8ef0[]
-    __attribute__((section(".data")));
-extern RECT DAT_800d8f10[] __attribute__((section(".data")));
+extern char s_Bits[];
+extern char s_Items[];
+extern char s_Sk2Anim[];
+extern char s_SkEdThemeFmt[];
+namespace { extern "C++" {
+extern FrontEditorLevelSuffixBytes s_AckSuffix[];
+} }
+extern RECT FrontPromptClipRect[];
 
 // === Function implementations (address order) ===
-
-/**
- * LoadingScreen_Main__Fv
- *
- * Address:   0x80025F94
- * Mangled:   LoadingScreen_Main__Fv
- * Demangled: LoadingScreen_Main(void)
- *            ASM: jr $ra; nop
- */
-void LoadingScreen_Main(void)
-{
-}
 
 /**
  * ClearSoftReset__Fv
@@ -1408,7 +1477,7 @@ static void InitStatsSwisch(void)
     {
         // The original register allocation keeps this delta in a0; ordinary forms
         // commute four instructions in this exact 22-instruction loop.
-        register int diff asm("$4");
+        register int diff;
         diff = four - i;
         int val;
         val = (diff << 4) - diff;
@@ -1420,10 +1489,8 @@ static void InitStatsSwisch(void)
         *left = val;
         // This boundary keeps the left cursor increment in the loop branch's
         // delay slot; removing it changes four instructions.
-        asm volatile("");
-        i++;
-        left++;
-    } while (i < 8);
+        left++; ; i++;
+    } while (8 > i);
 }
 
 /**
@@ -1458,7 +1525,6 @@ zero:
  */
 CMenu::CMenu(int x, int y, unsigned char Justification, int HiScale, int LowScale, int LineSep)
 {
-    CClass.vtable = &FrontCMenuVTableAddressView::__vt_5CMenu;
     mX = x;
     mY = y;
     mJustification = Justification;
@@ -1480,47 +1546,24 @@ CMenu::CMenu(int x, int y, unsigned char Justification, int HiScale, int LowScal
     SetLine(0);
 }
 
-/** Restores the deleting-destructor vtable before the compiler-owned cleanup. */
-CMenu::~CMenu()
-{
-    CClass.vtable = &FrontCMenuVTableAddressView::__vt_5CMenu + 4;
-    // cc1plus generates the trailing `if (__in_chrg & 1) operator delete(this)`
-    // branch automatically for the in-charge dtor variant.
-}
+/** Destroy a menu through its natural polymorphic base. */
+CMenu::~CMenu() {}
 
 /** Centers the visible menu entries vertically on the 240-line display. */
 void CMenu::CentreY()
 {
-    // These two scalar constraints retain the original accumulator/count
-    // allocation. Ordinary forms change 11 and 29 instructions respectively.
-    register int numactivelines asm("$3") = 0;
-    int i = 0;
     int totalclearance = 0;
-    register int count asm("$2");
-    count = mNumLines;
-    if (count == 0)
-        goto done;
+    int numactivelines = 0;
+    for (int i = 0; i < mNumLines; i++)
     {
-        // Reusing the pinned count as the loop bound changes twenty-eight
-        // instructions and two relocations; preserve the copied limit.
-        int limit = count;
-        do
+        if (mEntry[i].Visible != 0)
         {
-            if (mEntry[i].Visible != 0)
-            {
-                numactivelines++;
-                totalclearance += mEntry[i].Clearance;
-            }
-            i++;
-        } while (i < limit);
+            numactivelines++;
+            totalclearance += mEntry[i].Clearance;
+        }
     }
-done:
-{
-    numactivelines--;
-    int menuheight = numactivelines * mLineSep + totalclearance;
-    int y = (0xF0 - menuheight) / 2;
-    mY = y;
-}
+    int menuheight = (numactivelines - 1) * mLineSep + totalclearance;
+    mY = (0xF0 - menuheight) / 2;
 }
 
 /**
@@ -1820,7 +1863,7 @@ void CMenu::Update()
 void Front_ClearScreen(void)
 {
     GameFade = 0;
-    RECT screen = Db_SkyColorBak[0];
+    RECT screen = FrontAddressViewOwners::Db_SkyColorBak[0];
     ClearImage(&screen, 0, 0, 0);
     DrawSync(0);
     screen.y = 0x1ff;
@@ -2073,19 +2116,19 @@ int Graffiti_Stats(CBruce *pSkater, int x, int y, int r, int g, int b, int Win, 
     Mess_SetRGB(r & 0xff, g, b, 0);
     Mess_SetTextJustify(1);
     int drawX = x + 0x14;
-    Mess_DrawText(drawX, y, GrafLabel1, 0, 0, scale, 0);
+    Mess_DrawText(drawX, y, FrontAddressViewOwners::GrafLabel1, 0, 0, scale, 0);
     int y2 = y + 0x11;
-    Mess_DrawText(drawX, y2, GrafLabel2, 0, 0, scale, 0);
+    Mess_DrawText(drawX, y2, FrontAddressViewOwners::GrafLabel2, 0, 0, scale, 0);
     int y3 = y + 0x33;
-    Mess_DrawText(drawX, y3, GrafLabel3, 0, 0, scale, 0);
+    Mess_DrawText(drawX, y3, FrontAddressViewOwners::GrafLabel3, 0, 0, scale, 0);
     int y4 = y + 0x44;
-    Mess_DrawText(drawX, y4, GrafLabel4, 0, 0, scale, 0);
+    Mess_DrawText(drawX, y4, FrontAddressViewOwners::GrafLabel4, 0, 0, scale, 0);
     int y5 = y + 0x55;
-    Mess_DrawText(drawX, y5, GrafLabel5, 0, 0, scale, 0);
+    Mess_DrawText(drawX, y5, FrontAddressViewOwners::GrafLabel5, 0, 0, scale, 0);
     int y6 = y + 0x66;
-    Mess_DrawText(drawX, y6, GrafLabel6, 0, 0, scale, 0);
+    Mess_DrawText(drawX, y6, FrontAddressViewOwners::GrafLabel6, 0, 0, scale, 0);
     Mess_SetTextJustify(2);
-    const char *fmt = GrafFmt;
+    const char *fmt = FrontAddressViewOwners::GrafFmt;
     sprintf(N, fmt, pSkater->mTags);
     int drawX2 = x + 0x88;
     Mess_DrawText(drawX2, y, N, 0, 0, scale, 0);
@@ -2114,16 +2157,18 @@ typedef unsigned int FrontDisplayFontStorage[sizeof(Font) / sizeof(unsigned int)
  *            Massive switch on (Status-1) with 46 cases — display logic for pause/menus/competition
  *
  */
+// FIXME(match): asm alias — second SYMBOL_REF to NextHorsePlayer so the no-score horse branch loads it via $gp and jump2 cross-jumping stops at the load (without alias: score 13); tried: `GHorsePlayer ^ 1` (score 5, wrong load form), block-scope extern, `!x`, `1 - x`.
+extern int NextHorsePlayerAlias asm("NextHorsePlayer");
 void Front_Display(void)
 {
     CBruce *pMan;
-    static char Score1[20] asm("Score1.380");
-    static char Score2[20] asm("Score2.381");
+    static char Score1[20];
+    static char Score2[20];
     /** `Front_Display`'s target-named function-local small-BSS buffers. */
-    static char Tapes[5] asm("Tapes.382");
-    static char Tricks[8] asm("Tricks.383");
-    static char Bails[8] asm("Bails.384");
-    static char BestCombo[40] asm("BestCombo.385");
+    static char Tapes[5];
+    static char Tricks[8];
+    static char Bails[8];
+    static char BestCombo[40];
     int Line;
 
     if (Cheat_GameInfo != 0)
@@ -2297,7 +2342,7 @@ void Front_Display(void)
                 }
                 else
                 {
-                    static char GotATape[25] asm("GotATape.386");
+                    static char GotATape[25];
                     sprintf(GotATape, GameText.pYouGotNTapes, NumTapes);
                     Mess_DrawText(0x100, 0x28, GotATape,
                                   0, 0, 0x100, 0);
@@ -2438,16 +2483,16 @@ void Front_Display(void)
                 if (GHorsePlayer == 0)
                 {
                     Mess_DrawText(0x100, 0x78,
-                                  GrafFmt + 4,
+                                  FrontAddressViewOwners::GrafFmt + 4,
                                   0, 0, 0x100, 0);
                 }
                 else
                 {
                     Mess_DrawText(0x100, 0x78,
-                                  GrafFmt + 0x14,
+                                  FrontAddressViewOwners::GrafFmt + 0x14,
                                   0, 0, 0x100, 0);
                 }
-                sprintf(Score, GrafFmt, GHorseScore);
+                sprintf(Score, FrontAddressViewOwners::GrafFmt, GHorseScore);
                 Mess_DrawText(0x100, 0x8c, Score,
                               0, 0, 0x100, 0);
             }
@@ -2461,7 +2506,7 @@ void Front_Display(void)
         break;
     case STATUS_HIGHSCORE:
         {
-            static char highScoreBuf[64] asm("highScoreBuf.387");
+            static char highScoreBuf[64];
             int i;
             Mess_SetScale(0x100);
 
@@ -2560,7 +2605,7 @@ void Front_Display(void)
                     (((TTime / 10) & 1) != 0))
                 {
                     sprintf(highScoreBuf,
-                            GrafFmt + 0x24);
+                            FrontAddressViewOwners::GrafFmt + 0x24);
                     Mess_SetTextJustify(0);
                     int cursorOffset =
                         GHighScoreInitialCursorPos * 0x14 - 0x50;
@@ -2570,7 +2615,7 @@ void Front_Display(void)
                 }
 
                 sprintf(highScoreBuf,
-                        GrafFmt + 0x28,
+                        FrontAddressViewOwners::GrafFmt + 0x28,
                         Stats[static_cast<unsigned char>(
                                   reinterpret_cast<SCareerOwner *>(&GCareer)->HighScore[Level][i].Skater)]
                             .Name);
@@ -2590,7 +2635,7 @@ void Front_Display(void)
                               (i + 1) * 0x13 + 0x28, highScoreBuf,
                               0, 0, 0x100, 0);
 
-                sprintf(highScoreBuf, GrafFmt,
+                sprintf(highScoreBuf, FrontAddressViewOwners::GrafFmt,
                         reinterpret_cast<SCareerOwner *>(&GCareer)->HighScore[Level][i].Score);
                 for (int j = strlen(highScoreBuf) - 1; j >= 0; j--)
                 {
@@ -2625,13 +2670,13 @@ void Front_Display(void)
                 if (GGame == 7)
                 {
                     Mess_DrawText(0x100, 0x28,
-                                  GrafFmt + 0x2c,
+                                  FrontAddressViewOwners::GrafFmt + 0x2c,
                                   0, 0, 0x100, 0);
                 }
                 else
                 {
                     Mess_DrawText(0x100, 0x28,
-                                  GrafFmt + 0x38,
+                                  FrontAddressViewOwners::GrafFmt + 0x38,
                                   0, 0, 0x100, 0);
                 }
             }
@@ -2641,7 +2686,6 @@ void Front_Display(void)
 
             if (GNumberOfPlayers == 1)
             {
-                int Line;
                 int Level;
                 Mess_SetTextJustify(1);
                 for (int i = 0; i < 5; i++)
@@ -2689,13 +2733,13 @@ void Front_Display(void)
                     }
                 }
 
-                sprintf(Score1, GrafFmt,
+                sprintf(Score1, FrontAddressViewOwners::GrafFmt,
                         pMan->mPanelData.mTotalScore);
                 Line = 2;
                 Mess_DrawText(StatsRight[0], 0x3c, Score1,
                               0, 0, 0x100, 0);
 
-                sprintf(Score2, GrafFmt,
+                sprintf(Score2, FrontAddressViewOwners::GrafFmt,
                         reinterpret_cast<SCareerOwner *>(&GCareer)->HighScore[Level][0].Score);
                 Mess_DrawText(StatsRight[1], 0x4e, Score2,
                               0, 0, 0x100, 0);
@@ -2793,7 +2837,7 @@ void Front_Display(void)
                     if (GSkater[1]->mTags == GSkater[0]->mTags)
                     {
                         Mess_DrawText(0x100, 0x40,
-                                      GrafFmt + 0x74,
+                                      FrontAddressViewOwners::GrafFmt + 0x74,
                                       0, 0, 0x100, 0);
                     }
                     else if (GSkater[0]->mTags < GSkater[1]->mTags)
@@ -2826,13 +2870,18 @@ void Front_Display(void)
                     NextHorseLetters[0] = GHorseLetters[0];
                     NextHorseLetters[1] = GHorseLetters[1];
 
-                    if (GHorsePlayer == 0)
                     {
-                        Mess_SetRGB(0x50, 0x50, 0x80, 0);
-                    }
-                    else
-                    {
-                        Mess_SetRGB(0x80, 0x50, 0x50, 0);
+                        Line = 0;
+                        if (GHorsePlayer == 0)
+                        {
+                            Mess_SetRGB(0x50, 0x50, 0x80, 0);
+                        }
+                        else
+                        {
+                            Mess_SetRGB(0x80, 0x50, 0x50, 0);
+                        }
+                        // FIXME(match): asm barrier — keeps the dead `Line = 0` alive so `move $s2,$0` fills the delay slot (without it flow deletes it, 4 insns off); tried: moving Line = 0, adding real uses (0x50 + Line, Line++) — all deleted.
+                        asm volatile("" : : "r"(Line));
                     }
 
                     if (GHorseMode == 0)
@@ -2846,6 +2895,7 @@ void Front_Display(void)
                             Mess_DrawText(0x100, 0x50, Score,
                                           0, 0, 0x100, 0);
                             NextHorseMode ^= 1;
+                            NextHorsePlayer ^= 1;
                         }
                         else
                         {
@@ -2853,8 +2903,8 @@ void Front_Display(void)
                                 0x100, 0x50,
                                 Front_NoScoreSwitchText(),
                                 0, 0, 0x100, 0);
+                            NextHorsePlayer = NextHorsePlayerAlias ^ 1;
                         }
-                        NextHorsePlayer ^= 1;
                     }
                     else
                     {
@@ -2872,7 +2922,7 @@ void Front_Display(void)
                             static_cast<unsigned int>(GHorseScore))
                         {
                             Mess_DrawText(0x100, 0x80,
-                                          GrafFmt + 0xc8,
+                                          FrontAddressViewOwners::GrafFmt + 0xc8,
                                           0, 0, 0x100, 0);
                             NextHorsePlayer ^= 1;
                         }
@@ -3038,7 +3088,7 @@ void Front_Display(void)
                         else
                         {
                             Mess_DrawText(0x100, 0x80,
-                                      GrafFmt + 0xe8,
+                                      FrontAddressViewOwners::GrafFmt + 0xe8,
                                           0, 0, 0x100, 0);
                             NextHorseScore =
                                 GSkater[0]->mPanelData.mLandedTotal;
@@ -3080,7 +3130,7 @@ void Front_Display(void)
                     else
                     {
                         Mess_DrawText(0x100, 0x7b,
-                                      GrafFmt + 0x110,
+                                      FrontAddressViewOwners::GrafFmt + 0x110,
                                       0, 0, 0x100, 0);
                     }
                     break;
@@ -3528,38 +3578,17 @@ void Front_PrintHorseLetters(void)
 void Front_SwitchOnVideoScreen(void)
 {
     EPausedStatus VideoScreenMode;
-    if (GVideoRestart.NumSkaters != 0)
-        goto set_status;
+    if (GVideoRestart.NumSkaters == 0 &&
+        Levels[GLevel].isCompetition != 0 && GGame == 1 &&
+        Competition_IsOver() == 0)
     {
-        SLevel *pBase = Levels;
-        int level = GLevel;
-        int ofs = level * sizeof(SLevel);
-        // Clean typed pointer addition differs only in the commutative addu's
-        // operand order. This generic operandized instruction preserves it.
-        asm volatile("addu\t%0,%0,%1" : "+r"(pBase) : "r"(ofs));
-        int video = reinterpret_cast<int>(pBase->isCompetition);
-        int one = 1;
-        if (video == 0)
-            goto set_status;
-        {
-            // An ordinary local changes four instructions around this branch.
-            register int game asm("$3") = GGame;
-            if (game != one)
-                goto set_status;
-        }
-        if (Competition_IsOver() == 0)
-        {
-            VideoScreenMode = STATUS_ENDHEATVIDEOMENU;
-            goto store;
-        }
+        VideoScreenMode = STATUS_ENDHEATVIDEOMENU;
     }
-set_status:
-    VideoScreenMode = STATUS_VIDEOSCREEN2;
-    if (GVideoRestart.NumSkaters == 0)
+    else
     {
-        VideoScreenMode = STATUS_VIDEOSCREEN;
+        VideoScreenMode = GVideoRestart.NumSkaters == 0
+            ? STATUS_VIDEOSCREEN : STATUS_VIDEOSCREEN2;
     }
-store:
     Status = VideoScreenMode;
     CommonSwitchOnMenuCode();
 }
@@ -5139,21 +5168,16 @@ unsigned int Front_CalculateGameChecksum(SSaveGame &Game)
  */
 void Front_LoadGame(SSaveGame *pGame)
 {
-    // The original's prologue completes every callee-saved store before it
-    // builds the first call's %hi/%lo argument pair.  cc1plus' post-reload
-    // scheduler otherwise ranks the lui/addiu chain above the leaf stores and
-    // hoists it to insn 4, which also robs the jal of its %lo delay-slot
-    // filler.  An empty volatile asm anchors the entry block so the saves are
-    // emitted first and the addiu lands in the delay slot, as in the original.
+    // FIXME(match): asm barrier — anchors entry block so the callee-saved stores precede the first lui/addiu pair (addiu in jal delay slot); tried: arg via local, comma-expr arg, TrigFileName store first (all score 6-7).
     __asm__ __volatile__("");
     Front_DisplayScreen(
-        FrontAddressViewOwners::s_s2demo2_bmp_800d8e78);
+        FrontAddressViewOwners::s_S2Demo2Bmp);
 
     TrigFileName = pGame->State.TrigFileName;
 
     Utils_InitialRand(0x12a6cc58);
     FileIO_SetSectorsPerFrame(0x7d0);
-    SFX_Init(FrontAddressViewOwners::s_skate2_vab_800d8e84);
+    SFX_Init(FrontAddressViewOwners::s_Skate2Vab);
 
     // Level setup from Levels table
     SFX_SpoolInLevelSFX(Levels[GLevel].pVab);
@@ -5168,7 +5192,7 @@ void Front_LoadGame(SSaveGame *pGame)
         if (spr != 0)
         {
             spr = ::new (spr) Sprite(
-                FrontAddressViewOwners::s_scorep_bmp_800d8e90,
+                FrontAddressViewOwners::s_ScorepBmp,
                 1, 0x100, 0x100);
         }
         pScoreSprite = spr;
@@ -5179,7 +5203,7 @@ void Front_LoadGame(SSaveGame *pGame)
         if (spr != 0)
         {
             spr = ::new (spr) Sprite(
-                FrontAddressViewOwners::s_special_bmp_800d8e9c,
+                FrontAddressViewOwners::s_SpecialBmp,
                 1, 0x100, 0x100);
         }
         pSpecialSprite = spr;
@@ -5190,22 +5214,22 @@ void Front_LoadGame(SSaveGame *pGame)
         if (spr != 0)
         {
             spr = ::new (spr) Sprite(
-                FrontAddressViewOwners::s_spec_bar_bmp_800d8ea8,
+                FrontAddressViewOwners::s_SpecBarBmp,
                 1, 0x100, 0x100);
         }
         pBarSprite = spr;
     }
     {
         Sprite2 *spr = new Sprite2(
-            FrontAddressViewOwners::s_paused_bmp_800d8eb8,
+            FrontAddressViewOwners::s_PausedBmp,
             1, 0x40, 0x100);
         pPausedSprite = reinterpret_cast<Sprite *>(spr);
         spr->JustX = 1;
     }
 
-    int region = Spool_PSX(DAT_800d8ec4, 0, 0, 1);
+    int region = Spool_PSX(s_Bits, 0, 0, 1);
     PSXRegion[region].Protected = 1;
-    region = Spool_PSX(s_items_800d8ecc, 0, 0, 1);
+    region = Spool_PSX(s_Items, 0, 0, 1);
     PSXRegion[region].Protected = 1;
     CurrentItemsFileRegion = static_cast<u8>(region);
     Spool_Sync();
@@ -5219,7 +5243,7 @@ void Front_LoadGame(SSaveGame *pGame)
     if (Levels[GLevel].isCompetition != 0 && GGame == 1)
     {
         region = Spool_PSX(
-            FrontAddressViewOwners::s_SkMedals_800d8ed4, 0, 0, 1);
+            FrontAddressViewOwners::s_SkMedals, 0, 0, 1);
     }
     CurrentMedalsFileRegion = static_cast<u8>(region);
 
@@ -5260,13 +5284,13 @@ void Front_LoadGame(SSaveGame *pGame)
             {
                 GSkaterRegion[i] = Spool_GetReducedSkater(
                         Stats[selectedSkater].PSXName2,
-                        s_sk2anim_800d8ee0);
+                        s_Sk2Anim);
             }
             else
             {
                 GSkaterRegion[i] = Spool_GetReducedSkater(
                         Stats[selectedSkater].PSXName,
-                        s_sk2anim_800d8ee0);
+                        s_Sk2Anim);
             }
 
             GHeadPart = -1;
@@ -5292,7 +5316,7 @@ void Front_LoadGame(SSaveGame *pGame)
 
         char theme_name[10];
         int r;
-        sprintf(theme_name, s_SkEd_d_800d8ee8, GenerateThemeNumber + 1);
+        sprintf(theme_name, s_SkEdThemeFmt, GenerateThemeNumber + 1);
         ed->LoadModels(theme_name);
         ed->CreatePSX(&r, true);
         ed->FakeTrig();
@@ -5302,7 +5326,7 @@ void Front_LoadGame(SSaveGame *pGame)
         }
         *reinterpret_cast<FrontEditorLevelSuffixBytes *>(
             pGame->State.RestartName) =
-            DAT_800d8ef0[0];
+            s_AckSuffix[0];
     }
     else
     {
@@ -5335,8 +5359,8 @@ void Front_LoadGame(SSaveGame *pGame)
         promptFont.JustY = 3;
 
         PromptScreenElement *pElement = new PromptScreenElement(
-            FrontAddressViewOwners::s_s2prmpt1_bmp_800d8ef4,
-            FrontAddressViewOwners::s_to_continue_800d8f04,
+            FrontAddressViewOwners::s_S2Prmpt1Bmp,
+            FrontAddressViewOwners::s_ToContinue,
             promptFontPointer, 0xbd, 0xda, -1, -1);
 
         unsigned int oldDb_SkyColor = Db_SkyColor;
@@ -5346,7 +5370,7 @@ void Front_LoadGame(SSaveGame *pGame)
         int flash = 0;
         while (Pad[0].X.Triggered == 0)
         {
-            RECT newClipRect = DAT_800d8f10[0];
+            RECT newClipRect = FrontPromptClipRect[0];
             Db_FlipClear();
 
             oldClipRect = pDoubleBuffer->DrawClip;
@@ -5383,53 +5407,334 @@ void Front_LoadGame(SSaveGame *pGame)
 }
 
 
-/**
- * Destroy the global HORSE effect with the target's complete-object flag.
- *
- * A normal destructor expression emits the same flag, but making the global
- * itself non-trivial causes GCC 2.x to name this wrapper after
- * `GHorseContinue` instead of the target's `LoadingScreen_Main` identity.
- */
-void Front_GlobalDestroy_LoadingScreen_Main(void)
-    asm("_GLOBAL_.D.LoadingScreen_Main__Fv");
-void Front_GlobalDestroy_LoadingScreen_Main(void)
+
+/* FRONT initialized small-data definitions, in original owner order. */
+int GHorseContinue __attribute__((section(".sdata"))) = 0;
+int MIDILEVEL __attribute__((section(".sdata"))) = 0x4000;
+int SFXLEVEL __attribute__((section(".sdata"))) = 0x4000;
+int XALEVEL __attribute__((section(".sdata"))) = 0x7f;
+#define FRONTTIMERS_TITLE_TIMEOUT_OWNER_DECLARATION
+#include "FRONTTIMERS.h"
+int TitleTimeout __attribute__((section(".sdata"))) = 0x14;
+int GRollCredits __attribute__((section(".sdata"))) = 0;
+int GHighScoreLineIndex __attribute__((section(".sdata"))) = -1;
+int GHighScoreInitialCursorPos __attribute__((section(".sdata"))) = 0;
+int GSoftResetEnabled __attribute__((section(".sdata"))) = 1;
+EPausedStatus Status __attribute__((section(".sdata"))) = STATUS_NORMAL;
+namespace { extern "C++" {
+int DemoFlashTimer __attribute__((section(".sdata"))) = 0x30;
+char DemoString[]
+    __attribute__((section(".sdata"), aligned(4))) = "demo mode";
+char HorseLabel1[]
+    __attribute__((section(".sdata"), aligned(4))) = "PLAYER 1";
+char HorseLabel2[]
+    __attribute__((section(".sdata"), aligned(4))) = "PLAYER 2";
+} }
+int CurrentFrontBackground __attribute__((section(".sdata"))) = 0;
+
+namespace { extern "C++" {
+char FrontRoofLib[] __attribute__((section(".sdata"), aligned(4))) =
+    "roof_lib";
+char FrontRoofEnv[] __attribute__((section(".sdata"), aligned(4))) =
+    "roof_1";
+char FrontRoofSizes[] __attribute__((section(".sdata"), aligned(4))) =
+    "roofback";
+char FrontSewerLib[] __attribute__((section(".sdata"), aligned(4))) =
+    "sewr_lib";
+char FrontSewerEnv[] __attribute__((section(".sdata"), aligned(4))) =
+    "sewr_4";
+char FrontSewerSizes[] __attribute__((section(".sdata"), aligned(4))) =
+    "sewrback";
+char FrontNoBackground[] __attribute__((section(".sdata"), aligned(4))) =
+    "";
+} }
+
+const unsigned int *pSizeData __attribute__((section(".sdata"))) = 0;
+int GamePaused __attribute__((section(".sdata"))) = 0;
+
+namespace { extern "C++" {
+int WobbleAmplitude __attribute__((section(".sdata"))) = 0;
+int WobbleT __attribute__((section(".sdata"))) = 0;
+int UpDownAutoRepeatTimer __attribute__((section(".sdata"))) = 0;
+} }
+
+#define FRONTTIMERS_LEFT_RIGHT_TIMER_OWNER_DECLARATION
+#include "FRONTTIMERS.h"
+int LeftRightAutoRepeatTimer __attribute__((section(".sdata"))) = 0;
+SAnimFrame *ButtonsAnim __attribute__((section(".sdata"))) = 0;
+int VoiceLevelGotFocus __attribute__((section(".sdata"))) = 0;
+
+CMenu *pYesNoMenu __attribute__((section(".sdata"))) = 0;
+CMenu *pESMenu __attribute__((section(".sdata"))) = 0;
+CMenu *pVSMenu __attribute__((section(".sdata"))) = 0;
+CMenu *pVS2Menu __attribute__((section(".sdata"))) = 0;
+CMenu *pVS3Menu __attribute__((section(".sdata"))) = 0;
+CMenu *pEHMenu __attribute__((section(".sdata"))) = 0;
+CMenu *pERMMenu __attribute__((section(".sdata"))) = 0;
+CMenu *pSoundMenu __attribute__((section(".sdata"))) = 0;
+
+namespace FrontAddressViewOwners
 {
-    Front_HorseFallingText().~FallingTextEffect();
+extern "C"
+{
+namespace { extern "C++" {
+RECT Db_SkyColorBak[]
+    __attribute__((section(".sdata"))) = {
+        {0, 0, 512, 511},
+    };
+} }
+}
 }
 
-/** Invoke the global HORSE effect constructor. */
-void Front_GlobalInit_LoadingScreen_Main(void)
-    asm("_GLOBAL_.I.LoadingScreen_Main__Fv");
-void Front_GlobalInit_LoadingScreen_Main(void)
+namespace { extern "C++" {
+int GaugeOn __attribute__((section(".sdata"))) = 0;
+unsigned int TotalProgress __attribute__((section(".sdata"))) = 0;
+unsigned int TotalSize __attribute__((section(".sdata"))) = 0;
+FrontLoadingGaugeState FrontLoadingGauge
+    __attribute__((section(".sdata"))) = {
+        {106, 200, 300, 12},
+        {108, 201, 296, 10},
+        {0, 0, 0, 0},
+        {108, 201, 0, 10},
+    };
+} }
+
+extern "C"
 {
-    FallingTextEffect_ConstructAbi(&Front_HorseFallingText());
-}
+    namespace { extern "C++" {
+CMenu *pPausedMenu __attribute__((section(".sdata"))) = 0;
+} }
+    namespace { extern "C++" {
+CMenu *pRestartsMenu __attribute__((section(".sdata"))) = 0;
+} }
 
-/** Target-ordered constructor-table entry for the explicit global wrapper. */
-static void (*volatile Front_GlobalCtorSlot)(void)
-    __attribute__((section(".ctors"))) = Front_GlobalInit_LoadingScreen_Main;
-
-/** Target-ordered destructor-table entry for the explicit global wrapper. */
-static void (*volatile Front_GlobalDtorSlot)(void)
-    __attribute__((section(".dtors"))) = Front_GlobalDestroy_LoadingScreen_Main;
-
-/**
- * Destroy FRONT's private CClass base and optionally release its storage.
- *
- * GCC 2.x emits one file-local CClass destructor copy for each owner whose
- * derived vtable embeds the private base-table suffix.  MAIN.SYM places this
- * copy last in FRONT's text at 0x8002D678.
- *
- * @param self   Implicit CClass `this` pointer.
- * @param flags  GCC 2.x in-charge flags; bit zero requests operator delete.
- */
-extern "C" {
-static void __DOT__6CClass_8002D678(CClass *self, int flags)
-{
-    self->vtable = &FrontCMenuVTableAddressView::__vt_5CMenu + 4;
-    if (flags & 1)
+    namespace FrontAddressViewOwners
     {
-        ::CClass::operator delete(self);
+    namespace { extern "C++" {
+char GrafLabel1[]
+        __attribute__((section(".sdata"), aligned(4))) = "TAGS";
+} }
+    namespace { extern "C++" {
+char GrafLabel2[]
+        __attribute__((section(".sdata"), aligned(4))) = "STEALS";
+} }
+    namespace { extern "C++" {
+char GrafLabel3[]
+        __attribute__((section(".sdata"), aligned(4))) = "HIGH";
+} }
+    namespace { extern "C++" {
+char GrafLabel4[]
+        __attribute__((section(".sdata"), aligned(4))) = "WINS";
+} }
+    namespace { extern "C++" {
+char GrafLabel5[]
+        __attribute__((section(".sdata"), aligned(4))) = "LOSSES";
+} }
+    namespace { extern "C++" {
+char GrafLabel6[]
+        __attribute__((section(".sdata"), aligned(4))) = "STREAK";
+} }
+    }
+
+    namespace FrontAddressViewOwners
+    {
+    namespace { extern "C++" {
+char GrafFmt[4]
+        __attribute__((section(".sdata"), aligned(4))) = "%d";
+} }
+    }
+    namespace { extern "C++" {
+char Front_GrafPlayer1Match[16]
+        __attribute__((section(".sdata"), aligned(4))) = "PLAYER 1 MATCH";
+} }
+    namespace { extern "C++" {
+char Front_GrafPlayer2Match[16]
+        __attribute__((section(".sdata"), aligned(4))) = "PLAYER 2 MATCH";
+} }
+    namespace { extern "C++" {
+char Front_GrafSeparator[4]
+        __attribute__((section(".sdata"), aligned(4))) = "_";
+} }
+    namespace { extern "C++" {
+char Front_GrafStringFormat[4]
+        __attribute__((section(".sdata"), aligned(4))) = "%s";
+} }
+    namespace { extern "C++" {
+char Front_GrafTimeUp[12]
+        __attribute__((section(".sdata"), aligned(4))) = "TIME IS UP!";
+} }
+    namespace { extern "C++" {
+char Front_GrafGameOver[12]
+        __attribute__((section(".sdata"), aligned(4))) = "GAME OVER";
+} }
+    namespace { extern "C++" {
+char Front_GrafCountFormat[12]
+        __attribute__((section(".sdata"), aligned(4))) = "%ld of %ld";
+} }
+    namespace { extern "C++" {
+char Front_GrafLongFormat[4]
+        __attribute__((section(".sdata"), aligned(4))) = "%ld";
+} }
+    namespace { extern "C++" {
+char Front_GrafTrickFont[16]
+        __attribute__((section(".sdata"), aligned(4))) = "s2tricks.fnt";
+} }
+    namespace { extern "C++" {
+char Front_GrafPasscodeFormat[16]
+        __attribute__((section(".sdata"), aligned(4))) = "PASSCODE : %s";
+} }
+    namespace { extern "C++" {
+char Front_GrafTie[4]
+        __attribute__((section(".sdata"), aligned(4))) = "TIE";
+} }
+    namespace { extern "C++" {
+char Front_GrafPlayer2Wins[16]
+        __attribute__((section(".sdata"), aligned(4))) = "PLAYER TWO WINS";
+} }
+    namespace { extern "C++" {
+char Front_GrafPlayer1Wins[16]
+        __attribute__((section(".sdata"), aligned(4))) = "PLAYER ONE WINS";
+} }
+    namespace { extern "C++" {
+char Front_GrafScoreSetFormat[16]
+        __attribute__((section(".sdata"), aligned(4))) = "SCORE SET AT %d";
+} }
+    namespace { extern "C++" {
+char Front_GrafGoingForFormat[16]
+        __attribute__((section(".sdata"), aligned(4))) = "GOING FOR %d";
+} }
+    namespace { extern "C++" {
+char Front_GrafYouScoredFormat[16]
+        __attribute__((section(".sdata"), aligned(4))) = "YOU SCORED %d";
+} }
+    namespace { extern "C++" {
+char Front_GrafPush[8]
+        __attribute__((section(".sdata"), aligned(4))) = "PUSH";
+} }
+    namespace { extern "C++" {
+char Front_GrafYouAreAn[12]
+        __attribute__((section(".sdata"), aligned(4))) = "YOU ARE AN";
+} }
+    namespace { extern "C++" {
+char Front_GrafYouAreA[12]
+        __attribute__((section(".sdata"), aligned(4))) = "YOU ARE A";
+} }
+    namespace { extern "C++" {
+char Front_GrafSwitch[8]
+        __attribute__((section(".sdata"), aligned(4))) = "SWITCH";
+} }
+    namespace { extern "C++" {
+char Front_GrafPlayer1ScoreFormat[16]
+        __attribute__((section(".sdata"), aligned(4))) = "PLAYER ONE %d";
+} }
+    namespace { extern "C++" {
+char Front_GrafPlayer2ScoreFormat[16]
+        __attribute__((section(".sdata"), aligned(4))) = "PLAYER TWO %d";
+} }
+    namespace { extern "C++" {
+char Front_GrafDraw[8]
+        __attribute__((section(".sdata"), aligned(4))) = "DRAW";
+} }
+    namespace { extern "C++" {
+char Front_GrafGameStateFormat[12]
+        __attribute__((section(".sdata"), aligned(4))) = "gs = %d\n";
+} }
+
+    namespace FrontAddressViewOwners
+    {
+    namespace { extern "C++" {
+char _restart_comp_string[]
+        __attribute__((section(".sdata"), aligned(4))) = "RE_START_FRIG";
+} }
     }
 }
+
+namespace { extern "C++" {
+int StartSelectPressed
+    __attribute__((section(".sdata"))) = 0;
+unsigned int VblanksWhenStartSelectFirstPressed
+    __attribute__((section(".sdata"))) = 0;
+char FrontEditorPrefix[]
+    __attribute__((section(".sdata"), aligned(4))) = "de_";
+} }
+
+extern "C"
+{
+    namespace FrontAddressViewOwners
+    {
+    namespace { extern "C++" {
+char s_S2Demo2Bmp[]
+        __attribute__((section(".sdata"), aligned(4))) = "s2demo2.bmp";
+} }
+    namespace { extern "C++" {
+char s_Skate2Vab[]
+        __attribute__((section(".sdata"), aligned(4))) = "skate2.vab";
+} }
+    namespace { extern "C++" {
+char s_ScorepBmp[]
+        __attribute__((section(".sdata"), aligned(4))) = "scorep.bmp";
+} }
+    namespace { extern "C++" {
+char s_SpecialBmp[]
+        __attribute__((section(".sdata"), aligned(4))) = "special.bmp";
+} }
+    namespace { extern "C++" {
+char s_SpecBarBmp[]
+        __attribute__((section(".sdata"), aligned(4))) = "spec_bar.bmp";
+} }
+    namespace { extern "C++" {
+char s_PausedBmp[]
+        __attribute__((section(".sdata"), aligned(4))) = "paused.bmp";
+} }
+    namespace { extern "C++" {
+char s_Bits[]
+        __attribute__((section(".sdata"), aligned(4))) = "bits";
+} }
+    namespace { extern "C++" {
+char s_Items[]
+        __attribute__((section(".sdata"), aligned(4))) = "items";
+} }
+    namespace { extern "C++" {
+char s_SkMedals[]
+        __attribute__((section(".sdata"), aligned(4))) = "SkMedals";
+} }
+    namespace { extern "C++" {
+char s_Sk2Anim[]
+        __attribute__((section(".sdata"), aligned(4))) = "sk2anim";
+} }
+    namespace { extern "C++" {
+char s_SkEdThemeFmt[]
+        __attribute__((section(".sdata"), aligned(4))) = "SkEd%d";
+} }
+    }
+
+    namespace FrontAddressViewOwners
+    {
+    namespace { extern "C++" {
+FrontEditorLevelSuffixBytes s_AckSuffix
+        __attribute__((section(".sdata"))) = {{'a', 'c', 'k', '\0'}};
+} }
+    }
+    namespace FrontAddressViewOwners
+    {
+    namespace { extern "C++" {
+char s_S2Prmpt1Bmp[]
+        __attribute__((section(".sdata"), aligned(4))) = "s2prmpt1.bmp";
+} }
+    namespace { extern "C++" {
+char s_ToContinue[]
+        __attribute__((section(".sdata"), aligned(4))) = "to continue";
+} }
+    }
+    namespace FrontAddressViewOwners
+    {
+    namespace { extern "C++" {
+int s_PromptClipRectLo
+        __attribute__((section(".sdata"))) = 0x00cb00a3;
+} }
+    namespace { extern "C++" {
+int s_PromptClipRectHi
+        __attribute__((section(".sdata"))) = 0x002300ba;
+} }
+    }
 }

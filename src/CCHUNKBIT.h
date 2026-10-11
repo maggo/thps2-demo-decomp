@@ -38,7 +38,6 @@ struct CChunkBit : CBit {
     /** Transform the four model-local corners into world space. */
     void CalculateWorldCoords();
     /** Release chunk storage through the CBit allocator. */
-    static void operator delete(void *p) { CBit::operator delete(p); }
 };
 
 #endif // CCHUNKBIT_INC_H

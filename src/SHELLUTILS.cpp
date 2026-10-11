@@ -3,9 +3,9 @@
 // Functions: 31 recovered functions
 // Address range: 0x8005E214 - 0x80060EF4
 //
-// Compiled with cc1plus (GCC 2.91.66-psx). Compiler auto-mangles symbol names.
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
-#include "globals.h"
+#include "CCLASS_POLY.h"
 #include "DB.h"
 #include <STDDEF.H>
 #include <LIBGTE.H>
@@ -49,8 +49,7 @@ u16 GetFree256Slot(void);
 #include "PDOUBLEBUFFER.h"
 
 /** Pixel buffer split into independently packable VRAM rectangles. */
-struct SlicedImage {
-    CClass CClass;
+struct SlicedImage : CClass {
     int width;
     int height;
     int slice_width;
@@ -67,15 +66,8 @@ struct SlicedImage {
     /** Build a sliced image from caller-owned source pixels. */
     SlicedImage(char *pImg, int w, int h, int slicew, int sliceh,
                 int bpp, u16 clut);
-    /** Allocate through the original CClass arena. */
-    static void *operator new(unsigned int size) throw()
-    {
-        return ::CClass::operator new(size);
-    }
     /** Release the image's VRAM slices, palette slot, and backing pixels. */
-    ~SlicedImage();
-    /** Release image storage through the original CClass allocator. */
-    static void operator delete(void *p) { ::CClass::operator delete(p); }
+    virtual ~SlicedImage();
 
     /** Pack every image slice into VRAM and remember its packed rectangle. */
     int pack();
@@ -94,23 +86,20 @@ struct SlicedImage {
 #include "SPRITE.h"
 
 /** Captured screen rectangle used to erase transient shell graphics. */
-struct EraseSprite {
-    CClass CClass;
+struct EraseSprite : CClass {
     RECT mR;
     unsigned long *mData;
 
     /** Release the screen-image buffer owned by this erase sprite. */
-    ~EraseSprite();
-    /** Release erase-sprite storage through the original CClass allocator. */
-    static void operator delete(void *p) { ::CClass::operator delete(p); }
+    virtual ~EraseSprite();
 };
 
 /** Circular buffer of controller states used by shell input. */
-struct PadBuffer {
+struct PadBuffer : CClass {
+    virtual ~PadBuffer();
     /** Shared suppression flag for the second controller input stream. */
     static int mIgnoreTwo;
 
-    CClass CClass;
     int entries;
     int down;
     int buffer[64];
@@ -123,8 +112,7 @@ struct PadBuffer {
 #include "VERTICALMENUITEM.h"
 
 /** Animated vertical text menu with selection and erase sprites. */
-struct VerticalMenu {
-    CClass CClass;
+struct VerticalMenu : CClass {
     int item_spacing;
     int font_scale;
     int font_scale_big;
@@ -144,15 +132,13 @@ struct VerticalMenu {
                  int *xlist, int *ylist, int selection);
 
     /** Release the menu's triangle and per-item erase sprites. */
-    ~VerticalMenu();
-    /** Release menu storage through the original CClass allocator. */
-    static void operator delete(void *p) { ::CClass::operator delete(p); }
+    virtual ~VerticalMenu();
 
     /** Draw the erase sprites covering the current menu state. */
     void erase();
 
     /** Draw menu entries and advance the selection animation. */
-    void draw();
+    virtual void draw();
 
     /** Replace an item's text and refresh its active selection state. */
     void setString(int i, char *string);
@@ -173,9 +159,9 @@ struct VerticalMenu {
 /** Non-interactive vertical dialog rendered with menu item geometry. */
 struct VerticalDialog : public VerticalMenu {
     /** Destroy the inherited vertical-menu state. */
-    ~VerticalDialog();
+    virtual ~VerticalDialog();
     /** Draw every dialog item and its erase sprite. */
-    void draw();
+    virtual void draw();
 };
 
 typedef char shell_sliced_image_size_must_be_52[
@@ -196,9 +182,6 @@ typedef char shell_vertical_dialog_size_must_be_820[
 #include "MEM.h"
 #include "PACK.h"
 
-// These scalar ABI views preserve the target's absolute vtable addressing.
-#define SPRITE_DECLARE_SCALAR_VTABLE_ADDRESSES
-#include "SPRITE.h"
 
 #include <STDIO.H>
 #include <STRINGS.H>
@@ -241,88 +224,21 @@ enum ShellPolyF4Offset {
 #undef SPRITE_DECLARE_SLICED_IMAGE_UNPACK_ABI
 #define Shell_SlicedImageUnpack \
     SlicedImageMethodABI::unpack__11SlicedImage
-#define PAD_DECLARE_BUFFER_DESTRUCTOR_ABI
-#include "PAD.h"
-#undef PAD_DECLARE_BUFFER_DESTRUCTOR_ABI
-/** ABI-slot aliases for manual vtables; the natural destructors define them. */
-#define SPRITE_DECLARE_SLICED_IMAGE_DESTRUCTOR_ABI
-#define SPRITE_DECLARE_SPRITE_DESTRUCTOR_ABI
-#define SPRITE_DECLARE_ERASE_SPRITE_DESTRUCTOR_ABI
-#define SPRITE_DECLARE_VERTICAL_MENU_DESTRUCTOR_ABI
-#define SPRITE_DECLARE_VERTICAL_DIALOG_DESTRUCTOR_ABI
-#include "SPRITE.h"
-#undef SPRITE_DECLARE_VERTICAL_DIALOG_DESTRUCTOR_ABI
-#undef SPRITE_DECLARE_VERTICAL_MENU_DESTRUCTOR_ABI
-#undef SPRITE_DECLARE_ERASE_SPRITE_DESTRUCTOR_ABI
-#undef SPRITE_DECLARE_SPRITE_DESTRUCTOR_ABI
-#undef SPRITE_DECLARE_SLICED_IMAGE_DESTRUCTOR_ABI
-
 extern "C" {
-static void __DOT__6CClass_80060EC4(CClass *, int);
 
 /** Current and midpoint shell ordering-table entries. */
 int OT_entry __attribute__((section(".sdata"))) = 0x1000;
 static int OT_half __attribute__((section(".sdata"))) = 0;
 
-/** Ordering-table bounds diagnostic retained with its original padding. */
-static char s_OT_entry_is__d_800da768[16]
-    __attribute__((section(".sdata"))) = "\nOT_entry is %d";
 
-/** Shared PadBuffer input-suppression flag. */
-int PadBuffer::mIgnoreTwo
-    __attribute__((section(".sdata"))) = 0;
-
-/** Shell class dispatch tables in their original small-data order. */
-namespace ShellVtableOwners {
-int __vt_14VerticalDialog[4]
-    __attribute__((section(".sdata"), aligned(8))) = {
-        0, 0,
-        (int)&Shell_VerticalDialogDestructorSlot,
-        (int)(void (*)(VerticalDialog *))&VerticalDialog::draw,
-};
-int __vt_12VerticalMenu[4]
-    __attribute__((section(".sdata"))) = {
-        0, 0,
-        (int)&Shell_VerticalMenuDestructorSlot,
-        (int)(void (*)(VerticalMenu *))&VerticalMenu::draw,
-};
-}
-static int Shell_PadBufferVtable_owner[4]
-    __attribute__((section(".sdata"))) = {
-        0, 0,
-        (int)&Shell_PadBufferDestructor,
-        0,
-};
-namespace ShellVtableOwners {
-int __vt_11EraseSprite[4]
-    __attribute__((section(".sdata"))) = {
-        0, 0,
-        (int)&Shell_EraseSpriteDestructorSlot,
-        0,
-};
-int __vt_6Sprite[4]
-    __attribute__((section(".sdata"))) = {
-        0, 0,
-        (int)&Shell_SpriteDestructorSlot,
-        0,
-};
-int __vt_11SlicedImage[4]
-    __attribute__((section(".sdata"))) = {
-        0, 0,
-        (int)&Shell_SlicedImageDestructorSlot,
-        0,
-};
-static int DAT_800da7e0[3]
-    __attribute__((section(".sdata"))) = {
-        0, 0,
-        (int)&__DOT__6CClass_80060EC4,
-};
-}
+/** Read-only ordering-table bounds diagnostic. */
+extern const char s_OTEntryOutOfRange[];
 
 /** Nonzero while the shell is rendering through its high-resolution path. */
 #define HIRESMODE_OWNER_DECLARATION
 #include "HIRESMODE.h"
-int HiresMode __attribute__((section(".sdata"))) = 0;
+
+int HiresMode __attribute__((section(".sdata")));
 
 }
 
@@ -521,53 +437,15 @@ int Load8BitBMP(char *file, char **data, int *ww, int *hh, unsigned short *clut)
  */
 void DrawColoredBox(int x, int y, int w, int h, unsigned char r, unsigned char g, unsigned char b)
 {
-    int lowMask = 0x00ffffff;
-    int polyCode2 = 0x28;
     POLY_F4 *Poly = (POLY_F4 *)pPoly;
-    int polyAddress = (int)Poly;
-    /** Existing register assignments preserve the target's primitive-store order. */
-    register unsigned char red asm("$9") = r;
-    register unsigned char green asm("$10") = g;
-    register unsigned char blue asm("$11") = b;
-    register int next asm("$2") = polyAddress + sizeof(POLY_F4);
-    pPoly = reinterpret_cast<unsigned int *>(next);
-    register int polyCode asm("$2") = 5;
-    *(short *)(polyAddress + ShellPolyF4Y0Offset) = y;
-    *(short *)(polyAddress + ShellPolyF4Y1Offset) = y;
-    y += h;
-    *(u8 *)(polyAddress + ShellPolyF4LengthOffset) = polyCode;
-    *(u8 *)(polyAddress + ShellPolyF4CodeOffset) = polyCode2;
-    *(u8 *)(polyAddress + ShellPolyF4RedOffset) = red;
-    *(u8 *)(polyAddress + ShellPolyF4GreenOffset) = green;
-    *(u8 *)(polyAddress + ShellPolyF4BlueOffset) = blue;
+    pPoly = (unsigned int *)(Poly + 1);
+    setPolyF4(Poly);
+    setRGB0(Poly, r, g, b);
+    setXY4(Poly, x, y, x + w, y, x, y + h, x + w, y + h);
     SDoubleBuffer *db = pDoubleBuffer;
-    int x2 = x;
-    x2 = x2 + w;
-    *(short *)(polyAddress + ShellPolyF4X1Offset) = x2;
-    *(short *)(polyAddress + ShellPolyF4X3Offset) = x2;
-    register int entry asm("$6") = OT_entry;
-    int tag = *(int *)polyAddress;
-    register int highMask asm("$9") = 0xff000000;
-    *(short *)(polyAddress + ShellPolyF4X0Offset) = x;
-    *(short *)(polyAddress + ShellPolyF4X2Offset) = x;
-    *(short *)(polyAddress + ShellPolyF4Y2Offset) = y;
-    *(short *)(polyAddress + ShellPolyF4Y3Offset) = y;
-    register int ot asm("$4") = (int)db->OrderingTable;
-    int offset = entry << 2;
-    ot = offset + ot;
-    int otVal = *(int *)ot;
-    tag = (tag & highMask) | (otVal & lowMask);
-    *(int *)polyAddress = tag;
-
-    ot = (int)db->OrderingTable;
-    entry = entry - 1;
-    OT_entry = entry;
-    int otPtr2 = offset + ot;
-    int otVal2 = *(int *)otPtr2;
-    polyAddress = polyAddress & lowMask;
-    otVal2 = otVal2 & highMask;
-    otVal2 = otVal2 | polyAddress;
-    *(int *)otPtr2 = otVal2;
+    int entry = OT_entry;
+    addPrim(db->OrderingTable + entry, Poly);
+    OT_entry = entry - 1;
 }
 
 /**
@@ -587,36 +465,18 @@ void SetClippingBox(int x, int y, int w, int h)
 {
     RECT r;
     DR_AREA *pClip = (DR_AREA *)pPoly;
-    int clipAddress = (int)pClip;
     r.x = x;
     r.y = y;
     r.w = w;
     r.h = h;
     SetDrawArea(pClip, &r);
-
-    int lowMask = 0x00FFFFFF;
-    int highMask = 0xFF000000;
     SDoubleBuffer *db = pDoubleBuffer;
-    /** These reads must remain ordered before the ordering-table pointer load. */
-    int entry = *(volatile int *)&OT_entry;
-    int tag = *(volatile int *)clipAddress;
-    register int ot asm("$4") = (int)db->OrderingTable;
-    int otPtr = (entry << 2) + ot;
-    int otVal = *(int *)otPtr;
-    tag = (tag & highMask) | (otVal & lowMask);
-    *(int *)clipAddress = tag;
-
-    ot = (int)db->OrderingTable;
-    int next = clipAddress + sizeof(DR_AREA);
-    int offset = entry << 2;
-    ot = offset + ot;
-    register int otVal2 asm("$3") = *(int *)ot;
-    clipAddress = clipAddress & lowMask;
-    otVal2 = (otVal2 & highMask) | clipAddress;
+    int entry = OT_entry;
+    addPrim(db->OrderingTable + entry, pClip);
+    pPoly = (unsigned int *)(pClip + 1);
     OT_entry = entry - 1;
-    pPoly = reinterpret_cast<unsigned int *>(next);
-    *(int *)ot = otVal2;
 }
+
 
 /**
  * ResetOT__Fv
@@ -656,7 +516,6 @@ SlicedImage::SlicedImage(
     int arg_bpp, u16 arg_clut)
 {
     SlicedImage *self = this;
-    self->CClass.vtable = &__vt_11SlicedImage;
     self->is_packed = 0;
     self->bpp = arg_bpp;
     self->clut = arg_clut;
@@ -750,7 +609,6 @@ SlicedImage::SlicedImage(
  */
 SlicedImage::~SlicedImage()
 {
-    CClass.vtable = &__vt_11SlicedImage;
     if (is_packed != 0)
     {
         Shell_SlicedImageUnpack(this);
@@ -770,7 +628,6 @@ check_type:
     {
         Mem_Delete(slicedBuffer);
     }
-    CClass.vtable = &DAT_800da7e0;
 }
 
 /**
@@ -1018,7 +875,7 @@ void SlicedImage::draw(int x, int y, int UsePanelOT, int r, int g, int b,
 
     if ((unsigned int)OT_entry >= 0x2000)
     {
-        printf(s_OT_entry_is__d_800da768, OT_entry);
+        printf(s_OTEntryOutOfRange, OT_entry);
     }
 
     if (UsePanelOT != 0)
@@ -1105,6 +962,14 @@ void SlicedImage::draw(int x, int y, int UsePanelOT, int r, int g, int b,
         yt += sliceTab[j * num_slices_x].h;
     }
 }
+
+/** Ordering-table bounds diagnostic. */
+extern const char s_OTEntryOutOfRange[16]
+    __attribute__((section(".sdata"))) = "\nOT_entry is %d";
+
+/** Shared PadBuffer input-suppression flag. */
+int PadBuffer::mIgnoreTwo
+    __attribute__((section(".sdata"))) = 0;
 
 /**
  * DrawIt__FP4RECTiiii
@@ -1328,7 +1193,6 @@ Sprite::Sprite(char *file, int pack, int slicew, int sliceh)
     int h;
     u16 clut;
 
-    CClass.vtable = &__vt_6Sprite;
     Load8BitBMP(file, &buf, &w, &h, &clut);
     m_bpp = 8;
     m_w = w;
@@ -1375,7 +1239,6 @@ Sprite::Sprite(int x, int y, int w, int h,
     RECT r;
     int bpp = 0x10;
 
-    CClass.vtable = &__vt_6Sprite;
     m_bpp = bpp;
     m_w = w;
     m_h = h;
@@ -1418,16 +1281,11 @@ Sprite::Sprite(int x, int y, int w, int h,
  */
 Sprite::~Sprite()
 {
-    CClass.vtable = &__vt_6Sprite;
     SlicedImage *image = m_image;
     if (image != 0)
     {
-        int *vtable = image->CClass.vtable;
-        typedef void (*VtFunc)(SlicedImage *, int);
-        VtFunc func = (VtFunc)vtable[2];
-        func(image, 3);
+        delete image;
     }
-    CClass.vtable = &DAT_800da7e0;
 }
 
 /**
@@ -1467,9 +1325,7 @@ void Sprite::draw(int x, int y, int UsePanelOT, int r, int g, int b)
  */
 EraseSprite::~EraseSprite()
 {
-    CClass.vtable = &__vt_11EraseSprite;
     Mem_Delete(mData);
-    CClass.vtable = &DAT_800da7e0;
 }
 
 /**
@@ -1495,7 +1351,6 @@ VerticalMenu::VerticalMenu(int top, int bottom, int spacing, char **items,
 {
     int tot_h = 0;
 
-    CClass.vtable = &__vt_12VerticalMenu;
     item_spacing = spacing;
     num_items = num;
     font_scale = Mess_GetFontScale();
@@ -1601,41 +1456,14 @@ void VerticalMenu::setString(int i, char *string)
  */
 VerticalMenu::~VerticalMenu()
 {
-    /** GCC 2.x needs the target's existing dispatch registers for these slots. */
-    typedef int (*VtFunc)(Sprite *, int);
-    CClass.vtable = &__vt_12VerticalMenu;
     if (mDontDeleteSprites == 0)
     {
-        Sprite *sprite = mTri1;
-        if (sprite != 0)
-        {
-            register int *vtable asm("$2") = sprite->CClass.vtable;
-            register VtFunc func asm("$3") = (VtFunc)vtable[2];
-            func(sprite, 3);
-        }
-        sprite = mTri2;
-        if (sprite != 0)
-        {
-            register int *vtable asm("$2") = sprite->CClass.vtable;
-            register VtFunc func asm("$3") = (VtFunc)vtable[2];
-            func(sprite, 3);
-        }
+        if (mTri1 != 0) delete mTri1;
+        if (mTri2 != 0) delete mTri2;
     }
 
-    Sprite *sprite = mEraseTri1;
-    if (sprite != 0)
-    {
-        register int *vtable asm("$2") = sprite->CClass.vtable;
-        register VtFunc func asm("$3") = (VtFunc)vtable[2];
-        func(sprite, 3);
-    }
-    sprite = mEraseTri2;
-    if (sprite != 0)
-    {
-        register int *vtable asm("$2") = sprite->CClass.vtable;
-        register VtFunc func asm("$3") = (VtFunc)vtable[2];
-        func(sprite, 3);
-    }
+    if (mEraseTri1 != 0) delete mEraseTri1;
+    if (mEraseTri2 != 0) delete mEraseTri2;
 
     int numItems = num_items;
     if (numItems > 0)
@@ -1643,19 +1471,16 @@ VerticalMenu::~VerticalMenu()
         int i = 0;
         do
         {
-            sprite = list[i].erase_sprite;
+            Sprite *sprite = list[i].erase_sprite;
             if (sprite != 0)
             {
-                register int *vtable asm("$2") = sprite->CClass.vtable;
-                register VtFunc func asm("$3") = (VtFunc)vtable[2];
-                func(sprite, 3);
+                delete sprite;
                 numItems = num_items;
             }
             i = i + 1;
         } while (i < numItems);
     }
 
-    CClass.vtable = &DAT_800da7e0;
 }
 
 /**
@@ -1738,9 +1563,7 @@ void VerticalMenu::draw()
     {
         if (mEraseTri1 != 0)
         {
-            int *vtable = mEraseTri1->CClass.vtable;
-            typedef void (*Destructor)(Sprite *, int);
-            ((Destructor)vtable[2])(mEraseTri1, 3);
+            delete mEraseTri1;
         }
 
         Sprite *tri = (Sprite *)::CClass::operator new(sizeof(Sprite));
@@ -1756,9 +1579,7 @@ void VerticalMenu::draw()
 
         if (mEraseTri2 != 0)
         {
-            int *vtable = mEraseTri2->CClass.vtable;
-            typedef void (*Destructor)(Sprite *, int);
-            ((Destructor)vtable[2])(mEraseTri2, 3);
+            delete mEraseTri2;
         }
 
         Sprite *tri2 = (Sprite *)::CClass::operator new(sizeof(Sprite));
@@ -1901,32 +1722,15 @@ void VerticalMenu::up()
         return;
     }
 
-    int current = selected;
-    int choice = current - 1;
+    int choice = selected - 1;
     if (choice < 0)
-    {
         choice = num_items - 1;
-    }
-    if (choice != current)
+    while (choice != selected && list[choice].grayed != 0)
     {
-        char *disabledBase = (char *)&list[0].grayed;
-        int saved = current;
-        int shifted = choice << 6;
-    up_check:
-        if (*(int *)(disabledBase + shifted) == 0)
-            goto up_done;
-        choice = choice - 1;
+        choice--;
         if (choice < 0)
-        {
             choice = num_items - 1;
-        }
-        if (choice != saved)
-        {
-            shifted = choice << 6;
-            goto up_check;
-        }
     }
-up_done:
     select(choice);
 }
 
@@ -1948,31 +1752,15 @@ void VerticalMenu::down()
         return;
     }
 
-    int current = selected;
-    /** Retain the target's loop-bound and sentinel register across the scan. */
-    register int numEntries asm("$6") = num_items;
-    int choice = current + 1;
-    if (choice >= numEntries)
+    int choice = selected + 1;
+    if (choice >= num_items)
         choice = 0;
-    if (choice != current)
+    while (choice != selected && list[choice].grayed != 0)
     {
-        char *disabledBase = (char *)&list[0].grayed;
-        int total = numEntries;
-        register int saved asm("$6") = current;
-        int shifted = choice << 6;
-    down_check:
-        if (*(int *)(disabledBase + shifted) == 0)
-            goto down_done;
         choice++;
-        if (choice >= total)
+        if (choice >= num_items)
             choice = 0;
-        if (choice != saved)
-        {
-            shifted = choice << 6;
-            goto down_check;
-        }
     }
-down_done:
     select(choice);
 }
 
@@ -1987,7 +1775,6 @@ down_done:
  */
 VerticalDialog::~VerticalDialog()
 {
-    CClass.vtable = &__vt_14VerticalDialog;
 }
 
 /**
@@ -2030,31 +1817,7 @@ void VerticalDialog::draw()
     }
 }
 
-/**
- * Destroy the shell's input buffer and optionally release its storage.
- *
- * This owner-instantiated destructor belongs to the same original
- * `ShellUtils.obj` contribution as the shell implementation above.
- *
- * Address: 0x80060E94
- * Mangled: _._9PadBuffer
- */
-static void Shell_PadBufferDestructor(PadBuffer *self, int flag)
+/** Release the controller-state buffer through its shared CClass base. */
+PadBuffer::~PadBuffer()
 {
-    self->CClass.vtable = &DAT_800da7e0;
-    if (flag & 1)
-        ::CClass::operator delete(self);
-}
-
-/**
- * Destroy the private `CClass` base instantiated by `ShellUtils.obj`.
- *
- * Address: 0x80060EC4
- * Mangled: _._6CClass
- */
-static void __DOT__6CClass_80060EC4(CClass *self, int flag)
-{
-    self->vtable = &DAT_800da7e0;
-    if (flag & 1)
-        ::CClass::operator delete(self);
 }

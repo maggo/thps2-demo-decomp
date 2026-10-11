@@ -53,12 +53,13 @@ extern "C" int SizeUp RFRONT_SHARED_STATE_DECL_ATTR; // 0x800D7E18
 #endif // RFRONT_INC_H
 
 #ifdef RFRONT_DECLARE_SAVE_NAME_ADDRESS_VIEWS
-/** Scalar compiler identities for RFRONT's three eleven-byte name buffers. */
+/** Scalar compiler identities for RFRONT's four eleven-byte name buffers. */
 namespace RFrontSaveNameViews {
 extern "C" {
 extern char SaveGameName;
 extern char LastCareerName;
 extern char LastVideoName;
+extern char StoredCareerName;
 }
 }
 #undef RFRONT_DECLARE_SAVE_NAME_ADDRESS_VIEWS

@@ -1,11 +1,17 @@
-// Smoke-jet construction, positioning, animation, and damage handling.
+// SMOKE.cpp -- Smoke-jet construction, positioning, animation, and damage handling.
+// Original: SMOKE.CPP
+// Functions: 4
+// Address range: 0x800256FC - 0x80025F94
+//
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 #define SMOKE_OWNER_DECLARATIONS
 #include "SMOKE.h"
 #undef SMOKE_OWNER_DECLARATIONS
 #include "MECHLIST.h"
 #include "MAIN.h"
-#include "BADDY.h"
+/** Head of the baddy body list (BADDY.cpp; BADDY.h carries the old CItem layout). */
+extern CBody *BaddyList __attribute__((section(".data"))); // 0x800D9B04
 #include "BIT.h"
 #include "UTILS.h"
 
@@ -40,39 +46,6 @@ enum
         &rcossin_tbl + ((angle) & SMOKE_ANGLE_MASK))->Sin)
 #include "CVECTOROPS.h"
 #include "M3DCOLIJ.h"
-
-// C++ cannot take a destructor's address, so the owner keeps a local view of
-// the symbol used by its manual virtual table.
-void Smoke_Destroy(CSmokeJet *jet, int inCharge) asm("_._9CSmokeJet");
-
-/** Exact five-slot virtual table shape emitted for CSmokeJet. */
-struct SmokeJetVTable
-{
-    void (*reserved0)(void);
-    void (*reserved1)(void);
-    void (*destroy)(CSmokeJet *, int);
-    void (*move)(CSmokeJet *);
-    void (*display)(CTexturedRibbon *);
-};
-
-/** CBody virtual-table prefix through the collision-hit method used here. */
-struct SmokeBodyVTable
-{
-    void (*reserved[7])(void);
-    int (*hit)(CBody *, int, CVector *, int);
-};
-
-/**
- * Smoke-jet virtual dispatch table in its original read-only owner section.
- */
-SmokeJetVTable __vt_9CSmokeJet
-    __attribute__((section(".rdata"), aligned(8))) = {
-        0,
-        0,
-        Smoke_Destroy,
-        (void (*)(CSmokeJet *))&CSmokeJet::Move,
-        (void (*)(CTexturedRibbon *))&CTexturedRibbon::Display,
-};
 
 // === Function implementations (address order) ===
 
@@ -114,7 +87,6 @@ CSmokeJet::CSmokeJet(
     unsigned int Checksum)
     : CTexturedRibbon(SMOKE_POINT_COUNT, 0)
 {
-    _vf = &__vt_9CSmokeJet;
     mAngles = Angles;
     mLength = Length;
     SetPos(BasePos);
@@ -189,7 +161,6 @@ CSmokeJet::CSmokeJet(
  */
 CSmokeJet::~CSmokeJet()
 {
-    _vf = &__vt_9CSmokeJet;
 }
 
 
@@ -232,11 +203,11 @@ void CSmokeJet::Move()
     if (mLifetime ==
         SMOKE_PERMANENT_LIFETIME) {
         int dx = (mpPoints[0].Pos.vx -
-                  MechList->CItem.mPos.vx) >> 12;
+                  MechList->mPos.vx) >> 12;
         if (dx < 0) dx = -dx;
 
         int dz = (mpPoints[0].Pos.vz -
-                  MechList->CItem.mPos.vz) >> 12;
+                  MechList->mPos.vz) >> 12;
         if (dz < 0) dz = -dz;
 
         int Dist;
@@ -256,8 +227,7 @@ void CSmokeJet::Move()
     }
 
     mDontDisplay = 0;
-    mU =
-        Smoke_Sine(TTime << 4) / 128;
+    mU = Smoke_Sine(TTime << 4) / 128;
     mV += mScrollSpeed;
 
     for (int i = 0; i < SMOKE_POINT_COUNT; i++) {
@@ -298,7 +268,7 @@ void CSmokeJet::Move()
         CBody *pBody = M3dColij_LineToSphere(
             Start, End, dummy, MechList, 0, SMOKE_COLLISION_SCALE);
         if (pBody != 0) {
-            pBody->CItem._vf->hit(pBody, mDamage, &Unit, 31);
+            pBody->Hit(mDamage, Unit, 31);
             mDamageTimer = 15;
         }
 
@@ -306,8 +276,7 @@ void CSmokeJet::Move()
             CBody *pBody = M3dColij_LineToSphere(
                 Start, End, dummy, BaddyList, 0, SMOKE_COLLISION_SCALE);
             if (pBody != 0) {
-                pBody->CItem._vf->hit(
-                    pBody, mDamage, &Unit, 31);
+                pBody->Hit(mDamage, Unit, 31);
                 mDamageTimer = 15;
             }
         }

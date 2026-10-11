@@ -3,7 +3,7 @@
 // Functions: 3 reconstructed entries
 // Address range: 0x80087600 - 0x80087A08
 //
-// Compiled with cc1plus (GCC 2.91.66-psx). Compiler auto-mangles symbol names.
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 #include "globals.h"
 #include "PAD.h"

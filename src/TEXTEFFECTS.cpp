@@ -3,16 +3,20 @@
 // Functions: 31 (31 reconstructed)
 // Address range: 0x8006BFBC - 0x8006C988
 //
-// Compiled with cc1plus (GCC 2.91.66-psx). Compiler auto-mangles symbol names.
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#define TEXTEFFECT_POLYMORPHIC_LAYOUT
+#include "CCLASS_POLY.h"
 #define TEXTEFFECTS_OWNER_DECLARATIONS
 #include "TEXTEFFECTS.h"
 #undef TEXTEFFECTS_OWNER_DECLARATIONS
+// The shared headers below model CClass as the bare vtable-pointer holder
+// (`x->CClass.vtable`), so they see globals.h's data view of it.
+#define CClass CClassData
 #include "MAIN.h"
 #include "FRONT.h"
 #include "FONTTOOLS.h"
 #include "UTILS.h"
-#include "PUREVIRTUAL.h"
 
 /** Return caller-owned storage for an ordinary placement construction. */
 inline void *operator new(unsigned int, void *storage) { return storage; }
@@ -49,6 +53,7 @@ struct RotateSprite : Sprite2 {
 };
 
 #include "IMAGE.h"
+#undef CClass
 typedef char text_effect_Image_size_must_be_28[(sizeof(Image) == 28) ? 1 : -1];
 typedef char text_effect_SlicedImage2_size_must_be_60[(sizeof(SlicedImage2) == 60) ? 1 : -1];
 typedef char text_effect_Sprite2_size_must_be_60[(sizeof(Sprite2) == 60) ? 1 : -1];
@@ -84,165 +89,6 @@ typedef char trick_text_effect_size_must_be_24[
 Sprite2 *FallingTextEffect::mpBloodSprite
     __attribute__((section(".sdata"))) = 0;
 
-/*
- * The blood sprite's texture name.  It is twelve bytes, so -G8 gives it the
- * target's absolute `lui`/`addiu` form rather than a gp-relative load.
- */
-static char DAT_800dab38[12]
-    __attribute__((section(".sdata"))) = "s2blood.bmp";
-
-// === Owner-local ABI declarations ===
-// C++ does not permit taking a destructor's address, so the owner vtables keep
-// addressable views of the natural derived-destructor symbols.
-extern "C" void TrickTextEffect_DestroyAbi(
-    TrickTextEffect *effect, int inCharge) asm("_._15TrickTextEffect");
-extern "C" void FallingTextEffect_DestroyAbi(
-    FallingTextEffect *effect, int inCharge) asm("_._17FallingTextEffect");
-
-// The composed base's raw constructor entry is retained because spelling it as
-// a natural constructor advances GCC 2.x's translation-unit label allocator,
-// renumbering every later local label even though the emitted object is equal.
-namespace TextEffectsConstructorAbi
-{
-extern "C" TextEffect *__10TextEffect(TextEffect *effect);
-}
-
-// Destruction retains a typed ABI entry because the composed base must receive
-// the target's explicit GCC 2.x in-charge mode.
-#define TEXTEFFECTS_DECLARE_BASE_DESTRUCTOR_ABI
-#define TEXTEFFECTS_BASE_LIFECYCLE_TYPE TextEffect
-#define TEXTEFFECTS_BASE_DESTRUCTOR_NAME TextEffect_Destructor
-#include "TEXTEFFECTS.h"
-
-/** GCC 2.x dispatch table for the TextEffect interface. */
-struct TextEffectVTable {
-    int baseOffset;
-    int typeInfo;
-    void (*destroy)(TextEffect *, int);
-    void (*bind)(TextEffect *, Font *);
-    void (*unbind)(TextEffect *, Font *);
-    void (*init)(TextEffect *);
-    void (*update)(TextEffect *);
-    void (*getScreenPos)(TextEffect *, int *, int *);
-    void (*getColor)(TextEffect *, unsigned char *, unsigned char *,
-                     unsigned char *);
-    int (*handleComplete)(TextEffect *);
-    void (*postEffect)(TextEffect *, int, int, int, int);
-};
-
-/** GCC 2.x dispatch table specialized for TrickTextEffect receivers. */
-struct TrickTextEffectVTable {
-    int baseOffset;
-    int typeInfo;
-    void (*destroy)(TrickTextEffect *, int);
-    void (*bind)(TrickTextEffect *, Font *);
-    void (*unbind)(TextEffect *, Font *);
-    void (*init)(TrickTextEffect *);
-    void (*update)(TrickTextEffect *);
-    void (*getScreenPos)(TextEffect *, int *, int *);
-    void (*getColor)(TrickTextEffect *, unsigned char *, unsigned char *,
-                     unsigned char *);
-    int (*handleComplete)(TrickTextEffect *);
-    void (*postEffect)(TextEffect *, int, int, int, int);
-};
-
-/** GCC 2.x dispatch table specialized for FallingTextEffect receivers. */
-struct FallingTextEffectVTable {
-    int baseOffset;
-    int typeInfo;
-    void (*destroy)(FallingTextEffect *, int);
-    void (*bind)(FallingTextEffect *, Font *);
-    void (*unbind)(TextEffect *, Font *);
-    void (*init)(FallingTextEffect *);
-    void (*update)(FallingTextEffect *);
-    void (*getScreenPos)(FallingTextEffect *, int *, int *);
-    void (*getColor)(FallingTextEffect *, unsigned char *, unsigned char *,
-                     unsigned char *);
-    int (*handleComplete)(FallingTextEffect *);
-    void (*postEffect)(FallingTextEffect *, int, int, int, int);
-};
-
-typedef char text_effect_vtable_size_must_be_44[
-    (sizeof(TextEffectVTable) == 44) ? 1 : -1];
-typedef char trick_text_effect_vtable_size_must_be_44[
-    (sizeof(TrickTextEffectVTable) == 44) ? 1 : -1];
-typedef char falling_text_effect_vtable_size_must_be_44[
-    (sizeof(FallingTextEffectVTable) == 44) ? 1 : -1];
-
-/**
- * Text-effect dispatch tables in their original read-only section order.
- *
- * Every table contains the two GCC 2.x header words and nine virtual slots.
- * Eight-byte alignment leaves one zero padding word between adjacent tables.
- */
-extern "C" {
-TrickTextEffectVTable __vt_15TrickTextEffect
-    __attribute__((section(".rdata"), aligned(8))) = {
-        0,
-        0,
-        &TrickTextEffect_DestroyAbi,
-        (void (*)(TrickTextEffect *, Font *))&TrickTextEffect::bind,
-        (void (*)(TextEffect *, Font *))&TextEffect::unbind,
-        (void (*)(TrickTextEffect *))&TrickTextEffect::init,
-        (void (*)(TrickTextEffect *))&TrickTextEffect::update,
-        (void (*)(TextEffect *, int *, int *))&TextEffect::getScreenPos,
-        (void (*)(TrickTextEffect *, unsigned char *, unsigned char *,
-                  unsigned char *))&TrickTextEffect::getColor,
-        (int (*)(TrickTextEffect *))&TrickTextEffect::handleComplete,
-        (void (*)(TextEffect *, int, int, int, int))&TextEffect::PostEffect,
-};
-
-FallingTextEffectVTable __vt_17FallingTextEffect
-    __attribute__((section(".rdata"), aligned(8))) = {
-        0,
-        0,
-        &FallingTextEffect_DestroyAbi,
-        (void (*)(FallingTextEffect *, Font *))&FallingTextEffect::bind,
-        (void (*)(TextEffect *, Font *))&TextEffect::unbind,
-        (void (*)(FallingTextEffect *))&FallingTextEffect::init,
-        (void (*)(FallingTextEffect *))&FallingTextEffect::update,
-        (void (*)(FallingTextEffect *, int *, int *))
-            &FallingTextEffect::getScreenPos,
-        (void (*)(FallingTextEffect *, unsigned char *, unsigned char *,
-                  unsigned char *))&FallingTextEffect::getColor,
-        (int (*)(FallingTextEffect *))&FallingTextEffect::handleComplete,
-        (void (*)(FallingTextEffect *, int, int, int, int))
-            &FallingTextEffect::PostEffect,
-};
-
-TextEffectVTable __vt_10TextEffect
-    __attribute__((section(".rdata"), aligned(8))) = {
-        0,
-        0,
-        &TextEffect_Destructor,
-        (void (*)(TextEffect *, Font *))&TextEffect::bind,
-        (void (*)(TextEffect *, Font *))&TextEffect::unbind,
-        (void (*)(TextEffect *))&__pure_virtual,
-        (void (*)(TextEffect *))&__pure_virtual,
-        (void (*)(TextEffect *, int *, int *))&TextEffect::getScreenPos,
-        (void (*)(TextEffect *, unsigned char *, unsigned char *,
-                  unsigned char *))&TextEffect::getColor,
-        (int (*)(TextEffect *))&__pure_virtual,
-        (void (*)(TextEffect *, int, int, int, int))&TextEffect::PostEffect,
-};
-}
-
-// GCC 2.x emits a private copy of `CClass::~CClass` beside a private base vtable
-// in every owner that derives from CClass.  `MAIN.SYM` records 25 such
-// `_._6CClass` copies and names no base vtable, so both are file-local here.
-extern "C"
-{
-static void __DOT__6CClass_8006C9A0(CClass *, int);
-}
-
-// Three consecutive small-data words rather than an array, so -G8 still yields
-// the target's `addiu $vX, $gp, 0x2ea4`.  TextEffect's *public* vtable lives in
-// `.rdata` above; only this private base table is small-data.
-static int __vt_base_10TextEffect
-    __attribute__((section(".sdata"))) = 0;
-static int TextEffects_BaseVTableIndex __attribute__((section(".sdata"))) = 0;
-static void (*TextEffects_BaseVTableDtor)(CClass *, int)
-    __attribute__((section(".sdata"))) = &__DOT__6CClass_8006C9A0;
 
 // === Function implementations (address order) ===
 
@@ -254,11 +100,9 @@ static void (*TextEffects_BaseVTableDtor)(CClass *, int)
  * Demangled: TextEffect::(void)
  *
  */
-TextEffect *TextEffectsConstructorAbi::__10TextEffect(TextEffect *_this)
+TextEffect::TextEffect()
 {
-    _this->CClass.vtable = (int *)&__vt_10TextEffect;
-    _this->mEnabled = 0;
-    return _this;
+    mEnabled = 0;
 }
 
 /**
@@ -271,13 +115,8 @@ TextEffect *TextEffectsConstructorAbi::__10TextEffect(TextEffect *_this)
  * @param _this Effect to destroy.
  * @param __in_chrg GCC 2.x in-charge flag; bit zero releases the object.
  */
-void TextEffect_Destructor(TextEffect *_this, int __in_chrg)
+TextEffect::~TextEffect()
 {
-    _this->CClass.vtable = &__vt_base_10TextEffect;
-    if (__in_chrg & 1)
-    {
-        ::CClass::operator delete(_this);
-    }
 }
 
 /**
@@ -379,8 +218,6 @@ void TextEffect::disable()
  */
 FallingTextEffect::FallingTextEffect()
 {
-    TextEffectsConstructorAbi::__10TextEffect(&TextEffect);
-    TextEffect.CClass.vtable = (int *)&__vt_17FallingTextEffect;
     mBloody = 0;
 }
 
@@ -395,9 +232,6 @@ FallingTextEffect::FallingTextEffect()
 
 FallingTextEffect::~FallingTextEffect()
 {
-    TextEffect.CClass.vtable = (int *)&__vt_17FallingTextEffect;
-    TextEffect_Destructor(&TextEffect, 0);
-
 }
 
 /**
@@ -423,7 +257,7 @@ void FallingTextEffect::SetBloodiness(int bloody)
  */
 void FallingTextEffect::init()
 {
-    TextEffect.mEnabled = 1;
+    mEnabled = 1;
     int i = 0;
     short *bloodRotation = &mTextEffectInfo[0].bloodRotation;
     short *bloodOffsetY = &mTextEffectInfo[0].bloodOffsetY;
@@ -460,7 +294,7 @@ void FallingTextEffect::init()
  */
 void FallingTextEffect::update()
 {
-    if (TextEffect.mEnabled != 0)
+    if (mEnabled != 0)
     {
         if (GameFrozen == 0)
         {
@@ -496,63 +330,35 @@ void FallingTextEffect::update()
  */
 void FallingTextEffect::PostEffect(int oldX, int oldY, int ScreenX, int ScreenY)
 {
-    register FallingTextEffect *self asm("$17") = this;
-    asm volatile("" : "+r"(self));
-    register int savedOldY asm("$20") = oldY;
-
-    if (self->TextEffect.mEnabled != 0)
+    if (mEnabled)
     {
-        if (self->mBloody == 1)
+        if (mBloody == 1)
         {
-            int clipX = oldX >> 12;
-            int x2 = clipX + 0x10;
-            if ((u32)x2 < 0x211)
+            int clipX = oldX >> FixedPointShift;
+            int clipY = oldY >> FixedPointShift;
+            int clipW;
+            int clipH;
+
+            if (clipX + 16 >= 0 && clipX + 16 <= 528)
             {
-                register int clipY asm("$19") = savedOldY >> 12;
-                asm volatile("" : "+r"(clipY));
-                SetClippingBox2(0, 0, 0x200, 0xF0);
+                SetClippingBox2(0, 0, 512, 240);
 
-                Sprite2 *sprite = mpBloodSprite;
-                sprite->Scale = 0x2000;
+                mpBloodSprite->Scale = 0x2000;
+                ((Sprite2VTable *)*(int **)mpBloodSprite)->draw(
+                    mpBloodSprite,
+                    clipX - mTextEffectInfo[mCharCount & CharacterMask].bloodOffsetX,
+                    clipY - mTextEffectInfo[mCharCount & CharacterMask].bloodOffsetY,
+                    mTextEffectInfo[mCharCount & CharacterMask].bloodRotation);
 
-                int characterIndex = self->mCharCount;
-                asm volatile("" : "+r"(characterIndex));
-                Sprite2 *spriteArg = sprite;
-                asm volatile("" : "+r"(spriteArg));
-                characterIndex = characterIndex & CharacterMask;
-                characterIndex = characterIndex << 3;
-                register FallingTextEffect *infoBase asm("$3") =
-                    (FallingTextEffect *)((unsigned char *)self + characterIndex);
-                FallingTextEffect *rotationBase = infoBase;
-                asm volatile("" : "+r"(rotationBase));
-                register FallingTextEffect *offsetYBase asm("$2") = infoBase;
-                asm volatile("" : "+r"(offsetYBase));
-                Sprite2VTable *vtable;
-                int bloodOffsetX =
-                    infoBase->mTextEffectInfo[0].bloodOffsetX;
-                int bloodRotation =
-                    rotationBase->mTextEffectInfo[0].bloodRotation;
-                vtable = (Sprite2VTable *)sprite->CClass.vtable;
-                int bloodOffsetY =
-                    offsetYBase->mTextEffectInfo[0].bloodOffsetY;
-                vtable->draw(
-                    spriteArg,
-                    clipX - bloodOffsetX,
-                    clipY - bloodOffsetY,
-                    bloodRotation);
-
-                int clipW = 0x10;
-                int clipH =
-                    (ScreenY - savedOldY) >> FixedPointShift;
-                if (x2 >= 0x201)
+                clipW = 16;
+                clipH = (ScreenY - oldY) >> FixedPointShift;
+                if (clipX + clipW > 512)
                 {
-                    clipW = 0x210 - x2;
+                    clipW -= (clipX + clipW) - 512;
                 }
-                int yh = clipY + clipH;
-                if (yh >= 0xF1)
+                if (clipY + clipH > 240)
                 {
-                    int hPlus = clipH + 0xF0;
-                    clipH = hPlus - yh;
+                    clipH -= (clipY + clipH) - 240;
                 }
                 SetClippingBox2(clipX, clipY, clipW, clipH);
             }
@@ -575,41 +381,17 @@ void FallingTextEffect::PostEffect(int oldX, int oldY, int ScreenX, int ScreenY)
  */
 void FallingTextEffect::getScreenPos(int *pX, int *pY)
 {
-    if (TextEffect.mEnabled == 0)
+    if (mEnabled == 0)
         return;
 
-    register myTextEffectInfo *motionTable asm("$8") = &mTextEffectInfo[0];
-    register int gravityIdx asm("$9") = mCharCount;
-
-    register int gravity asm("$3");
-    {
-        int gravityAddress = (gravityIdx & CharacterMask) << 3;
-        asm("addu %0,%1,%0" : "+r"(gravityAddress) : "r"(motionTable));
-        gravity = *(short *)gravityAddress;
-    }
-    gravity = -gravity;
-
-    register int gravShifted asm("$7");
+    int gravity = -mTextEffectInfo[mCharCount & CharacterMask].waitTime;
+    int gravShifted;
     if (mBloody == 1)
-    {
         gravShifted = gravity << 13;
-    }
     else
-    {
-        register int squaredGravity asm("$2") = gravity * gravity;
-        gravShifted = squaredGravity << 12;
-    }
-
-    asm volatile("" : "+r"(gravShifted), "+r"(gravityIdx),
-                 "+r"(motionTable));
-    int repeatedIndex = gravityIdx & CharacterMask;
-    asm volatile("" : "+r"(repeatedIndex), "+r"(motionTable)
-                 : "r"(gravityIdx));
-    int repeatedAddress = repeatedIndex << 3;
-    asm("addu %0,%1,%0" : "+r"(repeatedAddress) : "r"(motionTable));
+        gravShifted = (gravity * gravity) << 12;
     int limit;
-
-    if (*(short *)repeatedAddress < 0)
+    if (mTextEffectInfo[mCharCount & CharacterMask].waitTime < 0)
     {
         int newPos = *pY + gravShifted;
         limit = mOffscreenY << 12;
@@ -641,7 +423,7 @@ done:
  */
 void FallingTextEffect::getColor(unsigned char * pR, unsigned char * pG, unsigned char * pB)
 {
-    if (TextEffect.mEnabled != 0)
+    if (mEnabled != 0)
     {
         int red = 255;
         *pR = red;
@@ -674,8 +456,8 @@ void FallingTextEffect::setScale(int scale)
  */
 void FallingTextEffect::bind(Font *pFont)
 {
-    TextEffect.bind(pFont);
-    if (TextEffect.mEnabled != 0)
+    TextEffect::bind(pFont);
+    if (mEnabled != 0)
     {
         pFont->Scale = mScale;
         mFallingCount = 0;
@@ -694,7 +476,7 @@ void FallingTextEffect::bind(Font *pFont)
 int FallingTextEffect::handleComplete()
 {
     int active = (u32)mFallingCount > 0;
-    TextEffect.mEnabled = active;
+    mEnabled = active;
     return active ^ 1;
 }
 
@@ -712,7 +494,7 @@ int FallingTextEffect::handleComplete()
  */
 void FallingTextEffect::drawBloodyFrame(int x, int y, int width)
 {
-    if (TextEffect.mEnabled)
+    if (mEnabled)
     {
         if (mBloody == 1)
         {
@@ -757,7 +539,7 @@ void FallingTextEffect::InitSprite()
     if (sprite != 0)
     {
         sprite = ::new (sprite) RotateSprite(
-            DAT_800dab38, 1, 0x20, 0x20);
+            "s2blood.bmp", 1, 0x20, 0x20);
     }
     mpBloodSprite = sprite;
     sprite->Shaded = (void *)1;
@@ -776,7 +558,7 @@ void FallingTextEffect::FreeSprite()
 {
     if (mpBloodSprite != 0)
     {
-        ((Sprite2VTable *)mpBloodSprite->CClass.vtable)
+        ((Sprite2VTable *)*(int **)mpBloodSprite)
             ->destroy(mpBloodSprite, 3);
     }
     mpBloodSprite = 0;
@@ -792,8 +574,6 @@ void FallingTextEffect::FreeSprite()
  */
 TrickTextEffect::TrickTextEffect()
 {
-    TextEffectsConstructorAbi::__10TextEffect(&TextEffect);
-    TextEffect.CClass.vtable = (int *)&__vt_15TrickTextEffect;
     mTrickState = Idle;
 }
 
@@ -808,9 +588,6 @@ TrickTextEffect::TrickTextEffect()
 
 TrickTextEffect::~TrickTextEffect()
 {
-    TextEffect.CClass.vtable = (int *)&__vt_15TrickTextEffect;
-    TextEffect_Destructor(&TextEffect, 0);
-
 }
 
 /**
@@ -824,8 +601,8 @@ TrickTextEffect::~TrickTextEffect()
  */
 void TrickTextEffect::bind(Font *pFont)
 {
-    TextEffect.bind(pFont);
-    if (TextEffect.mEnabled != 0)
+    TextEffect::bind(pFont);
+    if (mEnabled != 0)
     {
         int Steady = 0xbc0;
         if (GNumberOfPlayers > 1)
@@ -843,10 +620,11 @@ void TrickTextEffect::bind(Font *pFont)
             int Pos = mTrickTime;
             int Duration = 10;
             pFont->Scale = A + ((B - A) * Pos) / Duration;
-            if (mTrickTime != Duration)
-                goto done;
-            mTrickTime = 0;
-            mTrickState = BailComplete;
+            if (mTrickTime == Duration)
+            {
+                mTrickTime = 0;
+                mTrickState = BailComplete;
+            }
             break;
         }
         case Growing:
@@ -855,10 +633,11 @@ void TrickTextEffect::bind(Font *pFont)
             int Pos = mTrickTime;
             int Duration = 5;
             pFont->Scale = 0x3c0 + ((B - 0x3c0) * Pos) / Duration;
-            if (mTrickTime != Duration)
-                goto done;
-            mTrickTime = 0;
-            mTrickState = Settling;
+            if (mTrickTime == Duration)
+            {
+                mTrickTime = 0;
+                mTrickState = Settling;
+            }
             break;
         }
         case Settling:
@@ -868,18 +647,20 @@ void TrickTextEffect::bind(Font *pFont)
             int Pos = mTrickTime;
             int Duration = 5;
             pFont->Scale = A + ((B - A) * Pos) / Duration;
-            if (mTrickTime != Duration)
-                goto done;
-            mTrickTime = 0;
-            mTrickState = Holding;
+            if (mTrickTime == Duration)
+            {
+                mTrickTime = 0;
+                mTrickState = Holding;
+            }
             break;
         }
         case Holding:
             pFont->Scale = Steady;
-            if (mTrickTime != 0x1e)
-                goto done;
-            mTrickTime = 0;
-            mTrickState = Shrinking;
+            if (mTrickTime == 0x1e)
+            {
+                mTrickTime = 0;
+                mTrickState = Shrinking;
+            }
             break;
         case Shrinking:
         {
@@ -887,20 +668,20 @@ void TrickTextEffect::bind(Font *pFont)
             int Pos = mTrickTime;
             int Duration = 10;
             pFont->Scale = A + ((0 - A) * Pos) / Duration;
-            if (mTrickTime != Duration)
-                goto done;
-            mTrickTime = 0;
-            mTrickState = Complete;
+            if (mTrickTime == Duration)
+            {
+                mTrickTime = 0;
+                mTrickState = Complete;
+            }
             break;
         }
         case Complete:
             pFont->Scale = 0;
-            goto done;
+            break;
         case Idle:
         default:
-            goto done;
+            break;
         }
-    done:
         mScale = pFont->Scale;
     }
 }
@@ -915,7 +696,7 @@ void TrickTextEffect::bind(Font *pFont)
  */
 void TrickTextEffect::init()
 {
-    TextEffect.mEnabled = 1;
+    mEnabled = 1;
     mTrickTime = 0;
     mTrickState = Growing;
 }
@@ -931,7 +712,7 @@ void TrickTextEffect::init()
  */
 void TrickTextEffect::update()
 {
-    if (TextEffect.mEnabled != 0)
+    if (mEnabled != 0)
     {
         if (GameFrozen == 0)
         {
@@ -956,7 +737,7 @@ void TrickTextEffect::update()
  */
 void TrickTextEffect::getColor(unsigned char * pR, unsigned char * pG, unsigned char * pB)
 {
-    if (TextEffect.mEnabled == 0)
+    if (mEnabled == 0)
         return;
     if ((u32)(mTrickState - Bailing) >= 2)
         return;
@@ -993,9 +774,9 @@ int TrickTextEffect::handleComplete()
 {
     if (mTrickState == BailComplete)
     {
-        TextEffect.mEnabled = 0;
+        mEnabled = 0;
     }
-    return (u32)TextEffect.mEnabled < 1;
+    return (u32)mEnabled < 1;
 }
 
 /**
@@ -1011,16 +792,4 @@ void TrickTextEffect::Bail()
     mBailStartSize = mScale;
     mTrickState = Bailing;
     mTrickTime = 0;
-}
-
-// GCC emitted this private `CClass::~CClass` copy last in the owner's text, so it
-// stays at the end of the translation unit.
-extern "C"
-{
-static void __DOT__6CClass_8006C9A0(CClass *_this, int __in_chrg) {
-    _this->vtable = &__vt_base_10TextEffect;
-    if (__in_chrg & 1) {
-        ::CClass::operator delete(_this);
-    }
-}
 }

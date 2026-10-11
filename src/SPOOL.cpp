@@ -2,7 +2,8 @@
 // Original: SPOOL.CPP
 // Functions: 32 reconstructed entries
 // Address range: 0x800674F8 - 0x80069768
-// Compiled with cc1plus (GCC 2.91.66-psx). Compiler auto-mangles symbol names.
+//
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 /** One linked animation packet owned by the spooler. */
 struct AnimPacket {
@@ -143,7 +144,7 @@ AnimPacket *AnimPackets = 0;
 int TotalTextureUsage = 0;
 
 /** Lower-case PSX filename extension used while resolving packed assets. */
-static char DAT_800daa08[8]
+static char s_LowerPsxExt[8]
     __attribute__((section(".sdata"))) = ".psx";
 
 /** Current asynchronous spool phase, recorded as local SpoolMode by MAIN.SYM. */
@@ -153,9 +154,9 @@ static int SpoolMode = 0;
  * Filename formats used when loading a model's PSH and enumerating its part
  * textures.
  */
-static char s__s_psh_800daa14[8]
+static char s_PshFileFormat[8]
     __attribute__((section(".sdata"))) = "%s.psh";
-char s__spart__800daa1c[8]
+char s_SpartPrefixFormat[8]
     __attribute__((section(".sdata"))) = "%spart_";
 
 u32 *EnvModelChecksums[2] __attribute__((section(".sdata"))) = {};
@@ -164,7 +165,7 @@ static int HashIndex;
 static Texture *pCurrentTex;
 
 /** Diagnostic emitted after an animation packet has been compacted in place. */
-static char s_Shrinking_animation_800b2bb0[36]
+static char s_ShrinkingAnimation[36]
     __attribute__((section(".rdata"))) =
         "Shrinking animation %s.psx to %d\n";
 
@@ -347,34 +348,16 @@ void Spool_Init(void) {
  * @return result
  */
 int Spool_FreeRegion(void) {
-    int freeregion;
+    int freeregion = -1;
+    SPSXRegion *pRegion;
+    int i;
 
-    // A natural typed loop matches the instructions but introduces three
-    // relocations that are absent from the target owner object.
-    asm(
-        ".set noreorder\n\t"
-        "addiu $5,$zero,-1\n\t"
-        "move $3,$zero\n\t"
-        "lui $2,0x800c\n\t"
-        "addiu $4,$2,0x2e20\n"
-        "1:\n\t"
-        "lbu $2,0($4)\n\t"
-        "nop\n\t"
-        "bnez $2,2f\n\t"
-        "nop\n\t"
-        ".word 0x08019d94\n\t"
-        "move $5,$3\n"
-        "2:\n\t"
-        "addiu $3,$3,1\n\t"
-        "slti $2,$3,0x28\n\t"
-        "bnez $2,1b\n\t"
-        "addiu $4,$4,0x40\n"
-        "3:\n\t"
-        ".set reorder"
-        : "=r"(freeregion)
-        :
-        : "$2", "$3", "$4"
-    );
+    for (i = 0, pRegion = PSXRegion; i < 40; i++, pRegion++) {
+        if (pRegion->Filename[0] == 0) {
+            freeregion = i;
+            break;
+        }
+    }
 
     return freeregion;
 }
@@ -395,25 +378,10 @@ int Spool_FreeRegion(void) {
  * @return i
  */
 unsigned int Spool_GetModel(u32 Checksum, int Region) {
-    int offset;
-    // Three ordinary typed address forms measured 12-15 mismatches; these
-    // aliases preserve the target's v0/v1 lifetime without raw field offsets.
-    register SPSXRegion *base asm("$2");
-    SPSXRegion *region;
-    register SPSXRegion *regionAlias asm("$2");
-    SModel **models;
-    u32 *pChecksums;
-    int NumModels;
-    register int i asm("$7");
+    int NumModels = ((int *)PSXRegion[Region].ppModels)[-1];
+    u32 *pChecksums = PSXRegion[Region].pModelChecksums;
+    int i;
 
-    base = PSXRegion;
-    offset = Region << 6;
-    asm("addu %0,%1,%2" : "=r"(region) : "r"(base), "r"(offset));
-    regionAlias = region;
-    models = region->ppModels;
-    asm("move %0,%1" : "=r"(regionAlias) : "r"(region), "r"(models));
-    NumModels = ((int *)models)[-1];
-    pChecksums = regionAlias->pModelChecksums;
     for (i = 0; (u32)i < (u32)NumModels; ++i, ++pChecksums) {
         if (*pChecksums == Checksum) {
             return i;
@@ -481,35 +449,14 @@ Item *Spool_FindEnviroItem(u32 Checksum) {
  * @return texEntry
  */
 Texture *NewTextureEntry(u32 checksum) {
-    Texture **hashBucket;
-    Texture **hashBase;
-    int Lower;
-    register Texture *hashHead asm("$4");
-    Texture *pNew;
-    int totalUsage;
-    Texture *allocatedEntry;
-
-    allocatedEntry = (Texture *)Mem_New(sizeof(Texture), 0, 1);
-    Lower = checksum & 0x1ff;
-    hashBase = TextureChecksumHashTable;
-    hashBucket = hashBase + Lower;
-    pNew = allocatedEntry;
-    hashHead = *hashBucket;
-    totalUsage = TotalTextureUsage;
-    // Removing this inherited allocation barrier changes 15 instructions;
-    // ordinary forms for hashHead and nextEntry leave 2 and 7 mismatches.
-    asm("" : "+r"(hashHead), "+r"(pNew), "+r"(totalUsage), "+r"(hashBucket));
+    Texture *pNew = (Texture *)Mem_New(sizeof(Texture), 0, 1);
+    TotalTextureUsage += sizeof(Texture) + sizeof(u32);
+    u32 Lower = checksum & 0x1ff;
+    pNew->pNext = TextureChecksumHashTable[Lower];
     pNew->pPrevious = 0;
-    pNew->pNext = hashHead;
-    *hashBucket = pNew;
-    {
-        register Texture *nextEntry asm("$3");
-        nextEntry = pNew->pNext;
-        totalUsage = totalUsage + sizeof(Texture) + sizeof(u32);
-        TotalTextureUsage = totalUsage;
-        if (nextEntry != 0) {
-            nextEntry->pPrevious = pNew;
-        }
+    TextureChecksumHashTable[Lower] = pNew;
+    if (pNew->pNext != 0) {
+        pNew->pNext->pPrevious = pNew;
     }
     pNew->Checksum = checksum;
     pNew->InVRAM = 0;
@@ -568,19 +515,9 @@ void RemoveTextureEntry(Texture *pEntry) {
  * @return texEntry
  */
 Texture *Spool_FindTextureEntry(u32 checksum) {
-    Texture **hashTable;
     Texture *pSearch;
 
-    // Loading the table in ordinary C++ adds two target-absent relocations.
-    asm(
-        ".set noreorder\n\t"
-        "lui %0, 0x800c\n\t"
-        "addiu %0, %0, 0x3820\n\t"
-        ".set reorder"
-        : "=r"(hashTable)
-    );
-
-    for (pSearch = hashTable[checksum & 0x1ff];
+    for (pSearch = TextureChecksumHashTable[checksum & 0x1ff];
          pSearch != 0 && pSearch->Checksum != checksum;
          pSearch = pSearch->pNext) {
     }
@@ -599,18 +536,8 @@ Texture *Spool_FindTextureEntry(u32 checksum) {
  * Demangled: void GotoStartOfTextureList(void)
  */
 void GotoStartOfTextureList(void) {
-    // The equivalent natural C++ form adds four target-absent relocations.
-    asm volatile(
-        ".set noreorder\n\t"
-        "lui $2,0x800c\n\t"
-        "lw $3,0x3820($2)\n\t"
-        "sw $zero,0x4aac($gp)\n\t"
-        "sw $3,0x4ab0($gp)\n\t"
-        ".set reorder"
-        :
-        :
-        : "$2", "$3", "memory"
-    );
+    HashIndex = 0;
+    pCurrentTex = TextureChecksumHashTable[0];
 }
 
 /**
@@ -635,7 +562,6 @@ Texture *NextTexture(void) {
 
     pReturnedTex = pCurrentTex;
     if (pReturnedTex != 0) {
-advance:
         pCurrentTex = pReturnedTex->pNext;
         return pReturnedTex;
     }
@@ -649,7 +575,8 @@ advance:
         }
     } while (pReturnedTex == 0);
 
-    goto advance;
+    pCurrentTex = pReturnedTex->pNext;
+    return pReturnedTex;
 }
 
 /**
@@ -669,31 +596,14 @@ advance:
  * @return pos + 4
  */
 u32 *Spool_SkipPackets(u32 *pPSX) {
-    u8 *pPacket;
-    // Three ordinary declaration/expression orders all moved NumBytes out of
-    // v1 and left seven mismatches; the former addition asm is no longer used.
-    register int NumBytes asm("$3");
-    int tag;
-    int curtag;
-
-    // Jump to metaTop: fileBase + *(fileBase + 4)
-    pPacket = (u8 *)pPSX + pPSX[1];
-    tag = *(int *)pPacket;
-    NumBytes = -1;
-    if (tag == NumBytes) goto done;
-    tag = -1;
-    pPacket = pPacket + 4;
-    do {
-        NumBytes = *(int *)pPacket;
-        pPacket = pPacket + 4;
-        pPacket += NumBytes;
-        curtag = *(int *)pPacket;
-
-        pPacket = pPacket + 4;
-    } while (curtag != tag);
-    pPacket = pPacket + -4;
-done:
-    return (u32 *)(pPacket + 4); // Return address after the -1 terminator
+    u32 *pPacket = (u32 *)((u8 *)pPSX + pPSX[1]);
+    while (*(int *)pPacket != -1) {
+        pPacket++;
+        int NumBytes = *(int *)pPacket;
+        pPacket++;
+        pPacket = (u32 *)((u8 *)pPacket + NumBytes);
+    }
+    return pPacket + 1;
 }
 
 /**
@@ -828,8 +738,7 @@ void Spool_RemoveUnusedTextures(void) {
  */
 
 void ProcessNewPSX(int region) {
-    // Removing both surviving cursor pins leaves six mismatches; retaining
-    // only pPSX still leaves two. The two loop-counter pins were eliminated.
+    // FIXME(match): register pin (pPSX $s3, pPacket $s0) — without both, NumItems lands in $a0 not $v1 and the NumItems*9*4 temps in $v1 not $v0 (score 6); tried: permuter best_2 decl/statement order (2, but loses a nop slot), pPSX/NumItems order, NumItems type/decl order.
     register u32 *pPSX asm("$19");
     SModel **ppModels;
     u32 NumModels;
@@ -840,6 +749,7 @@ void ProcessNewPSX(int region) {
     u32 *pPaletteInfo;
     u32 Num16CPalettes;
     u32 Num256CPalettes;
+    // FIXME(match): register pin — pPacket $s0, paired with the pPSX pin above.
     register u32 *pPacket asm("$16");
     int AnimPacketFound;
     int PacketType;
@@ -992,69 +902,37 @@ void ProcessNewPSX(int region) {
         ++pPacket;
         int NumBytes = *pPacket++;
 
-        if (PacketType == 0x2A)
-            goto anim_file_packet;
-        if (PacketType < 0x2B) {
-            if (PacketType == 7)
-                goto colour_pulse_packet;
-            if (PacketType < 8) {
-                if (PacketType == 6)
-                    goto tex_wib_packet;
-                goto advance_packet;
-            }
-            if (PacketType == 10)
-                goto zone_packet;
-            goto advance_packet;
-        }
-        if (PacketType == 0x45)
-            goto anim_packet;
-        if (PacketType < 0x46) {
-            if (PacketType == 0x2C)
-                goto anim_file_packet;
-            goto advance_packet;
-        }
-        if (PacketType == 0x52454948)
-            goto hierarchy_packet;
-        if (PacketType == 0x73424752)
-            goto colour_table_packet;
-        goto advance_packet;
-
-    zone_packet:
-        {
+        switch (PacketType) {
+        case 10: {
             int EnvIndex = Spool_GetEnvIndex(region);
             M3dZone_SetZone(EnvIndex, pPacket);
+            break;
         }
-        goto advance_packet;
-
-    anim_packet:
-        PreProcessAnimPacket(pPSX, pPacket);
-        AnimPacketFound = 1;
-        goto advance_packet;
-
-    anim_file_packet:
-        PSXRegion[region].pAnimFile = pPacket;
-        PSXRegion[region].IsSuper = 1;
-        goto advance_packet;
-
-    colour_table_packet:
-        PSXRegion[region].pColourTable = pPacket;
-        goto advance_packet;
-
-    tex_wib_packet:
-        PSXRegion[region].pTexWibData = pPacket;
-        M3dInit_FlagZeroWibbles(
-            reinterpret_cast<STexWibItemInfo *>(pPacket));
-        pCurrentTexWibPacket = pPacket - 2;
-        goto advance_packet;
-
-    colour_pulse_packet:
-        PSXRegion[region].pColourPulseData = pPacket;
-        goto advance_packet;
-
-    hierarchy_packet:
-        PSXRegion[region].pHierarchy = (u16 *)pPacket;
-
-    advance_packet:
+        case 0x45:
+            PreProcessAnimPacket(pPSX, pPacket);
+            AnimPacketFound = 1;
+            break;
+        case 0x2A:
+        case 0x2C:
+            PSXRegion[region].pAnimFile = pPacket;
+            PSXRegion[region].IsSuper = 1;
+            break;
+        case 0x73424752:
+            PSXRegion[region].pColourTable = pPacket;
+            break;
+        case 6:
+            PSXRegion[region].pTexWibData = pPacket;
+            M3dInit_FlagZeroWibbles(
+                reinterpret_cast<STexWibItemInfo *>(pPacket));
+            pCurrentTexWibPacket = pPacket - 2;
+            break;
+        case 7:
+            PSXRegion[region].pColourPulseData = pPacket;
+            break;
+        case 0x52454948:
+            PSXRegion[region].pHierarchy = (u16 *)pPacket;
+            break;
+        }
         pPacket = (u32 *)((char *)pPacket + NumBytes);
         PacketType = *pPacket;
     }
@@ -1085,51 +963,18 @@ void ProcessNewPSX(int region) {
  */
 // Purpose: Splice the region's environment item chain into the active list.
 void AttachNewEnviro(int region) {
-    Item *oldHead;
-    Item *pStart;
-    int envIndex;
-
-    oldHead = EnviroList;
-    if (oldHead == 0) {
-        SPSXRegion *base;
-        int offset;
-        int head;
-
-        base = PSXRegion;
-        offset = region << 6;
-        // Preserve the original address-add operand order emitted by GCC.
-        base = (SPSXRegion *)((char *)base - -offset);
-        head = (int)(base->pPSX + 3);
-        EnviroList = (Item *)head;
-        goto common;
-    }
-    {
-        SPSXRegion *base;
-        int offset;
-        int head;
-
-        base = PSXRegion;
-        offset = region << 6;
-        // Preserve the original address-add operand order emitted by GCC.
-        base = (SPSXRegion *)((char *)base - -offset);
-        head = (int)(base->pPSX + 3);
-        pStart = (Item *)head;
-    }
-    {
-        Item *pScan;
-        Item *next;
-        pScan = pStart;
-        next = pStart->NextItem;
-        if (next != 0) {
-            do {
-                pScan = pScan->NextItem;
-            } while (pScan->NextItem != 0);
+    if (EnviroList == 0) {
+        EnviroList = (Item *)(PSXRegion[region].pPSX + 3);
+    } else {
+        Item *pStart = (Item *)(PSXRegion[region].pPSX + 3);
+        Item *pScan = pStart;
+        while (pScan->NextItem != 0) {
+            pScan = pScan->NextItem;
         }
-        pScan->NextItem = oldHead;
+        pScan->NextItem = EnviroList;
+        EnviroList = pStart;
     }
-    EnviroList = pStart;
-common:
-    envIndex = Spool_GetEnvIndex(region);
+    int envIndex = Spool_GetEnvIndex(region);
     pTexWibPacket[envIndex] = pCurrentTexWibPacket;
 }
 
@@ -1311,16 +1156,10 @@ void Spool_LoadTexturesToVRAM(int Region, int defrag) {
                         LoadImage(&rec, pTextureData);
                     }
 
-                    // Ordinary initialized locals and split assignments each
-                    // leave six call-site mismatches; direct arguments cascade.
-                    register int Is8Bit asm("$4") =
-                        (NumColours == 256);
-                    register int argX asm("$6") = x;
-                    register int argY asm("$7") = y;
                     ++pPal->Usage;
                     pTextureEntry->pPalette = pPal;
                     pTextureEntry->clut = pPal->Clut;
-                    u16 tpage = (u16)GetTPage(Is8Bit, 0, argX, argY);
+                    u16 tpage = (u16)GetTPage(NumColours == 256, 0, x, y);
                     int U = x;
                     pTextureEntry->tpage = tpage;
                     pTextureEntry->u0 = (u8)((U & 0x3F) *
@@ -1738,27 +1577,13 @@ match:
 void LoadNameExt(char * Name, char * Ext) {
     char *p;
     char *from;
-    register SQueue *queueBase asm("$2");
-    int queueIndex;
     char *to;
     char ch;
     char ch2;
 
     from = Name;
     p = Ext;
-    // Direct SpoolQ/FreePos references add three target-absent relocations.
-    // Only the queue-base pin and memory clobber remain load-bearing here.
-    asm(
-        ".set noreorder\n\t"
-        "lui %0,0x800c\n\t"
-        "addiu %0,%0,0x2ccc\n\t"
-        "lw %1,0x2d5c($gp)\n\t"
-        ".set reorder"
-        : "=r"(queueBase), "=r"(queueIndex)
-        :
-        : "memory"
-    );
-    to = (char *)(queueIndex * sizeof(SQueue) + (int)queueBase);
+    to = SpoolQ[FreePos].Name;
     ch = *from;
     while (ch != 0) {
         from++;
@@ -1896,7 +1721,7 @@ int Spool_PSX(char *Name, int IsEnviro, int KeepTextures, int WhichHeap) {
     }
 
     PSXRegion[freeregion].WhichHeap = WhichHeap;
-    LoadNameExt(Name, SpoolAddressViews::DAT_800daa08);
+    LoadNameExt(Name, SpoolAddressViews::s_LowerPsxExt);
 
     if (IsEnviro != 2) {
         SpoolQ[FreePos].FileType = IsEnviro != 0;
@@ -1926,27 +1751,8 @@ int Spool_PSX(char *Name, int IsEnviro, int KeepTextures, int WhichHeap) {
  * @return Zero for environment slot 0, one for slot 1, or -1 otherwise.
  */
 int Spool_GetEnvIndex(int region) {
-    int env0;
-    int env1;
-
-    // Direct EnvRegions indexing adds two target-absent relocations. Volatile
-    // also preserves the target's two early-return schedules in this function.
-    asm volatile(
-        ".set noreorder\n\t"
-        "lw %0,0x2d3c($gp)\n\t"
-        "nop\n\t"
-        ".set reorder"
-        : "=r"(env0)
-    );
-    if (region == env0) return 0;
-    asm volatile(
-        ".set noreorder\n\t"
-        "lw %0,0x2d40($gp)\n\t"
-        "nop\n\t"
-        ".set reorder"
-        : "=r"(env1)
-    );
-    if (region == env1) return 1;
+    if (region == EnvRegions[0]) return 0;
+    if (region == EnvRegions[1]) return 1;
     return -1;
 }
 
@@ -2116,16 +1922,10 @@ void Spool_StripAnim(int Region) {
     u32 NumTextures;
 
     pPSX = PSXRegion[Region].pPSX;
-    {
-        // Off/call-argument barriers remain after ordinary, direct-call, and
-        // reordered variants left 2-50 mismatches. Three other pins are gone.
-        register u32 off asm("$16") = pPSX[1];
-        asm volatile("" : "+r"(off));
-        u32 *pStuff = pPSX;
-        asm volatile("" : "+r"(pStuff));
-        pAnim = Spool_SkipPackets(pStuff);
-        pDest = (u8 *)pPSX + off;
-    }
+    u32 *pStuff = pPSX;
+    u8 *pEnd = (u8 *)pPSX + pPSX[1];
+    pAnim = Spool_SkipPackets(pStuff);
+    pDest = pEnd;
 
     NumModels = PSXRegion[Region].NumParts;
 
@@ -2253,7 +2053,7 @@ void Spool_StripModel(int AnimRegion, s16 *pAnimationList) {
     /* Copy mesh entry pairs (8 bytes each: offset + size) */
     {
         u32 vbytes = NumAnims << 3;
-        // Three ordinary vbytes forms each leave sixteen mismatches.
+        // FIXME(match): asm barrier — keeps pAnimAnim in $t4 and NumAnims in $t5 (swapped without, score 16); tried: inline `NumAnims << 3` / `NumAnims * 2` pointer forms, decl order, NumAnims pre-init, load orders.
         asm volatile("" : "+r"(vbytes));
         pSourceBytes = (u8 *)pAnimAnim + vbytes;
         pDestBytes = (u8 *)pAnimPSX + vbytes;
@@ -2306,8 +2106,7 @@ void Spool_StripModel(int AnimRegion, s16 *pAnimationList) {
         int m = 0;
         int last = (s32)NumAnims - 1;
         u8 *keep = AnimUsed;
-        // Removing or folding this bitmap cursor barrier cascades through
-        // 88-102 instructions in the target loop.
+        // FIXME(match): asm barrier — keeps the AnimUsed cursor in its own register through the keep/skip loop (score 32 without); tried: removal only.
         asm volatile("" : "+r"(keep));
         u32 *entryOff = pAnimPSX;
         u32 *entrySize = pAnimPSX + 1;
@@ -2369,7 +2168,7 @@ void Spool_StripModel(int AnimRegion, s16 *pAnimationList) {
             (u32)((u8 *)pAnimPSX - (u8 *)PSXRegion[AnimRegion].pPSX);
         Mem_Shrink((void *)PSXRegion[AnimRegion].pPSX, NewLen);
         PSXRegion[AnimRegion].Size = NewLen;
-        printf(SpoolAddressViews::s_Shrinking_animation_800b2bb0,
+        printf(SpoolAddressViews::s_ShrinkingAnimation,
             &PSXRegion[AnimRegion], NewLen);
     }
 }
@@ -2464,21 +2263,16 @@ char * Spool_LoadPSH(
     char prefixString[16];
 
     // Build PSH filename and search pattern
-    sprintf(filename, SpoolAddressViews::s__s_psh_800daa14, pPSHName);
-    sprintf(prefixString, SpoolAddressViews::s__spart__800daa1c, pPSHName);
+    sprintf(filename, SpoolAddressViews::s_PshFileFormat, pPSHName);
+    sprintf(prefixString, SpoolAddressViews::s_SpartPrefixFormat, pPSHName);
     LowerCase(prefixString);
 
     // Load PSH file from disc, null-terminate, and lowercase
     pData = FileIO_OpenLoad(filename);
-    // The canonical scalar view keeps the target's absolute-address load. The
-    // lower-case call barrier and cursor move remain after three clean forms
-    // left 1-68 mismatches in this target-sensitive tail.
-    register char *lowerBuf asm("$4") = pData;
-    asm volatile("" : : "r"(lowerBuf));
     int fsize = FileIO_Size;
-    asm volatile("move %0,%1" : "=r"(p) : "r"(pData));
     pData[fsize + -1] = '\0';
-    LowerCase(lowerBuf);
+    LowerCase(pData);
+    p = pData;
 
     *pPartCount = 0;
     prefixStringLength = strlen(prefixString);

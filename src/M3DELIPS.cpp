@@ -1,4 +1,10 @@
-#include "M3DELIPS.h"
+// M3DELIPS.cpp -- Ellipsoid and shadow rendering.
+// Original: M3DELIPS.CPP
+// Functions: 2
+// Address range: 0x8008EED8 - 0x8008FFC0
+//
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
+
 #include "globals.h"
 #include "MAIN.h"
 #include "DB.h"

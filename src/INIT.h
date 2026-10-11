@@ -36,6 +36,6 @@ extern int TopOfCode __attribute__((section(".data")));
 
 #ifdef INIT_DECLARE_STARTUP_RECT_ADDRESS_VIEW
 /** Opaque address view of INIT's GP-sized startup clear rectangle. */
-extern RECT DAT_800daaa4[];
+extern RECT StartupClearRect[];
 #undef INIT_DECLARE_STARTUP_RECT_ADDRESS_VIEW
 #endif

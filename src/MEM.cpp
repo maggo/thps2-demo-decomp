@@ -1,4 +1,9 @@
 // MEM.cpp -- Game heap allocator.
+// Original: MEM.CPP
+// Functions: 14
+// Address range: 0x8004E4FC - 0x8004EF00
+//
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 #define MEM_OWNER_DECLARATIONS
 #include "MEM.h"
@@ -26,9 +31,9 @@ namespace MemAddressViewOwners
 {
 extern "C"
 {
-static char DAT_800da4a4[]
+static char s_HeapSizes[]
     __attribute__((section(".sdata"), aligned(4))) = "Heap sizes: ";
-static char DAT_800da4b4[]
+static char s_Newline[]
     __attribute__((section(".sdata"), aligned(4))) = "\n";
 }
 }
@@ -46,7 +51,7 @@ namespace MemAddressViewOwners
 {
 extern "C"
 {
-static const MemHeapUsageFormat s_Heap__d___ld_bytes__800b28bc
+static const MemHeapUsageFormat s_HeapUsageFormat
     __attribute__((section(".rdata"), aligned(4))) =
         {"Heap %d: %ld bytes, "};
 }
@@ -58,8 +63,8 @@ static const MemHeapUsageFormat s_Heap__d___ld_bytes__800b28bc
 #include "MEM.h"
 // Keep these address-only views opaque so cc1plus does not fold the owner
 // definitions into literals or choose small-data addressing.
-extern char DAT_800da4a4[];
-extern char DAT_800da4b4[];
+extern char s_HeapSizes[];
+extern char s_Newline[];
 
 static void Bang(unsigned char r, unsigned char g, unsigned char b);
 
@@ -145,7 +150,7 @@ void Mem_Init(void)
 {
     int i;
 
-    printf(DAT_800da4a4);
+    printf(s_HeapSizes);
 
     for (i = 0; i < 2; i++) {
         FirstFreeBlock[i] = 0;
@@ -157,11 +162,11 @@ void Mem_Init(void)
             HeapDefs[i][1] - HeapDefs[i][0] - sizeof(SBlockHeader);
         AddToFreeList(pAllFreeMem, i);
 
-        printf(MemAddressViewOwners::s_Heap__d___ld_bytes__800b28bc.text,
+        printf(MemAddressViewOwners::s_HeapUsageFormat.text,
                i, HeapDefs[i][1] - HeapDefs[i][0]);
     }
 
-    printf(DAT_800da4b4);
+    printf(s_Newline);
     CriticalBigHeapUsage =
         (98 * (HeapDefs[1][1] - HeapDefs[1][0])) / 100;
 }

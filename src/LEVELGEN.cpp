@@ -1,9 +1,12 @@
-// LEVELGEN.cpp
+// LEVELGEN.cpp -- Reconstructed translation unit
 // Original: LEVELGEN.CPP
+// Functions: 28
 // Address range: 0x80056020 - 0x80059FF4
 //
-// Compiled with cc1plus (GCC 2.91.66-psx). Compiler auto-mangles symbol names.
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "CCLASS_POLY.h"
+#define CClass CClassData
 #include "FACEREMOVAL.h"
 #include "M3DZONE.h"
 #include "M3DINIT.h"
@@ -12,6 +15,7 @@
 #define LEVELGEN_OWNER_DECLARATIONS
 #include "LEVELGEN.h"
 #undef LEVELGEN_OWNER_DECLARATIONS
+#undef CClass
 #include "RAILINFO.h"
 // Owner-local level-editor model and generator layouts used by LEVELGEN.cpp.
 //
@@ -91,14 +95,15 @@ struct LevelGenTriggerFileHeader
 };
 
 /** One source model available to the level editor (68 bytes). */
-struct EditorInModel
+struct EditorInModel : CClass
 {
+    EditorInModel();
+    virtual ~EditorInModel();
     /** Recovers source-model dimensions, faces, and rail metadata. */
     void SetData(SModel *pModel, int model_index);
     /** Releases this source model's faces and generated rail metadata. */
     void KillModelInfo();
 
-    struct CClass CClass;
     struct ModelFace *Faces;
     struct SModel *mModel;
     unsigned char mIndex;
@@ -135,7 +140,7 @@ struct RailPoint : public CClass
 /** Linked string of rail points (32 bytes). */
 struct RailString
 {
-    struct CClass CClass;
+    struct CClassData CClass;
     struct SVector BoundsMin;
     struct SVector BoundsMax;
     struct RailPoint *PointList;
@@ -170,7 +175,7 @@ struct EditorOutModel
     void UnhideSharedFaces(
         bool unhide, EditorOutModel *wire_model, unsigned char against);
 
-    struct CClass CClass;
+    struct CClassData CClass;
     void *DeleteModelRequest;
     unsigned char FaceRemovalRequest;
     unsigned char FaceRemovalPadding[3];
@@ -203,13 +208,17 @@ struct EditorOutModel
 };
 
 /** Complete level generator object (42548 bytes / 0xA634). */
-class LevelGenerator
+class LevelGenerator : CClass
 {
 public:
+    /** Shared editor grid dimensions and placement cells. */
+    static int GridCellHeight;
+    static int GridCellWidth;
+    static GridCell GridTab[24][24];
+
     /** Region slot holding the generated editor-level output. */
     static int OutRegion;
 
-    struct CClass CClass;
     unsigned int NumSourceModels;
     char SourceFileName[16];
     int SourceRegion;
@@ -230,6 +239,7 @@ public:
     int NumShellModels;
 
     LevelGenerator(bool game_build);
+    virtual ~LevelGenerator();
     static void Init(void);
     void LoadModels(char *file);
     void UnloadModels(void);
@@ -259,10 +269,6 @@ public:
 };
 
 /** Typed owner-local lifecycle and method ABI entry points. */
-#define LEVELGEN_DECLARE_DESTRUCTOR_ABI
-#define LEVELGEN_DESTRUCTOR_NAME LevelGenerator_destruct
-#define LEVELGEN_DESTRUCTOR_RECEIVER LevelGenerator
-#include "LEVELGEN.h"
 namespace LevelGenConstructorABI
 {
 #define GENOBJS_ABI_SELECTORS_ONLY
@@ -272,10 +278,6 @@ namespace LevelGenConstructorABI
 #define GENOBJS_LEVELGEN_EDITOR_OUT_MODEL_TYPE EditorOutModel
 #include "GENOBJS.h"
 }
-#define RAILINFO_DECLARE_DESTRUCTOR
-#define RAILINFO_DESTRUCTOR_NAME LevelGen_RailInfoDestructor
-#define RAILINFO_DESTRUCTOR_RECEIVER RailInfo
-#include "RAILINFO.h"
 #define LevelGen_InitEditorPolyBuffer \
     LevelGenConstructorABI::InitPolyBuf__13EditorInModelb
 #define LevelGen_SetEditorModelDataSize \
@@ -324,15 +326,15 @@ namespace LevelGenAddressViewOwners
 {
 extern "C"
 {
-static char DAT_800da664[8]
+static char s_EditOutputRegionName[8]
     __attribute__((section(".sdata"))) = "edit";
 }
 }
 int LevelGenerator::OutRegion
     __attribute__((section(".sdata"))) = 0;
-int _14LevelGenerator_GridCellHeight
+int LevelGenerator::GridCellHeight
     __attribute__((section(".sdata"))) = 0;
-int _14LevelGenerator_GridCellWidth
+int LevelGenerator::GridCellWidth
     __attribute__((section(".sdata"))) = 0;
 
 // The original compilation addresses this fixed name as an ordinary object,
@@ -340,35 +342,8 @@ int _14LevelGenerator_GridCellWidth
 #define LEVELGEN_DECLARE_OUTPUT_NAME_ADDRESS_VIEW
 #include "LEVELGEN.h"
 
-// GCC 2.x emits a private copy of `CClass::~CClass` beside a private base
-// vtable in every owner that derives from CClass.  `MAIN.SYM` records 25 such
-// `_._6CClass` copies and names no base vtable, so both are file-local here.
-// The legal per-address identifier keeps the private target copy distinct.
-extern "C"
-{
-static void __DOT__6CClass_8005A060(CClass *self, int __in_chrg);
-}
-
-// C++ forbids taking a destructor's address, so the owner source provides an
-// addressable ABI alias for the symbol this TU defines below.
-
-// Consecutive eight-byte-aligned small-data words per vtable rather than
-// arrays, so -G8 still yields the target's `addiu $vX, $gp, off` form.
-int __vt_14LevelGenerator
-    __attribute__((section(".sdata"), aligned(8))) = 0;
-static int LevelGen_VTableIndex __attribute__((section(".sdata"))) = 0;
-static int LevelGen_VTableDtor __attribute__((section(".sdata"))) =
-    (int)&LevelGenerator_destruct;
-
-static int LevelGen_BaseVTable
-    __attribute__((section(".sdata"), aligned(8))) = 0;
-static int LevelGen_BaseVTableIndex __attribute__((section(".sdata"))) = 0;
-static int LevelGen_BaseVTableDtor __attribute__((section(".sdata"))) =
-    (int)&__DOT__6CClass_8005A060;
-
 /** Model-placement grid cleared by LevelGenerator::Init. */
-GridCell _14LevelGenerator_GridTab[24][24]
-    __attribute__((section(".data"))) = {{{0}}};
+GridCell LevelGenerator::GridTab[24][24] = {{{0}}};
 
 // === Function implementations (address order) ===
 
@@ -378,16 +353,6 @@ GridCell _14LevelGenerator_GridTab[24][24]
 // Demangled: LevelGenerator::(bool)
 LevelGenerator::LevelGenerator(bool game_build)
 {
-    CClass.vtable = &__vt_14LevelGenerator;
-    EditorInModel *ptr = SourceModelTab;
-    int i = 0x95;
-    do
-    {
-        LevelGenConstructorABI::__13EditorInModel(ptr);
-        i--;
-        ptr++;
-    } while (i != -1);
-    RailInfo_ctor(&OutRails);
     GameBuild = game_build;
     SourceRegion = -1;
     ShellRegion = -1;
@@ -405,35 +370,12 @@ LevelGenerator::LevelGenerator(bool game_build)
 // _._14LevelGenerator
 // Address: 0x800560EC
 // Demangled: LevelGenerator::~LevelGenerator()
-void LevelGenerator_destruct(LevelGenerator *self, int __in_chrg)
+LevelGenerator::~LevelGenerator()
 {
-    self->CClass.vtable = &__vt_14LevelGenerator;
-    self->UnloadModels();
-    self->ClearOutModels();
-    self->ClearFloorModels();
-
-    EditorInModel *start = self->SourceModelTab;
+    UnloadModels();
+    ClearOutModels();
+    ClearFloorModels();
     EditorOutModel::Cleanup();
-    LevelGen_RailInfoDestructor(&self->OutRails, 2);
-
-    EditorInModel *ptr = &self->SourceModelTab[150];
-    if (start != 0 && start != ptr)
-    {
-        do
-        {
-            ptr--;
-            typedef void (*EditorInModelDestructor)(EditorInModel *, int);
-            EditorInModelDestructor dtor =
-                (EditorInModelDestructor)ptr->CClass.vtable[2];
-            dtor(ptr, 2);
-        } while (start != ptr);
-    }
-
-    self->CClass.vtable = &__vt_14LevelGenerator + 4;
-    if (__in_chrg & 1)
-    {
-        ::CClass::operator delete(self);
-    }
 }
 
 /**
@@ -450,11 +392,11 @@ void LevelGenerator::Init(void)
     short cellInit = -1;
     u8 flagInit = 1;
 
-    int base = (int)_14LevelGenerator_GridTab;
-    int rotBase = base + sizeof(_14LevelGenerator_GridTab[0][0].modelIndex);
+    int base = (int)LevelGenerator::GridTab;
+    int rotBase = base + sizeof(LevelGenerator::GridTab[0][0].modelIndex);
 
-    _14LevelGenerator_GridCellWidth = 0x154;
-    _14LevelGenerator_GridCellHeight = 0xAA;
+    LevelGenerator::GridCellWidth = 0x154;
+    LevelGenerator::GridCellHeight = 0xAA;
 
     do
     {
@@ -479,7 +421,7 @@ void LevelGenerator::Init(void)
             x++;
             cellOff += sizeof(GridCell);
         } while (x < 24);
-        layerOff += sizeof(_14LevelGenerator_GridTab[0]);
+        layerOff += sizeof(LevelGenerator::GridTab[0]);
         z++;
     } while (z < 24);
 
@@ -654,7 +596,7 @@ void LevelGenerator::ProcessGrid(void)
             {
                 FloorTab[j][i].modelIndex[slot] = -1;
                 FloorTab[j][i].rot[slot] = 0;
-                if (slot < _14LevelGenerator_GridTab[j][i].numUsedSlots)
+                if (slot < LevelGenerator::GridTab[j][i].numUsedSlots)
                 {
                     FloorTab[j][i].modelIndex[slot] =
                         (short)Floor1X1Piece[slot];
@@ -677,10 +619,10 @@ void LevelGenerator::ProcessGrid(void)
             for (int i = 0; i < 24; i++)
             {
                 if (slot <
-                    _14LevelGenerator_GridTab[j][i].numUsedSlots)
+                    LevelGenerator::GridTab[j][i].numUsedSlots)
                 {
                     int piece_num =
-                        _14LevelGenerator_GridTab[j][i].modelIndex[slot];
+                        LevelGenerator::GridTab[j][i].modelIndex[slot];
                     if (piece_num != -1)
                     {
                         int w;
@@ -688,7 +630,7 @@ void LevelGenerator::ProcessGrid(void)
                         int h;
                         int start_level;
 
-                        switch (_14LevelGenerator_GridTab[j][i].rot[slot])
+                        switch (LevelGenerator::GridTab[j][i].rot[slot])
                         {
                         case 0:
                         case 2:
@@ -869,12 +811,12 @@ void LevelGenerator::GenerateOutModels(void)
     ClearOutModels();
     last_model = 0;
 
-    z = (_14LevelGenerator_GridCellWidth * 24) >> 1;
+    z = (LevelGenerator::GridCellWidth * 24) >> 1;
     {
         int j;
         for (j = 0; j < 24; j++)
         {
-            int x = (_14LevelGenerator_GridCellWidth * -24) >> 1;
+            int x = (LevelGenerator::GridCellWidth * -24) >> 1;
             {
                 int i;
                 for (i = 0; i < 24; i++)
@@ -889,18 +831,18 @@ void LevelGenerator::GenerateOutModels(void)
                             int xoff;
                             int zoff;
 
-                            if (_14LevelGenerator_GridTab[j][i]
+                            if (LevelGenerator::GridTab[j][i]
                                         .modelIndex[slot] == -1 ||
-                                slot >= _14LevelGenerator_GridTab[j][i]
+                                slot >= LevelGenerator::GridTab[j][i]
                                             .numUsedSlots)
                             {
-                                y -= _14LevelGenerator_GridCellHeight;
+                                y -= LevelGenerator::GridCellHeight;
                             }
                             else
                             {
                                 in_model =
                                     &SourceModelTab[
-                                        _14LevelGenerator_GridTab[j][i]
+                                        LevelGenerator::GridTab[j][i]
                                             .modelIndex[slot]];
                                 out_model = static_cast<EditorOutModel *>(
                                     ::CClass::operator new(
@@ -912,7 +854,7 @@ void LevelGenerator::GenerateOutModels(void)
                                             in_model, j * 100 + i);
                                 }
 
-                                switch (_14LevelGenerator_GridTab[j][i]
+                                switch (LevelGenerator::GridTab[j][i]
                                             .rot[slot])
                                 {
                                 case 0:
@@ -961,7 +903,7 @@ void LevelGenerator::GenerateOutModels(void)
                                 out_model->ZCell = (unsigned char)j;
                                 out_model->HCell = height;
                                 out_model->Rot =
-                                    _14LevelGenerator_GridTab[j][i]
+                                    LevelGenerator::GridTab[j][i]
                                         .rot[slot];
 
                                 {
@@ -997,14 +939,14 @@ void LevelGenerator::GenerateOutModels(void)
                                     last_model->Next = out_model;
                                 }
                                 last_model = out_model;
-                                y -= _14LevelGenerator_GridCellHeight;
+                                y -= LevelGenerator::GridCellHeight;
                             }
                         }
                     }
-                    x += _14LevelGenerator_GridCellWidth;
+                    x += LevelGenerator::GridCellWidth;
                 }
             }
-            z -= _14LevelGenerator_GridCellWidth;
+            z -= LevelGenerator::GridCellWidth;
         }
     }
 }
@@ -1227,12 +1169,12 @@ void LevelGenerator::GenerateFloorModels(void)
         }
     }
 
-    z = (_14LevelGenerator_GridCellWidth * 24) >> 1;
+    z = (LevelGenerator::GridCellWidth * 24) >> 1;
     {
         int j;
         for (j = 0; j < 24; j++)
         {
-            int x = (_14LevelGenerator_GridCellWidth * -24) >> 1;
+            int x = (LevelGenerator::GridCellWidth * -24) >> 1;
             {
                 int i;
                 for (i = 0; i < 24; i++)
@@ -1249,7 +1191,7 @@ void LevelGenerator::GenerateFloorModels(void)
 
                             if (FloorTab[j][i].modelIndex[slot] == -1)
                             {
-                                y -= _14LevelGenerator_GridCellHeight;
+                                y -= LevelGenerator::GridCellHeight;
                             }
                             else
                             {
@@ -1342,14 +1284,14 @@ void LevelGenerator::GenerateFloorModels(void)
                                     last_model->Next = out_model;
                                 }
                                 last_model = out_model;
-                                y -= _14LevelGenerator_GridCellHeight;
+                                y -= LevelGenerator::GridCellHeight;
                             }
                         }
                     }
-                    x += _14LevelGenerator_GridCellWidth;
+                    x += LevelGenerator::GridCellWidth;
                 }
             }
-            z -= _14LevelGenerator_GridCellWidth;
+            z -= LevelGenerator::GridCellWidth;
         }
     }
 }
@@ -1392,7 +1334,7 @@ void LevelGenerator::LoadRails(char *file)
     pModelChecksums = Spool_SkipPackets(PSXRegion[SourceRegion].pPSX);
     Trig_LoadTRG(file);
 
-    for (node = 0; node < NumNodes;)
+    for (node = 0; node < NumNodes; )
     {
         short num_links;
         int trickob;
@@ -1446,6 +1388,7 @@ void LevelGenerator::LoadRails(char *file)
                     while (true)
                     {
                         pMaterial = Trig_GetPosition(loc, linked_node);
+                        // FIXME(match): asm barrier — keeps the pMaterial move ahead of `li $a0,0x1C` for CClass::operator new; stripped = score 4 (with the other two sites also stripped, 25); tried: plain/unsigned short/`+= 1` forms.
                         asm volatile("" : "+r"(pMaterial));
                         point = static_cast<RailPoint *>(
                             ::CClass::operator new(sizeof(RailPoint)));
@@ -1475,6 +1418,7 @@ void LevelGenerator::LoadRails(char *file)
                 string->MakeCCW();
             }
         }
+        // FIXME(match): register pin ($v0 for node+1) + asm barrier (node) — the pin picks $v0 over $v1 for the node increment and the barrier keeps the andi before the NumNodes load; stripped = score 3 (pin) / 23 (barrier); tried: node++, node += 1, int next temp, for(;;node++) loop form.
         {
             register int next asm("$2") = node + 1;
             node = (unsigned short)next;
@@ -1527,7 +1471,7 @@ void LevelGenerator::LoadMap(char *load_name)
     FileIO_Sync();
 
     GridCell *loaded_grid = (GridCell *)buf;
-    GridCell *out_grid = &_14LevelGenerator_GridTab[0][0];
+    GridCell *out_grid = &LevelGenerator::GridTab[0][0];
     for (int i = 0; i < 24 * 24; i++)
     {
         int slot = 0;
@@ -1574,7 +1518,7 @@ void LevelGenerator::LoadMap(char *load_name)
  */
 void LevelGenerator::SetMapTheme(int theme)
 {
-    GridCell *grid = &_14LevelGenerator_GridTab[0][0];
+    GridCell *grid = &LevelGenerator::GridTab[0][0];
     for (int i = 0; i < 24 * 24; i++)
     {
         int slot = 0;
@@ -1595,7 +1539,7 @@ void LevelGenerator::SetMapTheme(int theme)
 
     EditorPieces_SetTheme(theme);
 
-    grid = &_14LevelGenerator_GridTab[0][0];
+    grid = &LevelGenerator::GridTab[0][0];
     for (int i = 0; i < 24 * 24; i++)
     {
         int slot = 0;
@@ -1701,7 +1645,7 @@ int LevelGenerator::RemoveModelFromMap(int xmap, int zmap, int *no_lower_than, E
                 if (mod != 0)
                 {
                     KillModel(x, z, slot + s);
-                    _14LevelGenerator_GridTab[z][x].numUsedSlots =
+                    LevelGenerator::GridTab[z][x].numUsedSlots =
                         (unsigned char)(slot + 1);
                 }
             }
@@ -1787,7 +1731,7 @@ u32 *LevelGenerator::CreatePSX(int *ret_region, bool refresh_models)
 
     ClearRegion(LevelGenerator::OutRegion, 0, 0);
     __builtin_memcpy(PSXRegion[LevelGenerator::OutRegion].Filename,
-                     DAT_800da664, 5);
+                     s_EditOutputRegionName, 5);
     *ret_region = LevelGenerator::OutRegion;
 
     pSourcePSX = PSXRegion[SourceRegion].pPSX;
@@ -2064,6 +2008,7 @@ u32 *LevelGenerator::CreatePSX(int *ret_region, bool refresh_models)
  * @param at Optional output buffer; null performs the sizing pass only.
  * @return Number of bytes required by the zone packet.
  */
+static inline ZoneCell *ZC(ZoneCell **t,int z,int x){return &t[z][x];}
 int LevelGenerator::CreateZonePacket(int *at)
 {
     /*
@@ -2076,8 +2021,7 @@ int LevelGenerator::CreateZonePacket(int *at)
 
     if (actual_create)
     {
-        ZoneTab = (ZoneCell **)Mem_New(
-            20 * sizeof(ZoneCell *), 1, 1);
+        ZoneTab = (ZoneCell **)Mem_New(20 * sizeof(ZoneCell *), 1, 1);
         for (i = 0; i < 20; i++)
         {
             ZoneTab[i] = (ZoneCell *)Mem_New(
@@ -2085,7 +2029,7 @@ int LevelGenerator::CreateZonePacket(int *at)
         }
     }
 
-    int zone_length = (_14LevelGenerator_GridCellWidth * 24) / 20;
+    int zone_length = (LevelGenerator::GridCellWidth * 24) / 20;
 
     if (actual_create)
     {
@@ -2108,18 +2052,23 @@ int LevelGenerator::CreateZonePacket(int *at)
             (i == 0) ? OutModelList : FloorModelList;
         for (; model != 0; model = model->Next)
         {
-            int zz1 = 20 - (model->ZCell * _14LevelGenerator_GridCellWidth) / zone_length;
-            int ix0 = (model->XCell * _14LevelGenerator_GridCellWidth) / zone_length;
-            int ix1 = ((model->XCell + model->WCell) * _14LevelGenerator_GridCellWidth +
+            int ix0 = (model->XCell * LevelGenerator::GridCellWidth) / zone_length;
+            int iz0 = (model->ZCell * LevelGenerator::GridCellWidth) / zone_length;
+            int ix1 = ((model->XCell + model->WCell) * LevelGenerator::GridCellWidth +
                        zone_length - 1) / zone_length;
-            int zz0 = 18 - ((model->ZCell + model->LCell) * _14LevelGenerator_GridCellWidth +
-                            zone_length - 1) / zone_length;
+            int iz1 = ((model->ZCell + model->LCell) * LevelGenerator::GridCellWidth +
+                       zone_length - 1) / zone_length;
+            int zz1 = 20 - iz0;
+            int zz0 = 18 - iz1;
 
-            for (int zx = ix0; zx < ix1; zx++)
+            for (int zx = ix0, more = zx < ix1; more; more = (++zx < ix1))
             {
                 for (int zz = zz0; zz < zz1; zz++)
                 {
-                    if (zx >= 0 && zz >= 0 && zx < 20 && zz < 20)
+                    /* This pure temporary preserves the original branch scheduling. */
+                    bool valid_cell =
+                        zx >= 0 && zz >= 0 && zx < 20 && 20 > zz;
+                    if (zx >= 0 && zz >= 0 && zx < 20 && 20 > zz)
                     {
                         if (actual_create)
                         {
@@ -2136,9 +2085,9 @@ int LevelGenerator::CreateZonePacket(int *at)
 
     /* Pass two over the shell models, which carry their own bounding boxes. */
     u32 *pShellPSX = PSXRegion[ShellRegion].pPSX;
-    int start_x = -(_14LevelGenerator_GridCellWidth * 12);
     SModel **ppShellModels =
         (SModel **)((Item *)(pShellPSX + 3) + NumShellModels) + 1;
+    int start_x = -(LevelGenerator::GridCellWidth * 12);
     for (i = 0; i < NumShellModels; i++)
     {
         int *entry = (int *)(pShellPSX + i * 9 + 4);
@@ -2187,9 +2136,7 @@ int LevelGenerator::CreateZonePacket(int *at)
         }
     }
 
-    ZoneBytes = zone_item_count * sizeof(int) +
-                20 * 20 * 4 * sizeof(int) +
-                sizeof(LevelGenZonePacketHeader);
+    ZoneBytes = zone_item_count * sizeof(int) + (20 * ((20 * 4) * sizeof(int)) + sizeof(LevelGenZonePacketHeader));
 
     if (!actual_create)
     {
@@ -2198,25 +2145,31 @@ int LevelGenerator::CreateZonePacket(int *at)
 
     at[0] = 10;
     at[1] = ZoneBytes - 8;
-    at[2] = -(_14LevelGenerator_GridCellWidth * 0xC000);
+    at[2] = -(LevelGenerator::GridCellWidth * 12) << 12;
     at[3] = at[2];
-    at[4] = _14LevelGenerator_GridCellWidth * 0xC000;
+    at[4] = LevelGenerator::GridCellWidth * 0xC000;
     at[5] = at[4];
-    ((short *)at)[12] = 20;
-    ((short *)at)[13] = 20;
+    
 
     /* Each cell reserves two words before its count; the count and trailing
      * zero make the four fixed words included in ZoneBytes. */
+    short *sp = (short *)at + 12;
+    sp[0] = 20;
+    sp[1] = 20;
+    int row;
     int index = sizeof(LevelGenZonePacketHeader) / sizeof(int);
     for (i = 0; i < 20; i++)
     {
+        row = i;
         for (int zx = 0; zx < 20; zx++)
         {
+            int column = zx;
+            ZoneCell **table = ZoneTab;
             index += 2;
-            at[index++] = ZoneTab[i][zx].num;
-            for (int n = 0; n < ZoneTab[i][zx].num; n++)
+            at[index++] = table[row][column].num;
+            for (int n = 0; n < ZoneTab[row][column].num; n++)
             {
-                at[index++] = ZoneTab[i][zx].item[n];
+                at[index++] = ZoneTab[row][column].item[n];
             }
             at[index++] = 0;
         }
@@ -2238,6 +2191,7 @@ int LevelGenerator::CreateZonePacket(int *at)
 void LevelGenerator::CreateRails(void)
 {
     OutRails.Clear();
+    // FIXME(match): register pin ($s1 for model) — the target's jump-to-test inner loop (goto form) only gets model in $s1 with the pin (15 without); natural for/while forms get the register right but emit a duplicated loop test (score 4); tried: for/while/hybrid forms, declaration-first.
     register EditorOutModel *model asm("$17") = OutModelList;
     while (model != 0)
     {
@@ -2280,14 +2234,12 @@ void LevelGenerator::CreateRails(void)
  */
 int GenerateRailNode(short *pData, RailPoint *point, RailPoint *next_point, int next_node)
 {
-    register int pad asm("$3") = ((int)pData & 3) != 0;
+    int pad = ((int)pData & 3) != 0;
     int num_links = next_point != 0;
-    pad = (pad + num_links) & 1;
-    asm volatile("" : "+r"(pad));
-    register int v0 asm("$2") = pad;
-    v0 += 2;
-    v0 = num_links + v0;
-    int size = v0 + 11;
+    pad += num_links;
+    pad &= 1;
+    int trailer = pad + 2;
+    int size = num_links + trailer + 11;
 
     if (!pData)
         return size;
@@ -2302,14 +2254,10 @@ int GenerateRailNode(short *pData, RailPoint *point, RailPoint *next_point, int 
         n = 3;
     }
 
-    register int posOff asm("$5") = n << 1;
     if (pad)
-    {
         n++;
-        posOff = n << 1;
-    }
+    int *pos = (int *)((n << 1) + (int)pData);
     n += 6;
-    int *pos = (int *)(posOff + (int)pData);
 
     pos[0] = point->Pos.vx;
     pos[1] = point->Pos.vy;
@@ -2370,12 +2318,15 @@ void LevelGenerator::FakeTrig(void)
     LevelGenTriggerFileHeader *trig_header =
         (LevelGenTriggerFileHeader *)trigFile;
 
+    short **offsetList = (short **)(trigFile + 6);
     *(unsigned int *)trigFile = 0x4752545f;
     unsigned short nodeCount = (unsigned short)NumNodes;
     trig_header->Version = 2;
     trig_header->NumNodes = nodeCount;
+    // FIXME(match): asm barrier — keeps the header stores (version/nodeCount) and the lhu NumNodes ahead of the OffsetList store (14 without); tried: store reorders, inlined NumNodes, offsetList vs OffsetList uses.
+    asm("" : : "r"(nodeCount), "r"(offsetList));
 
-    OffsetList = (short **)(trigFile + 6);
+    OffsetList = offsetList;
     short *pNode = (short *)(OffsetList + NumNodes);
     OffsetList[0] = pNode;
     pNode[0] = 8;
@@ -2585,22 +2536,13 @@ void LevelGenerator::HideWalls(bool hide)
 
     if (i < num_models)
     {
-		register int offset asm("$2") = i * 4;
-        register u32 *pModelTable asm("$4") =
-            (u32 *)(offset + (int)model_table_base);
-        SModel *wall;
+        SModel **pModelTable = (SModel **)(i * 4 + (int)model_table_base);
         do
         {
             if (hide)
-            {
-                wall = (SModel *)*pModelTable;
-                wall->Flags |= 0x20;
-            }
+                (*pModelTable)->Flags |= 0x20;
             else
-            {
-                wall = (SModel *)*pModelTable;
-                wall->Flags &= 0xffdf;
-            }
+                (*pModelTable)->Flags &= 0xffdf;
             i++;
             pModelTable++;
         } while (i < num_models);
@@ -2642,9 +2584,9 @@ void LevelGenerator::AddModel(int x, int z, int slot, int rot, int index)
     int xworld;
     int zworld;
     int yworld;
-    _14LevelGenerator_GridTab[z][x].modelIndex[slot] = (short)index;
+    LevelGenerator::GridTab[z][x].modelIndex[slot] = (short)index;
     in_model = &SourceModelTab[index];
-    _14LevelGenerator_GridTab[z][x].rot[slot] = (unsigned char)rot;
+    LevelGenerator::GridTab[z][x].rot[slot] = (unsigned char)rot;
 
     out_model = static_cast<EditorOutModel *>(
         ::CClass::operator new(sizeof(EditorOutModel)));
@@ -2696,16 +2638,16 @@ void LevelGenerator::AddModel(int x, int z, int slot, int rot, int index)
     }
 
     out_model->HCell = in_model->h;
-    xworld = (x - 12) * _14LevelGenerator_GridCellWidth + xoff;
-    yworld = -slot * _14LevelGenerator_GridCellHeight;
-    zworld = (12 - z) * _14LevelGenerator_GridCellWidth - zoff;
+    xworld = (x - 12) * LevelGenerator::GridCellWidth + xoff;
+    yworld = -slot * LevelGenerator::GridCellHeight;
+    zworld = (12 - z) * LevelGenerator::GridCellWidth - zoff;
     out_model->XCell = x;
     out_model->YCell = slot;
     out_model->ZCell = z;
     out_model->X = (short)xworld;
     out_model->Y = (short)yworld;
     out_model->Z = (short)zworld;
-    out_model->Rot = _14LevelGenerator_GridTab[z][x].rot[slot];
+    out_model->Rot = LevelGenerator::GridTab[z][x].rot[slot];
 
     for (int n = z; n < z + out_model->LCell; n++)
     {
@@ -2733,39 +2675,8 @@ void LevelGenerator::AddModel(int x, int z, int slot, int rot, int index)
  */
 void LevelGenerator::KillModel(int x, int z, int slot)
 {
-    int xSlotOffset = x * 5 + slot;
-    xSlotOffset <<= 2;
-    int zOffset = z * 15;
-    zOffset <<= 5;
-    xSlotOffset += zOffset;
-    EditorOutModel **slotPtr = (EditorOutModel **)&OutModelMap[0][0];
-    slotPtr = (EditorOutModel **)((char *)slotPtr + xSlotOffset);
-    asm volatile("" : "+r"(slotPtr));
-    register int one asm("$2") = 1;
-    register char *grid asm("$9") =
-        (char *)_14LevelGenerator_GridTab;
-    asm volatile("" : "+r"(grid));
-    int gridOffset = slot << 1;
-    int xGridOffset = x << 4;
-    gridOffset += xGridOffset;
-    register EditorOutModel *model asm("$8") = *slotPtr;
-    register int negOne asm("$3") = -1;
-    model->DeleteModelRequest = (void *)one;
-    register int zGridOffset asm("$2") = z * 3;
-    zGridOffset <<= 7;
-    gridOffset += zGridOffset;
-    gridOffset += (int)grid;
-    *slotPtr = 0;
-    *(short *)gridOffset = negOne;
-}
-
-// GCC emitted this private `CClass::~CClass` copy last in the owner's text, so
-// it stays at the end of the translation unit.
-static void __DOT__6CClass_8005A060(CClass *self, int __in_chrg)
-{
-    self->vtable = &LevelGen_BaseVTable;
-    if (__in_chrg & 1)
-    {
-        ::CClass::operator delete(self);
-    }
+    EditorOutModel *model = OutModelMap[z][x].modelInSlot[slot];
+    model->DeleteModelRequest = (void *)1;
+    OutModelMap[z][x].modelInSlot[slot] = 0;
+    LevelGenerator::GridTab[z][x].modelIndex[slot] = -1;
 }

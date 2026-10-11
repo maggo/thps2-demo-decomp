@@ -26,7 +26,6 @@ struct CRibbon : CNonRenderedBit {
     /** Advance the ribbon history to the supplied position. */
     void SetPos(CVector &pos);
     /** Release ribbon storage through the CBit allocator. */
-    static void operator delete(void *p) { CBit::operator delete(p); }
 };
 
 #endif // CRIBBON_INC_H

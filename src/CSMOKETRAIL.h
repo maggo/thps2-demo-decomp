@@ -13,7 +13,6 @@ struct CSmokeTrail : CRibbon {
     /** Fade active segments and retire the trail when they are gone. */
     void Move();
     /** Release smoke-trail storage through the CBit allocator. */
-    static void operator delete(void *p) { CBit::operator delete(p); }
 };
 
 #endif // CSMOKETRAIL_INC_H

@@ -135,24 +135,3 @@ extern SSaveGame DefaultGameState;
 
 #undef FRONT_DECLARE_DEFAULT_GAME_STATE_VIEW
 #endif
-
-#ifdef FRONT_DECLARE_CMENU_VTABLE_ADDRESS_VIEWS
-#ifndef FRONT_CMENU_VTABLE_ABI_TYPE
-#error FRONT_DECLARE_CMENU_VTABLE_ADDRESS_VIEWS requires a vtable type
-#endif
-
-/** Typed owner view of FRONT's CMenu virtual table. */
-namespace FrontCMenuVTableOwner
-{
-extern "C" FRONT_CMENU_VTABLE_ABI_TYPE __vt_5CMenu;
-}
-
-/** Integer owner view preserving FRONT's constructor/destructor arithmetic. */
-namespace FrontCMenuVTableAddressView
-{
-extern "C" int __vt_5CMenu;
-}
-
-#undef FRONT_CMENU_VTABLE_ABI_TYPE
-#undef FRONT_DECLARE_CMENU_VTABLE_ADDRESS_VIEWS
-#endif

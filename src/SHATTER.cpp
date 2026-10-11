@@ -3,7 +3,7 @@
 // Functions: 12 reconstructed entries
 // Address range: 0x80030F94 - 0x80032888
 //
-// Compiled with cc1plus (GCC 2.91.66-psx). Compiler auto-mangles symbol names.
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 #define SHATTER_OWNER_DECLARATIONS
 #include "SHATTER.h"
@@ -172,34 +172,26 @@ void Shatter_Glass(int n, const CVector &p0, const CVector &p1, const CVector &p
  * @param pos World-space chunk centre.
  * @param Smoke Legacy smoke-selection argument retained by the original ABI.
  */
+static inline void SetSVec(CSVector *p, short x, short y, short z)
+{
+    p->vx = x;
+    p->vy = y;
+    p->vz = z;
+}
+
 CShatterBit::CShatterBit(const CSVector &a, const CSVector &b,
                          const CSVector &c, const CVector &pos, int Smoke)
     : CChunkBit(a, b, c)
 {
     _vf = (ShatterObjectVtable *)&__vt_11CShatterBit;
-    short *angBase;
-    // These empty constraints retain the target's value/address scheduling.
-    // Ordinary int, short, direct-field, and reordered forms were measured;
-    // the best clean form still commuted the addiu pairs in both branches.
     if (Rnd(2) != 0) {
         int v = Rnd(160) + 80;
-        asm("" : "+r"(v));
-        angBase = &mAngVel.vx;
-        mAngVel.vx = (short)v;
-        angBase[1] = 0;
+        SetSVec(&mAngVel, (short)v, 0, 0);
     } else {
         int v = Rnd(160) + 80;
-        asm("" : "+r"(v));
-        angBase = &mAngVel.vx;
-        mAngVel.vx = 0;
-        angBase[1] = (short)v;
+        SetSVec(&mAngVel, 0, (short)v, 0);
     }
-    angBase[2] = 0;
-    // Without these two scheduling boundaries GCC moves the final angular
-    // store into Rnd's delay slot and the lifetime store into SetPos's.
-    asm("");
     mLifetime = (unsigned short)(Rnd(30) + 45);
-    asm("");
     this->SetPos(pos);
     CalculateWorldCoords();
     if (Rnd(2) != 0) {
@@ -804,24 +796,7 @@ void Shatter_MaybeMakeGlassShatterSound(void) {
 }
 
 
-/**
- *
- * Address: 0x80032888
- * Mangled: _GLOBAL_.I.__11CShatterBitRC8CSVectorN21RC7CVectori
- *
- */
-void Shatter_GlobalInit_CShatterBit(void) asm("_GLOBAL_.I.__11CShatterBitRC8CSVectorN21RC7CVectori");
-void Shatter_GlobalInit_CShatterBit(void)
-{
-}
-
-/**
- * `.ctors` table slot for this owner's hand-written global constructor.
- *
- * GCC emits this entry itself for a compiler-generated constructor, but this owner's
- * hook is written by hand, so the entry has to be declared. The sectioned,
- * initialized definition is retained in the object and reproduces the target
- * application object's table sequence.
- */
-static void (*Shatter_GlobalCtorSlot)(void)
-    __attribute__((section(".ctors"))) = Shatter_GlobalInit_CShatterBit;
+struct ShatterInit {
+    ShatterInit() {}
+};
+static ShatterInit shatterInit;

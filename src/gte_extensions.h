@@ -19,6 +19,20 @@
         "lwc2 $27, 8(%0)" \
         : : "r"(v))
 
+#define gte_ldmac1(value) __asm__ volatile ("mtc2 %0, $25" : : "r"(value))
+#define gte_ldmac2(value) __asm__ volatile ("mtc2 %0, $26" : : "r"(value))
+#define gte_ldmac3(value) __asm__ volatile ("mtc2 %0, $27" : : "r"(value))
+
+// Store MAC1-3 as three shorts through fixed scratch registers, like gte_stsv.
+#define gte_stmac_sv(r0) __asm__ volatile ( \
+        "mfc2 $8, $25\n" \
+        "mfc2 $9, $26\n" \
+        "mfc2 $10, $27\n" \
+        "sh $8, 0(%0)\n" \
+        "sh $9, 2(%0)\n" \
+        "sh $10, 4(%0)" \
+        : : "r"(r0) : "$8", "$9", "$10", "memory")
+
 #define gte_ldrgb_word(value) __asm__ volatile ("mtc2 %0, $6" : : "r"(value))
 
 #define gte_ldrot0(value) __asm__ volatile ("ctc2 %0, $0" : : "r"(value))

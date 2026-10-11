@@ -3,11 +3,14 @@
 // Functions: 8 reconstructed entries
 // Address range: 0x8006341C - 0x800643F8
 //
-// Compiled with cc1plus (GCC 2.91.66-psx). Compiler auto-mangles symbol names.
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#define CCLASS_POLY_ITEM_FAMILY
+#define CCLASS_POLY_BADDY_FAMILY
+#define CCAR_NATURAL
+#include "CCLASS_POLY.h"
 #include "CAR.h"
 #include "MAIN.h"
-#include "CITEM.h"
 #include "MECH.h"
 #include "MIPS.h"
 #include "M3D.h"
@@ -17,8 +20,6 @@
 #include "OB.h"
 #undef OB_OWNER_LAYOUT
 #undef OB_LAYOUT_ONLY
-#include "CBODY.h"
-#include "CSUPER.h"
 // Owner-local traffic-car hierarchy used by CAR.cpp.
 #include "globals.h"
 #include <STDDEF.H>
@@ -122,24 +123,7 @@ enum ECarSound {
 /** Target-era external compiler view of the traffic-car sound volume. */
 extern int CarVol;
 
-/** Target-sized virtual dispatch record owned by CAR.cpp. */
-struct CCarVTable {
-    void *reservedClass;
-    void *reservedRtti;
-    void (*destroy)(CCar *, int);
-    void (*die)(CBaddy *);
-    void (*ai)(CCar *);
-    void (*everyFrame)(CBodyOwner *);
-    void (*lightingSetup)(CBodyOwner *);
-    int (*hit)(CBodyOwner *, int, const CVector &, int);
-    void (*deleteStuff)(CBodyOwner *);
-    int (*executeCommand)(CCar *, unsigned short);
-    void (*setVariable)(CBaddy *, unsigned short);
-    short (*getVariable)(CBaddy *, unsigned short);
-};
-
-struct CBruceCarOwner {
-    CSuperOwner CSuper;
+struct CBruceCarOwner : CSuper {
 };
 
 /**
@@ -148,9 +132,8 @@ struct CBruceCarOwner {
  * This remains an owner-local slice: the intervening gameplay state is opaque
  * until the wider CBruce layout is proven across its other owning systems.
  */
-struct CBruceCarCollisionOwner {
-    CSuperOwner CSuper;
-    unsigned char _padToIgnoreCar[0xA7C - sizeof(CSuperOwner)];
+struct CBruceCarCollisionOwner : CSuper {
+    unsigned char _padToIgnoreCar[0xA7C - sizeof(CSuper)];
     CCar *mIgnoreCar;
     unsigned char _padToInBail[0xF7C - 0xA80];
     int mInBail;
@@ -169,41 +152,25 @@ struct SVideoInfo {
     unsigned char _remainingVideoState[188];
 };
 
-typedef char car_item_size_must_be_76[(sizeof(CItemOwner) == 76) ? 1 : -1];
-typedef char car_body_size_must_be_264[(sizeof(CBodyOwner) == 264) ? 1 : -1];
-typedef char car_super_size_must_be_400[(sizeof(CSuperOwner) == 400) ? 1 : -1];
 typedef char car_owner_size_must_be_540[(sizeof(CCar) == 540) ? 1 : -1];
-typedef char car_vtable_size_must_be_48[(sizeof(CCarVTable) == 48) ? 1 : -1];
 typedef char car_bruce_collision_slice_size_must_be_0x1070[
     (sizeof(CBruceCarCollisionOwner) == 0x1070) ? 1 : -1];
 typedef char car_video_info_size_must_be_192[(sizeof(SVideoInfo) == 192) ? 1 : -1];
 
-/* CAR-owned virtual methods use readable source names at their target ABIs. */
-namespace CarMethodABI
+/** Identity views kept for the existing call sites. */
+static inline CVector &Car_Vector(CVector &vector)
 {
-extern "C" void AI__4CCar(CCar *);
-}
-#define CCar_Update CarMethodABI::AI__4CCar
-
-/** Addressable destructor entry used by CAR's owner-local virtual table. */
-void CCar_Destroy(CCar *, int) asm("_._4CCar");
-
-/** Reinterpret the common owner-local vector storage as its public type. */
-static inline CVector &Car_Vector(CVectorOwner &vector)
-{
-    return reinterpret_cast<CVector &>(vector);
+    return vector;
 }
 
-/** Reinterpret a public vector as the identical owner-local storage type. */
-static inline CVectorOwner &Car_OwnerVector(CVector &vector)
+static inline CVector &Car_OwnerVector(CVector &vector)
 {
-    return reinterpret_cast<CVectorOwner &>(vector);
+    return vector;
 }
 
-/** Reinterpret the identical owner-local short-vector storage for BIT's API. */
-static inline const CSVector &Car_ShortVector(const CSVectorOwner &vector)
+static inline const CSVector &Car_ShortVector(const CSVector &vector)
 {
-    return *(const CSVector *)&vector;
+    return vector;
 }
 
 /** Obtain CAR's collision-specific player view at the same object address. */
@@ -214,16 +181,6 @@ static inline const CSVector &Car_ShortVector(const CSVectorOwner &vector)
 
 #include "M3DMATHS.h"
 
-#define CBADDY_DECLARE_DESTRUCTOR
-#define CBADDY_DESTRUCTOR_NAME Car_DestroyBaddy
-#define CBADDY_DESTRUCTOR_RECEIVER CCar
-#include "CBADDYABI.h"
-namespace CarInitItemABI
-{
-extern "C" void InitItem__5CItemPc(CCar *, char *);
-}
-void Car_InitVanItem(CCar *, char *) asm("InitItem__5CItemPc");
-#define Car_InitItem CarInitItemABI::InitItem__5CItemPc
 
 #include "SFX.h"
 #include "OB.h"
@@ -266,11 +223,11 @@ static inline CVector &Car_ZeroVector()
 #include "LOCALTXT.h"
 
 // Car model names loaded from the original small-data contribution.
-extern char DAT_800EA844[];
-extern char DAT_800EA858[];
-extern char DAT_800EA860[];
-extern char DAT_800EA868[];
-extern char DAT_800EA870[];
+extern char s_CarModel_Taxi[];
+extern char s_CarModel_Van[];
+extern char s_CarModel_Cable[];
+extern char s_CarModel_Kart[];
+extern char s_CarModel_Mar[];
 
 extern "C" {
 /**
@@ -282,41 +239,22 @@ extern "C" {
  */
 namespace CarAddressViewOwners
 {
-static char DAT_800EA844[8]
+static char s_CarModel_Taxi[8]
     __attribute__((section(".sdata"), aligned(4))) = "c_taxi";
-static char DAT_800EA84C[12]
+static char s_CarModel_Police[12]
     __attribute__((section(".sdata"), aligned(4))) = "c_police";
-static char DAT_800EA858[8]
+static char s_CarModel_Van[8]
     __attribute__((section(".sdata"), aligned(4))) = "c_van";
-static char DAT_800EA860[8]
+static char s_CarModel_Cable[8]
     __attribute__((section(".sdata"), aligned(4))) = "c_cable";
-static char DAT_800EA868[8]
+static char s_CarModel_Kart[8]
     __attribute__((section(".sdata"), aligned(4))) = "c_kart";
-static char DAT_800EA870[8]
+static char s_CarModel_Mar[8]
     __attribute__((section(".sdata"), aligned(4))) = "c_mar";
 }
 }
 
 #include "GSKATER_STATE.h"
-
-/**
- * Car virtual dispatch table in its original read-only owner section.
- */
-CCarVTable __vt_4CCar
-    __attribute__((section(".rdata"), aligned(8))) = {
-        0,
-        0,
-        CCar_Destroy,
-        (void (*)(CBaddy *))&CBaddy::Die,
-        (void (*)(CCar *))&CCar::AI,
-        (void (*)(CBodyOwner *))&CBody::EveryFrame,
-        (void (*)(CBodyOwner *))&CBody::DoLightingSetup,
-        (int (*)(CBodyOwner *, int, const CVector &, int))&CBody::Hit,
-        (void (*)(CBodyOwner *))&CBody::DeleteStuff,
-        (int (*)(CCar *, unsigned short))&CCar::ExecuteCommand,
-        (void (*)(CBaddy *, unsigned short))&CBaddy::SetVariable,
-        (short (*)(CBaddy *, unsigned short))&CBaddy::GetVariable,
-};
 
 // === Function implementations (address order) ===
 
@@ -332,77 +270,67 @@ CCarVTable __vt_4CCar
  */
 CCar::CCar(short *pInfo, int NodeIndex, int Type)
 {
-    CSuper.CBody.CItem.mType = Type;
+    mType = Type;
     /*
      * GCC otherwise selects $2 for this address and commutes the adjacent
      * type/update stores.  Direct assignment, an ordinary local, and both
      * store orders were measured; the best clean form still differs in three
      * instructions and two relocation positions.
      */
-    register CCarVTable *carVtable asm("$3") = &__vt_4CCar;
-    CSuper.CBody.CItem._vf = carVtable;
     mLoopingSoundUpdate = 1;
 
-    int soundId;
     switch (Type)
     {
     case CAR_TYPE_TAXI:
-        Car_InitItem(this, DAT_800EA844);
-        soundId = CAR_SOUND_TAXI_ENGINE;
-        goto play_sound;
+        InitItem(s_CarModel_Taxi);
+        mLoopingSound = SFX_PlayPos(CAR_SOUND_TAXI_ENGINE, Car_Vector(mPos), 0);
+        break;
     case CAR_TYPE_POLICE:
         mLoopingSoundUpdate = 0;
-        Car_InitItem(this, CarAddressViewOwners::DAT_800EA84C);
+        InitItem(CarAddressViewOwners::s_CarModel_Police);
         break;
     case CAR_TYPE_VAN:
-        Car_InitVanItem(this, DAT_800EA858);
-        soundId = CAR_SOUND_VAN_ENGINE;
-        goto play_sound;
+        InitItem(s_CarModel_Van);
+        mLoopingSound = SFX_PlayPos(CAR_SOUND_VAN_ENGINE, Car_Vector(mPos), 0);
+        break;
     case CAR_TYPE_CABLE:
-        Car_InitItem(this, DAT_800EA860);
-        soundId = CAR_SOUND_CABLE_ENGINE;
-        goto play_sound;
+        InitItem(s_CarModel_Cable);
+        mLoopingSound = SFX_PlayPos(CAR_SOUND_CABLE_ENGINE, Car_Vector(mPos), 0);
+        break;
     case CAR_TYPE_KART:
-        Car_InitItem(this, DAT_800EA868);
-        soundId = CAR_SOUND_VAN_ENGINE;
-        goto play_sound;
+        InitItem(s_CarModel_Kart);
+        mLoopingSound = SFX_PlayPos(CAR_SOUND_VAN_ENGINE, Car_Vector(mPos), 0);
+        break;
     case CAR_TYPE_MAR:
-        Car_InitItem(this, DAT_800EA870);
-        soundId = CAR_SOUND_MAR_ENGINE;
-        goto play_sound;
+        InitItem(s_CarModel_Mar);
+        mLoopingSound = SFX_PlayPos(CAR_SOUND_MAR_ENGINE, Car_Vector(mPos), 0);
+        break;
     }
-    goto after_sound;
 
-play_sound:
-    mLoopingSound = SFX_PlayPos(
-        soundId, Car_Vector(CSuper.CBody.CItem.mPos), 0);
-
-after_sound:
     if (mLoopingSoundUpdate != 0)
     {
         SFX_ModifyVol(mLoopingSound, 0, 0);
     }
 
     CarVol = 300;
-    ::CBody *body = reinterpret_cast< ::CBody *>(this);
-    body->AttachTo(&BaddyList);
-    CSuper.mAnimSpeed = CAR_ANIMATION_SPEED;
-    reinterpret_cast< ::CSuper *>(&CSuper)->CycleAnim(0, 1);
+    AttachTo(&BaddyList);
+    mAnimSpeed = CAR_ANIMATION_SPEED;
+    CycleAnim(0, 1);
 
     mGroundToOrigin = 52;
     mOriginToEye = 32;
-    CSuper.CBody.mHealth = 60;
-    short *pos = body->SquirtPos(pInfo);
-    body->SquirtAngles(pos);
+    mHealth = 60;
+    short *pos = SquirtPos(pInfo);
+    SquirtAngles(pos);
 
-    CSuper.CBody.mNode = NodeIndex;
+    mNode = NodeIndex;
     unsigned short *links = Trig_GetLinksPointer(NodeIndex);
     mCurrentRoadSegment = links[1];
     Trig_GetPosition(
-        Car_Vector(CSuper.CBody.CItem.mPos),
+        Car_Vector(mPos),
         mCurrentRoadSegment);
 
-    CSuper.CBody.CItem.mPos.y -= CAR_ROAD_HEIGHT;
+    mPos.vy -= CAR_ROAD_HEIGHT;
 }
 
 /**
@@ -414,15 +342,9 @@ after_sound:
  * @param self Car being destroyed.
  * @param __in_chrg Hidden GCC ownership flags.
  */
-void CCar_Destroy(CCar *self, int __in_chrg)
+CCar::~CCar()
 {
-    self->CSuper.CBody.CItem._vf = &__vt_4CCar;
-    reinterpret_cast<CBody *>(self)->DeleteFrom(&BaddyList);
-    Car_DestroyBaddy(self, 0);
-    if (__in_chrg & 1)
-    {
-        ::CItem::operator delete(self);
-    }
+    DeleteFrom(&BaddyList);
 }
 
 /**
@@ -465,8 +387,8 @@ static void CollideWithSkater(CCar *pCar, CBruce *pSkater, const MATRIX &tm, sho
     // The original uses an unsigned range check, which also rejects a
     // negative sentinel returned by the coarse distance helper.
     if ((unsigned int)Utils_CrapDist(
-            Car_Vector(skater->CSuper.CBody.CItem.mPos),
-            Car_Vector(pCar->CSuper.CBody.CItem.mPos)) >= 500)
+            Car_Vector(skater->mPos),
+            Car_Vector(pCar->mPos)) >= 500)
         return;
 
     int OldX;
@@ -476,18 +398,18 @@ static void CollideWithSkater(CCar *pCar, CBruce *pSkater, const MATRIX &tm, sho
     int NewY;
     int NewZ;
 
-    OldX = skater->CSuper.CBody.mOldPos.x -
-        pCar->CSuper.CBody.CItem.mPos.x;
-    OldY = skater->CSuper.CBody.mOldPos.y -
-        pCar->CSuper.CBody.CItem.mPos.y;
-    OldZ = skater->CSuper.CBody.mOldPos.z -
-        pCar->CSuper.CBody.CItem.mPos.z;
-    NewX = skater->CSuper.CBody.CItem.mPos.x -
-        pCar->CSuper.CBody.CItem.mPos.x;
-    NewY = skater->CSuper.CBody.CItem.mPos.y -
-        pCar->CSuper.CBody.CItem.mPos.y;
-    NewZ = skater->CSuper.CBody.CItem.mPos.z -
-        pCar->CSuper.CBody.CItem.mPos.z;
+    OldX = skater->mOldPos.vx -
+        pCar->mPos.vx;
+    OldY = skater->mOldPos.vy -
+        pCar->mPos.vy;
+    OldZ = skater->mOldPos.vz -
+        pCar->mPos.vz;
+    NewX = skater->mPos.vx -
+        pCar->mPos.vx;
+    NewY = skater->mPos.vy -
+        pCar->mPos.vy;
+    NewZ = skater->mPos.vz -
+        pCar->mPos.vz;
 
     gte_ldrot0(CAR_ROTATION_WORD(tm, 0));
     gte_ldrot1(CAR_ROTATION_WORD(tm, 1));
@@ -557,21 +479,21 @@ static void CollideWithSkater(CCar *pCar, CBruce *pSkater, const MATRIX &tm, sho
         return;
 
     int CarHeight = 0;
-    if (pCar->CSuper.CBody.CItem.mType == CAR_TYPE_VAN)
+    if (pCar->mType == CAR_TYPE_VAN)
         CarHeight = CAR_VAN_HEIGHT;
-    else if (pCar->CSuper.CBody.CItem.mType == CAR_TYPE_CABLE)
+    else if (pCar->mType == CAR_TYPE_CABLE)
         CarHeight = CAR_CABLE_HEIGHT;
 
     if (skater->mInBail == 0 &&
         skater->mPhysicsState == 1 &&
         CarHeight <
-            pCar->CSuper.CBody.CItem.mPos.y -
-            skater->CSuper.CBody.CItem.mPos.y)
+            pCar->mPos.vy -
+            skater->mPos.vy)
     {
-        skater->CSuper.CBody.mVel.x >>= 1;
-        skater->CSuper.CBody.mVel.y >>= 1;
-        skater->CSuper.CBody.mVel.z >>= 1;
-        skater->CSuper.CBody.mVel.y -= CAR_OVERHEAD_Y_IMPULSE;
+        skater->mVel.vx >>= 1;
+        skater->mVel.vy >>= 1;
+        skater->mVel.vz >>= 1;
+        skater->mVel.vy -= CAR_OVERHEAD_Y_IMPULSE;
 
         pSkater->Vibrate(8, 1, 150);
         SFX_Grunt(pSkater);
@@ -584,7 +506,7 @@ static void CollideWithSkater(CCar *pCar, CBruce *pSkater, const MATRIX &tm, sho
         {
             pSkater->SetAnglesFromHeading();
             Bit_SetSparkTrajectory(
-                Car_ShortVector(skater->CSuper.CBody.CItem.mAngles));
+                Car_ShortVector(skater->mAngles));
 
             CSVector cone;
             cone.vx = 450;
@@ -615,8 +537,8 @@ static void CollideWithSkater(CCar *pCar, CBruce *pSkater, const MATRIX &tm, sho
     {
     case 0:
     {
-        int vx = pCar->CSuper.CBody.mVel.x;
-        int vz = pCar->CSuper.CBody.mVel.z;
+        int vx = pCar->mVel.vx;
+        int vz = pCar->mVel.vz;
         int absX = CarAbs(vx);
         int absZ = CarAbs(vz);
         if (absZ < absX)
@@ -635,21 +557,21 @@ static void CollideWithSkater(CCar *pCar, CBruce *pSkater, const MATRIX &tm, sho
                 offset = -offset;
             vx += offset;
         }
-        skater->CSuper.CBody.mVel.x = vx;
+        skater->mVel.vx = vx;
         // Direct member use changes the target's three-instruction load order.
-        int carVelY = pCar->CSuper.CBody.mVel.y;
-        skater->CSuper.CBody.mVel.z = vz;
-        skater->CSuper.CBody.mVel.y = carVelY - CAR_LAUNCH_Y_OFFSET;
+        int carVelY = pCar->mVel.vy;
+        skater->mVel.vz = vz;
+        skater->mVel.vy = carVelY - CAR_LAUNCH_Y_OFFSET;
         break;
     }
     case 1:
     {
         // Folding this load changes 69 instructions and 14 relocations.
-        int carVelX = pCar->CSuper.CBody.mVel.x;
-        skater->CSuper.CBody.mVel.y = -CAR_SIDE_Y_IMPULSE;
-        skater->CSuper.CBody.mVel.x = -carVelX >> 2;
-        skater->CSuper.CBody.mVel.z =
-            -pCar->CSuper.CBody.mVel.z >> 2;
+        int carVelX = pCar->mVel.vx;
+        skater->mVel.vy = -CAR_SIDE_Y_IMPULSE;
+        skater->mVel.vx = -carVelX >> 2;
+        skater->mVel.vz =
+            -pCar->mVel.vz >> 2;
         break;
     }
     }
@@ -667,7 +589,7 @@ static void CollideWithSkater(CCar *pCar, CBruce *pSkater, const MATRIX &tm, sho
      * statement so it happens in place, in the register the type was loaded
      * into, exactly as the original does.
      */
-    int carType = pCar->CSuper.CBody.CItem.mType;
+    int carType = pCar->mType;
     carType -= CAR_TYPE_TAXI;
     switch (carType)
     {
@@ -706,10 +628,10 @@ static void CollideWithSkaters(CCar *pCar)
     short *pBox;
 
     if ((GVInfo1.VideoMode != 2) && (GVInfo2.VideoMode != 2)) {
-        m = PSXRegion[pCar->CSuper.CBody.CItem.mRegion].ppModels[4];
+        m = PSXRegion[pCar->mRegion].ppModels[4];
         pBox = ((CarModelBounds *)&m->Box)->Half;
         M3dMaths_TransposeMat(
-            reinterpret_cast<unsigned short *>(&pCar->CSuper.mTransform),
+            reinterpret_cast<unsigned short *>(&pCar->mTransform),
             reinterpret_cast<unsigned short *>(&tm));
         CollideWithSkater(pCar, GSkater[0], tm, pBox);
         if (GSkater[1] != 0) {
@@ -746,14 +668,14 @@ static void HonkAtSkaters(CCar *pCar, CVector Front)
         for (; Skater < GNumberOfPlayers; ppSkater++, Skater++)
         {
             if (static_cast<int>(Utils_CrapDist(
-                    Car_Vector(pCar->CSuper.CBody.CItem.mPos),
-                    Car_Vector(CAR_SKATER_PREFIX(*ppSkater)->CSuper.CBody.CItem.mPos))) < 2000)
+                    Car_Vector(pCar->mPos),
+                    Car_Vector(CAR_SKATER_PREFIX(*ppSkater)->mPos))) < 2000)
             {
                 int LeftZ = Front.vz;
-                int VecX = CAR_SKATER_PREFIX(*ppSkater)->CSuper.CBody.CItem.mPos.x -
-                    pCar->CSuper.CBody.CItem.mPos.x;
-                int VecZ = CAR_SKATER_PREFIX(*ppSkater)->CSuper.CBody.CItem.mPos.z -
-                    pCar->CSuper.CBody.CItem.mPos.z;
+                int VecX = CAR_SKATER_PREFIX(*ppSkater)->mPos.vx -
+                    pCar->mPos.vx;
+                int VecZ = CAR_SKATER_PREFIX(*ppSkater)->mPos.vz -
+                    pCar->mPos.vz;
                 int RightX;
                 if (Mips_DotProd2Sign(
                         Front.vx - LeftZ, VecX, Front.vx + LeftZ, VecZ) > 0)
@@ -773,7 +695,7 @@ static void HonkAtSkaters(CCar *pCar, CVector Front)
     {
         if (pCar->mHonkLock == 0)
         {
-            switch (pCar->CSuper.CBody.CItem.mType)
+            switch (pCar->mType)
             {
             case CAR_TYPE_TAXI:
                 SFX_PlayX(
@@ -816,7 +738,7 @@ static void HonkAtSkaters(CCar *pCar, CVector Front)
  *
  * @param car Traffic car being advanced.
  */
-void CCar_Update(CCar *car)
+void CCar::AI()
 {
     CVector SegStart;
     CVector SegEnd;
@@ -830,21 +752,21 @@ void CCar_Update(CCar *car)
     int MajorAxis;
     int FirstTimeThroughLoop;
 
-    if (car->mLoopingSoundUpdate != -1)
+    if (mLoopingSoundUpdate != -1)
     {
         // Reloading the member at the call changes 284 instructions and
         // three relocations by disrupting the method's register allocation.
-        unsigned int loopingSound = car->mLoopingSound;
+        unsigned int loopingSound = mLoopingSound;
         if (loopingSound != 0)
         {
-            int remainder = XFrames % car->mLoopingSoundUpdate;
+            int remainder = XFrames % mLoopingSoundUpdate;
             int t = SFXLEVEL;
             SFXLEVEL = SFXLEVEL * CarVol / 100;
             if (remainder == 0)
             {
                 SFX_ModifyPos(
                     loopingSound,
-                    Car_Vector(car->CSuper.CBody.CItem.mPos), 0);
+                    Car_Vector(mPos), 0);
             }
             SFXLEVEL = t;
         }
@@ -852,16 +774,16 @@ void CCar_Update(CCar *car)
 
     FirstTimeThroughLoop = 1;
     // CSuperOwner is CAR's target-proven view of the inherited CSuper object.
-    M3d_BuildTransform(reinterpret_cast<CSuper *>(&car->CSuper));
-    CollideWithSkaters(car);
+    M3d_BuildTransform(this);
+    CollideWithSkaters(this);
 
     do
     {
         unsigned short *links =
-            Trig_GetLinksPointer(car->mCurrentRoadSegment);
+            Trig_GetLinksPointer(mCurrentRoadSegment);
         NextSegment = links[1];
 
-        Trig_GetPosition(SegStart, car->mCurrentRoadSegment);
+        Trig_GetPosition(SegStart, mCurrentRoadSegment);
         SegStart.vy -= CAR_ROAD_HEIGHT;
         Trig_GetPosition(SegEnd, NextSegment);
         SegEnd.vy -= CAR_ROAD_HEIGHT;
@@ -874,7 +796,7 @@ void CCar_Update(CCar *car)
             FirstTimeThroughLoop = 0;
             Speed = InitialSpeed = Mips_CVecDotProd(
                 &SegDir, reinterpret_cast<CVector *>(
-                    &car->CSuper.CBody.mVel));
+                    &mVel));
             if (Speed < 0)
             {
                 Speed = 0;
@@ -884,20 +806,20 @@ void CCar_Update(CCar *car)
                 Speed += CAR_ACCELERATION;
             }
 
-            car->CSuper.CBody.mVel.x =
+            mVel.vx =
                 Mips_FixMul(SegDir.vx, Speed);
-            car->CSuper.CBody.mVel.y =
+            mVel.vy =
                 Mips_FixMul(SegDir.vy, Speed);
-            car->CSuper.CBody.mVel.z =
+            mVel.vz =
                 Mips_FixMul(SegDir.vz, Speed);
         }
         else
         {
-            car->CSuper.CBody.mVel.x =
+            mVel.vx =
                 Mips_FixMul(SegDir.vx, InitialSpeed);
-            car->CSuper.CBody.mVel.y =
+            mVel.vy =
                 Mips_FixMul(SegDir.vy, InitialSpeed);
-            car->CSuper.CBody.mVel.z =
+            mVel.vz =
                 Mips_FixMul(SegDir.vz, InitialSpeed);
         }
 
@@ -922,19 +844,19 @@ void CCar_Update(CCar *car)
         {
         case 0:
             Length = ((SegEnd.vx - SegStart.vx) / SegDir.vx) << 12;
-            t = ((car->CSuper.CBody.CItem.mPos.x - SegStart.vx) /
+            t = ((mPos.vx - SegStart.vx) /
                  SegDir.vx) << 12;
             break;
 
         case 1:
             Length = ((SegEnd.vy - SegStart.vy) / SegDir.vy) << 12;
-            t = ((car->CSuper.CBody.CItem.mPos.y - SegStart.vy) /
+            t = ((mPos.vy - SegStart.vy) /
                  SegDir.vy) << 12;
             break;
 
         case 2:
             Length = ((SegEnd.vz - SegStart.vz) / SegDir.vz) << 12;
-            t = ((car->CSuper.CBody.CItem.mPos.z - SegStart.vz) /
+            t = ((mPos.vz - SegStart.vz) /
                  SegDir.vz) << 12;
             break;
         }
@@ -942,22 +864,22 @@ void CCar_Update(CCar *car)
         if (Length - (Length >> 4) < t)
         {
             Speed -= Speed >> 4;
-            car->CSuper.CBody.mVel.x -=
-                car->CSuper.CBody.mVel.x >> 4;
-            car->CSuper.CBody.mVel.y -=
-                car->CSuper.CBody.mVel.y >> 4;
-            car->CSuper.CBody.mVel.z -=
-                car->CSuper.CBody.mVel.z >> 4;
+            mVel.vx -=
+                mVel.vx >> 4;
+            mVel.vy -=
+                mVel.vy >> 4;
+            mVel.vz -=
+                mVel.vz >> 4;
         }
 
         t += Speed;
         if (t >= 0 && t <= Length)
         {
-            car->CSuper.CBody.CItem.mPos.x +=
+            mPos.vx +=
                 Mips_FixMul(SegDir.vx, Speed);
-            car->CSuper.CBody.CItem.mPos.y +=
+            mPos.vy +=
                 Mips_FixMul(SegDir.vy, Speed);
-            car->CSuper.CBody.CItem.mPos.z +=
+            mPos.vz +=
                 Mips_FixMul(SegDir.vz, Speed);
             RemainingSpeed = 0;
         }
@@ -965,41 +887,41 @@ void CCar_Update(CCar *car)
         {
             Trig_GetLinksPointer(NextSegment);
             RemainingSpeed = t - Length;
-            car->mCurrentRoadSegment = NextSegment;
-            car->CSuper.CBody.CItem.mPos = Car_OwnerVector(SegEnd);
+            mCurrentRoadSegment = NextSegment;
+            mPos = Car_OwnerVector(SegEnd);
         }
 
     } while ((Speed = RemainingSpeed) != 0);
 
     int TargetAngle = ratan2(-SegDir.vx, -SegDir.vz) & CAR_ANGLE_MASK;
     int d = GetDeltaAngle(
-        car->CSuper.CBody.CItem.mAngles.vy, TargetAngle);
+        mAngles.vy, TargetAngle);
     if (CarAbs(d) < CAR_TURN_SNAP_THRESHOLD)
     {
-        car->CSuper.CBody.CItem.mAngles.vy = TargetAngle;
+        mAngles.vy = TargetAngle;
     }
     else
     {
-        car->CSuper.CBody.CItem.mAngles.vy =
-            (car->CSuper.CBody.CItem.mAngles.vy + (d >> 2)) &
+        mAngles.vy =
+            (mAngles.vy + (d >> 2)) &
             CAR_ANGLE_MASK;
     }
 
     TargetAngle = ratan2(SegDir.vy, CAR_FIXED_ONE) & CAR_ANGLE_MASK;
     d = GetDeltaAngle(
-        car->CSuper.CBody.CItem.mAngles.vx, TargetAngle);
+        mAngles.vx, TargetAngle);
     if (CarAbs(d) < CAR_TURN_SNAP_THRESHOLD)
     {
-        car->CSuper.CBody.CItem.mAngles.vx = TargetAngle;
+        mAngles.vx = TargetAngle;
     }
     else
     {
-        car->CSuper.CBody.CItem.mAngles.vx =
-            (car->CSuper.CBody.CItem.mAngles.vx + (d >> 3)) &
+        mAngles.vx =
+            (mAngles.vx + (d >> 3)) &
             CAR_ANGLE_MASK;
     }
 
-    HonkAtSkaters(car, SegDir);
+    HonkAtSkaters(this, SegDir);
 }
 
 /**

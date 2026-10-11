@@ -3,7 +3,7 @@
 // Functions: 36 reconstructed entries
 // Address range: 0x80033160 - 0x80036848
 //
-// Compiled with cc1plus (GCC 2.91.66-psx). Compiler auto-mangles symbol names.
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 #define MAIN_OWNER_DECLARATIONS
 #include "MAIN.h"
@@ -14,7 +14,7 @@
 #include "VIDEO.h"
 #include "PHYSICS.h"
 #include "RFRONT.h"
-#include "COMPCHECK_H.h"
+#include "globals.h"
 #include "CITEM.h"
 #include "SHELL.h"
 #include "CARD.h"
@@ -133,7 +133,7 @@ typedef CCamera MainCreationCamera;
  */
     int Cheat_FlipScreen __attribute__((section(".sdata"))) = 0;
     short *GTricks __attribute__((section(".sdata"))) = 0;
-    char Code_String[9] __attribute__((section(".sdata"))) = "12345678";
+    char Code_String[9] = "12345678";
     int GGame __attribute__((section(".sdata"))) = 1;
     int GNumberOfPlayers __attribute__((section(".sdata"))) = 1;
     int GAutoTest __attribute__((section(".sdata"))) = 0;
@@ -188,161 +188,17 @@ static char *pAutoTestRestartName __attribute__((section(".sdata"))) = 0;
     int PatchX __attribute__((section(".sdata"))) = 16;
     int PatchY __attribute__((section(".sdata"))) = 150;
 
-/** Select-button edge latch owned by Display. */
-static int Display_Released asm("Released.30")
-    __attribute__((section(".sdata"))) = 1;
+#include "COMPCHECK_H.h"
 
-/** MAIN-owned frame-loop state stored alongside the FPS counters. */
-static unsigned int LoopTimer __attribute__((section(".sdata"))) = 0;
-
-int FPSIndex __attribute__((section(".sdata"))) = 0;
-
-/**
- * MAIN-private storage that also needs compiler-distinct absolute address
- * views remains namespace-scoped while retaining its target C symbols.
- */
-namespace MainAddressViewOwners
-{
-extern "C"
-{
-static char Main_fpsFormat[]
-    __attribute__((section(".sdata"))) = " %d FPS";
-}
-}
-
-/**
- * Small diagnostic strings retained by the original main.obj data image.
- */
-namespace MainAddressViewOwners
-{
-extern "C"
-{
-    static char DefaultPSH[]
-        __attribute__((section(".sdata"))) = "sk2anim";
-}
-}
-    static char Main_gameFontName[]
-        __attribute__((section(".sdata"))) = "ingame1.fnt";
-    int MemTotal __attribute__((section(".sdata"))) = 0;
-    static char Main_systemAreaLabel[]
-        __attribute__((section(".sdata"))) = "System Area";
-    static char Main_codeLabel[]
-        __attribute__((section(".sdata"))) = "Code";
-    static char Main_polyBuffersLabel[]
-        __attribute__((section(".sdata"))) = "2 Poly Buffers ";
-    static char Main_orderingTablesLabel[]
-        __attribute__((section(".sdata"))) = "2 OTs";
-    static char Main_tricksFileName[]
-        __attribute__((section(".sdata"))) = "Tricks.bin";
-    static char Main_triggerFileLabel[]
-        __attribute__((section(".sdata"))) = ".TRG file";
-    static char Main_classUsageLabel[]
-        __attribute__((section(".sdata"))) = "CClass usage";
-    static char Main_palettesLabel[]
-        __attribute__((section(".sdata"))) = "Palletes";
-    static char Main_packRegionsLabel[]
-        __attribute__((section(".sdata"))) = "Pack Regions";
-    static char Main_textureInfoLabel[]
-        __attribute__((section(".sdata"))) = "Texture Info";
-    static char Main_vabHeadersLabel[]
-        __attribute__((section(".sdata"))) = "VAB Headers";
-    static char Main_memoryDivider[]
-        __attribute__((section(".sdata"))) = "---------\n";
-    static char Main_freeMemoryLabel[]
-        __attribute__((section(".sdata"))) = "Free Memory";
-    int DemoDiskMode __attribute__((section(".sdata"))) = 0;
-
-namespace MainAddressViewOwners
-{
-extern "C"
-{
-    static char s_xxx_main_800d976c[]
-        __attribute__((section(".sdata"))) = "xxx main\n";
-    static char DAT_800d9778[]
-        __attribute__((section(".sdata"))) = "9,";
-    static char DAT_800d977c[]
-        __attribute__((section(".sdata"))) = "10,";
-    static char DAT_800d9780[]
-        __attribute__((section(".sdata"))) = "11,";
-    static char DAT_800d9784[]
-        __attribute__((section(".sdata"))) = "12,";
-    static char DAT_800d9788[]
-        __attribute__((section(".sdata"))) = "13\n";
-    static char s_s2bgd0_bmp_800d978c[]
-        __attribute__((section(".sdata"))) = "s2bgd0.bmp";
-    static char s_s2market_bmp_800d9798[]
-        __attribute__((section(".sdata"))) = "s2market.bmp";
-}
-}
-
-    void *OldSP __attribute__((section(".sdata"))) = 0;
-    int CurrentGameLevel __attribute__((section(".sdata"))) = 0;
-    int CurrentWaterDamage __attribute__((section(".sdata"))) = 0;
-    int CurrentDifficultyLevel __attribute__((section(".sdata"))) = 0;
-    int XFrames __attribute__((section(".sdata"))) = 0;
-    int TimeScale __attribute__((section(".sdata"))) = 0;
-    int TimeScaleSquared __attribute__((section(".sdata"))) = 0;
-    unsigned char *PolyBufferEnd __attribute__((section(".sdata"))) = 0;
-    int GState __attribute__((section(".sdata"))) = 0;
-    int GSpin __attribute__((section(".sdata"))) = 0;
-    int GSpinSpeed __attribute__((section(".sdata"))) = 0;
-    int GStartTime __attribute__((section(".sdata"))) = 0;
-    int GSkaterRegion[2] __attribute__((section(".sdata"))) = {0, 0};
-    int GHorsePlayer __attribute__((section(".sdata"))) = 0;
-    int GHorseMode __attribute__((section(".sdata"))) = 0;
-    int GHorseScore __attribute__((section(".sdata"))) = 0;
-    int GHorseDoneStart __attribute__((section(".sdata"))) = 0;
-    int GHorseRestart __attribute__((section(".sdata"))) = 0;
-    /** Per-player counts of letters accumulated in the current HORSE round. */
-    int GHorseLetters[2] __attribute__((section(".sdata"))) = {0, 0};
-    int GHorseCursorPos __attribute__((section(".sdata"))) = 0;
-    int GHorseWaitTime __attribute__((section(".sdata"))) = 0;
-    int GHorseClearInput2 __attribute__((section(".sdata"))) = 0;
-    char GVideoFlags __attribute__((section(".sdata"))) = 0;
-    short *GTricksKeys __attribute__((section(".sdata"))) = 0;
-    short *GGrindTricksList __attribute__((section(".sdata"))) = 0;
-    short *GBailsList __attribute__((section(".sdata"))) = 0;
-    CBruce *GSkater[2]
-        __attribute__((section(".sdata"))) = {0, 0};
-
-    CPowerUp *GPowS __attribute__((section(".sdata"))) = 0;
-    CPowerUp *GPowK __attribute__((section(".sdata"))) = 0;
-    CPowerUp *GPowA __attribute__((section(".sdata"))) = 0;
-    CPowerUp *GPowT __attribute__((section(".sdata"))) = 0;
-    CPowerUp *GPowE __attribute__((section(".sdata"))) = 0;
-    CPowerUp *GPowTape __attribute__((section(".sdata"))) = 0;
-    int GClear1 __attribute__((section(".sdata"))) = 0;
-    int GClear2 __attribute__((section(".sdata"))) = 0;
-    int GRenderedInvisible __attribute__((section(".sdata"))) = 0;
-    int GRenderedCulled __attribute__((section(".sdata"))) = 0;
-    int GRenderedFast __attribute__((section(".sdata"))) = 0;
-    int GRenderedNonRotated __attribute__((section(".sdata"))) = 0;
-    int GRenderedRotated __attribute__((section(".sdata"))) = 0;
-    int NumPolyF3 __attribute__((section(".sdata"))) = 0;
-    int NumPolyFT3 __attribute__((section(".sdata"))) = 0;
-    int NumPolyG3 __attribute__((section(".sdata"))) = 0;
-    int NumPolyGT3 __attribute__((section(".sdata"))) = 0;
-    int NumPolyF4 __attribute__((section(".sdata"))) = 0;
-    int NumPolyFT4 __attribute__((section(".sdata"))) = 0;
-    int NumPolyG4 __attribute__((section(".sdata"))) = 0;
-    int NumPolyGT4 __attribute__((section(".sdata"))) = 0;
-    int NumSetTile __attribute__((section(".sdata"))) = 0;
-    int NumTile1 __attribute__((section(".sdata"))) = 0;
-    int NumOther __attribute__((section(".sdata"))) = 0;
-    int CloseCam __attribute__((section(".sdata"))) = 0;
-    int PrimitiveCount __attribute__((section(".sdata"))) = 0;
-    int XFramesShifted __attribute__((section(".sdata"))) = 0;
-    int FPS __attribute__((section(".sdata"))) = 0;
-    static int Main_FPSTail[2]
-        __attribute__((section(".sdata"))) = {0, 0};
-    int LastXblanks __attribute__((section(".sdata"))) = 0;
-    int Profile_Bop __attribute__((section(".sdata"))) = 0;
-    Sprite *pScoreSprite __attribute__((section(".sdata"))) = 0;
-    Sprite *pSpecialSprite __attribute__((section(".sdata"))) = 0;
-    Sprite *pBarSprite __attribute__((section(".sdata"))) = 0;
-    Sprite *pPausedSprite __attribute__((section(".sdata"))) = 0;
-    int MemDumpLoop __attribute__((section(".sdata"))) = 0;
-    int DemoSize __attribute__((section(".sdata"))) = 0;
+/** Frame-loop state defined after the display-owned latch. */
+extern int GSpinSpeed;
+extern int CloseCam;
+extern int FPS;
+extern int LastXblanks;
+extern int XFramesShifted;
+extern char GVideoFlags;
+extern int MemDumpLoop;
+extern void *OldSP;
 
 #include "PAD.h"
 
@@ -472,11 +328,6 @@ extern "C"
     #define FRONTFLOWSTATE_DECLARE_BACKOUT
     #include "FRONTFLOWSTATE.h"
     #include "GENERATELEVEL.h"
-    extern char DAT_800d9778[];
-    extern char DAT_800d977c[];
-    extern char DAT_800d9780[];
-    extern char DAT_800d9784[];
-    extern char DAT_800d9788[];
     // Draw_Rect / Mick_Darken globals (absolute addressing)
     // db.obj owns pPoly at 0x800DA344; no pPoly_arr array view is needed in MAIN.
     // db.obj owns pPoly at 0x800DA344; no pPoly2_arr array view is needed in MAIN.
@@ -537,15 +388,15 @@ int Horse_Reset(void);
 void UnloadGTricks(void);
 #include "DB.h"
 
-// CClass memory tracking counter (gp+0x19E4)
-// Used[1] is the global memory-usage counter at 0x800DA4C0.  This scalar
-// address view preserves the two target loads around Mem_Delete.
-extern int CClassDelete_Used asm("Used+4")
-    __attribute__((section(".data")));
+#define MEM_HEAP_SCALARS_DECLARATION
+#include "MEM.h"
+// MemTopUsed (Used[1]) is addressed absolutely here, not via $gp.
+extern int MemTopUsed __attribute__((section(".data")));
 
-/** Eight-character header view of MAIN's nine-byte encoded-check buffer. */
-#define COMPCHECK_DECLARE_CHECKSUM_STRING_VIEW
-#include "COMPCHECK_H.h"
+// CClass memory tracking counter (gp+0x19E4)
+// MemTopUsed is the global memory-usage counter at 0x800DA4C0.  This scalar
+// address view preserves the two target loads around Mem_Delete.
+
 
 static const u32 CHECKSUM_RANDOM_MULTIPLIER = 0xF26D;
 static const u32 CHECKSUM_POLYNOMIAL = 0x4517215A;
@@ -647,7 +498,7 @@ u32 CheckSum_Calculate(u32 Score, u8 Random, int gs)
  */
 void CheckSum_Encode(u32 Score, u8 Random, int gs)
 {
-    PutHex4Byte(Main_ChecksumCodeString,
+    PutHex4Byte(Code_String,
                 CheckSum_Calculate(Score, Random, gs));
 }
 
@@ -744,9 +595,9 @@ void *CClass::operator new(unsigned int size)
  */
 void CClass::operator delete(void *p)
 {
-    int Before = CClassDelete_Used;
+    int Before = MemTopUsed;
     Mem_Delete(p);
-    Before -= CClassDelete_Used;
+    Before -= MemTopUsed;
     TotalCClassUsage -= Before;
 }
 
@@ -887,91 +738,39 @@ end_section:
  */
 void Mick_Darken(void)
 {
-    register int darkness asm("$4") = Mick_Darkness;
-    register MainDoubleBuffer *dblBuf asm("$2") =
-        reinterpret_cast<MainDoubleBuffer *>(pDoubleBuffer);
-    register int cond asm("$3") = (darkness < 0x28);
-    register unsigned int *otBase asm("$9") = dblBuf->PanelOT;
-    if (cond)
+    int darkness = Mick_Darkness;
+    MainDoubleBuffer *dblBuf = reinterpret_cast<MainDoubleBuffer *>(pDoubleBuffer);
+    unsigned int *otBase = dblBuf->PanelOT;
+    if (darkness < 0x28)
     {
-        register int newDarkness asm("$2") = darkness + 4;
-        Mick_Darkness = newDarkness;
+        Mick_Darkness = darkness + 4;
     }
 
-    register int p asm("$8") = reinterpret_cast<int>(pPoly);
-    int newppoly = p + sizeof(POLY_F4) + sizeof(DR_TPAGE);
-    register int tpage_p asm("$10") = p + sizeof(POLY_F4);
-    if ((u32)PolyBufferEnd < (u32)newppoly)
+    POLY_F4 *aPoly = reinterpret_cast<POLY_F4 *>(pPoly);
+    DR_TPAGE *ptpage = reinterpret_cast<DR_TPAGE *>(aPoly + 1);
+    unsigned int newppoly = reinterpret_cast<unsigned int>(ptpage + 1);
+    if ((u32)PolyBufferEnd < newppoly)
     {
         return;
     }
-    asm volatile("" : "+r"(tpage_p));
-    register int loMask asm("$5") = 0x00FFFFFF;
-
-    // Advance pPoly past both primitives
     pPoly = reinterpret_cast<unsigned int *>(newppoly);
 
-    register int code asm("$2") = 5;
-    asm volatile("" : "+r"(code));
-    register int color asm("$3") = 0x2A;
-    register int tpage_cmd asm("$7") = 0xE1000000;
-    asm volatile("" : "+r"(tpage_cmd));
-    // Set POLY_F4 tag code = 5, color code = 0x2A (semi-transparent)
-    reinterpret_cast<P_TAG *>(p)->len = code;
-    reinterpret_cast<POLY_F4 *>(p)->code = color;
+    setlen(aPoly, 5);
+    aPoly->code = 0x2A;
+    setRGB0(aPoly, Mick_Darkness, Mick_Darkness, Mick_Darkness);
+    aPoly->x0 = 0;
+    aPoly->x1 = 512;
+    aPoly->y0 = 0;
+    aPoly->y1 = 0;
+    aPoly->x2 = 0;
+    aPoly->x3 = 512;
+    aPoly->y2 = 240;
+    aPoly->y3 = 240;
+    addPrim((P_TAG *)&otBase[1], (P_TAG *)aPoly);
 
-    register u8 d1 asm("$2") = (u8)Mick_Darkness;
-    {
-        register int v200 asm("$3") = 0x200;
-        reinterpret_cast<POLY_F4 *>(p)->x1 = v200;
-        reinterpret_cast<POLY_F4 *>(p)->x3 = v200;
-    }
-
-    register int tag asm("$3") = *(volatile int *)p;
-    asm volatile("" : "+r"(tag));
-    tpage_cmd |= 0x640;
-
-    reinterpret_cast<POLY_F4 *>(p)->x0 = 0;
-    reinterpret_cast<POLY_F4 *>(p)->y0 = 0;
-    reinterpret_cast<POLY_F4 *>(p)->y1 = 0;
-    reinterpret_cast<POLY_F4 *>(p)->x2 = 0;
-
-    reinterpret_cast<POLY_F4 *>(p)->r0 = d1;
-    u8 d2 = (u8)Mick_Darkness;
-
-    reinterpret_cast<POLY_F4 *>(p)->y2 = 0xF0;
-    reinterpret_cast<POLY_F4 *>(p)->y3 = 0xF0;
-
-    reinterpret_cast<POLY_F4 *>(p)->g0 = d2;
-    u8 d3 = (u8)Mick_Darkness;
-
-    register int hiMask asm("$6") = 0xFF000000;
-
-    reinterpret_cast<POLY_F4 *>(p)->b0 = d3;
-
-    // First addPrim: link POLY_F4 into OT at otBase+4
-    register int link asm("$2") = otBase[1];
-    tag = (tag & hiMask) | (link & loMask);
-    reinterpret_cast<POLY_F4 *>(p)->tag = tag;
-    register int link2 asm("$4") = otBase[1];
-    link2 = (link2 & hiMask) |
-            ((u32)p & loMask);
-    otBase[1] = link2;
-
-    // Store DR_TPAGE primitive
-    reinterpret_cast<DR_TPAGE *>(p + sizeof(POLY_F4))->tag = 0x01000000;
-    reinterpret_cast<DR_TPAGE *>(tpage_p)->code[0] = tpage_cmd;
-
-    // Second addPrim: link DR_TPAGE into OT at otBase+4
-    register int tag2 asm("$4") =
-        reinterpret_cast<DR_TPAGE *>(p + sizeof(POLY_F4))->tag;
-    register int link3 asm("$3") = otBase[1];
-    tag2 = (tag2 & hiMask) | (link3 & loMask);
-    reinterpret_cast<DR_TPAGE *>(p + sizeof(POLY_F4))->tag = tag2;
-    register int link4 asm("$2") = otBase[1];
-    link4 = (link4 & hiMask) |
-            ((u32)tpage_p & loMask);
-    otBase[1] = link4;
+    ptpage->tag = 0x01000000;
+    ptpage->code[0] = 0xE1000640;
+    addPrim((P_TAG *)&otBase[1], (P_TAG *)ptpage);
 }
 
 /**
@@ -1423,6 +1222,9 @@ void BlackOut(int x, int y, int w, int h)
  */
 void Display(void)
 {
+    /** Select-button edge latch retained between frames. */
+    static int Released = 1;
+
     if (pAutoTestRestartName)
     {
         Mess_SetRGB(255, 0, 0, 0);
@@ -1444,9 +1246,9 @@ void Display(void)
     {
         if (Pad[0].Select.Pressed)
         {
-            if (Display_Released)
+            if (Released)
             {
-                Display_Released = 0;
+                Released = 0;
                 if (GNumberOfPlayers == 2 && GGame != 7)
                 {
                     ViewportMode++;
@@ -1463,7 +1265,7 @@ void Display(void)
         }
         else
         {
-            Display_Released = 1;
+            Released = 1;
         }
 
         if (Pad[1].Select.Triggered)
@@ -1610,6 +1412,35 @@ void Display(void)
         (polyBufferStart & 0x7fffffff);
 }
 
+/** MAIN-owned frame-loop state stored alongside the FPS counters. */
+static unsigned int LoopTimer __attribute__((section(".sdata"))) = 0;
+
+int FPSIndex __attribute__((section(".sdata"))) = 0;
+
+/**
+ * MAIN-private storage that also needs compiler-distinct absolute address
+ * views remains namespace-scoped while retaining its target C symbols.
+ */
+namespace MainAddressViewOwners
+{
+extern "C"
+{
+static char Main_fpsFormat[]
+    __attribute__((section(".sdata"))) = " %d FPS";
+}
+}
+
+/**
+ * Small diagnostic strings retained by the original main.obj data image.
+ */
+namespace MainAddressViewOwners
+{
+extern "C"
+{
+    static char DefaultPSH[]
+        __attribute__((section(".sdata"))) = "sk2anim";
+}
+}
 /**
  * FPS_Init__Fv
  * Initializes FPS tracking: sets 3 frame counters to 2 and stores
@@ -1690,11 +1521,11 @@ int FPS_Display(void)
 
     if (Cheat_FPS)
     {
-        static int FPS_Pulse asm("FPS_Pulse.335");
+        static int FPS_Pulse;
         FPS_Pulse += 10;
         FPS_Pulse &= 127;
 
-        static char tmp1[100] asm("tmp1.336");
+        static char tmp1[100];
         sprintf(tmp1, Main_fpsFormat, averageFPS);
         if (!GameFrozen)
         {
@@ -2028,7 +1859,7 @@ void Game_Init(void)
             VblankUpdateBar = 0;
             if (LoadError != 0)
             {
-                Mess_SetCurrentFont(Main_gameFontName);
+                Mess_SetCurrentFont("ingame1.fnt");
                 HiRes_ClearOTag();
                 ResetOT();
                 SetClippingBox(0, 0, 0x200, 0xF0);
@@ -2309,6 +2140,36 @@ void Game_Init(void)
     GameFade = 0;
     (void)XStart;
 }
+
+    int MemTotal __attribute__((section(".sdata"))) = 0;
+    static char Main_systemAreaLabel[]
+        __attribute__((section(".sdata"))) = "System Area";
+    static char Main_codeLabel[]
+        __attribute__((section(".sdata"))) = "Code";
+    static char Main_polyBuffersLabel[]
+        __attribute__((section(".sdata"))) = "2 Poly Buffers ";
+    static char Main_orderingTablesLabel[]
+        __attribute__((section(".sdata"))) = "2 OTs";
+    static char Main_tricksFileName[]
+        __attribute__((section(".sdata"))) = "Tricks.bin";
+    static char Main_triggerFileLabel[]
+        __attribute__((section(".sdata"))) = ".TRG file";
+    static char Main_classUsageLabel[]
+        __attribute__((section(".sdata"))) = "CClass usage";
+    static char Main_palettesLabel[]
+        __attribute__((section(".sdata"))) = "Palletes";
+    static char Main_packRegionsLabel[]
+        __attribute__((section(".sdata"))) = "Pack Regions";
+    static char Main_textureInfoLabel[]
+        __attribute__((section(".sdata"))) = "Texture Info";
+    static char Main_vabHeadersLabel[]
+        __attribute__((section(".sdata"))) = "VAB Headers";
+    static char Main_memoryDivider[]
+        __attribute__((section(".sdata"))) = "---------\n";
+    static char Main_freeMemoryLabel[]
+        __attribute__((section(".sdata"))) = "Free Memory";
+    int DemoDiskMode __attribute__((section(".sdata"))) = 0;
+
 
 /**
  * System_Logic__Fv
@@ -2738,16 +2599,16 @@ done:
  */
 int main(void)
 {
-    printf(MainAddressViewOwners::s_xxx_main_800d976c);
-    printf(DAT_800d9778);
+    printf("xxx main\n");
+    printf("9,");
     Options_Init();
-    printf(DAT_800d977c);
+    printf("10,");
     Career_Init();
-    printf(DAT_800d9780);
+    printf("11,");
     Init_AtStart();
-    printf(DAT_800d9784);
+    printf("12,");
     Init_Restart(PACK512x240, 16);
-    printf(DAT_800d9788);
+    printf("13\n");
     Db_Init();
 
     Pad_Update();
@@ -2771,7 +2632,7 @@ int main(void)
         GameFMV_PlayMovie(-25);
     }
 
-    Front_DisplayScreen(MainAddressViewOwners::s_s2bgd0_bmp_800d978c);
+    Front_DisplayScreen("s2bgd0.bmp");
 
     Pad_Update();
     int i = 0;
@@ -2840,6 +2701,85 @@ int main(void)
 
     return 0;
 }
+
+namespace MainAddressViewOwners
+{
+extern "C"
+{
+    static char s_S2MarketBmp[]
+        __attribute__((section(".sdata"))) = "s2market.bmp";
+}
+}
+
+    void *OldSP __attribute__((section(".sdata"))) = 0;
+    int CurrentGameLevel __attribute__((section(".sdata"))) = 0;
+    int CurrentWaterDamage __attribute__((section(".sdata"))) = 0;
+    int CurrentDifficultyLevel __attribute__((section(".sdata"))) = 0;
+    int XFrames __attribute__((section(".sdata"))) = 0;
+    int TimeScale __attribute__((section(".sdata"))) = 0;
+    int TimeScaleSquared __attribute__((section(".sdata"))) = 0;
+    unsigned char *PolyBufferEnd __attribute__((section(".sdata"))) = 0;
+    int GState __attribute__((section(".sdata"))) = 0;
+    int GSpin __attribute__((section(".sdata"))) = 0;
+    int GSpinSpeed __attribute__((section(".sdata"))) = 0;
+    int GStartTime __attribute__((section(".sdata"))) = 0;
+    int GSkaterRegion[2] __attribute__((section(".sdata"))) = {0, 0};
+    int GHorsePlayer __attribute__((section(".sdata"))) = 0;
+    int GHorseMode __attribute__((section(".sdata"))) = 0;
+    int GHorseScore __attribute__((section(".sdata"))) = 0;
+    int GHorseDoneStart __attribute__((section(".sdata"))) = 0;
+    int GHorseRestart __attribute__((section(".sdata"))) = 0;
+    /** Per-player counts of letters accumulated in the current HORSE round. */
+    int GHorseLetters[2] __attribute__((section(".sdata"))) = {0, 0};
+    int GHorseCursorPos __attribute__((section(".sdata"))) = 0;
+    int GHorseWaitTime __attribute__((section(".sdata"))) = 0;
+    int GHorseClearInput2 __attribute__((section(".sdata"))) = 0;
+    char GVideoFlags __attribute__((section(".sdata"))) = 0;
+    short *GTricksKeys __attribute__((section(".sdata"))) = 0;
+    short *GGrindTricksList __attribute__((section(".sdata"))) = 0;
+    short *GBailsList __attribute__((section(".sdata"))) = 0;
+    CBruce *GSkater[2]
+        __attribute__((section(".sdata"))) = {0, 0};
+
+    CPowerUp *GPowS __attribute__((section(".sdata"))) = 0;
+    CPowerUp *GPowK __attribute__((section(".sdata"))) = 0;
+    CPowerUp *GPowA __attribute__((section(".sdata"))) = 0;
+    CPowerUp *GPowT __attribute__((section(".sdata"))) = 0;
+    CPowerUp *GPowE __attribute__((section(".sdata"))) = 0;
+    CPowerUp *GPowTape __attribute__((section(".sdata"))) = 0;
+    int GClear1 __attribute__((section(".sdata"))) = 0;
+    int GClear2 __attribute__((section(".sdata"))) = 0;
+    int GRenderedInvisible __attribute__((section(".sdata"))) = 0;
+    int GRenderedCulled __attribute__((section(".sdata"))) = 0;
+    int GRenderedFast __attribute__((section(".sdata"))) = 0;
+    int GRenderedNonRotated __attribute__((section(".sdata"))) = 0;
+    int GRenderedRotated __attribute__((section(".sdata"))) = 0;
+    int NumPolyF3 __attribute__((section(".sdata"))) = 0;
+    int NumPolyFT3 __attribute__((section(".sdata"))) = 0;
+    int NumPolyG3 __attribute__((section(".sdata"))) = 0;
+    int NumPolyGT3 __attribute__((section(".sdata"))) = 0;
+    int NumPolyF4 __attribute__((section(".sdata"))) = 0;
+    int NumPolyFT4 __attribute__((section(".sdata"))) = 0;
+    int NumPolyG4 __attribute__((section(".sdata"))) = 0;
+    int NumPolyGT4 __attribute__((section(".sdata"))) = 0;
+    int NumSetTile __attribute__((section(".sdata"))) = 0;
+    int NumTile1 __attribute__((section(".sdata"))) = 0;
+    int NumOther __attribute__((section(".sdata"))) = 0;
+    int CloseCam __attribute__((section(".sdata"))) = 0;
+    int PrimitiveCount __attribute__((section(".sdata"))) = 0;
+    int XFramesShifted __attribute__((section(".sdata"))) = 0;
+    int FPS __attribute__((section(".sdata"))) = 0;
+    static int Main_FPSTail[2]
+        __attribute__((section(".sdata"))) = {0, 0};
+    int LastXblanks __attribute__((section(".sdata"))) = 0;
+    int Profile_Bop __attribute__((section(".sdata"))) = 0;
+    Sprite *pScoreSprite __attribute__((section(".sdata"))) = 0;
+    Sprite *pSpecialSprite __attribute__((section(".sdata"))) = 0;
+    Sprite *pBarSprite __attribute__((section(".sdata"))) = 0;
+    Sprite *pPausedSprite __attribute__((section(".sdata"))) = 0;
+    int MemDumpLoop __attribute__((section(".sdata"))) = 0;
+    int DemoSize __attribute__((section(".sdata"))) = 0;
+
 
 /**
  * LaunchGame__Fv
@@ -2935,7 +2875,7 @@ play_game:
         Init_Restart(PACK512x240, 16);
         Db_Init();
         GNumberOfPlayers = 1;
-        Front_DisplayScreen(MainAddressViewOwners::s_s2market_bmp_800d9798);
+        Front_DisplayScreen(MainAddressViewOwners::s_S2MarketBmp);
         Pad_Update();
 
         Pad[0].Start.Triggered = 0;

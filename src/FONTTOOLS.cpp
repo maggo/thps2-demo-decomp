@@ -3,53 +3,27 @@
 // Functions: 21
 // Address range: 0x8005ACB8 - 0x8005C228
 //
-// Compiled with cc1plus (GCC 2.91.66-psx). Compiler auto-mangles symbol names.
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
-#define FONTTOOLS_SLICED_IMAGE_CONSTRUCTION
+#include "CCLASS_POLY.h"
+#define FONTTOOLS_POLYMORPHIC_LAYOUT
 #define FONTTOOLS_OWNER_DECLARATIONS
 
 #include "FONTTOOLS.h"
-#define IMAGE_OWNER_LAYOUT
+#define IMAGE_POLYMORPHIC_LAYOUT
 #include "IMAGE.h"
-#undef IMAGE_OWNER_LAYOUT
 #include <STDDEF.H>
 #include <LIBGTE.H>
 #include <LIBGPU.H>
 
-/** Dispatch table entries used by FONTTOOLS for a text effect. */
-struct FontToolsTextEffectVTable {
-    int baseOffset;
-    void *typeInfo;
-    void (*destroy)(TextEffect *effect, int inCharge);
-    void *reserved3;
-    void *reserved4;
-    void *reserved5;
-    void *reserved6;
-    void (*modifyPosition)(TextEffect *effect, int *x, int *y);
-    void (*modifyColour)(TextEffect *effect, u8 *r, u8 *g, u8 *b);
-    void *reserved9;
-    void (*afterDraw)(TextEffect *effect, int preX, int preY,
-                      int postX, int postY);
-};
-
-#include "TEXTEFFECT.h"
-
-/** Dispatch prefix used by the image operations in this owner. */
-struct FontToolsImageVTable {
-    int baseOffset;
-    void *typeInfo;
-    void (*destroy)(SlicedImage2 *image, int inCharge);
-    void *reserved3;
-    void *reserved4;
-    void (*draw)(SlicedImage2 *image, int x, int y, int depth);
-};
-
-/** Recover the typed image dispatch table from the shared CClass prefix. */
-inline FontToolsImageVTable *FontTools_GetImageVTable(SlicedImage2 *image)
+/** Construct an object in explicitly allocated CClass arena storage. */
+inline void *operator new(unsigned int, void *address)
 {
-    return reinterpret_cast<FontToolsImageVTable *>(
-        image->CClass.vtable);
+    return address;
 }
+
+#define TEXTEFFECT_POLYMORPHIC_LAYOUT
+#include "TEXTEFFECT.h"
 
 /**
  * Address one glyph while preserving the target's scaled-index-first add.
@@ -92,17 +66,6 @@ inline u16 FontTools_LowHalf(const int &word)
 #include "FILEIO.h"
 #include "PAL.h"
 
-// Owner-ABI entry points retain the linker names recorded in the target
-// object. The destructor alias stays at the ABI boundary.
-void FontTools_DestroyFont(Font *font, int inCharge)
-    asm("_._4Font");
-namespace FontToolsAbi
-{
-extern "C" void draw__4FontiiPci(
-    Font *font, int x, int y, char *str, int drawFirst);
-}
-#define FontTools_DrawAbi FontToolsAbi::draw__4FontiiPci
-
 typedef char FontTools_TextEffect_size_must_be_8[
     (sizeof(TextEffect) == 8) ? 1 : -1];
 
@@ -131,41 +94,15 @@ int FontManager::dumb = 0;
  *            Sets the vtable ($gp+0x2a88) and marks the Clut slot unused.
  *
  */
-// GCC 2.x emits a private copy of `CClass::~CClass` beside a private base
-// vtable in every owner that derives from CClass.  `MAIN.SYM` records 25 such
-// `_._6CClass` copies and names no base vtable, so both are file-local here.
-// The filesystem-safe spelling keeps the per-address target assembly reachable.
-extern "C" {
-static void __DOT__6CClass_8005C228(CClass *base, int __in_chrg);
-}
-
 // Two owner-local strings sit between the manager scalar and the vtables in
 // the target's small-data contribution.  No surviving code references them.
-static char FontTools_DefaultFontName[12] __attribute__((section(".sdata"))) =
+static char FontTools_DefaultFontName[12] =
     "mainf.fnt";
-static char FontTools_Greeting[12] __attribute__((section(".sdata"))) =
+static char FontTools_Greeting[12] =
     "Hello world";
 
-// Consecutive eight-byte-aligned small-data words per vtable rather than
-// arrays, so -G8 still yields the target's `addiu $vX, $gp, off` form.
-// GCC 2.x vtable layout for CClass-derived types: word [0] base offset,
-// word [1] RTTI slot, word [2] virtual destructor, words [3..] virtual
-// methods in declaration order.
-int __vt_4Font
-    __attribute__((section(".sdata"), aligned(8))) = 0;
-static int FontTools_VTableIndex = 0;
-static void (*FontTools_VTableDtor)(Font *, int) = FontTools_DestroyFont;
-static void (*FontTools_VTableDraw)(Font *, int, int, char *, int) =
-    FontTools_DrawAbi;
-
-static int __vt_base_4Font
-    __attribute__((section(".sdata"), aligned(8))) = 0;
-static int FontTools_BaseVTableIndex = 0;
-static void (*FontTools_BaseVTableDtor)(CClass *, int) =
-    __DOT__6CClass_8005C228;
 Font::Font()
 {
-    CClass.vtable = &__vt_4Font;
     Clut = -1;
 }
 
@@ -192,7 +129,6 @@ Font::Font(unsigned char *buf)
     int crap_size;
     unsigned char *crap;
 
-    CClass.vtable = &__vt_4Font;
     JustX = 0;
     JustY = 0;
     R = 0x80;
@@ -257,8 +193,13 @@ Font::Font(unsigned char *buf)
                 CharTab[i].Baseline = FontTools_ReadInt(baselineField);
 
                 int image_w = FontTools_ReadInt(tb);
-                CharTab[i].Image = new SlicedImage2(
-                    db, image_w * 4, CharTab[i].H, 0, 0, 4, Clut);
+                FontCharacter *imageSlot = FontTools_GetCharacter(CharTab, i);
+                SlicedImage2 *image = static_cast<SlicedImage2 *>(
+                    CClass::operator new(sizeof(SlicedImage2)));
+                if (image != 0)
+                    image = ::new (image) SlicedImage2(
+                        db, image_w * 4, CharTab[i].H, 0, 0, 4, Clut);
+                imageSlot->Image = image;
 
                 CharTab[i].Image->pack();
                 CharTab[i].Image->removeFromMemory();
@@ -292,11 +233,7 @@ Font::Font(unsigned char *buf)
         int i = 0;
         if (crap_size > 0)
         {
-            /*
-             * GCC otherwise sinks the byte store into the loop delay slot.
-             * The target reuses $v0 for the address and loop condition; clean
-             * do/while, while, for, and scoped-do forms were all measured.
-             */
+            // FIXME(match): register pin — moreBytes in $v0 shares the address/loop-condition reg so the byte store is not sunk into the delay slot and i lands in $v1 (unpinned: i in $a0, 9 insns off); tried: do/while, while, for, i++ inside index, fill-byte local, unpinned moreBytes.
             register int moreBytes asm("$2");
             do
             {
@@ -307,9 +244,13 @@ Font::Font(unsigned char *buf)
         }
     }
 
-    CharTab[NumChars].Image = new SlicedImage2(
-        crap, image_w * 4, CharTab[NumChars].H,
-        0, 0, 4, Clut);
+    FontCharacter *imageSlot = FontTools_GetCharacter(CharTab, NumChars);
+    SlicedImage2 *image = static_cast<SlicedImage2 *>(
+        CClass::operator new(sizeof(SlicedImage2)));
+    if (image != 0)
+        image = ::new (image) SlicedImage2(
+            crap, image_w * 4, CharTab[NumChars].H, 0, 0, 4, Clut);
+    imageSlot->Image = image;
     Mem_Delete(crap);
     CharTab[NumChars].Image->pack();
     CharTab[NumChars].Image->removeFromMemory();
@@ -318,27 +259,8 @@ Font::Font(unsigned char *buf)
     CharTab[NumChars].Image->Shaded = reinterpret_cast<void *>(1);
 }
 
-/**
- * Destroy a font through the GCC 2.x in-charge ABI.
- *
- * Address:   0x8005B150
- * Mangled:   _._4Font
- * Demangled: Font::~Font()
- *
- * A natural destructor does not emit the target's hidden delete path, so this
- * typed owner-ABI boundary retains the compiler's in-charge parameter.
- *
- * @param self       Font being destroyed.
- * @param __in_chrg  Bit 0 requests `operator delete` on the object.
- */
-void FontTools_DestroyFont(Font *font, int __in_chrg)
-{
-    font->CClass.vtable = &__vt_base_4Font;
-    if (__in_chrg & 1)
-    {
-        ::CClass::operator delete(font);
-    }
-}
+/** Release the Font object through the inherited CClass arena. */
+Font::~Font() {}
 
 /**
  *
@@ -447,21 +369,9 @@ void Font::draw(int x, int y, char *str, int drawFirst)
                 PreEffectX = ScreenX;
                 PreEffectY = ScreenY;
                 SlicedImage2 *sprite = CharTab[i].Image;
-                FontToolsTextEffectVTable *colourVTable =
-                    reinterpret_cast<FontToolsTextEffectVTable *>(
-                        colourEffect->CClass.vtable);
-                void (*modifyColour)(TextEffect *, u8 *, u8 *, u8 *) =
-                    colourVTable->modifyColour;
-                modifyColour(
-                    colourEffect, &sprite->R, &sprite->G,
-                    &sprite->B);
+                colourEffect->getColor(&sprite->R, &sprite->G, &sprite->B);
                 TextEffect *positionEffect = CurrentTextEffect;
-                FontToolsTextEffectVTable *positionVTable =
-                    reinterpret_cast<FontToolsTextEffectVTable *>(
-                        positionEffect->CClass.vtable);
-                void (*modifyPosition)(TextEffect *, int *, int *) =
-                    positionVTable->modifyPosition;
-                modifyPosition(positionEffect, &ScreenX, &ScreenY);
+                positionEffect->getScreenPos(&ScreenX, &ScreenY);
                 PostEffectX = ScreenX;
                 PostEffectY = ScreenY;
             }
@@ -478,9 +388,7 @@ void Font::draw(int x, int y, char *str, int drawFirst)
 
             {
                 SlicedImage2 *sprite = CharTab[i].Image;
-                FontToolsImageVTable *vtbl = FontTools_GetImageVTable(sprite);
-                void (*drawFn)(SlicedImage2 *, int, int, int) = vtbl->draw;
-                drawFn(sprite, ScreenX >> 12, ScreenY >> 12, drawFirst);
+                sprite->draw(ScreenX >> 12, ScreenY >> 12, drawFirst);
             }
 
             if (Aliased != 0)
@@ -489,9 +397,7 @@ void Font::draw(int x, int y, char *str, int drawFirst)
                     reinterpret_cast<void *>(1);
                 CharTab[i].Image->TransType = 2;
                 SlicedImage2 *sprite = CharTab[i].Image;
-                FontToolsImageVTable *vtbl = FontTools_GetImageVTable(sprite);
-                void (*drawFn)(SlicedImage2 *, int, int, int) = vtbl->draw;
-                drawFn(sprite, ScreenX >> 12, ScreenY >> 12, drawFirst);
+                sprite->draw(ScreenX >> 12, ScreenY >> 12, drawFirst);
             }
 
             if (Shadow != 0)
@@ -504,20 +410,15 @@ void Font::draw(int x, int y, char *str, int drawFirst)
                 CharTab[i].Image->B = 0xFF;
 
                 SlicedImage2 *sprite = CharTab[i].Image;
-                FontToolsImageVTable *vtbl = FontTools_GetImageVTable(sprite);
-                void (*drawFn)(SlicedImage2 *, int, int, int) = vtbl->draw;
                 ScreenX += ShadowDx * Scale;
                 ScreenY += ShadowDy * Scale;
-                drawFn(sprite, ScreenX >> 12, ScreenY >> 12, drawFirst);
+                sprite->draw(ScreenX >> 12, ScreenY >> 12, drawFirst);
             }
 
             TextEffect *effect = CurrentTextEffect;
             if (effect != 0)
             {
-                reinterpret_cast<FontToolsTextEffectVTable *>(
-                    effect->CClass.vtable)->afterDraw(
-                        effect, PreEffectX, PreEffectY, PostEffectX,
-                        PostEffectY);
+                effect->PostEffect(PreEffectX, PreEffectY, PostEffectX, PostEffectY);
             }
         }
     next:
@@ -1010,8 +911,7 @@ void Font::unload()
     {
         if (CharTab[i].Image != 0)
         {
-            FontTools_GetImageVTable(CharTab[i].Image)->destroy(
-                CharTab[i].Image, 3);
+            delete CharTab[i].Image;
         }
         i++;
     } while (i < NumChars + 1);
@@ -1067,7 +967,10 @@ Font *FontManager::LoadFont(unsigned char *pData, char *fontname)
 found:
 {
     Font **fontSlot = FontTools_GetFontSlot(fontTab, slot);
-    *fontSlot = new Font(pData);
+    Font *font = static_cast<Font *>(CClass::operator new(sizeof(Font)));
+    if (font != 0)
+        font = ::new (font) Font(pData);
+    *fontSlot = font;
     strcpy(FontManager::FontName[slot], fontname);
     return *fontSlot;
 }
@@ -1127,19 +1030,8 @@ found:
     (*fontSlot)->unload();
     if (*fontSlot != 0)
     {
-        FontDispatch(*fontSlot)->destroy(*fontSlot, 3);
+        delete *fontSlot;
     }
     *fontSlot = 0;
 }
-}
-
-// GCC emitted this private `CClass::~CClass` copy last in the owner's
-// text, so it stays at the end of the translation unit.
-static void __DOT__6CClass_8005C228(CClass *base, int __in_chrg)
-{
-    base->vtable = &__vt_base_4Font;
-    if (__in_chrg & 1)
-    {
-        ::CClass::operator delete(base);
-    }
 }

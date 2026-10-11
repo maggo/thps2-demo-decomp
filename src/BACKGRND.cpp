@@ -3,77 +3,22 @@
 // Functions: 5
 // Address range: 0x800790B0 - 0x8007924C
 //
-// Compiled with cc1plus (GCC 2.91.66-psx). Compiler auto-mangles symbol names.
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#define CCLASS_POLY_ITEM_FAMILY
+#include "CCLASS_POLY.h"
 #include "BACKGRND.h"
-#include "globals.h"
-#include "CITEM.h"
-
-/** Body storage used by the background object's inherited CBody state. */
-struct CBody : public CItem {
-    CBody **mppOriginalList;
-    unsigned short mInputFlags;
-    unsigned short mCBodyFlags;
-    CVector mVel;
-    CVector mAcc;
-    CFriction mFric;
-    CSVector mAngVel;
-    CSVector mAngAcc;
-    CFriction mAngFric;
-    CSVector mNormal;
-    unsigned char mEventFlags;
-    unsigned int mEllipsoidRGB;
-    unsigned short mEllipsoidScale;
-    short mEllipsoidOTPushback;
-    CVector mShadowPos;
-    CSVector mShadowNormal;
-    void *mpShadow;
-    unsigned short mShadowScale;
-    short mShadowDist;
-    short mShadowThreshold;
-    int mPushVal;
-    unsigned short mRMinor;
-    unsigned short mNode;
-    unsigned short mCollision;
-    short mHealth;
-    unsigned int mPlayerDist;
-    unsigned char mAIFrequency;
-    unsigned char mAICount;
-    CVector mOldPos;
-    CVector mTweenPos;
-    CVector mNewPos;
-    CVector mDPos;
-    CSVector mOldAngles;
-    CSVector mNewAngles;
-    CSVector mDAngles;
-
-    CBody();
-    ~CBody();
-    void AttachTo(CBody **list);
-    void DeleteFrom(CBody **list);
-    /** Mark this body dead. */
-    void Die();
-    /** Run this body's per-frame behavior. */
-    void EveryFrame();
-    /** Configure lighting before this body is drawn. */
-    void DoLightingSetup();
-    /** Apply one hit and report whether it was accepted. */
-    int Hit(int damage, const CVector &knock, int whatHit);
-    /** Release resources owned by this body. */
-    void DeleteStuff();
-};
+#include "CFRICTION.h"
 
 /** Background body plus the monotonically assigned background-list index. */
 struct CBackground : public CBody {
     unsigned short mIndex;
 
     CBackground(unsigned int checksum, const CSVector &ang_vel);
-    ~CBackground();
+    virtual ~CBackground();
     void AI();
 };
 
-typedef char CItem_size_check[(sizeof(CItem) == 76) ? 1 : -1];
-typedef char CBody_size_check[(sizeof(CBody) == 264) ? 1 : -1];
 typedef char CBackground_size_check[(sizeof(CBackground) == 268) ? 1 : -1];
 
 #include "OB.h"
@@ -88,39 +33,6 @@ enum {
     BACKGROUND_ITEM_FLAGS_CLEARED_ON_INIT = 2,
     BACKGROUND_BODY_FLAGS_CLEARED_ON_INIT = 6
 };
-
-// C++ forbids taking a destructor's address, so this manual vtable retains an
-// owner-local addressable view of the natural destructor symbol.
-void Background_DestructorAbi(CBackground *background, int inCharge)
-    asm("_._11CBackground");
-
-/** Typed dispatch-table layout emitted for CBackground. */
-struct BackgroundVtable {
-    unsigned int reserved[2];
-    void (*destructor)(CBackground *, int);
-    void (*die)(CBody *);
-    void (*ai)(CBackground *);
-    void (*everyFrame)(CBody *);
-    void (*doLightingSetup)(CBody *);
-    int (*hit)(CBody *, int, const CVector &, int);
-    void (*deleteStuff)(CBody *);
-};
-
-typedef char BackgroundVtable_size_check[
-    (sizeof(BackgroundVtable) == 36) ? 1 : -1];
-
-/** Virtual dispatch table for the background-object specialization. */
-BackgroundVtable __vt_11CBackground
-    __attribute__((section(".rdata"))) = {
-        {0, 0},
-        Background_DestructorAbi,
-        (void (*)(CBody *))&CBody::Die,
-        (void (*)(CBackground *))&CBackground::AI,
-        (void (*)(CBody *))&CBody::EveryFrame,
-        (void (*)(CBody *))&CBody::DoLightingSetup,
-        (int (*)(CBody *, int, const CVector &, int))&CBody::Hit,
-        (void (*)(CBody *))&CBody::DeleteStuff,
-    };
 
 // === Function implementations (address order) ===
 
@@ -181,7 +93,6 @@ void Backgrnd_Off(unsigned short index) {
  */
 CBackground::CBackground(unsigned int checksum, const CSVector &ang_vel) {
     char *pName = pCurrentObjFile;
-    _vf = (void **)&__vt_11CBackground;
     InitItem(pName);
     mModel = Spool_GetModel(checksum, mRegion);
     mFlags &= ~BACKGROUND_ITEM_FLAGS_CLEARED_ON_INIT;
@@ -202,7 +113,6 @@ CBackground::CBackground(unsigned int checksum, const CSVector &ang_vel) {
  * when destruction also owns the object's storage.
  */
 CBackground::~CBackground() {
-    _vf = (void **)&__vt_11CBackground;
     DeleteFrom(&BackgroundList);
     CurrentIndex--;
 }

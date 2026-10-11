@@ -3,7 +3,7 @@
 // Functions: 23
 // Address range: 0x8005C258 - 0x8005DAA4
 //
-// Compiled with cc1plus (GCC 2.91.66-psx). Compiler auto-mangles symbol names.
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 // IMAGE.cpp is the only consumer of this recovered slice record.
 // Keep it owner-local instead of publishing the former generated TU header.
@@ -18,6 +18,10 @@ struct Slice {
     unsigned short *data;
 };
 
+#include "CCLASS_POLY.h"
+#define IMAGE_POLYMORPHIC_LAYOUT
+#define IMAGE_POLYMORPHIC_LAYOUT_IMPLEMENT
+#include "IMAGE.h"
 #include "PAL256.h"
 #include "PDOUBLEBUFFER.h"
 
@@ -26,36 +30,43 @@ struct Slice {
 #undef DB_BUFFER_LAYOUT
 #include "MEM.h"
 #include "PACK.h"
+/** One sine/cosine pair in the 4096-entry fixed-point lookup table. */
+struct ImageSinCos {
+    short sin;
+    short cos;
+};
+
+/** BMP header fields consumed by the 8-bit image loader. */
+struct ImageBmpHeader {
+    unsigned char opaque_before_width[0x12];
+    unsigned short width;
+    unsigned char opaque_before_height[0x16 - 0x14];
+    unsigned short height;
+    unsigned char opaque_before_color_count[0x2e - 0x18];
+    unsigned short color_count;
+    unsigned char opaque_before_palette[0x36 - 0x30];
+};
+
+/** Four-byte palette record consumed by the BMP decoder. */
+struct ImageBmpPaletteEntry {
+    unsigned char r;
+    unsigned char g;
+    unsigned char b;
+    unsigned char reserved;
+};
+
 #include <STDDEF.H>
 #include <LIBGTE.H>
 #include <LIBGPU.H>
 #include <STDIO.H>
-#define IMAGE_OWNER_LAYOUT
-#include "IMAGE.h"
-#undef IMAGE_OWNER_LAYOUT
-
-/** Placement construction for the inherited Sprite2 base. */
-inline void *operator new(unsigned int, void *address)
-{
-    return address;
-}
 
 // === Free function declarations ===
-#define IMAGE_DECLARE_SPRITE2_DESTRUCTOR
-#define IMAGE_DECLARE_ROTATE_SPRITE_DESTRUCTOR
-#include "IMAGE.h"
 void MakeTransparentClut2(int x, int y);
 int Load8BitBMP_2(
     char *pData, char **data, int *ww, int *hh, unsigned short *clut);
 int Load8BitBMP_(
     char *file, char **data, int *ww, int *hh, unsigned short *clut);
 
-// === ABI-labelled forward declarations ===
-#define IMAGE_DECLARE_DEFAULT_CONSTRUCTOR_ABI
-#define IMAGE_DECLARE_SLICED_IMAGE2_DESTRUCTOR
-#include "IMAGE.h"
-#define Image_Construct ImageDefaultConstructorAbi::__5Image
-#define SlicedImage2_Construct ImageDefaultConstructorAbi::__12SlicedImage2
 // === External function declarations ===
 // These palette return types are the declarations IMAGE was compiled against;
 // the target caller consumes both results as halfwords.  Heap declarations
@@ -84,32 +95,6 @@ unsigned short Get256SlotNumber(unsigned short clut);
 #define IMAGE_ROTATE_SLICE(index) \
     (this->SliceTab[(index)])
 
-// The prototype emits each invocation as one source-line region.  Keep the
-// working input pointer alive across allocation, matching its recovered scope.
-#define IMAGE_COPY_SLICE_PIXELS(SLICE, SRC, SLICE_W, SLICE_H, SOURCE_W, NEEDS_ALLOCATION) \
-    { \
-        unsigned short *out; \
-        unsigned short *in = (SRC); \
-        if ((NEEDS_ALLOCATION) != 0) { \
-            (SLICE)->data = (unsigned short *)Mem_New( \
-                (SLICE_W) * (SLICE_H) * sizeof(unsigned short), 1, 1); \
-        } \
-        out = (SLICE)->data; \
-        for (int j = 0; j < (SLICE_H); j++) { \
-            int i = 0; \
-            if ((SLICE_W) > 0) { \
-                do { \
-                    *out++ = *in++; \
-                    i++; \
-                } while (i < (SLICE_W)); \
-            } \
-            in += (SOURCE_W) - (SLICE_W); \
-        } \
-    }
-
-// === Vtable declarations ===
-#define IMAGE_DECLARE_OWNER_VTABLE_ADDRESSES
-#include "IMAGE.h"
 
 // === Function implementations (address order) ===
 
@@ -337,28 +322,16 @@ int Load8BitBMP_(
  * @param image Image being initialized.
  * @return `this` pointer (GCC 2.x ctor convention).
  */
-Image *Image_Construct(Image *image) {
-    Image *result = image;
-    // GCC otherwise materializes the vtable address before preserving `this`,
-    // producing two real mismatches.  Natural constructor spelling was also
-    // measured, but changes the implicit embedded-constructor graph.  A
-    // pointer-typed vtable temporary changes eight instructions, so the one
-    // shared scalar below retains the target's value-reuse lifetime.
-    asm volatile("" : "+r"(result));
-    int value = (int)&DAT_800da744;
-    result->CClass.vtable = (int *)value;
-    value = 0x80;
-    result->R = value;
-    result->G = value;
-    result->B = value;
-    value = 0x1000;
-    result->Transparent = 0;
-    result->Shaded = 0;
-    result->TransType = 0;
-    result->JustX = 0;
-    result->JustY = 0;
-    result->Scale = value;
-    return result;
+Image::Image() {
+    Transparent = 0;
+    Shaded = 0;
+    TransType = 0;
+    R = 0x80;
+    G = 0x80;
+    B = 0x80;
+    JustX = 0;
+    JustY = 0;
+    Scale = 0x1000;
 }
 
 
@@ -372,13 +345,10 @@ Image *Image_Construct(Image *image) {
  * @param image Sliced image being initialized.
  * @return `this` pointer (GCC 2.x ctor convention).
  */
-SlicedImage2 *SlicedImage2_Construct(SlicedImage2 *image) {
-    Image_Construct(image);
-    image->CClass.vtable = &__vt_12SlicedImage2[0];
-    image->InMemory = 0;
-    image->Packed = 0;
-    image->SliceTab = 0;
-    return image;
+SlicedImage2::SlicedImage2() {
+    InMemory = 0;
+    Packed = 0;
+    SliceTab = 0;
 }
 
 
@@ -399,18 +369,15 @@ SlicedImage2 *SlicedImage2_Construct(SlicedImage2 *image) {
  * @param clut  Palette CLUT (color lookup table) address.
  * @return `this` pointer (GCC 2.x ctor convention).
  */
-extern "C" SlicedImage2 *__12SlicedImage2PviiiiUcUs(
-    SlicedImage2 *image, void *pData, int width, int height,
+SlicedImage2::SlicedImage2(
+    void *pData, int width, int height,
     int slice_width, int slice_height, unsigned char bpp,
     unsigned short clut) {
-    Image_Construct(image);
-    image->CClass.vtable = &__vt_12SlicedImage2[0];
-    image->InMemory = 0;
-    image->Packed = 0;
-    image->SliceTab = 0;
-    image->newSlicedImage2(
+    InMemory = 0;
+    Packed = 0;
+    SliceTab = 0;
+    newSlicedImage2(
         pData, width, height, slice_width, slice_height, bpp, clut);
-    return image;
 }
 
 
@@ -423,22 +390,16 @@ extern "C" SlicedImage2 *__12SlicedImage2PviiiiUcUs(
  * @param image Sliced image being destroyed.
  * @param __in_chrg GCC 2.x in-charge flag; bit 0 also frees the object.
  */
-void SlicedImage2_Destroy(
-    SlicedImage2 *image, int __in_chrg) {
-    image->CClass.vtable = __vt_12SlicedImage2;
-    if (image->Packed != 0) {
-        image->unpack();
+SlicedImage2::~SlicedImage2() {
+    if (Packed != 0) {
+        unpack();
     }
-    if (image->InMemory != 0) {
-        image->removeFromMemory();
+    if (InMemory != 0) {
+        removeFromMemory();
     }
-    Slice *data = image->SliceTab;
+    Slice *data = SliceTab;
     if (data != 0) {
         Mem_Delete(data);
-    }
-    image->CClass.vtable = &DAT_800da754;
-    if (__in_chrg & 1) {
-        ::CClass::operator delete(image);
     }
 }
 
@@ -483,7 +444,7 @@ shiftDone:
     }
     image->W >>= image->BppShift;
     image->SliceW >>= image->BppShift;
-    image->setData(pData);
+    image->SlicedImage2::setData(pData);
 }
 
 
@@ -496,134 +457,64 @@ shiftDone:
  *
  * @param data  Data buffer.
  */
+static inline void Image_CopySlice(unsigned short *src, Slice *slice, int slicew, int sliceh,
+                                   int sourcew, bool alloc) {
+    unsigned short *out;
+    unsigned short *in = src;
+    if (alloc) {
+        slice->data = (unsigned short *)Mem_New(slicew * sliceh * sizeof(unsigned short), 1, 1);
+    }
+    out = slice->data;
+    for (int j = 0; j < sliceh; j++) {
+        for (int i = 0; i < slicew; i++) {
+            *out++ = *in++;
+        }
+        in += sourcew - slicew;
+    }
+    slice->w = slicew;
+    slice->h = sliceh;
+}
+
 void SlicedImage2::setData(void *data) {
-    unsigned short sourceWidth;
-    // The original holds the slice-grid width and the slice height in
-    // zero-extended halfword locals and sign-extends them at each use, which is
-    // why the target loads them once with `lhu` and pays an sll/sra per site
-    // instead of re-reading with `lh`.
-    unsigned short sliceCountX;
-    unsigned short sliceH;
     int remX;
     int remY;
     unsigned short *line_start;
     int j;
     unsigned short *in;
     int i;
-    int inMemory;
 
-    remX = this->W % this->SliceW;
-    sourceWidth = this->W;
-    if (remX == 0) {
-        remX = this->SliceW;
-    }
-    remY = this->H % this->SliceH;
-    if (remY == 0) {
-        remY = this->SliceH;
-    }
+    remX = W % SliceW;
+    if (remX == 0) remX = SliceW;
+    remY = H % SliceH;
+    if (remY == 0) remY = SliceH;
 
-    inMemory = (int)this->InMemory;
-    if (!inMemory) {
-        int sliceCountX = (this->W + this->SliceW - 1) / this->SliceW;
-        int sliceCountY = (this->H + this->SliceH - 1) / this->SliceH;
-        this->SliceCountX = sliceCountX;
-        this->SliceCountY = sliceCountY;
-        int gridW = (short)sliceCountX;
-        int sliceTableStride = (short)sliceCountY * sizeof(Slice);
-        this->SliceTab = (Slice *)Mem_New(
-            gridW * sliceTableStride, 1, 1);
-        sourceWidth = this->W;
-        inMemory = (int)this->InMemory;
+    if (!InMemory) {
+        SliceCountX = (W + SliceW - 1) / SliceW;
+        SliceCountY = (H + SliceH - 1) / SliceH;
+        SliceTab = (Slice *)Mem_New(sizeof(Slice) * SliceCountX * SliceCountY, 1, 1);
     }
 
     line_start = (unsigned short *)data;
-    j = 0;
-    if (this->SliceCountY - 1 > 0) {
-        do {
-            unsigned short *in = line_start;
-            int i = 0;
-            sliceCountX = this->SliceCountX;
-            sliceH = this->SliceH;
-            if ((short)sliceCountX - 1 > 0) {
-                unsigned short cx = sliceCountX;
-                do {
-                    unsigned short *src = in;
-                    int sliceh = (short)sliceH;
-                    int sourceW = (short)sourceWidth;
-                    Slice *slice =
-                        &this->SliceTab[j * (short)cx + i];
-                    int slicew = this->SliceW;
-                    inMemory ^= 1;
-                    IMAGE_COPY_SLICE_PIXELS(slice, src, slicew, sliceh, sourceW, inMemory);
-                    i++;
-                    slice->w = slicew;
-                    slice->h = sliceh;
-                    in += this->SliceW;
-                    sliceCountX = this->SliceCountX;
-                    sourceWidth = this->W;
-                    sliceH = this->SliceH;
-                    inMemory = (int)this->InMemory;
-                    cx = sliceCountX;
-                } while (i < (short)sliceCountX - 1);
-            }
-
-            {
-                unsigned short *src = in;
-                int sliceh = (short)sliceH;
-                int sourceW = (short)sourceWidth;
-                Slice *slice =
-                    &this->SliceTab[j * (short)sliceCountX + i];
-                int slicew = remX;
-                IMAGE_COPY_SLICE_PIXELS(
-                    slice, src, slicew, sliceh, sourceW, inMemory ^= 1);
-                slice->w = slicew;
-                slice->h = sliceh;
-            }
-
-            j++;
-            line_start += this->W * this->SliceH;
-            sourceWidth = this->W;
-            inMemory = (int)this->InMemory;
-        } while (j < this->SliceCountY - 1);
+    for (j = 0; j < SliceCountY - 1; j++) {
+        unsigned short *in = line_start;
+        int i;
+        for (i = 0; i < SliceCountX - 1; i++) {
+            Image_CopySlice(in, &SliceTab[j * SliceCountX + i], SliceW, SliceH, W, !InMemory);
+            in += SliceW;
+        }
+        Image_CopySlice(in, &SliceTab[j * SliceCountX + i], remX, SliceH, W, !InMemory);
+        line_start += W * SliceH;
     }
-
-    sliceCountX = this->SliceCountX;
     in = line_start;
-    for (i = 0; i < (short)sliceCountX - 1; i++) {
-        unsigned short cx = sliceCountX;
-        int sliceh = remY;
-        unsigned short *src = in;
-        int sourceW = (short)sourceWidth;
-        Slice *slice =
-            &this->SliceTab[j * (short)cx + i];
-        int slicew = this->SliceW;
-        IMAGE_COPY_SLICE_PIXELS(
-            slice, src, slicew, sliceh, sourceW, inMemory ^= 1);
-        slice->w = slicew;
-        slice->h = sliceh;
-        in += this->SliceW;
-        sliceCountX = this->SliceCountX;
-        sourceWidth = this->W;
-        inMemory = (int)this->InMemory;
-        cx = sliceCountX;
+    for (i = 0; i < SliceCountX - 1; i++) {
+        Image_CopySlice(in, &SliceTab[j * SliceCountX + i], SliceW, remY, W, !InMemory);
+        in += SliceW;
     }
+    Image_CopySlice(in, &SliceTab[j * SliceCountX + i], remX, remY, W, !InMemory);
 
-    {
-        int slicew = remX;
-        int sliceh = remY;
-        unsigned short *src = in;
-        int sourceW = (short)sourceWidth;
-        Slice *slice =
-            &this->SliceTab[j * (short)sliceCountX + i];
-        inMemory ^= 1;
-        IMAGE_COPY_SLICE_PIXELS(slice, src, slicew, sliceh, sourceW, inMemory);
-        slice->w = slicew;
-        slice->h = sliceh;
-    }
-
-    this->InMemory = (void *)1;
-    if (this->Packed != 0) {
-        this->repack();
+    InMemory = 1;
+    if (Packed != 0) {
+        repack();
     }
 }
 
@@ -946,8 +837,6 @@ void SlicedImage2::draw(int x, int y, int drawFirst) {
 Sprite2::Sprite2(
     char *filename, int pack, int slice_w, int slice_h) {
     Sprite2 *sprite = this;
-    SlicedImage2_Construct(sprite);
-    sprite->CClass.vtable = &__vt_7Sprite2[0];
     unsigned short clut;
     char *pixel_data_buf;
     int w;
@@ -981,8 +870,6 @@ Sprite2::Sprite2(
 Sprite2::Sprite2(
     unsigned char *buffer, int pack, int slice_w, int slice_h) {
     Sprite2 *sprite = this;
-    SlicedImage2_Construct(sprite);
-    sprite->CClass.vtable = &__vt_7Sprite2[0];
     unsigned short clut;
     char *pixel_data_buf;
     int w;
@@ -1010,14 +897,9 @@ Sprite2::Sprite2(
  * @param sprite Sprite being destroyed.
  * @param __in_chrg GCC 2.x in-charge flag; bit 0 also frees the object.
  */
-void Sprite2_DestroyAbi(Sprite2 *sprite, int __in_chrg) {
-    sprite->CClass.vtable = __vt_7Sprite2;
-    if (sprite->BppShift == 1) {
-        Free256Slot(sprite->Clut);
-    }
-    SlicedImage2_Destroy(sprite, 0);
-    if (__in_chrg & 1) {
-        ::CClass::operator delete(sprite);
+Sprite2::~Sprite2() {
+    if (BppShift == 1) {
+        Free256Slot(Clut);
     }
 }
 
@@ -1092,11 +974,8 @@ int SlicedImage2::screenHeight() {
  * @return `this` pointer (GCC 2.x ctor convention).
  */
 RotateSprite::RotateSprite(
-    char *filename, int pack, int slice_w, int slice_h) {
-    ::new (static_cast<Sprite2 *>(this)) struct Sprite2(
-        filename, pack, slice_w, slice_h);
-    CClass.vtable =
-        &__vt_12RotateSprite[0];
+    char *filename, int pack, int slice_w, int slice_h)
+    : Sprite2(filename, pack, slice_w, slice_h) {
     AspectType = 1;
 }
 
@@ -1329,34 +1208,3 @@ void RotateSprite::draw(int x, int y, int rot) {
  * vtables. Keeping these definitions after the functions preserves that
  * source-level section order.
  */
-int __vt_12RotateSprite[6]
-    __attribute__((section(".rdata"), aligned(8))) = {
-        0,
-        0,
-        (int)&RotateSprite_DestroyAbi,
-        (int)(void (*)(Image *, int, int))&Image::draw,
-        (int)(void (*)(Sprite2 *, void *))&Sprite2::setData,
-        (int)(void (*)(RotateSprite *, int, int, int))&RotateSprite::draw,
-    };
-
-/** Virtual dispatch table for ordinary sprites. */
-int __vt_7Sprite2[6]
-    __attribute__((section(".rdata"), aligned(8))) = {
-        0,
-        0,
-        (int)&Sprite2_DestroyAbi,
-        (int)(void (*)(Image *, int, int))&Image::draw,
-        (int)(void (*)(Sprite2 *, void *))&Sprite2::setData,
-        (int)(void (*)(SlicedImage2 *, int, int, int))&SlicedImage2::draw,
-    };
-
-/** Virtual dispatch table for sliced images. */
-int __vt_12SlicedImage2[6]
-    __attribute__((section(".rdata"), aligned(8))) = {
-        0,
-        0,
-        (int)&SlicedImage2_Destroy,
-        (int)(void (*)(Image *, int, int))&Image::draw,
-        (int)(void (*)(SlicedImage2 *, void *))&SlicedImage2::setData,
-        (int)(void (*)(SlicedImage2 *, int, int, int))&SlicedImage2::draw,
-    };

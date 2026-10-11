@@ -3,7 +3,7 @@
 // Functions: 13
 // Address range: 0x8007EDD0 - 0x8007FC6C
 //
-// Compiled with cc1plus (GCC 2.91.66-psx). Compiler auto-mangles symbol names.
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 #define GAMEFMV_DEFINE_OWNER_LOCAL_DECODER_STATE
 #define GAMEFMV_OWNER_DECLARATIONS
@@ -21,9 +21,6 @@ typedef char GameFMV_cd_file_size_must_be_24[
 
 #include <LIBPRESS.H>
 #include "STCDINTRFLAG.h"
-
-#define GAMEFMV_DECLARE_DECODER_ADDRESS_VIEWS
-#include "GAMEFMV.h"
 
 /** Typed view of the generated decoder-buffer prefix. */
 #define GameFMV_AsyncVlcBuffers \
@@ -65,6 +62,16 @@ typedef char GameFMV_sound_vector_size_must_be_12[
 
 /** Playback-mode flag owned by GAMEFMV. */
 int GameFMV_IsMovie = 0;
+
+/** Rewind request, active-playback and frame-buffer-copy flags owned by GAMEFMV. */
+int GameFMV_RewindSwitch = 0;
+int GameFMV_Active = 0;
+int GameFMV_FrameBufferCopyActive = 0;
+
+/** Decoder ring indices and the VLC hand-off flag. */
+static int currentDecodeBuffer = 0;
+static int currentVlcBuffer = 0;
+static int sendVLC = 0;
 
 /** Eight positional movie-audio sources constructed at program startup. */
 GameFMVSoundVector GameFMV_SoundSource[8];
@@ -110,6 +117,12 @@ static SMovieDetails movieDetails[30] __attribute__((section(".data"))) = {
 
 #undef GAMEFMV_MOVIE
 
+/** Next music-video track tried by GameFMV_SetStartTrack's cycling mode. */
+int CycleTracks = 2;
+
+/** Whether the lid-open pause has already been handled for this movie. */
+static int alreadyHandledPause = 0;
+
 /** Stable public-to-table track mapping used during disc lookup. */
 static u8 indices[30] __attribute__((section(".data"))) = {
     0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
@@ -121,17 +134,7 @@ static u8 indices[30] __attribute__((section(".data"))) = {
 unsigned short *decodeSliceBuffer[11]
     __attribute__((section(".data"))) = {};
 
-/**
- * Complete owner-local decoder state recorded as class-static globals by
- * MAIN.SYM.
- *
- * Natural owner-local definitions let GCC emit the original local common
- * records without exposing false public definitions.
- */
-static int currentDecodeBuffer;
-static int currentVlcBuffer;
-static int sendVLC;
-static int alreadyHandledPause;
+/** Owner-local ring buffer pointer (a local common record in MAIN.SYM). */
 static unsigned long *pRingBuffer;
 
 // === Owner-local callback declarations ===
@@ -207,7 +210,7 @@ void GameFMV_PlayMovie(int track) {
         sendVLC = 0;
         old_screen_w = DoubleBuffer[0].Disp.screen.w;
         int i = 0;
-        unsigned int **vlc_buffer = GameFMV_VlcBuffers;
+        unsigned int **vlc_buffer = GameFMV_AsyncVlcBuffers;
         do {
             *vlc_buffer = static_cast<unsigned int *>(
                 Mem_New(GameFMV_VLCBufferSize, 1, 0));
@@ -285,7 +288,7 @@ void GameFMV_PlayMovie(int track) {
         for (;;) {
             DecDCTin(
                 reinterpret_cast<unsigned long *>(
-                    GameFMV_VlcBuffers[currentVlcBuffer]),
+                    GameFMV_AsyncVlcBuffers[currentVlcBuffer]),
                 GameFMV_Is24Bit ? 3 : 2);
             DecDCTout(
                 reinterpret_cast<unsigned long *>(decodeSliceBuffer[currentDecodeBuffer]),
@@ -371,7 +374,7 @@ InsufficientMemory:
 FreeVlcBuffers:
     {
         int i = 0;
-        unsigned int **vlc_buffer = GameFMV_VlcBuffers;
+        unsigned int **vlc_buffer = GameFMV_AsyncVlcBuffers;
         do {
             if (*vlc_buffer) {
                 Mem_Delete(*vlc_buffer);
@@ -649,38 +652,17 @@ end:
 /**
  * Waits for the CD lid to close and for the drive to report a ready state.
  *
- * The original control flow shares one `CdControlB` call site. Its two argument
- * registers remain constrained: an ordinary typed merge changed 27 of 28
- * instructions, while a direct pair of loops changed four instructions and one
- * relocation.
- *
  * Address: 0x8007F910
  */
 static void handleLidOpen(void) {
     unsigned char result[8];
-    int command;
-    register u_char *arg1 asm("$5");
-    register u_char *arg2 asm("$6");
     do {
-        command = 1;
-        arg1 = 0;
-        arg2 = result;
-        CdControlB(command, arg1, arg2);
+        CdControlB(1, 0, result);
     } while (result[0] & 0x10);
 
-    command = 0x13;
-    arg1 = 0;
-    arg2 = 0;
-    goto do_control;
-
-wait_ready:
-    arg1 = 0;
-    arg2 = result;
-do_control:
-    CdControlB(command, arg1, arg2);
-    if (!(result[0] & 2)) {
-        command = 1;
-        goto wait_ready;
+    CdControlB(0x13, 0, 0);
+    while (!(result[0] & 2)) {
+        CdControlB(1, 0, result);
     }
 }
 

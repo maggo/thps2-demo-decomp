@@ -3,14 +3,12 @@
 // Functions: 38 reconstructed entries
 // Address range: 0x800441BC - 0x80045704
 //
-// Compiled with cc1plus (GCC 2.91.66-psx). Compiler auto-mangles symbol names.
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
-#define __SKIP_CSUPER_EXTERNS__
-
-#define __SKIP_CBODY_EXTERNS__
-
-#define __SKIP_CITEM_EXTERNS__
-
+#define CVECTOR_COMPONENT_CTORS
+#define CCLASS_POLY_ITEM_FAMILY
+#define CCLASS_POLY_ITEM_FAMILY_IMPLEMENT
+#include "CCLASS_POLY.h"
 #define OB_OWNER_DECLARATIONS
 #define OB_OWNER_LOCAL_SERVICE_DECLS
 #include "OB.h"
@@ -23,7 +21,6 @@
 #undef OB_LAYOUT_ONLY
 #include "MAIN.h"
 #include "PSXREGION.h"
-#include "CITEM.h"
 
 /** Return caller-provided storage for construction. */
 inline void *operator new(unsigned int, void *storage)
@@ -80,7 +77,6 @@ struct CQuadBit {
                      int width, int height, int flags);
 };
 
-typedef char CItem_class_size_check[(sizeof(class CItem) == 76) ? 1 : -1];
 typedef char CBitOwner_size_check[(sizeof(struct CBitOwner) == 72) ? 1 : -1];
 typedef char CQuadBitOwner_size_check[(sizeof(struct CQuadBitOwner) == 156) ? 1 : -1];
 typedef char SVECTOR_owner_size_check[(sizeof(SVECTOR) == 8) ? 1 : -1];
@@ -97,108 +93,6 @@ struct CBit
 #include "MEM.h"
 #include "UTILS.h"
 
-#define ZEROVECTOR_FIRST_COMPONENT_DECLARATIONS
-#include "ZEROVECTOR.h"
-#undef ZEROVECTOR_FIRST_COMPONENT_DECLARATIONS
-
-// === Owner-local natural ABI hierarchy ===
-
-class CBody : public CItem {
-public:
-    CBody **mppOriginalList;
-    u16 mInputFlags;
-    u16 mCBodyFlags;
-    CVector mVel;
-    CVector mAcc;
-    CFriction mFric;
-    CSVector mAngVel;
-    CSVector mAngAcc;
-    CFriction mAngFric;
-    CSVector mNormal;
-    u8 mEventFlags;
-    u32 mEllipsoidRGB;
-    u16 mEllipsoidScale;
-    s16 mEllipsoidOTPushback;
-    CVector mShadowPos;
-    CSVector mShadowNormal;
-    CQuadBitOwner *mpShadow;
-    u16 mShadowScale;
-    s16 mShadowDist;
-    s16 mShadowThreshold;
-    int mPushVal;
-    u16 mRMinor;
-    u16 mNode;
-    u16 mCollision;
-    s16 mHealth;
-    u32 mPlayerDist;
-    u8 mAIFrequency;
-    u8 mAICount;
-    CVector mOldPos;
-    CVector mTweenPos;
-    CVector mNewPos;
-    CVector mDPos;
-    CSVector mOldAngles;
-    CSVector mNewAngles;
-    CSVector mDAngles;
-
-    /** Initialize the item base and physical defaults. */
-    CBody();
-    /** Insert this body at the head of a linked body list. */
-    void AttachTo(CBody **list);
-    /** Remove this body from a linked body list. */
-    void DeleteFrom(CBody **list);
-    /** Decode and store one packed position triple. */
-    short *SquirtPos(short *info);
-    /** Decode and store one packed angle triple. */
-    short *SquirtAngles(short *info);
-    /** Move this body from its live list to the suspended list. */
-    void Suspend(CBody **originalList);
-    /** Restore this body to its saved live list. */
-    void UnSuspend();
-    /** Enable shadow rendering for this body. */
-    void ShadowOn();
-    /** Destroy this body's shadow and clear its shadow flag. */
-    void KillShadow();
-    /** Rebuild or retire this body's shadow and refresh its opacity. */
-    void UpdateShadow();
-    /** Mark this body dead. */
-    void Die();
-    /** Return whether this body has been marked dead. */
-    int IsDead() const;
-    /** Apply one hit and report whether it was accepted. */
-    int Hit(int damage, const CVector &knock, int whatHit);
-    /** Run the base body's empty AI behavior. */
-    void AI();
-    /** Run the base body's empty per-frame behavior. */
-    void EveryFrame();
-    /** Interleave expensive AI samples across frames. */
-    void InterleaveAI();
-    /** Configure the base body's empty lighting state. */
-    void DoLightingSetup();
-    /** Release base-body resources. */
-    void DeleteStuff();
-    ~CBody();
-};
-
-typedef char CBody_class_size_check[(sizeof(class CBody) == 264) ? 1 : -1];
-
-class CSuper : public CBody {
-public:
-    /** Initialize the body base and animation defaults. */
-    CSuper();
-    /** Start a bounded animation sequence. */
-    void RunAnim(int anim, int from, int to, int to2);
-    /** Start a looping animation in the requested playback direction. */
-    void CycleAnim(int animation, signed char direction);
-    /** Advance the active animation by one scaled frame step. */
-    void UpdateFrame();
-    /** Assign one model hierarchy slot to an animation hierarchy slot. */
-    void SetAnimOrder(u8 modelId, u8 animOrder);
-    /** Build the animation-order table by matching hierarchy names. */
-    void CalculateAnimOrder(char **animHierarchy, int animPartCount,
-                            char **modelHierarchy, int modelPartCount);
-    ~CSuper();
-};
 
 // === External function declarations ===
 #include "SPOOL.h"
@@ -213,21 +107,7 @@ public:
 #undef OB_OWNER_SERVICE_DECLARATIONS
 void Ob_MaybeUnSuspendOrCull(void);
 
-// === Extern "C" forward declarations ===
-
-void CItem_dtor(CItemOwner *, int inCharge) asm("_._5CItem");
-#define CBODY_ABI_ONLY
-#define CBODY_DECLARE_DESTRUCTOR
-#define CBODY_DESTRUCTOR_NAME CBody_dtor
-#define CBODY_DESTRUCTOR_RECEIVER CBodyOwner
-#include "CBODY.h"
-#undef CBODY_ABI_ONLY
-#define CSUPER_ABI_ONLY
-#define CSUPER_DECLARE_DESTRUCTOR
-#define CSUPER_DESTRUCTOR_NAME CSuper_dtor
-#include "CSUPER.h"
-#undef CSUPER_ABI_ONLY
-extern char s_Shadow_800d9b4c[];
+extern char s_Shadow[];
 #include "GSKATER_STATE.h"
 #define CVECTOROPS_OMIT_DIVIDE
 #include "CVECTOROPS.h"
@@ -245,11 +125,9 @@ CBody *EnvironmentalObjectList
 CBody *SuspendedList
     __attribute__((section(".sdata"))) = 0;
 
-/** Canonical zero vectors initialized again by the TU global initializer. */
-CVector ZeroVector
-    __attribute__((section(".sdata"))) = {0, 0, 0};
-CSVector ZeroSVector
-    __attribute__((section(".sdata"))) = {0, 0, 0};
+/** Canonical zero vectors (constructed by the TU's global initializer). */
+CVector ZeroVector(0, 0, 0);
+CSVector ZeroSVector(0, 0, 0);
 
 /** Distance beyond which environmental objects may be suspended. */
 unsigned int SuspendDistance
@@ -258,57 +136,12 @@ unsigned int SuspendDistance
 /** Texture name used by the body shadow quad. */
 namespace ObAddressViewOwners {
 extern "C" {
-static char s_Shadow_800d9b4c[8]
+static char s_Shadow[8]
     __attribute__((section(".sdata"))) = "Shadow";
 }
 }
 
 /** Base item dispatch table: header words followed by its destructor. */
-namespace ObCItemVtableOwner
-{
-extern "C"
-{
-int __vt_5CItem[3]
-    __attribute__((section(".sdata"))) = {
-        0,
-        0,
-        (int)&CItem_dtor,
-};
-}
-}
-
-/**
- * Super and body virtual dispatch tables in their original read-only order.
- *
- * Each table contains the two GCC 2.x header words and seven virtual slots.
- * Eight-byte alignment contributes one zero padding word between the tables.
- */
-int __vt_6CSuper[9]
-    __attribute__((section(".rdata"), aligned(8))) = {
-        0,
-        0,
-        (int)&CSuper_dtor,
-        (int)(void (*)(CBodyOwner *))&CBody::Die,
-        (int)(void (*)(CBodyOwner *))&CBody::AI,
-        (int)(void (*)(CBodyOwner *))&CBody::EveryFrame,
-        (int)(void (*)(CBodyOwner *))&CBody::DoLightingSetup,
-        (int)(int (*)(CBodyOwner *, int, const CVector &, int))&CBody::Hit,
-        (int)(void (*)(CBodyOwner *))&CBody::DeleteStuff,
-};
-
-int __vt_5CBody[9]
-    __attribute__((section(".rdata"), aligned(8))) = {
-        0,
-        0,
-        (int)&CBody_dtor,
-        (int)(void (*)(CBodyOwner *))&CBody::Die,
-        (int)(void (*)(CBodyOwner *))&CBody::AI,
-        (int)(void (*)(CBodyOwner *))&CBody::EveryFrame,
-        (int)(void (*)(CBodyOwner *))&CBody::DoLightingSetup,
-        (int)(int (*)(CBodyOwner *, int, const CVector &, int))&CBody::Hit,
-        (int)(void (*)(CBodyOwner *))&CBody::DeleteStuff,
-};
-
 // === Virtual dispatch helpers ===
 //
 // GCC 2.x vtables carry two header words, so slot k of the tables above is
@@ -322,22 +155,22 @@ static inline void DeleteBit(CBitOwner *pBit) {
 
 /** Invoke a CBody's virtual destructor with in-charge flag 3 (also frees). */
 static inline void DeleteBody(CBodyOwner *pBody) {
-    ((void (*)(CBodyOwner *, int))((int *)pBody->CItem.vtable)[2])(pBody, 3);
+    delete reinterpret_cast<CBody *>(pBody);
 }
 
 /** Dispatch CBody::AI() through the object's vtable. */
 static inline void CallAI(CBodyOwner *pBody) {
-    ((void (*)(CBodyOwner *))((int *)pBody->CItem.vtable)[4])(pBody);
+    reinterpret_cast<CBody *>(pBody)->AI();
 }
 
 /** Dispatch CBody::EveryFrame() through the object's vtable. */
 static inline void CallEveryFrame(CBodyOwner *pBody) {
-    ((void (*)(CBodyOwner *))((int *)pBody->CItem.vtable)[5])(pBody);
+    reinterpret_cast<CBody *>(pBody)->EveryFrame();
 }
 
 /** Dispatch CBody::DeleteStuff() through the object's vtable. */
 static inline void CallDeleteStuff(CBodyOwner *pBody) {
-    ((void (*)(CBodyOwner *))((int *)pBody->CItem.vtable)[8])(pBody);
+    reinterpret_cast<CBody *>(pBody)->DeleteStuff();
 }
 
 // === Function implementations (address order) ===
@@ -391,7 +224,6 @@ void CItem::operator delete(void *p)
  */
 CItem::CItem()
 {
-    _vf = (void **)&__vt_5CItem;
     CSVector *scale = &mScale;
     scale->vx = 0x1000;
     scale->vy = 0x1000;
@@ -410,7 +242,6 @@ CItem::CItem()
  */
 CItem::~CItem()
 {
-    _vf = (void **)&__vt_5CItem;
 }
 
 
@@ -538,7 +369,6 @@ void CItem::FlashUpdate()
  */
 CBody::CBody() {
     CBodyOwner *body = reinterpret_cast<CBodyOwner *>(this);
-    body->CItem.vtable = (void *)&__vt_5CBody[0];
     body->mFric.Set(1, 1, 1);
     body->mAngFric.Set(1, 1, 1);
     body->mPushVal = 10;
@@ -562,7 +392,6 @@ CBody::CBody() {
  */
 CBody::~CBody() {
     CBodyOwner *body = (CBodyOwner *)this;
-    body->CItem.vtable = (void *)&__vt_5CBody[0];
     CQuadBitOwner *shadow = (CQuadBitOwner *)body->mpShadow;
     if (shadow != 0) {
         DeleteBit(&shadow->CBit);
@@ -759,7 +588,7 @@ void CBody::UpdateShadow() {
             _this->mpShadow = shadow;
             UseCacheForBits = 1;
             reinterpret_cast<CQuadBit *>(shadow)->SetTexture(
-                s_Shadow_800d9b4c, 0);
+                s_Shadow, 0);
             reinterpret_cast<CQuadBit *>(_this->mpShadow)->FlagOn(4);
             reinterpret_cast<CQuadBit *>(_this->mpShadow)
                 ->SetSemiTransparent();
@@ -854,7 +683,6 @@ int CBody::Hit(int Damage, const CVector &knock, int whathit) {
  */
 CSuper::CSuper() {
     CSuperOwner *super = reinterpret_cast<CSuperOwner *>(this);
-    super->CBody.CItem.vtable = (void *)&__vt_6CSuper[0];
     super->mExtraFlags = 0;
     super->mAnimSpeed = 0x10000;
     super->mNumFrames = 1;
@@ -876,7 +704,6 @@ CSuper::CSuper() {
  */
 CSuper::~CSuper() {
     CSuperOwner *super = (CSuperOwner *)this;
-    super->CBody.CItem.vtable = (void *)&__vt_6CSuper[0];
     if (super->mpPoseBuffer != 0) {
         Mem_Delete((void *)super->mpPoseBuffer);
     }
@@ -905,44 +732,17 @@ CSuper::~CSuper() {
  * @param to2  Secondary target-frame value.
  */
 void CSuper::RunAnim(int anim, int from, int to, int to2) {
-    CSuperOwner *super = reinterpret_cast<CSuperOwner *>(this);
-    int region = super->CBody.CItem.mRegion;
-    // These remaining pins/barriers preserve the target's GCC 2.x allocation;
-    // natural unpinned forms were measured and change this exact routine.
-    register unsigned int *tbl asm("$4");
-    u32 idx;
-    int frameCount;
-
-    super->mAnim = anim;
-    tbl = PSXRegion[region].pAnimFile;
-    asm volatile("" : "+r"(super), "+r"(region));
-    idx = super->mAnim;
-    if (!(idx < *tbl)) {
-        idx = 46;
-        asm("" : "+r"(idx));
-        super->mAnim = 46;
+    mAnim = anim;
+    if (mAnim >= PSXRegion[mRegion].pAnimFile[0]) {
+        mAnim = 46;
     }
+    mNumFrames = ((u8 *)PSXRegion[mRegion].pAnimFile)[mAnim * 8 + 8];
 
-    tbl = PSXRegion[region].pAnimFile;
-    int minusOne = -1;
-    {
-        // Integer addition preserves the target's base/offset operand order.
-        int animationEntry = (idx << 3) + (int)tbl;
-        register int rawFrame asm("$2") =
-            ((ObAnimationTableOwner *)animationEntry)
-                ->mAnimations[0].mNumFrames;
-        super->mNumFrames = rawFrame;
-
-        if (from == minusOne) {
-            asm("" : "+r"(rawFrame));
-            from = (rawFrame & 0xFF) - 1;
-            asm volatile("" : "+r"(rawFrame));
-        }
+    if (from == -1) {
+        from = mNumFrames - 1;
     }
-
-    frameCount = super->mNumFrames;
-    if (to == minusOne) {
-        to = frameCount - 1;
+    if (to == -1) {
+        to = mNumFrames - 1;
     }
 
     if (from < 0) {
@@ -951,37 +751,30 @@ void CSuper::RunAnim(int anim, int from, int to, int to2) {
     if (to < 0) {
         to = 0;
     }
-    if (!(from < frameCount)) {
-        from = frameCount - 1;
+    if (from >= mNumFrames) {
+        from = mNumFrames - 1;
     }
-    if (!(to < frameCount)) {
-        to = frameCount - 1;
+    if (to >= mNumFrames) {
+        to = mNumFrames - 1;
     }
 
-    super->mAnimMode = 0;
+    mAnimMode = 0;
     if (to <= from) {
         if (to < from) {
-            super->mAnimDir = minusOne;
+            mAnimDir = -1;
         } else {
-            super->mAnimDir = 0;
+            mAnimDir = 0;
         }
     } else {
-        super->mAnimDir = 1;
+        mAnimDir = 1;
     }
 
-    int tf = to << 24;
-    super->mStartFrame = from;
-    super->mFrame = from;
-    super->mTargetFrame = to;
-    asm("");
-    {
-        register int spd asm("$2") = to2;
-        tf >>= 24;
-        super->mFrameFrac = 0;
-        super->mTargetFrame2 = spd;
-    }
-    register int sf asm("$2") = (s16)from;
-    super->mAnimFinished = (sf == tf);
+    mStartFrame = from;
+    mFrame = from;
+    mTargetFrame = to;
+    mTargetFrame2 = to2;
+    mFrameFrac = 0;
+    mAnimFinished = (mFrame == mTargetFrame);
 }
 
 
@@ -996,41 +789,14 @@ void CSuper::RunAnim(int anim, int from, int to, int to2) {
  * @param animdir  Initial playback direction.
  */
 void CSuper::CycleAnim(int anim, signed char animdir) {
-    CSuperOwner *super = reinterpret_cast<CSuperOwner *>(this);
-    // The two pins keep the region-table base and animation index in the
-    // target registers; removing either changes nine instructions.
-    register int regionBase asm("$7");
-    int regionOffset;
-    register int animIndex asm("$2");
-    int animTable;
-    u8 region;
+    mAnim = anim;
+    mNumFrames = ((u8 *)PSXRegion[mRegion].pAnimFile)[mAnim * 8 + 8];
 
-    region = super->CBody.CItem.mRegion;
-    regionBase = (int)PSXRegion;
-    super->mAnim = (u16)anim;
-    animIndex = super->mAnim;
-    regionOffset = region << 6;
-    /**
-     * Keep the accumulated region pointer in the same register that is reused
-     * for the frame-count byte; ordinary pointer addition changes two target
-     * instructions in this otherwise exact routine.
-     */
-    asm("addu %0,%0,%1" : "+r"(regionBase) : "r"(regionOffset));
-    animTable = (int)((SPSXRegion *)regionBase)->pAnimFile;
-    animIndex = animIndex << 3;
-    animIndex = animIndex + animTable;
-    {
-        int mode = 1;
-        regionBase =
-            ((ObAnimationTableOwner *)animIndex)->mAnimations[0].mNumFrames;
-
-        super->mAnimMode = (u8)mode;
-        super->mAnimDir = animdir;
-        super->mFrame = 0;
-        super->mFrameFrac = 0;
-        super->mAnimFinished = 0;
-        super->mNumFrames = (u8)regionBase;
-    }
+    mAnimMode = 1;
+    mAnimDir = animdir;
+    mFrame = 0;
+    mFrameFrac = 0;
+    mAnimFinished = 0;
 }
 
 
@@ -1045,17 +811,12 @@ void CSuper::CycleAnim(int anim, signed char animdir) {
  * target frames, and the global time scale.
  */
 void CSuper::UpdateFrame() {
-    // The receiver pin and barrier preserve target scheduling (65 and 13
-    // instruction mismatches respectively when expressed naturally).
-    register CSuperOwner *p asm("$7") =
-        reinterpret_cast<CSuperOwner *>(this);
-    asm("" : "+r"(p));
 // Named-member views retain the target's deliberate signed/unsigned loads.
-#define SUPER_S8(member)  (*(signed char *)&p->member)
-#define SUPER_U8(member)  (*(u8 *)&p->member)
-#define SUPER_S16(member) (*(s16 *)&p->member)
-#define SUPER_U16(member) (*(u16 *)&p->member)
-#define SUPER_S32(member) (*(int *)&p->member)
+#define SUPER_S8(member)  (*(signed char *)&((CSuperOwner *)this)->member)
+#define SUPER_U8(member)  (*(u8 *)&((CSuperOwner *)this)->member)
+#define SUPER_S16(member) (*(s16 *)&((CSuperOwner *)this)->member)
+#define SUPER_U16(member) (*(u16 *)&((CSuperOwner *)this)->member)
+#define SUPER_S32(member) (*(int *)&((CSuperOwner *)this)->member)
 
     int t;
     int cmp;
@@ -1230,48 +991,17 @@ void CSuper::SetAnimOrder(u8 modelId, u8 animOrder) {
 void CSuper::CalculateAnimOrder(
     char **pAnimHierarchy, int animPartCount,
     char **pModelHierarchy, int modelPartCount) {
-    // The saved-register assignment is load-bearing: removing these pins
-    // changes 51 instructions even though the control flow is unchanged.
-    register int oc asm("$22") = modelPartCount;
-    register int i asm("$18") = 0;
-    register CSuperOwner *s asm("$23") =
-        reinterpret_cast<CSuperOwner *>(this);
-    register char **np asm("$30") = pAnimHierarchy;
-    register int nc asm("$21") = animPartCount;
-    register char **op asm("$20");
-    if (oc <= 0) goto done;
-    op = pModelHierarchy;
-    // Preserve the target's saved-register initialization order.
-    asm("" : "+r"(oc), "+r"(i), "+r"(np), "+r"(s), "+r"(nc));
-loop_outer:
-    {
-        register int j asm("$17");
-        register char **oSrc asm("$19");
-        register char **nSrc asm("$16");
-        if (nc <= 0) goto skip_inner;
-        j = 0;
-        oSrc = op;
-        nSrc = np;
-    loop_inner:
-        if (strcmp(*oSrc, *nSrc) != 0) goto next_inner;
-        reinterpret_cast<CSuper *>(s)->SetAnimOrder(
-            i & 0xFF, j & 0xFF);
-        op++;
-        goto next_outer;
-    next_inner:
-        j++;
-        if (j < nc) {
-            nSrc++;
-            goto loop_inner;
+    int i;
+
+    for (i = 0; i < modelPartCount; i++) {
+        int j;
+        for (j = 0; j < animPartCount; j++) {
+            if (strcmp(pModelHierarchy[i], pAnimHierarchy[j]) == 0) {
+                SetAnimOrder(i, j);
+                break;
+            }
         }
-    skip_inner:
-        op++;
     }
-next_outer:
-    i++;
-    if (i < oc) goto loop_outer;
-done:
-    ;
 }
 
 
@@ -1386,12 +1116,12 @@ void Ob_ClearInputFlags(CBody * pBody) {
     if (!body) return;
     CBodyOwner *pNext = (CBodyOwner *)body->CItem.mNextItem;
 loop:
-    body->mInputFlags = body->mInputFlags & 1;
-    // Prevent the store from moving into the null-check delay slot.
-    asm("");
-    if (!pNext) return;
+    body->mInputFlags &= 1;
+
     body = pNext;
-    pNext = (CBodyOwner *)pNext->CItem.mNextItem;
+    if (!pNext) return;
+    CItemOwner *next = pNext->CItem.mNextItem;
+    pNext = (CBodyOwner *)next;
     goto loop;
 }
 
@@ -1473,31 +1203,28 @@ void Ob_QuickAI(CBody ** ppBody) {
     CBodyOwner *pNext;
     unsigned short flags;
 
-    if (!pBody) goto end;
+    if (!pBody) return;
     pNext = (CBodyOwner *)pBody->CItem.mNextItem;
 
-top:
-    flags = pBody->mCBodyFlags;
+    while (1) {
+        flags = pBody->mCBodyFlags;
 
-    if (flags & 0x40) {
-        if (flags & 0x80) {
-            if (pBody) {
-                DeleteBody(pBody);
+        if (flags & 0x40) {
+            if (flags & 0x80) {
+                if (pBody) {
+                    DeleteBody(pBody);
+                }
+            } else {
+                pBody->mCBodyFlags = flags | 0x80;
             }
         } else {
-            pBody->mCBodyFlags = flags | 0x80;
+            CallAI(pBody);
         }
-    } else {
-        CallAI(pBody);
+
+        pBody = pNext;
+        if (!pNext) return;
+        pNext = (CBodyOwner *)pNext->CItem.mNextItem;
     }
-
-    pBody = pNext;
-    if (!pNext) goto end;
-    pNext = (CBodyOwner *)pNext->CItem.mNextItem;
-    goto top;
-
-end:
-    ;
 }
 
 
@@ -1511,81 +1238,32 @@ end:
 #include "MECHLIST.h"
 void Ob_MaybeUnSuspendOrCull(void)
 {
-    // These list-cursor pins retain the target loop allocation; unpinned
-    // forms change 14 and 11 instructions respectively.
-    register CBodyOwner *pBody asm("$17") = (CBodyOwner *)SuspendedList;
+    CBodyOwner *pBody = (CBodyOwner *)SuspendedList;
     if (pBody == (CBodyOwner *)0) return;
-    register CBodyOwner *pNext asm("$19") =
-        (CBodyOwner *)pBody->CItem.mNextItem;
-top:
-    if ((pBody->mCBodyFlags & 2) != 0) {
-        CVector *pBodyPos = (CVector *)&pBody->CItem.mPos;
-        unsigned int dist = (unsigned int)Utils_CrapDist(
-            *(CVector *)&((CBodyOwner *)MechList)->CItem.mPos, *pBodyPos);
-        if (GNumberOfPlayers == 2) {
-            unsigned int dist2 = (unsigned int)Utils_CrapDist(
-                *(CVector *)&((CBodyOwner *)((CBodyOwner *)MechList)
-                                  ->CItem.mNextItem)
-                    ->CItem.mPos,
-                *pBodyPos);
-            if (dist2 < dist) {
-                dist = dist2;
+    CBodyOwner *pNext = (CBodyOwner *)pBody->CItem.mNextItem;
+    while (1) {
+        if ((pBody->mCBodyFlags & 2) != 0) {
+            CVector *pBodyPos = (CVector *)&pBody->CItem.mPos;
+            unsigned int dist = (unsigned int)Utils_CrapDist(
+                *(CVector *)&((CBodyOwner *)MechList)->CItem.mPos, *pBodyPos);
+            if (GNumberOfPlayers == 2) {
+                unsigned int dist2 = (unsigned int)Utils_CrapDist(
+                    *(CVector *)&((CBodyOwner *)((CBodyOwner *)MechList)
+                                      ->CItem.mNextItem)
+                        ->CItem.mPos,
+                    *pBodyPos);
+                if (dist2 < dist) {
+                    dist = dist2;
+                }
+            }
+            if (SuspendDistance >= dist) {
+                reinterpret_cast<CBody *>(pBody)->UnSuspend();
             }
         }
-        if (SuspendDistance >= dist) {
-            reinterpret_cast<CBody *>(pBody)->UnSuspend();
-        }
+        if (pNext == (CBodyOwner *)0) return;
+        pBody = pNext;
+        pNext = (CBodyOwner *)pNext->CItem.mNextItem;
     }
-    if (pNext == (CBodyOwner *)0) return;
-    pBody = pNext;
-    pNext = (CBodyOwner *)pNext->CItem.mNextItem;
-    goto top;
 }
 
 
-/**
- * Initialize the translation unit's global zero vectors.
- *
- * Address: 0x800456C4
- * Mangled: _GLOBAL_.I.EnvironmentalObjectList
- */
-void Ob_GlobalInit_EnvironmentalObjectList(void) asm("_GLOBAL_.I.EnvironmentalObjectList");
-void Ob_GlobalInit_EnvironmentalObjectList(void)
-{
-    (&ObZeroVectorFirstComponent)[0] = 0;
-    (&ObZeroVectorFirstComponent)[1] = 0;
-    (&ObZeroVectorFirstComponent)[2] = 0;
-    (&ObZeroSVectorFirstComponent)[0] = 0;
-    (&ObZeroSVectorFirstComponent)[1] = 0;
-    (&ObZeroSVectorFirstComponent)[2] = 0;
-}
-
-/**
- * `.ctors` table slot for this owner's hand-written global constructor.
- *
- * GCC emits this entry itself for a compiler-generated constructor, but this
- * owner's hook is written by hand, so the slot is declared explicitly. The
- * recovered application object order reproduces the target's table sequence.
- */
-static void (*Ob_GlobalCtorSlot)(void)
-    __attribute__((section(".ctors"))) = Ob_GlobalInit_EnvironmentalObjectList;
-
-/** Empty default used by bodies with no owner-specific teardown work. */
-void CBody::DeleteStuff()
-{
-}
-
-/** Empty default used by bodies with no owner-specific lighting setup. */
-void CBody::DoLightingSetup()
-{
-}
-
-/** Empty per-frame default supplied by the original inline body. */
-void CBody::EveryFrame()
-{
-}
-
-/** Empty AI default supplied by the original inline body. */
-void CBody::AI()
-{
-}

@@ -1,4 +1,9 @@
-// Core timing, fixed-point maths, collision-query, and visibility utilities.
+// UTILS.cpp -- Core timing, fixed-point maths, collision-query, and visibility utilities.
+// Original: UTILS.CPP
+// Functions: 24
+// Address range: 0x800484AC - 0x8004999C
+//
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 #define UTILS_OWNER_DECLARATIONS
 #include "UTILS.h"
@@ -166,19 +171,6 @@ int ExplosionPriority[3] __attribute__((section(".sdata"))) = {};
 
 // === External function declarations ===
 #include "M3DMATHS.h"
-/**
- * Compiler-live no-result view used only by the vblank callback.
- *
- * The canonical SDK declaration is the integer-returning DrawSync above.
- * GCC 2.91 reorders the callback's pinned packet-width value when that unused
- * return is visible, changing two target instructions.  A narrow C-linkage
- * declaration preserves the historical call schedule without an ASM alias,
- * cast, or new pin.
- */
-namespace UtilsDrawSyncAbi
-{
-extern "C" void DrawSync(int mode);
-}
 #include "SFX.h"
 
 static int RandSeed;
@@ -213,21 +205,19 @@ void Utils_VblankProcessing(void)
             aPoly.b0 = 0;
         }
 
-        // Ordinary width storage changes six instructions.
-        register int screenWidth asm("$2") = 512;
         aPoly.x0 = 0;
-        aPoly.x1 = screenWidth;
+        aPoly.x1 = 512;
         aPoly.y0 = 0;
         aPoly.y1 = 0;
         aPoly.x2 = 0;
-        aPoly.x3 = screenWidth;
+        aPoly.x3 = 512;
         aPoly.y2 = 240;
         aPoly.y3 = 240;
 
-        UtilsDrawSyncAbi::DrawSync(0);
+        DrawSync(0);
         DrawPrim(const_cast<DR_TPAGE *>(&ptpage));
         DrawPrim(&aPoly);
-        UtilsDrawSyncAbi::DrawSync(0);
+        DrawSync(0);
     }
 
     if (SFX_ReverbDepthSetTimer != 0)
@@ -243,7 +233,7 @@ void Utils_VblankProcessing(void)
 /** Advance frame timing and run the per-vblank game callbacks. */
 void MyVSync(void)
 {
-    // cc1plus otherwise selects v0 and changes three target instructions.
+    // FIXME(match): register pin — forces the Vblanks load/add into $v1 (unpinned picks $v0, 3 insns off); tried: Vblanks++, += 1, local temps, split load/add, two locals.
     register unsigned int vblanks asm("$3") = Vblanks;
     Vblanks = vblanks + 1;
     Db_Vblank();
@@ -330,26 +320,15 @@ void Utils_RotateY(CVector &ans, const CVector &in, int a)
  */
 void Utils_CalcUnit(CVector &Unit, const CVector &Vec)
 {
-    // The original allocation keeps the source in s1. Removing this pin
-    // changes four instructions, while removing its lifetime barrier changes
-    // 23 of the routine's 60 instructions.
-    register const CVector *source asm("$17") = &Vec;
-    CVector *destination = &Unit;
-    asm("" : "+r"(source));
     CVector u;
     int l;
 
-    // Keeping x in v0 preserves the GTE input-store order; ordinary storage
-    // changes twenty instructions.
-    register int x asm("$2") = source->vx;
-    int y = source->vy;
-    x >>= 12;
-    y >>= 12;
+    int x = Vec.vx >> 12;
+    int y = Vec.vy >> 12;
+    int z = Vec.vz >> 12;
     u.vx = x;
-    int z = source->vz;
     CVector *squared = &u;
     squared->vy = y;
-    z >>= 12;
     squared->vz = z;
     gte_ldlvl(squared);
     gte_sqr0();
@@ -357,15 +336,15 @@ void Utils_CalcUnit(CVector &Unit, const CVector &Vec)
     l = M3dMaths_SquareRoot0(u.vx + u.vy + u.vz);
     if (l != 0)
     {
-        destination->vx = source->vx / l;
-        destination->vy = source->vy / l;
-        destination->vz = source->vz / l;
+        Unit.vx = Vec.vx / l;
+        Unit.vy = Vec.vy / l;
+        Unit.vz = Vec.vz / l;
     }
     else
     {
-        destination->vx = 0;
-        destination->vy = 0;
-        destination->vz = 0;
+        Unit.vx = 0;
+        Unit.vy = 0;
+        Unit.vz = 0;
     }
 }
 
@@ -639,9 +618,8 @@ void Utils_CopyString(const char *pSource, char *pDest)
 int Utils_ArcCos(int a)
 {
     int flag = 0;
-    SSinCos *base;
     int t;
-    register int d asm("$5");
+    int d;
     int c;
 
     if (a < 0)
@@ -651,15 +629,11 @@ int Utils_ArcCos(int a)
     }
 
     d = 0x100;
-    base = Utils_TrigEntries();
-    // The a1 step register and this table-base lifetime are load-bearing:
-    // ordinary allocation changes nine instructions and removing the barrier seven.
-    asm volatile("" : "+r"(base));
     t = 0x200;
 
     for (;;)
     {
-        c = base[t].Cos;
+        c = Utils_TrigEntries()[t].Cos;
         if (a < c)
         {
             t += d;

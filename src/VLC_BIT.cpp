@@ -1,4 +1,4 @@
-// VLC_BIT.cpp -- semantic C++ reference for the movie player's VLC decoder.
+// VLC_BIT.cpp -- Semantic C++ reference for the movie player's VLC decoder.
 // Original: SCEE's hand-written version 1.4 bit decoder, linked locally as
 // vlc_bit.obj. This is an independent clean-C++ recovery; the canonical link
 // object uses assembly reconstructed from this target's own instruction words.

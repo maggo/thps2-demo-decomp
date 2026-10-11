@@ -2,7 +2,8 @@
 // Original: PAD.CPP
 // Functions: 15
 // Address range: 0x800698E8 - 0x8006A7D0
-// Compiled with cc1plus (GCC 2.91.66-psx). Compiler auto-mangles symbol names.
+//
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 #include "PAD.h"
 #include "MAIN.h"
@@ -218,7 +219,6 @@ void Pad_ActuatorOn(unsigned char index, unsigned short time, unsigned char moto
     int checkIndex = 0;
     int port;
     int state;
-    register int aligned asm("$20");
 
     if (GGame != 7)
     {
@@ -230,9 +230,7 @@ void Pad_ActuatorOn(unsigned char index, unsigned short time, unsigned char moto
 
     if (state != 0)
     {
-        aligned = 1;
-
-        if (state == aligned)
+        if (state == 1)
         {
             unsigned char *base = (unsigned char *)Pad;
             ((SControl *)(base + checkIndex * sizeof(SControl)))->AlignCalled = 0;
@@ -246,10 +244,13 @@ void Pad_ActuatorOn(unsigned char index, unsigned short time, unsigned char moto
             {
                 PadSetAct(port, &Pad[index].Motor0, 2);
 
-                if (state == 2 ||
-                    (state == 6 && PadSetActAlign(port, align) != 0))
+                if (state == 2)
                 {
-                    p_pad->AlignCalled = aligned;
+                    p_pad->AlignCalled = 1;
+                }
+                else if (state == 6 && PadSetActAlign(port, align) != 0)
+                {
+                    p_pad->AlignCalled = 1;
                 }
             }
 

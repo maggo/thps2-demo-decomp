@@ -2,6 +2,8 @@
 // Original: CREATE_COLOR.CPP
 // Functions: 6
 // Address range: 0x8006CAAC - 0x8006CE98
+//
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 #include "CREATE_COLOR.h"
 #include <STDDEF.H>

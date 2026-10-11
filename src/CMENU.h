@@ -23,8 +23,14 @@ struct SEntry {
 };
 
 /** Front-end text menu and its ordinary service interface. */
-struct CMenu {
+struct CMenu
+#ifdef CMENU_POLYMORPHIC_LAYOUT
+    : CClass   /* natural polymorphic base (CCLASS_POLY.h); FRONT.cpp owns __vt_5CMenu */
+#endif
+{
+#ifndef CMENU_POLYMORPHIC_LAYOUT
     struct CClass CClass;
+#endif
     unsigned char mJustification;
     unsigned char mRep;
     unsigned char mLine;
@@ -36,13 +42,18 @@ struct CMenu {
     int mLineSep;
     struct SEntry mEntry[15];
 
+#ifndef CMENU_POLYMORPHIC_LAYOUT
     /** Allocate menu storage through the shared CClass arena. */
     static void *operator new(unsigned int size) throw()
     {
         return ::CClass::operator new(size);
     }
+#endif
     CMenu(int x, int y, unsigned char justification,
           int highScale, int lowScale, int lineSeparation);
+#ifdef CMENU_POLYMORPHIC_LAYOUT
+    virtual
+#endif
     ~CMenu();
     /** Center the visible entries vertically. */
     void CentreY();

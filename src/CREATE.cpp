@@ -1,8 +1,9 @@
-// Character-creation models, textures, palettes, and front-end editor.
-
-#define __SKIP_MYSKATERTEXTUREINFO_EXTERNS__
-
-#define __SKIP_CCREATETEXSPEC_EXTERNS__
+// CREATE.cpp -- Character-creation models, textures, palettes, and front-end editor.
+// Original: CREATE.CPP
+// Functions: 79
+// Address range: 0x8006D86C - 0x80073244
+//
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 // CREATE owner-local types and declarations.
 
@@ -27,7 +28,7 @@ typedef unsigned char undefined3[3];
 #include <LIBGTE.H>
 #include <LIBGPU.H>
 
-#include "globals.h"
+#include "CCLASS_POLY.h"
 #include "CITEM.h"
 #include "SMODEL.h"
 
@@ -101,8 +102,9 @@ struct SManualStitchPart {
     char *pName;
 };
 
-struct MySkaterTextureInfo {
-    struct CClass CClass;
+struct MySkaterTextureInfo : CClass {
+    MySkaterTextureInfo(unsigned int checksum);
+    virtual ~MySkaterTextureInfo() {}
     unsigned int mChecksum;
     RECT mUVRect;
     unsigned int mPart[120];
@@ -142,6 +144,7 @@ typedef char Create_SLight_size_must_be_52[
 #include "PAD.h"
 #include "PSXREGION.h"
 #include "SPOOL.h"
+#define SCREENTOOLS_POLYMORPHIC_LAYOUT
 #include "SCREENTOOLS.h"
 #include "FONTTOOLS.h"
 #include "M3DINIT.h"
@@ -165,71 +168,39 @@ typedef char Create_SLight_size_must_be_52[
 extern SPart Part[];
 extern char *BodyPart[];
 extern SGroup Group[4];
-extern char SearchPattern1[];
-extern char SearchPattern2[];
-extern char CreateSubDir[];
-extern char sBodyPart_Head[];
-extern char sBodyPart_Board1[];
-extern char sBodyPart_Board2[];
-extern char sBodyPart_Board3[];
-extern char ErrorMsg_GetFirstTexture[];
-extern char sAnimFormatStr[];
-extern char sSk2Def[];
-extern char sSk2DefPSH[];
 
 #include "STRLIB.h"
 #include "M3DASM.h"
 
 // === CREATE-owned body-part names and model-selection state ===
-//
-// Access sites retain their incomplete-array declarations below so the old
-// compiler keeps the target's absolute address formation.  These owner names
-// provide the real storage and exact assembler labels without exposing the
-// target-private data as linker exports or changing source-facing codegen.
-namespace CreateAddressViewOwners
-{
-extern "C"
-{
-static char sBodyPart_Pelvis[8]
-    __attribute__((section(".sdata"), aligned(4))) = "_pelvis";
-static char sBodyPart_Legs5[16]
-    __attribute__((section(".sdata"), aligned(4))) = "_right_thigh";
-static char sBodyPart_Legs7[12]
-    __attribute__((section(".sdata"), aligned(4))) = "_right_shoe";
-static char sBodyPart_Legs6[12]
-    __attribute__((section(".sdata"), aligned(4))) = "_right_shin";
-static char sBodyPart_Legs2[12]
-    __attribute__((section(".sdata"), aligned(4))) = "_left_thigh";
-static char sBodyPart_Legs4[12]
-    __attribute__((section(".sdata"), aligned(4))) = "_left_shoe";
-static char sBodyPart_Legs3[12]
-    __attribute__((section(".sdata"), aligned(4))) = "_left_shin";
-static char sBodyPart_Torso1[12]
-    __attribute__((section(".sdata"), aligned(4))) = "_stomach";
-static char sBodyPart_Chest[8]
-    __attribute__((section(".sdata"), aligned(4))) = "_chest";
-static char sBodyPart_Torso8[12]
-    __attribute__((section(".sdata"), aligned(4))) = "_left_hand";
-static char sBodyPart_Torso7[16]
-    __attribute__((section(".sdata"), aligned(4))) = "_left_forearm";
-static char sBodyPart_Torso6[12]
-    __attribute__((section(".sdata"), aligned(4))) = "_left_bicep";
-static char sBodyPart_Torso5[12]
-    __attribute__((section(".sdata"), aligned(4))) = "_right_hand";
-static char sBodyPart_Torso4[16]
-    __attribute__((section(".sdata"), aligned(4))) = "_right_forearm";
-static char sBodyPart_Torso3[16]
-    __attribute__((section(".sdata"), aligned(4))) = "_right_bicep";
-static char sBodyPart_Head[8]
-    __attribute__((section(".sdata"), aligned(4))) = "_head";
-static char sBodyPart_Board1[8]
-    __attribute__((section(".sdata"), aligned(4))) = "_board";
-static char sBodyPart_Board2[16]
-    __attribute__((section(".sdata"), aligned(4))) = "_front_wheel";
-static char sBodyPart_Board3[12]
-    __attribute__((section(".sdata"), aligned(4))) = "_back_wheel";
-}
-}
+
+/**
+ * Body-part search names in animation-order slot order.
+ *
+ * MAIN.SYM names this original 19-pointer table `BodyPart`; all recovered
+ * consumers use that canonical identity directly.
+ */
+char *BodyPart[19] __attribute__((section(".data"))) = {
+    "_pelvis",
+    "_right_thigh",
+    "_right_shoe",
+    "_right_shin",
+    "_left_thigh",
+    "_left_shoe",
+    "_left_shin",
+    "_stomach",
+    "_chest",
+    "_left_hand",
+    "_left_forearm",
+    "_left_bicep",
+    "_right_hand",
+    "_right_forearm",
+    "_right_bicep",
+    "_head",
+    "_board",
+    "_front_wheel",
+    "_back_wheel",
+};
 
 /**
  * Four model-name prefixes searched by Create_GetModelIndex.
@@ -239,13 +210,13 @@ static char sBodyPart_Board3[12]
  * the three owner-private tail pointers remain physically contiguous.
  */
 char *ManualStitchPart =
-    CreateAddressViewOwners::sBodyPart_Pelvis;
+    "_pelvis";
 static char *Create_ManualStitchSecond =
-    CreateAddressViewOwners::sBodyPart_Torso1;
+    "_stomach";
 static char *Create_ManualStitchThird =
-    CreateAddressViewOwners::sBodyPart_Chest;
+    "_chest";
 static char *Create_ManualStitchFourth =
-    CreateAddressViewOwners::sBodyPart_Head;
+    "_head";
 
 int PaletteSelected = -1;
 int GFirstTime = 1;
@@ -297,170 +268,12 @@ struct CreateAnimHdr8
     short w[4];
 };
 
-#define CREATE_DECLARE_OWNER_DESTRUCTOR_ABI
-#include "CREATE.h"
-
-// These definitions precede the functions that use the three tables so the
-// original compiler selects its one-instruction gp-relative address form.
-namespace CreateAddressViewOwners
-{
-extern "C"
-{
-/** PSH part-table search markers. */
-static char SearchPattern1[12]
-    __attribute__((section(".sdata"))) =
-    "sk2defpart_";
-static char SearchPattern2[8]
-    __attribute__((section(".sdata"))) =
-    "parent:";
-
-/** Character-editor source model names. */
-static char sSk2Def[8]
-    __attribute__((section(".sdata"))) = "sk2def";
-static char sSk2DefPSH[12]
-    __attribute__((section(".sdata"))) = "sk2def.psh";
-
-/** Body-part suffixes used while selecting replacement textures. */
-static char sBodyPart_Bicep[8]
-    __attribute__((section(".sdata"))) = "_bicep";
-static char sBodyPart_Forearm[12]
-    __attribute__((section(".sdata"))) = "_forearm";
-static char sBodyPart_Hand[8]
-    __attribute__((section(".sdata"))) = "_hand";
-static char sBodyPart_Thigh[8]
-    __attribute__((section(".sdata"))) = "_thigh";
-static char sBodyPart_Shin[8]
-    __attribute__((section(".sdata"))) = "_shin";
-static char sBodyPart_Shoe[8]
-    __attribute__((section(".sdata"))) = "_shoe";
-
-/** Character-editor directory and texture-name diagnostics. */
-static char CreateSubDir[12]
-    __attribute__((section(".sdata"))) = "skatedit\\";
-static char sCreateTexFmt[8]
-    __attribute__((section(".sdata"))) = "%s.bmp";
-static char sNextFaceFmt[12]
-    __attribute__((section(".sdata"))) = "%s face!\n";
-static char sNextFaceFwd[8]
-    __attribute__((section(".sdata"))) = "Next";
-static char sNextFaceBwd[8]
-    __attribute__((section(".sdata"))) = "Prev";
-
-/** Animation-name formatting strings. */
-static char CreateSubDir2[4]
-    __attribute__((section(".sdata"))) = "%s_";
-static char sAnimFormatStr[12]
-    __attribute__((section(".sdata"))) = "anims_cs";
-
-/** Character-editor art, fonts, labels, and prompts in original link order. */
-static char s_s2bgd4_bmp_800db428[12]
-    __attribute__((section(".sdata"))) = "s2bgd4.bmp";
-static char sFont1[12]
-    __attribute__((section(".sdata"))) = "s2font1.fnt";
-static char sFont4[16]
-    __attribute__((section(".sdata"))) = "s2skata2.fnt";
-static char sFont2[12]
-    __attribute__((section(".sdata"))) = "s2font2.fnt";
-static char sFont3[12]
-    __attribute__((section(".sdata"))) = "s2menu1.fnt";
-static char s_Head_800db468[8]
-    __attribute__((section(".sdata"))) = "Head";
-static char s_face_800db470[8]
-    __attribute__((section(".sdata"))) = " face";
-static char s_cap_800db478[8]
-    __attribute__((section(".sdata"))) = " cap";
-static char s_Upper_800db480[8]
-    __attribute__((section(".sdata"))) = "Upper";
-static char s_chest_800db488[8]
-    __attribute__((section(".sdata"))) = " chest";
-static char s_bicep_800db490[8]
-    __attribute__((section(".sdata"))) = " bicep";
-static char s_forearm_800db498[12]
-    __attribute__((section(".sdata"))) = " forearm";
-static char s_Lower_800db4a4[8]
-    __attribute__((section(".sdata"))) = "Lower";
-static char s_thigh_800db4ac[8]
-    __attribute__((section(".sdata"))) = " thigh";
-static char s_shin_800db4b4[8]
-    __attribute__((section(".sdata"))) = " shin";
-static char s_shoe_800db4bc[8]
-    __attribute__((section(".sdata"))) = " shoe";
-static char s_s2crskw1_bmp_800db4c4[16]
-    __attribute__((section(".sdata"))) = "s2crskw1.bmp";
-static char s_s2prmpt4_bmp_800db4d4[16]
-    __attribute__((section(".sdata"))) = "s2prmpt4.bmp";
-static char s_select_800db4e4[8]
-    __attribute__((section(".sdata"))) = "select";
-static char s_s2prmpt5_bmp_800db4ec[16]
-    __attribute__((section(".sdata"))) = "s2prmpt5.bmp";
-static char s_change_800db4fc[8]
-    __attribute__((section(".sdata"))) = "change";
-static char s_s2prmpt1_bmp_800db504[16]
-    __attribute__((section(".sdata"))) = "s2prmpt1.bmp";
-static char s_accept_800db514[8]
-    __attribute__((section(".sdata"))) = "accept";
-static char s_s2prmpt2_bmp_800db51c[16]
-    __attribute__((section(".sdata"))) = "s2prmpt2.bmp";
-static char s_back_800db52c[8]
-    __attribute__((section(".sdata"))) = "back";
-static char sAnimGameFmt[8]
-    __attribute__((section(".sdata"))) = "sk2anim";
-
-/** Default animation range copied into a newly created skater. */
-static CreateAnimHdr8 DAT_800db53c[1]
-    __attribute__((section(".sdata"), aligned(2))) = {
-        {{0, -1, -1, 9999}},
-};
-}
-}
-
-/**
- * MySkater constructor/destructor dispatch table.
- *
- * The exported first word stays a scalar so GCC 2.x retains the target's
- * gp-relative address load; the private tail is the rest of the same table.
- */
-int __vt_8MySkater = 0;
-static int Create_MySkaterVtableTail[3]
-    __attribute__((section(".sdata"))) = {
-        0,
-        (int)&Create_MySkaterDestructorSlot,
-        0,
-};
-
-/**
- * MySkaterTextureInfo constructor dispatch table.
- *
- * This has the same scalar-plus-tail layout but remains owner-local because
- * the target symbol table does not expose its assembler label.
- */
-static int __vt_19MySkaterTextureInfo = 0;
-static int Create_MySkaterTextureInfoVtableTail[3]
-    __attribute__((section(".sdata"))) = {
-        0,
-        (int)&Create_MySkaterTextureInfoDestructor,
-        0,
-};
-
-/** Owner-local base table installed by the generated texture-info destructor. */
-static int __vt_8MySkater_dtor = 0;
-static int Create_MySkaterDestructorVtableTail[2]
-    __attribute__((section(".sdata"))) = {
-        0,
-        (int)&__DOT__6CClass_80073244,
-};
 
 // === Forward type declarations ===
 
 
 class VerticalMenu2;
 struct VMenuItem;
-/** Pointer-only view of the shared screen-element width method. */
-struct ScreenElement
-{
-    int width();
-    void refresh();
-};
 struct FontCharacter;
 struct TextEffect;
 struct TextMenuProperties;
@@ -509,57 +322,11 @@ struct CreateClassAssignmentBase
     virtual ~CreateClassAssignmentBase();
 };
 
-/** Polymorphic assignment view matching Font's original CClass semantics. */
-class CreateAssignableFont : public CreateClassAssignmentBase
-{
-public:
-    int JustX;
-    int JustY;
-    int SpaceX;
-    int SpaceY;
-    int R;
-    int G;
-    int B;
-    void *Aliased;
-    void *Shadow;
-    int ShadowDx;
-    int ShadowDy;
-    int CharMap;
-    int FixedWidth;
-    int Scale;
-    FontCharacter *CharTab;
-    int NumChars;
-    int Clut;
-    TextEffect *CurrentTextEffect;
-    unsigned char OldR;
-    unsigned char OldG;
-    unsigned char OldB;
-    unsigned char Pad;
-};
-
-typedef char Create_assignable_font_size_must_be_0x50[
-    (sizeof(CreateAssignableFont) == 0x50) ? 1 : -1];
-
-/** Front-end sprite storage allocated through the original CClass arena. */
-struct Sprite2
-{
-    CreateDeleteVtable *vtable;
-    unsigned char mStorage[0x38];
-
-    static void *operator new(unsigned int size) throw() {
-        return ::CClass::operator new(size);
-    }
-    /** Build a sprite from a bitmap file. */
-    Sprite2(char *name, int pack, int sliceWidth, int sliceHeight);
-};
-
-typedef char Create_Sprite2_size_must_be_0x3C[
-    (sizeof(Sprite2) == 0x3C) ? 1 : -1];
 
 /** Menu style shared by every character-part text item. */
 struct TextMenuProperties : public CreateClassAssignmentBase
 {
-    FontStorage TheFont;
+    Font TheFont;
     int BigScale;
     int NormalScale;
     int SelectedR;
@@ -666,31 +433,10 @@ public:
 typedef char Create_VerticalMenu2_size_must_be_0x74[
     (sizeof(VerticalMenu2) == 0x74) ? 1 : -1];
 
-class ScreenElementList
-{
-public:
-    CreateDeleteVtable *vtable;
-    char mBase[0x18];
-    int mScreenX;
-    int mScreenY;
-    void *mpItem[16];
-    int mCount;
-
-    void update(void);
-    void draw(int x, int y);
-    /** Add one element to the first unused list slot. */
-    void addItem(ScreenElement *element);
-    /** Destroy the list and its inherited screen-element state. */
-    ~ScreenElementList();
-};
-
-typedef char Create_ScreenElementList_size_must_be_0x68[
-    (sizeof(ScreenElementList) == 0x68) ? 1 : -1];
 
 /** Prompt row containing an icon and its explanatory text. */
-struct PromptScreenElement
+struct PromptScreenElement : ScreenElementList
 {
-    ScreenElementList ScreenElementList;
 
     static void *operator new(unsigned int size) throw() {
         return ::CClass::operator new(size);
@@ -764,10 +510,9 @@ typedef char Create_StatsEntry_size_must_be_0x158[
     (sizeof(CreateStatsEntry) == 0x158) ? 1 : -1];
 
 // === Class declarations ===
-class MySkater
+class MySkater : public CClass
 {
 public:
-    CClass CClass;
     _SpoolerEntry mSpoolerEntryList[9];
     int mSpoolerEntryCount;
     int mSpoolSetDone;
@@ -799,11 +544,7 @@ public:
     char *GetGroupName(int Number);
     char *Create_GetGroupName(char *p, int Number);
     MySkater(void);
-    ~MySkater();
-    /** Releases create-a-skater storage through the original CClass allocator. */
-    static void operator delete(void *p) {
-        ::CClass::operator delete(p);
-    }
+    virtual ~MySkater();
     Texture *FindTexture(unsigned int checksum);
     void SaveTextures(void);
     void UpdateTextureList(void);
@@ -867,31 +608,29 @@ public:
     VerticalMenu2 *mMenu;
     VMenuItem *mItem[11];
     TextMenuProperties *mProps;
-    FontStorage mFont1;
-    FontStorage mFont2;
-    FontStorage mFont3;
+    Font mFont1;
+    Font mFont2;
+    Font mFont3;
     Sprite2 *mBackground;
 
-    ~CharacterEditor();
-    /** Releases editor-screen storage through the original CClass allocator. */
-    static void operator delete(void *p) {
-        ::CClass::operator delete(p);
-    }
+    CharacterEditor();
+    virtual ~CharacterEditor();
     /** Handle accept and cancel presses in the character editor. */
     int handlePress(void);
-    void update(void);
-    void draw(int x, int y);
+    virtual void update(void);
+    virtual void draw(int x, int y);
 };
 
 typedef char Create_CharacterEditor_size_must_be_0x1A0[
     (sizeof(CharacterEditor) == 0x1A0) ? 1 : -1];
 
 /** CREATE-owned storage for the original file-local MySkater singleton. */
-static unsigned char sMySkater[0x734];
+
+
+extern "C" { static MySkater sMySkater; }
 typedef char Create_MySkater_size_must_be_0x734[
     (sizeof(MySkater) == 0x734 && sizeof(sMySkater) == 0x734) ? 1 : -1];
 
-#define MySkaterSingleton (*(MySkater *)sMySkater)
 
 // === Free function declarations ===
 int Create_GetAnimIndex(int i);
@@ -909,52 +648,7 @@ void RefreshTexture(unsigned int Checksum, char *pBuf);
 #include "CREATE.h"
 
 // === Extern "C" forward declarations ===
-#define CREATE_DECLARE_EARLY_CONSTRUCTOR_ABI
 #include "CREATE.h"
-#define MySkaterTextureInfo_ctor \
-    CreateEarlyConstructorAbi::__19MySkaterTextureInfoUi
-#define CharacterEditor_Ctor CreateEarlyConstructorAbi::__15CharacterEditor
-
-// === CREATE-owned read-only data ===
-
-#define CREATE_DECLARE_CHARACTER_EDITOR_DESTRUCTOR_ABI
-#include "CREATE.h"
-/** Diagnostic emitted while resolving a unique replacement texture. */
-namespace CreateAddressViewOwners
-{
-extern "C"
-{
-static char FindUniquePrintFmt[40]
-    __attribute__((section(".rdata"), aligned(4))) =
-    "numFound = %d oldNumFound = %d %s %s\n";
-
-/** Diagnostic emitted when a create-a-skater part has no geometry. */
-static char ErrorMsg_GetFirstTexture[32]
-    __attribute__((section(".rdata"), aligned(4))) =
-    "No geometry defined for %s\n";
-}
-}
-
-/**
- * Character-editor virtual dispatch table.
- *
- * The final null word is a genuine reserved slot, not alignment padding.
- */
-int __vt_15CharacterEditor[8]
-    __attribute__((section(".rdata"), aligned(4))) = {
-        0,
-        0,
-        (int)&Create_CharacterEditorDestructorSlot,
-        (int)(void (*)(CharacterEditor *))&CharacterEditor::update,
-        (int)(void (*)(CharacterEditor *, int, int))&CharacterEditor::draw,
-        (int)(int (*)(ScreenElement *))&ScreenElement::width,
-        (int)(void (*)(ScreenElement *))&ScreenElement::refresh,
-        0,
-};
-
-/** Typed view of the common virtual prefix used by lifecycle code below. */
-#define CharacterEditor_vtable \
-    (*(CreateDeleteVtable *)__vt_15CharacterEditor)
 
 // === Function implementations (address order) ===
 
@@ -1013,25 +707,14 @@ int Create_GetAnimIndex(int i)
 
 int Create_GetModelIndex(int i)
 {
-    int n = 0;
-    int step1 = i << 2;
-    SPart *base = Part;
-    int offset = (step1 + i) << 2;
-    // Direct `&Part[i]` changes six target instructions.
-    SPart *groupEntry = (SPart *)((char *)base + offset);
-    // Letting GCC choose this cursor changed 9 of the function's 34 words.
-    register char **searchTable asm("$17") = &ManualStitchPart;
-
-    do
+    int n;
+    for (n = 0; n < 4; n++)
     {
-        if (strstr(groupEntry->pName, *searchTable) != 0)
+        if (strstr(Part[i].pName, (&ManualStitchPart)[n]) != 0)
         {
             return n;
         }
-        n++;
-        searchTable++;
-    } while (n < 4);
-
+    }
     return Create_NextBuildIndex++;
 }
 
@@ -1077,7 +760,7 @@ void Create_LoadPSH(char *pPSHName)
 
     while (*p != '\0')
     {
-        p = strstr(p, SearchPattern1);
+        p = strstr(p, "sk2defpart_");
         if (p == 0)
         {
             break;
@@ -1099,7 +782,7 @@ void Create_LoadPSH(char *pPSHName)
         }
 
         *p = '\0';
-        p = strstr(p + 1, SearchPattern2);
+        p = strstr(p + 1, "parent:");
 
         while (WhiteSpace(p) == 0)
         {
@@ -1310,9 +993,8 @@ int Create_CountString(char *p, int sourceRegion)
  * Iterates all vertices in a mesh and counts those with type bit 0 set.
  * Type bit 0 indicates "attachable/stitchable" vertices used for seaming
  * character body parts together (e.g., torso-to-legs, head-to-torso).
- * The target keeps `vertexCount` in `$v0`. Three ordinary forms (plain int,
- * plain register, and unsigned-short count) changed 14-17 of 19 instructions,
- * so this one proven allocation constraint remains load-bearing.
+ * The loop bound is re-read from the model; the guard's loaded count stays
+ * live in $v0 as the target does.
  *
  * Address:   0x8006DDB0, Size: 76 bytes (19 instructions)
  * Mangled:   Create_CountStitches__FP6SModel
@@ -1324,12 +1006,11 @@ int Create_CountStitches(SModel *pModel)
 {
     int i = 0;
     SVECTOR *pVertex = pModel->Vertices;
-    register int vertexCount asm("$2") = pModel->NumVertices;
     int count = 0;
+    int vertexCount = pModel->NumVertices;
 
     if (vertexCount != 0)
     {
-        int total = vertexCount;
         do
         {
             if (pVertex->pad & 1)
@@ -1338,7 +1019,7 @@ int Create_CountStitches(SModel *pModel)
             }
             i++;
             pVertex++;
-        } while (i < total);
+        } while (i < pModel->NumVertices);
     }
 
     return count;
@@ -1356,13 +1037,10 @@ int Create_CountStitches(SModel *pModel)
  * @param checksum  Asset hash for content lookup.
  * @return `this` pointer (GCC 2.x ctor convention).
  */
-MySkaterTextureInfo *MySkaterTextureInfo_ctor(
-    MySkaterTextureInfo *self, unsigned int checksum)
+MySkaterTextureInfo::MySkaterTextureInfo(unsigned int checksum)
 {
-    self->CClass.vtable = &__vt_19MySkaterTextureInfo;
-    self->mPartCount = 0;
-    self->mChecksum = checksum;
-    return self;
+    mPartCount = 0;
+    mChecksum = checksum;
 }
 
 /**
@@ -1410,7 +1088,6 @@ void MySkaterTextureInfo::SetTextureInfo(Texture *pTexture)
  */
 MySkater::MySkater(void)
 {
-    CClass.vtable = &__vt_8MySkater;
 
     // No body-part geometry is selected until Init populates these slots.
     {
@@ -1474,7 +1151,6 @@ MySkater::MySkater(void)
  */
 MySkater::~MySkater()
 {
-    CClass.vtable = &__vt_8MySkater_dtor;
 }
 
 /**
@@ -1564,8 +1240,8 @@ void MySkater::SaveTextures(void)
                     sizeof(MySkaterTextureInfo));
             if (result != 0)
             {
-                result = MySkaterTextureInfo_ctor(
-                    result, TextureLookup[TextureIndex]->Checksum);
+                result = ::new (result) MySkaterTextureInfo(
+                    TextureLookup[TextureIndex]->Checksum);
             }
             i++;
             *storePtr = result;
@@ -1630,25 +1306,13 @@ void MySkater::UpdateTextureList(void)
  */
 MySkaterTextureInfo *MySkater::FindTextureInfo(unsigned int checksum)
 {
-    // An unpinned loop bound changed 18 of this function's 20 words.
-    register int count asm("$2") = mNumTextures;
-    if (count > 0)
+    int i;
+    for (i = 0; i < mNumTextures; i++)
     {
-        int i = 0;
-        int max = count;
-        MySkaterTextureInfo **ptr = mppTextures;
-        do
+        if (mppTextures[i]->mChecksum == checksum)
         {
-            MySkaterTextureInfo *entry;
-
-            entry = *ptr;
-            if (entry->mChecksum == checksum)
-            {
-                return entry;
-            }
-            i++;
-            ptr++;
-        } while (i < max);
+            return mppTextures[i];
+        }
     }
     return 0;
 }
@@ -1782,14 +1446,14 @@ void MySkater::Init(char *pAnimFile)
     Spool_Sync();
     Create_IsBuildRegion = 0;
     Create_IsSourceRegion = 1;
-    mSourceRegion = Spool_PSX(sSk2Def, 0, 0, 0);
+    mSourceRegion = Spool_PSX("sk2def", 0, 0, 0);
     Spool_Sync();
     SPSXRegion *sourceRegion = &PSXRegion[mSourceRegion];
     u16 numParts = sourceRegion->NumParts;
     Create_IsSourceRegion = 0;
     mModelRegionPartCount = numParts;
     UpdateTextureList();
-    Create_LoadPSH(sSk2DefPSH);
+    Create_LoadPSH("sk2def.psh");
     // A direct typed SPSXRegion view changed one word and five relocations.
     // The target forms each ppModels slot from this shared interior base.
     char *psxModels = (char *)&PSXRegion[0].ppModels;
@@ -1808,14 +1472,13 @@ void MySkater::Init(char *pAnimFile)
         int slotAddr3 =
             (int)(psxModels + (mBuildRegion << 6));
         // Either unpin changes two of the function's 84 words.
-        register int *models3 asm("$5") =
-            (int *)*(SModel ***)slotAddr3;
-        register int count asm("$4") = 19;
+        int *models3 = (int *)*(SModel ***)slotAddr3;
+        int count = 19;
         models3[-1] = count;
     }
-    buildReg = mBuildRegion;
+    int buildReg4 = mBuildRegion;
     SModel ***modelsSlot4 =
-        (SModel ***)(psxModels + (buildReg << 6));
+        (SModel ***)(psxModels + (buildReg4 << 6));
     SModel **dst = *modelsSlot4;
     int i = 0;
     do
@@ -1840,13 +1503,13 @@ void MySkater::Init(char *pAnimFile)
  */
 void MySkater::UpdateStats(char *partName, int modelIndex)
 {
-    if (strstr(partName, (char *)sBodyPart_Board1) != 0)
+    if (strstr(partName, (char *)"_board") != 0)
         ((CreateStatsEntry *)Stats)[13].Board = modelIndex;
-    if (strstr(partName, (char *)sBodyPart_Board2) != 0)
+    if (strstr(partName, (char *)"_front_wheel") != 0)
         ((CreateStatsEntry *)Stats)[13].Wheel1 = modelIndex;
-    if (strstr(partName, (char *)sBodyPart_Board3) != 0)
+    if (strstr(partName, (char *)"_back_wheel") != 0)
         ((CreateStatsEntry *)Stats)[13].Wheel2 = modelIndex;
-    if (strstr(partName, (char *)sBodyPart_Head) != 0)
+    if (strstr(partName, (char *)"_head") != 0)
         ((CreateStatsEntry *)Stats)[13].Head = modelIndex;
 }
 
@@ -2072,7 +1735,6 @@ unsigned int MySkater::FindUniqueTextureBySize(char *inPart, int findLarger)
  *         candidate considered if no pass is unique.
  */
 /** Address view of CREATE's unique-texture diagnostic format. */
-extern char FindUniquePrintFmt[];
 unsigned int MySkater::FindUniqueTexture(char *inPart, char *notInPart,
                                          char *notInPart2)
 {
@@ -2179,7 +1841,7 @@ unsigned int MySkater::FindUniqueTexture(char *inPart, char *notInPart,
         return checksum;
     }
 
-    printf(FindUniquePrintFmt, numFound, oldNumFound, inPart, notInPart);
+    printf("numFound = %d oldNumFound = %d %s %s\n", numFound, oldNumFound, inPart, notInPart);
     return checksum;
 }
 
@@ -2232,16 +1894,6 @@ int MySkater::FindBuildIndex(char *name)
  * @return Checksum of the source texture selected for replacement.
  */
 /** Body-part names used while selecting replacement textures. */
-extern char sBodyPart_Pelvis[];
-extern char sBodyPart_Chest[];
-extern char sBodyPart_Bicep[];
-extern char sBodyPart_Forearm[];
-extern char sBodyPart_Hand[];
-extern char sBodyPart_Thigh[];
-extern char sBodyPart_Shin[];
-extern char sBodyPart_Shoe[];
-extern char sBodyPart_Torso1[];
-extern char sBodyPart_Legs2[];
 unsigned int MySkater::GetChecksumToReplace(int texPart)
 {
     if ((unsigned int)texPart < 9)
@@ -2249,20 +1901,20 @@ unsigned int MySkater::GetChecksumToReplace(int texPart)
         switch (texPart)
         {
         case 0:
-            return FindUniqueTextureBySize(sBodyPart_Head, 1);
+            return FindUniqueTextureBySize("_head", 1);
         case 1:
-            return FindUniqueTextureBySize(sBodyPart_Head, 0);
+            return FindUniqueTextureBySize("_head", 0);
         case 2:
-            return FindUniqueTexture(sBodyPart_Chest, sBodyPart_Bicep, 0);
+            return FindUniqueTexture("_chest", "_bicep", 0);
         case 3:
         {
-            char *bodyPart = sBodyPart_Bicep;
-            char *excludedPart = sBodyPart_Chest;
+            char *bodyPart = "_bicep";
+            char *excludedPart = "_chest";
             _SCreateTexList *texEntry = mpTexList[4];
             char *optionalPart;
             if (texEntry != 0)
             {
-                optionalPart = sBodyPart_Forearm;
+                optionalPart = "_forearm";
             }
             else
             {
@@ -2271,15 +1923,15 @@ unsigned int MySkater::GetChecksumToReplace(int texPart)
             return FindUniqueTexture(bodyPart, excludedPart, optionalPart);
         }
         case 4:
-            return FindUniqueTexture(sBodyPart_Forearm, sBodyPart_Hand, 0);
+            return FindUniqueTexture("_forearm", "_hand", 0);
         case 5:
-            return FindUniqueTexture(sBodyPart_Hand, sBodyPart_Forearm, 0);
+            return FindUniqueTexture("_hand", "_forearm", 0);
         case 6:
-            return FindUniqueTexture(sBodyPart_Thigh, sBodyPart_Pelvis, 0);
+            return FindUniqueTexture("_thigh", "_pelvis", 0);
         case 7:
-            return FindUniqueTexture(sBodyPart_Shin, sBodyPart_Thigh, 0);
+            return FindUniqueTexture("_shin", "_thigh", 0);
         case 8:
-            return FindUniqueTexture(sBodyPart_Shoe, sBodyPart_Shin, 0);
+            return FindUniqueTexture("_shoe", "_shin", 0);
         }
     }
 }
@@ -2319,14 +1971,13 @@ char *MySkater::GetSkinToneFileName(char *filename)
  *
  */
 /** Bitmap filename format used by the texture spooler. */
-extern char sCreateTexFmt[];
 void MySkater::SpoolTextures(void)
 {
     char FileNameWithExt[32];
     char oldSubDir[16];
     mSpoolerEntryCount = 0;
     strcpy(oldSubDir, FileIO_GetSubDir());
-    FileIO_SetSubDir(CreateSubDir);
+    FileIO_SetSubDir("skatedit\\");
     int i = 0;
     HSV_VALUE **paletteSlot = mpPaletteBuffer;
     _SCreateTexList **texList = mpTexList;
@@ -2338,16 +1989,16 @@ void MySkater::SpoolTextures(void)
         if (i == 8)
             goto skipslot;
         {
-            sprintf(FileNameWithExt, sCreateTexFmt, texEntry->TextureName);
+            sprintf(FileNameWithExt, "%s.bmp", texEntry->TextureName);
             int checksum = GetChecksumToReplace(i);
             char *skinName = GetSkinToneFileName(FileNameWithExt);
             AddSpoolerEntry(checksum, skinName, i);
             if (i == 2)
             {
                 // Also handle torso arms texture
-                int checksum2 = FindUniqueTexture(sBodyPart_Pelvis, sBodyPart_Thigh, 0);
+                int checksum2 = FindUniqueTexture("_pelvis", "_thigh", 0);
                 _SCreateTexList *torsoTexture = mpTexList[2];
-                sprintf(FileNameWithExt, sCreateTexFmt, torsoTexture->TextureName);
+                sprintf(FileNameWithExt, "%s.bmp", torsoTexture->TextureName);
                 char *skinName2 = GetSkinToneFileName(FileNameWithExt);
                 AddSpoolerEntry(checksum2, skinName2, 8);
             }
@@ -2386,7 +2037,7 @@ void MySkater::ReplaceTextures(void)
     char FileNameWithExt[32];
     char oldSubDir[16];
     strcpy(oldSubDir, FileIO_GetSubDir());
-    FileIO_SetSubDir(CreateSubDir);
+    FileIO_SetSubDir("skatedit\\");
     int i = 0;
     int zeroChar = '0';
     _SCreateTexList **texList = mpTexList;
@@ -2411,7 +2062,7 @@ void MySkater::ReplaceTextures(void)
                     goto skipslot;
             }
             // Load and replace
-            sprintf(FileNameWithExt, sCreateTexFmt, texEntry->TextureName);
+            sprintf(FileNameWithExt, "%s.bmp", texEntry->TextureName);
             int checksum = GetChecksumToReplace(i);
             char *skinName = GetSkinToneFileName(FileNameWithExt);
             ReplaceTexture(checksum, skinName);
@@ -2420,9 +2071,9 @@ void MySkater::ReplaceTextures(void)
             if (i == 2)
             {
                 // Also handle arms texture
-                int checksum2 = FindUniqueTexture(sBodyPart_Pelvis, sBodyPart_Thigh, 0);
+                int checksum2 = FindUniqueTexture("_pelvis", "_thigh", 0);
                 _SCreateTexList *torsoTexture = mpTexList[2];
-                sprintf(FileNameWithExt, sCreateTexFmt, torsoTexture->TextureName);
+                sprintf(FileNameWithExt, "%s.bmp", torsoTexture->TextureName);
                 char *skinName2 = GetSkinToneFileName(FileNameWithExt);
                 ReplaceTexture(checksum2, skinName2);
                 // Check if skin tone is '0'
@@ -2620,39 +2271,15 @@ alldone:
 void MySkater::Free2(void)
 {
     Mem_Delete(pPSH);
-    int count = mNumTextures;
     pPSH = 0;
-    if (count > 0)
+    for (int i = 0; i < mNumTextures; i++)
     {
-        int i = 0;
-        do
+        MySkaterTextureInfo *entry = mppTextures[i];
+        if (entry != 0)
         {
-            // Natural cursor allocation changes four of the 57 words.
-            register MySkaterTextureInfo **arr asm("$3") = mppTextures;
-            int offset = i << 2;
-            // Natural `&arr[i]` commutes two target `addu` instructions.
-            MySkaterTextureInfo **slot =
-                (MySkaterTextureInfo **)(offset + (int)arr);
-            MySkaterTextureInfo *entry = *slot;
-            if (entry != 0)
-            {
-                int *vtable = entry->CClass.vtable;
-                // GCC otherwise changes two words around the virtual call.
-                register void (*dtor)(MySkaterTextureInfo *, int) asm("$3") =
-                    (void (*)(MySkaterTextureInfo *, int))vtable[2];
-                dtor(entry, 3);
-                arr = mppTextures;
-                slot = (MySkaterTextureInfo **)(offset + (int)arr);
-            }
-            *slot = 0;
-            {
-                // An unpinned reload changes three words at the loop latch.
-                register int cnt asm("$3") = mNumTextures;
-                i++;
-                if (i >= cnt)
-                    break;
-            }
-        } while (1);
+            delete entry;
+        }
+        mppTextures[i] = 0;
     }
     void *arr2 = mppTextures;
     int j = 0;
@@ -2760,7 +2387,7 @@ check:
         goto body;
     {
         char *groupName2 = GetGroupName(bodyGroup);
-        printf(ErrorMsg_GetFirstTexture, groupName2);
+        printf("No geometry defined for %s\n", groupName2);
     }
     return pTexList;
 }
@@ -3030,18 +2657,15 @@ void MySkater::NextTexture(int texPart, int forwards)
  * @param forwards Nonzero to advance; zero to rewind.
  */
 /** Face-cycle diagnostic and direction strings. */
-extern char sNextFaceFmt[];
-extern char sNextFaceFwd[];
-extern char sNextFaceBwd[];
 void MySkater::NextFace(CCreateTexSpec *pSpec, int forwards)
 {
     int oldSkinTone = mSelectedSkinTone;
     char oldSubDir[16];
 
-    printf(sNextFaceFmt, forwards ? sNextFaceFwd : sNextFaceBwd);
+    printf("%s face!\n", forwards ? "Next" : "Prev");
     int textureIndex = 0;
     strcpy(oldSubDir, FileIO_GetSubDir());
-    FileIO_SetSubDir(CreateSubDir);
+    FileIO_SetSubDir("skatedit\\");
 
     while (1)
     {
@@ -3091,7 +2715,7 @@ void MySkater::NextFace(CCreateTexSpec *pSpec, int forwards)
             {
                 {
                     char textureName[32];
-                    sprintf(textureName, sCreateTexFmt,
+                    sprintf(textureName, "%s.bmp",
                             mpTexList[textureIndex]->TextureName);
                     textureName[7] = (char)mSelectedSkinTone + '1';
                     if (FileIO_Exists(textureName) != 0)
@@ -3123,12 +2747,11 @@ void MySkater::Create_Off(void)
 {
     int region = mSourceRegion;
     SPSXRegion *pRegion = &PSXRegion[region];
+    SModel **ppModels = pRegion->ppModels;
     u16 NumParts = pRegion->NumParts;
-    // An unpinned model cursor changed 6 of the function's 19 words.
-    register SModel **ppModels asm("$5") = pRegion->ppModels;
+    int i = 0;
     if (NumParts != 0)
     {
-        int i = 0;
         do
         {
             SModel *pModel = *ppModels;
@@ -3150,14 +2773,13 @@ void MySkater::Create_Off(void)
  * @param p2 Body-part suffix.
  */
 /** Model-name format used while enabling selected body parts. */
-extern char CreateSubDir2[];
 void MySkater::Create_On(char *p1, char *p2)
 {
     char buf[32];
     SPSXRegion *pRegion = &PSXRegion[mSourceRegion];
     SModel **ppModels = pRegion->ppModels;
     u16 Parts = pRegion->NumParts;
-    sprintf(buf, CreateSubDir2, p1);
+    sprintf(buf, "%s_", p1);
     int i = 0;
     if (Parts == 0)
         return;
@@ -3196,7 +2818,7 @@ void MySkater::Create_On(char *p1, char *p2)
  */
 void MySkater::Create_OnHead(char *p)
 {
-    Create_On(p, sBodyPart_Head);
+    Create_On(p, "_head");
 }
 
 /**
@@ -3211,9 +2833,9 @@ void MySkater::Create_OnHead(char *p)
  */
 void MySkater::Create_OnBoard(char *p)
 {
-    Create_On(p, sBodyPart_Board1);
-    Create_On(p, sBodyPart_Board2);
-    Create_On(p, sBodyPart_Board3);
+    Create_On(p, "_board");
+    Create_On(p, "_front_wheel");
+    Create_On(p, "_back_wheel");
 }
 
 /**
@@ -3225,22 +2847,16 @@ void MySkater::Create_OnBoard(char *p)
  * @param p Selected torso group name.
  */
 /** Additional torso model suffixes used by Create_OnTorso. */
-extern char sBodyPart_Torso3[];
-extern char sBodyPart_Torso4[];
-extern char sBodyPart_Torso5[];
-extern char sBodyPart_Torso6[];
-extern char sBodyPart_Torso7[];
-extern char sBodyPart_Torso8[];
 void MySkater::Create_OnTorso(char *p)
 {
-    Create_On(p, sBodyPart_Torso1);
-    Create_On(p, sBodyPart_Chest);
-    Create_On(p, sBodyPart_Torso3);
-    Create_On(p, sBodyPart_Torso4);
-    Create_On(p, sBodyPart_Torso5);
-    Create_On(p, sBodyPart_Torso6);
-    Create_On(p, sBodyPart_Torso7);
-    Create_On(p, sBodyPart_Torso8);
+    Create_On(p, "_stomach");
+    Create_On(p, "_chest");
+    Create_On(p, "_right_bicep");
+    Create_On(p, "_right_forearm");
+    Create_On(p, "_right_hand");
+    Create_On(p, "_left_bicep");
+    Create_On(p, "_left_forearm");
+    Create_On(p, "_left_hand");
 }
 
 /**
@@ -3252,20 +2868,15 @@ void MySkater::Create_OnTorso(char *p)
  * @param p Selected leg group name.
  */
 /** Additional leg model suffixes used by Create_OnLegs. */
-extern char sBodyPart_Legs3[];
-extern char sBodyPart_Legs4[];
-extern char sBodyPart_Legs5[];
-extern char sBodyPart_Legs6[];
-extern char sBodyPart_Legs7[];
 void MySkater::Create_OnLegs(char *p)
 {
-    Create_On(p, sBodyPart_Pelvis);
-    Create_On(p, sBodyPart_Legs2);
-    Create_On(p, sBodyPart_Legs3);
-    Create_On(p, sBodyPart_Legs4);
-    Create_On(p, sBodyPart_Legs5);
-    Create_On(p, sBodyPart_Legs6);
-    Create_On(p, sBodyPart_Legs7);
+    Create_On(p, "_pelvis");
+    Create_On(p, "_left_thigh");
+    Create_On(p, "_left_shin");
+    Create_On(p, "_left_shoe");
+    Create_On(p, "_right_thigh");
+    Create_On(p, "_right_shin");
+    Create_On(p, "_right_shoe");
 }
 
 /**
@@ -3282,22 +2893,13 @@ void MySkater::Create_OnLegs(char *p)
  */
 int MySkater::GetSourceIndex(int buildIndex)
 {
-    // An unpinned count changed 16 of the function's 18 words.
-    register int count asm("$2") = mModelRegionPartCount;
-    if (count > 0)
+    int sourceIndex;
+    for (sourceIndex = 0; sourceIndex < mModelRegionPartCount; sourceIndex++)
     {
-        int sourceIndex = 0;
-        int max = count;
-        short *ptr = &mStitchDatabase[0].buildIndex;
-        do
+        if (mStitchDatabase[sourceIndex].buildIndex == buildIndex)
         {
-            if (*(short *)ptr == buildIndex)
-            {
-                return sourceIndex;
-            }
-            sourceIndex++;
-            ptr = (short *)((char *)ptr + sizeof(_StitchEntry));
-        } while (sourceIndex < max);
+            return sourceIndex;
+        }
     }
     return -1;
 }
@@ -3919,14 +3521,10 @@ void MySkater::PatchAnimationOrder(CSuper *pBuildSkater)
     } while (i < 19);
 }
 
-#define SCREENTOOLS_DECLARE_SCREEN_ELEMENT_LIST_CONSTRUCTOR
 #define SCREENTOOLS_DECLARE_TEXT_MENU_PROPERTIES_CONSTRUCTOR
 #define SCREENTOOLS_DECLARE_TEXT_MENU_ITEM_CONSTRUCTOR
 #define SCREENTOOLS_DECLARE_VERTICAL_MENU2_CONSTRUCTOR
 #include "SCREENTOOLS.h"
-#define FONTTOOLS_DECLARE_STORAGE_CONSTRUCTOR_ABI
-#include "FONTTOOLS.h"
-#define Create_ConstructFont CreateCollaboratorConstructorAbi::__4Font
 #define M3DMATHS_TYPED_API
 #include "M3DMATHS.h"
 #undef M3DMATHS_TYPED_API
@@ -3936,35 +3534,8 @@ void MySkater::PatchAnimationOrder(CSuper *pBuildSkater)
     TextMenuItemConstructorABI::__12TextMenuItemiPCcR18TextMenuProperties
 #define VerticalMenu2_ctor \
     VerticalMenu2ConstructorABI::__13VerticalMenu2iiiiiii
-#define SCREENTOOLS_DECLARE_TEXT_SCREEN_ELEMENT_CONSTRUCTOR
-#define SCREENTOOLS_DECLARE_SPRITE_SCREEN_ELEMENT_CONSTRUCTOR
 #include "SCREENTOOLS.h"
 /** Resource and label strings used by CharacterEditor's constructor. */
-extern char s_s2bgd4_bmp_800db428[];
-extern char sFont1[];
-extern char sFont2[];
-extern char sFont3[];
-extern char sFont4[];
-extern char s_Head_800db468[];
-extern char s_face_800db470[];
-extern char s_cap_800db478[];
-extern char s_Upper_800db480[];
-extern char s_chest_800db488[];
-extern char s_bicep_800db490[];
-extern char s_forearm_800db498[];
-extern char s_Lower_800db4a4[];
-extern char s_thigh_800db4ac[];
-extern char s_shin_800db4b4[];
-extern char s_shoe_800db4bc[];
-extern char s_s2crskw1_bmp_800db4c4[];
-extern char s_s2prmpt4_bmp_800db4d4[];
-extern char s_select_800db4e4[];
-extern char s_s2prmpt5_bmp_800db4ec[];
-extern char s_change_800db4fc[];
-extern char s_s2prmpt1_bmp_800db504[];
-extern char s_accept_800db514[];
-extern char s_s2prmpt2_bmp_800db51c[];
-extern char s_back_800db52c[];
 
 /**
  * Build the create-a-skater preview actors, fonts, part menu, and prompts.
@@ -3976,22 +3547,17 @@ extern char s_back_800db52c[];
  * @param self Implicit `this` pointer in the GCC 2.x constructor ABI.
  * @return The constructed editor.
  */
-CharacterEditor *CharacterEditor_Ctor(CharacterEditor *self)
+CharacterEditor::CharacterEditor() : ScreenElementList(0, 0, -1, -1)
 {
-    CharacterEditor *editor = self;
+    CharacterEditor *editor = this;
     ScreenElement *pElement;
     /* Single loop counter reused by the Group and setXY loops: its combined
      * reference count outranks `this` in the allocno priority sort, so `this`
      * lands in $s3 and this counter in $s2 (matching the target). */
     int i;
 
-    __17ScreenElementListiiii(self, 0, 0, -1, -1);
-    self->vtable = &CharacterEditor_vtable;
-    Create_ConstructFont(&editor->mFont1);
-    Create_ConstructFont(&editor->mFont2);
-    Create_ConstructFont(&editor->mFont3);
 
-    editor->mpSkater = &MySkaterSingleton;
+    editor->mpSkater = &sMySkater;
 
     {
         CreateCSuperView *skater = static_cast<CreateCSuperView *>(
@@ -4026,11 +3592,11 @@ CharacterEditor *CharacterEditor_Ctor(CharacterEditor *self)
     }
 
     Create_InitSystem();
-    sprintf(editor->mpSkater->mAnimName, sAnimFormatStr);
+    sprintf(editor->mpSkater->mAnimName, "anims_cs");
 
     {
         Sprite2 *background = new Sprite2(
-            s_s2bgd4_bmp_800db428, 1, 0x40, 0x40);
+            "s2bgd4.bmp", 1, 0x40, 0x40);
         editor->mBackground = background;
     }
 
@@ -4049,7 +3615,7 @@ CharacterEditor *CharacterEditor_Ctor(CharacterEditor *self)
 
     reinterpret_cast<CItem *>(editor->mpBuildSkater)->InitItem(
         editor->mpSkater->mAnimName);
-    reinterpret_cast<CItem *>(editor->mpSourceSkater)->InitItem(sSk2Def);
+    reinterpret_cast<CItem *>(editor->mpSourceSkater)->InitItem("sk2def");
     ((CreateCSuperView *)editor->mpBuildSkater)->mAnimSpeed = 0x10000;
     {
         CreateCSuperView *cycleSkater =
@@ -4076,9 +3642,7 @@ CharacterEditor *CharacterEditor_Ctor(CharacterEditor *self)
     M3dInit_SetFoggingParams(10, 6000, 0x800);
     M3dInit_InitAtStart();
 
-    *reinterpret_cast<CreateAssignableFont *>(&editor->mFont1) =
-        *reinterpret_cast<CreateAssignableFont *>(
-            FontManager::GetFont(sFont1));
+    editor->mFont1 = *FontManager::GetFont("s2font1.fnt");
     editor->mFont1.JustX = 0;
     editor->mFont1.JustY = 3;
     editor->mFont1.R = 0x80;
@@ -4089,9 +3653,7 @@ CharacterEditor *CharacterEditor_Ctor(CharacterEditor *self)
     editor->mFont1.SpaceY = 0;
     editor->mFont1.Scale = 0x1000;
 
-    *reinterpret_cast<CreateAssignableFont *>(&editor->mFont2) =
-        *reinterpret_cast<CreateAssignableFont *>(
-            FontManager::GetFont(sFont4));
+    editor->mFont2 = *FontManager::GetFont("s2skata2.fnt");
     editor->mFont2.JustX = 0;
     editor->mFont2.JustY = 3;
     editor->mFont2.R = 0x80;
@@ -4102,9 +3664,7 @@ CharacterEditor *CharacterEditor_Ctor(CharacterEditor *self)
     editor->mFont2.SpaceY = 0;
     editor->mFont2.Scale = 0x1000;
 
-    *reinterpret_cast<CreateAssignableFont *>(&editor->mFont3) =
-        *reinterpret_cast<CreateAssignableFont *>(
-            FontManager::GetFont(sFont2));
+    editor->mFont3 = *FontManager::GetFont("s2font2.fnt");
     editor->mFont3.JustX = 0;
     editor->mFont3.JustY = 3;
     editor->mFont3.R = 0x80;
@@ -4135,9 +3695,7 @@ CharacterEditor *CharacterEditor_Ctor(CharacterEditor *self)
         editor->mProps = properties;
     }
 
-    *reinterpret_cast<CreateAssignableFont *>(&editor->mProps->TheFont) =
-        *reinterpret_cast<CreateAssignableFont *>(
-            FontManager::GetFont(sFont3));
+    editor->mProps->TheFont = *FontManager::GetFont("s2menu1.fnt");
     editor->mProps->TheFont.JustX = 2;
     editor->mProps->TheFont.JustY = 3;
     editor->mProps->TheFont.R = 0xFF;
@@ -4155,7 +3713,7 @@ CharacterEditor *CharacterEditor_Ctor(CharacterEditor *self)
             if (item != 0)
             {
                 item = TextMenuItem_ctor(
-                    item, 0, s_Head_800db468, editor->mProps);
+                    item, 0, "Head", editor->mProps);
             }
             editor->mItem[0] = item;
         }
@@ -4174,16 +3732,16 @@ CharacterEditor *CharacterEditor_Ctor(CharacterEditor *self)
         editor->mItem[slot] = item;                                       \
     } while (0)
 
-    CREATE_TEXT_MENU_ITEM(1, 1, s_face_800db470);
-    CREATE_TEXT_MENU_ITEM(2, 2, s_cap_800db478);
-    CREATE_TEXT_MENU_ITEM(3, 3, s_Upper_800db480);
-    CREATE_TEXT_MENU_ITEM(4, 4, s_chest_800db488);
-    CREATE_TEXT_MENU_ITEM(5, 5, s_bicep_800db490);
-    CREATE_TEXT_MENU_ITEM(6, 6, s_forearm_800db498);
-    CREATE_TEXT_MENU_ITEM(7, 7, s_Lower_800db4a4);
-    CREATE_TEXT_MENU_ITEM(8, 8, s_thigh_800db4ac);
-    CREATE_TEXT_MENU_ITEM(9, 9, s_shin_800db4b4);
-    CREATE_TEXT_MENU_ITEM(10, 10, s_shoe_800db4bc);
+    CREATE_TEXT_MENU_ITEM(1, 1, " face");
+    CREATE_TEXT_MENU_ITEM(2, 2, " cap");
+    CREATE_TEXT_MENU_ITEM(3, 3, "Upper");
+    CREATE_TEXT_MENU_ITEM(4, 4, " chest");
+    CREATE_TEXT_MENU_ITEM(5, 5, " bicep");
+    CREATE_TEXT_MENU_ITEM(6, 6, " forearm");
+    CREATE_TEXT_MENU_ITEM(7, 7, "Lower");
+    CREATE_TEXT_MENU_ITEM(8, 8, " thigh");
+    CREATE_TEXT_MENU_ITEM(9, 9, " shin");
+    CREATE_TEXT_MENU_ITEM(10, 10, " shoe");
 
 #undef CREATE_TEXT_MENU_ITEM
 
@@ -4217,48 +3775,41 @@ CharacterEditor *CharacterEditor_Ctor(CharacterEditor *self)
             sizeof(CreateTextScreenElementStorage));
         if (pElement != 0)
         {
-            pElement = reinterpret_cast<ScreenElement *>(
-                __17TextScreenElementPcP4Fontiiii(
-                    reinterpret_cast<TextScreenElement *>(pElement),
+            pElement = ::new (pElement) TextScreenElement(
                     ((CreateStatsEntry *)Stats)[13].Name,
-                    FontFromStorage(&editor->mFont1),
-                    0x42, 0x21, -1, -1));
+                    &editor->mFont1, 0x42, 0x21, -1, -1);
         }
     }
-    self->addItem(pElement);
+    addItem(pElement);
 
     {
         pElement = (ScreenElement *)CClass::operator new(
             sizeof(CreateSpriteScreenElementStorage));
         if (pElement != 0)
         {
-            pElement = reinterpret_cast<ScreenElement *>(
-                __19SpriteScreenElementPciiiiii(
-                    reinterpret_cast<SpriteScreenElement *>(pElement),
-                    s_s2crskw1_bmp_800db4c4,
-                    0x32, 0x11, -0x100, -1, 0, 0));
+            pElement = ::new (pElement) SpriteScreenElement(
+                    "s2crskw1.bmp", 0x32, 0x11, -0x100, -1, 0, 0);
         }
     }
-    self->addItem(pElement);
+    addItem(pElement);
 
 #define CREATE_PROMPT(image, text, x)                                      \
     do                                                                     \
     {                                                                      \
         pElement = reinterpret_cast<ScreenElement *>(                      \
             new PromptScreenElement(                                      \
-                image, text, FontFromStorage(&editor->mFont3),            \
+                image, text, &editor->mFont3,            \
                 x, 0xDC, -1, 0x104));                                     \
-        self->addItem(pElement);                                          \
+        addItem(pElement);                                          \
     } while (0)
 
-    CREATE_PROMPT(s_s2prmpt4_bmp_800db4d4, s_select_800db4e4, 0x3F);
-    CREATE_PROMPT(s_s2prmpt5_bmp_800db4ec, s_change_800db4fc, 0xAE);
-    CREATE_PROMPT(s_s2prmpt1_bmp_800db504, s_accept_800db514, 0x114);
-    CREATE_PROMPT(s_s2prmpt2_bmp_800db51c, s_back_800db52c, 0x17E);
+    CREATE_PROMPT("s2prmpt4.bmp", "select", 0x3F);
+    CREATE_PROMPT("s2prmpt5.bmp", "change", 0xAE);
+    CREATE_PROMPT("s2prmpt1.bmp", "accept", 0x114);
+    CREATE_PROMPT("s2prmpt2.bmp", "back", 0x17E);
 
 #undef CREATE_PROMPT
 
-    return self;
 }
 
 /**
@@ -4272,7 +3823,6 @@ CharacterEditor *CharacterEditor_Ctor(CharacterEditor *self)
  */
 CharacterEditor::~CharacterEditor()
 {
-    vtable = &CharacterEditor_vtable;
 
     CreateDeletableObject *obj = (CreateDeletableObject *)mBackground;
     if (obj != 0)
@@ -4333,9 +3883,6 @@ CharacterEditor::~CharacterEditor()
         item++;
     } while (i < 11);
 
-    FontFromStorage(&mFont3)->~Font();
-    FontFromStorage(&mFont2)->~Font();
-    FontFromStorage(&mFont1)->~Font();
 }
 
 /**
@@ -4435,14 +3982,8 @@ void CharacterEditor::update(void)
         }
     }
 
-    VerticalMenu2 *menu = mMenu;
-    // Three ordinary initializations changed two instructions (or five plus
-    // two relocations when reordered); the target materializes -1 in `$v1`.
-    {
-        register int defaultPalette asm("$3") = -1;
-        PaletteSelected = defaultPalette;
-    }
-    switch (menu->getHighlighted())
+    PaletteSelected = -1;
+    switch (mMenu->getHighlighted())
     {
     case 0:
     case 1:
@@ -4499,38 +4040,38 @@ void CharacterEditor::update(void)
 
 void CharacterEditor::draw(int x, int y)
 {
-    static_cast<Font *>(&mFont2)->draw(
+    mFont2.draw(
         140, 55, mpSkater->GetFrontEndName(0, HeadSpec), 0);
-    static_cast<Font *>(&mFont2)->draw(
+    mFont2.draw(
         140, 68, mpSkater->mpTexList[0]->FrontEndName, 0);
     if (mpSkater->mpTexList[1] != 0)
     {
-        static_cast<Font *>(&mFont2)->draw(
+        mFont2.draw(
             140, 81, mpSkater->mpTexList[1]->FrontEndName, 0);
     }
 
-    static_cast<Font *>(&mFont2)->draw(
+    mFont2.draw(
         140, 94, mpSkater->GetFrontEndName(1, UpperBodySpec), 0);
-    static_cast<Font *>(&mFont2)->draw(
+    mFont2.draw(
         140, 107, mpSkater->mpTexList[2]->FrontEndName, 0);
-    static_cast<Font *>(&mFont2)->draw(
+    mFont2.draw(
         140, 120, mpSkater->mpTexList[3]->FrontEndName, 0);
     if (mpSkater->mpTexList[4] != 0)
     {
-        static_cast<Font *>(&mFont2)->draw(
+        mFont2.draw(
             140, 133, mpSkater->mpTexList[4]->FrontEndName, 0);
     }
 
-    static_cast<Font *>(&mFont2)->draw(
+    mFont2.draw(
         140, 146, mpSkater->GetFrontEndName(2, LowerBodySpec), 0);
-    static_cast<Font *>(&mFont2)->draw(
+    mFont2.draw(
         140, 159, mpSkater->mpTexList[6]->FrontEndName, 0);
     if (mpSkater->mpTexList[7] != 0)
     {
-        static_cast<Font *>(&mFont2)->draw(
+        mFont2.draw(
             140, 172, mpSkater->mpTexList[7]->FrontEndName, 0);
     }
-    static_cast<Font *>(&mFont2)->draw(
+    mFont2.draw(
         140, 185, mpSkater->mpTexList[8]->FrontEndName, 0);
 
     // MAIN.SYM records this original local as `OldJust`; the source reapplies
@@ -4552,8 +4093,7 @@ void CharacterEditor::draw(int x, int y)
 
     ScreenElementList::draw(mScreenX + x, mScreenY + y);
 
-    CreateDeleteVtable *backgroundVtable = mBackground->vtable;
-    backgroundVtable->drawSprite(mBackground, 0, 0, 1);
+    mBackground->draw(0, 0, 1);
 }
 
 /**
@@ -4598,9 +4138,7 @@ int CharacterEditor::handlePress(void)
  */
 void ExtraAnims_AddSkatersAnims(void);
 /** Gameplay animation format and default animation-header view. */
-extern char sAnimGameFmt[];
-extern CreateAnimHdr8 DAT_800db53c[];
-// No Db_SkyColorCSV/DAT_800eb53c alias is needed in CREATE.
+extern CreateAnimHdr8 sDefaultAnimHdrs[];
 #include "DEFAULTANIMATIONS.h"
 void Create_InitSkater(int forGame)
 {
@@ -4620,24 +4158,24 @@ void Create_InitSkater(int forGame)
         reinterpret_cast<SLight *>(&AnimGroupData8[12]);
     pSourceSkater->Position.vx = 100 * 4096;
 
-    MySkater *pMySkater = &MySkaterSingleton;
+    MySkater *pMySkater = &sMySkater;
     char *animName;
 
     if (forGame != 0)
     {
         animName = pMySkater->mAnimName;
-        sprintf(animName, sAnimGameFmt);
+        sprintf(animName, "sk2anim");
     }
     else
     {
         animName = pMySkater->mAnimName;
-        sprintf(animName, sAnimFormatStr);
+        sprintf(animName, "anims_cs");
     }
 
     pMySkater->Init(animName);
 
     // InitItem
-    reinterpret_cast<CItem *>(pSourceSkater)->InitItem(sSk2Def);
+    reinterpret_cast<CItem *>(pSourceSkater)->InitItem("sk2def");
 
     // Clear old textures for non-null slots
     {
@@ -4665,7 +4203,7 @@ void Create_InitSkater(int forGame)
     Spool_StripAnim(pMySkater->mSourceRegion);
 
     // Default animation list = local copy of the 8-byte header at 0x800DB53C
-    struct CreateAnimHdr8 FrontEndAnimations = DAT_800db53c[0];
+    struct CreateAnimHdr8 FrontEndAnimations = sDefaultAnimHdrs[0];
     short *pAnimationList = (short *)&FrontEndAnimations;
     if (forGame != 0)
     {
@@ -4731,18 +4269,18 @@ void Create_InitSkaterFrontEnd(void)
             ::new (reinterpret_cast<CSuper *>(pSourceSkater)) CSuper());
     }
 
-    MySkater *pMySkater = &MySkaterSingleton;
+    MySkater *pMySkater = &sMySkater;
     char *animName = pMySkater->mAnimName;
 
     pSourceSkater->mpLight =
         reinterpret_cast<SLight *>(&AnimGroupData8[12]);
     pSourceSkater->Position.vx = 100 * 4096;
 
-    sprintf(animName, sAnimFormatStr);
+    sprintf(animName, "anims_cs");
 
     pMySkater->Init(animName);
 
-    reinterpret_cast<CItem *>(pSourceSkater)->InitItem(sSk2Def);
+    reinterpret_cast<CItem *>(pSourceSkater)->InitItem("sk2def");
 
     // Zero ALL old texture slots (unlike Create_InitSkater which conditionally zeroes)
     {
@@ -4782,7 +4320,7 @@ void Create_InitSkaterFrontEnd(void)
     Spool_StripAnim(pMySkater->mSourceRegion);
 
     // Default animation list = local copy of the 8-byte header at 0x800DB53C
-    struct CreateAnimHdr8 FrontEndAnimations = DAT_800db53c[0];
+    struct CreateAnimHdr8 FrontEndAnimations = sDefaultAnimHdrs[0];
     short *pAnimationList = (short *)&FrontEndAnimations;
     if (forGame != 0)
     {
@@ -4826,7 +4364,7 @@ void Create_InitSkaterFrontEnd(void)
  */
 void Create_FreeSkaterFrontEnd(void)
 {
-    MySkaterSingleton.Free2();
+    sMySkater.Free2();
     Spool_RemoveUnusedTextures();
     Pal_RemoveUnusedPalettes();
     Pack_DefragmentFully();
@@ -4844,7 +4382,7 @@ void Create_FreeSkaterFrontEnd(void)
  */
 void Create_BuildSkater(CSuper *pBuildSkater)
 {
-    MySkater *pMySkater = &MySkaterSingleton;
+    MySkater *pMySkater = &sMySkater;
     pMySkater->PatchAnimationOrder(pBuildSkater);
     reinterpret_cast<CItem *>(pBuildSkater)->InitItem(pMySkater->mAnimName);
 }
@@ -4858,7 +4396,7 @@ void Create_BuildSkater(CSuper *pBuildSkater)
  */
 void Create_FreeSkater(void)
 {
-    MySkater *pMySkater = &MySkaterSingleton;
+    MySkater *pMySkater = &sMySkater;
     if (pMySkater->mFree == 0)
     {
         SModel **entries =
@@ -4908,7 +4446,7 @@ void Create_FreeSkater(void)
  */
 void Create_SaveTextures(void)
 {
-    MySkaterSingleton.SaveTextures();
+    sMySkater.SaveTextures();
 }
 
 /**
@@ -4975,17 +4513,17 @@ int Create_Main(void)
     Spool_RemoveUnusedTextures();
     Pal_RemoveUnusedPalettes();
     Pack_DefragmentFully();
-    FontManager::LoadFont(CreateAddressViewOwners::sFont1);
-    FontManager::LoadFont(CreateAddressViewOwners::sFont2);
-    FontManager::LoadFont(CreateAddressViewOwners::sFont3);
-    FontManager::LoadFont(CreateAddressViewOwners::sFont4);
+    FontManager::LoadFont("s2font1.fnt");
+    FontManager::LoadFont("s2font2.fnt");
+    FontManager::LoadFont("s2menu1.fnt");
+    FontManager::LoadFont("s2skata2.fnt");
 
     CharacterEditor *pEditor =
         static_cast<CharacterEditor *>(
             CClass::operator new(sizeof(CharacterEditor)));
     if (pEditor != 0)
     {
-        pEditor = CharacterEditor_Ctor(pEditor);
+        pEditor = ::new (pEditor) CharacterEditor();
     }
 
     // Save and clear Db_SkyColor
@@ -5012,15 +4550,11 @@ mainloop:
 
     // update (vtable + 0xC)
     {
-        CreateDeleteVtable *vtable = pEditor->vtable;
-        void (*updateFn)(void *) = vtable->update;
-        updateFn(pEditor);
+        pEditor->update();
     }
     // draw (vtable + 0x10)
     {
-        CreateDeleteVtable *vtable = pEditor->vtable;
-        void (*drawFn)(void *, int, int) = vtable->drawElement;
-        drawFn(pEditor, 0, 0);
+        pEditor->draw(0, 0);
     }
 
     DrawSync(0);
@@ -5043,9 +4577,7 @@ exitloop:
     // Delete editor
     if (pEditor != 0)
     {
-        CreateDeleteVtable *vtable = pEditor->vtable;
-        void (*dtorFn)(void *, int) = vtable->destroy;
-        dtorFn(pEditor, 3);
+        delete pEditor;
     }
 
     // Restore SkyColor
@@ -5057,10 +4589,10 @@ exitloop:
 
     SelectedSkater = 13;
 
-    FontManager::UnloadFont(CreateAddressViewOwners::sFont1);
-    FontManager::UnloadFont(CreateAddressViewOwners::sFont2);
-    FontManager::UnloadFont(CreateAddressViewOwners::sFont3);
-    FontManager::UnloadFont(CreateAddressViewOwners::sFont4);
+    FontManager::UnloadFont("s2font1.fnt");
+    FontManager::UnloadFont("s2font2.fnt");
+    FontManager::UnloadFont("s2menu1.fnt");
+    FontManager::UnloadFont("s2skata2.fnt");
 
     if (press == 2)
         return -1;
@@ -5079,9 +4611,9 @@ void Create_InitSystem(void)
 {
     if (GFirstTime != 0)
     {
-        MySkater *mpSkater = &MySkaterSingleton;
+        MySkater *mpSkater = &sMySkater;
         char *animName = mpSkater->mAnimName;
-        sprintf(animName, sAnimFormatStr);
+        sprintf(animName, "anims_cs");
         mpSkater->Init(animName);
         mpSkater->UpdateGeometry(0);
         mpSkater->UpdateGeometry(1);
@@ -5140,9 +4672,9 @@ int Create_SpoolTextures(void)
 {
     char oldSubDir[16];
     strcpy(oldSubDir, FileIO_GetSubDir());
-    FileIO_SetSubDir(CreateSubDir);
+    FileIO_SetSubDir("skatedit\\");
     Spooler::SpoolMgr->Update();
-    MySkaterSingleton.ProcessSpoolerEntry();
+    sMySkater.ProcessSpoolerEntry();
     FileIO_SetSubDir(oldSubDir);
     return Spooler::SpoolMgr->IsSetDone();
 }
@@ -5158,97 +4690,21 @@ void Create_BeginSpooling(void)
 {
     char oldSubDir[16];
     strcpy(oldSubDir, FileIO_GetSubDir());
-    FileIO_SetSubDir(CreateSubDir);
+    FileIO_SetSubDir("skatedit\\");
     Spooler *spoolMgr = Spooler::SpoolMgr;
     spoolMgr->Spooool();
     FileIO_SetSubDir(oldSubDir);
 }
 
-#define CREATE_DECLARE_MYSKATER_CONSTRUCTOR_ABI
-#include "CREATE.h"
-#define Create_MySkaterCtor CreateMySkaterConstructorAbi::__8MySkater
-
-/** Destroy the CREATE-owned MySkater singleton during global teardown. */
-#define CREATE_DECLARE_GLOBAL_DTOR_ABI
-#include "CREATE.h"
-void Create_GlobalDtor_BodyPart(void)
-{
-    MySkaterSingleton.~MySkater();
-}
-
-/** Construct the CREATE-owned MySkater singleton during global startup. */
-#define CREATE_DECLARE_GLOBAL_INIT_ABI
-#include "CREATE.h"
-void Create_GlobalInit_BodyPart(void)
-{
-    Create_MySkaterCtor(&MySkaterSingleton);
-}
-
-/**
- * Destroy one CREATE-owned texture-info entry and optionally free its storage.
- *
- * This inline `CREATE.H` body was instantiated in the original `create.obj`.
- *
- * Address: 0x80073214
- * Mangled: _._19MySkaterTextureInfo
- */
-static void Create_MySkaterTextureInfoDestructor(
-    MySkaterTextureInfo *self, int flag)
-{
-    self->CClass.vtable = &__vt_8MySkater_dtor;
-    if (flag & 1)
-        CClass::operator delete(self);
-}
-
-/**
- * Destroy the private `CClass` base instantiated by `create.obj`.
- *
- * Address: 0x80073244
- * Mangled: _._6CClass
- */
-static void __DOT__6CClass_80073244(CClass *self, int flag)
-{
-    self->vtable = &__vt_8MySkater_dtor;
-    if (flag & 1)
-        CClass::operator delete(self);
-}
-
 // === CREATE-owned initialized data (target .data 0x800C4D20..0x800C5734) ===
 
-/**
- * Body-part search names in animation-order slot order.
- *
- * MAIN.SYM names this original 19-pointer table `BodyPart`; all recovered
- * consumers use that canonical identity directly.
- */
-char *BodyPart[19] __attribute__((section(".data"))) = {
-    sBodyPart_Pelvis,
-    sBodyPart_Legs5,
-    sBodyPart_Legs7,
-    sBodyPart_Legs6,
-    sBodyPart_Legs2,
-    sBodyPart_Legs4,
-    sBodyPart_Legs3,
-    sBodyPart_Torso1,
-    sBodyPart_Chest,
-    sBodyPart_Torso8,
-    sBodyPart_Torso7,
-    sBodyPart_Torso6,
-    sBodyPart_Torso5,
-    sBodyPart_Torso4,
-    sBodyPart_Torso3,
-    sBodyPart_Head,
-    sBodyPart_Board1,
-    sBodyPart_Board2,
-    sBodyPart_Board3,
-};
 
 /** Body-part group prefixes selected by the character editor. */
 SGroup Group[4] __attribute__((section(".data"))) = {
-    {0, sBodyPart_Head},
-    {0, sBodyPart_Chest},
-    {0, sBodyPart_Legs3},
-    {0, sBodyPart_Board1},
+    {0, "_head"},
+    {0, "_chest"},
+    {0, "_left_shin"},
+    {0, "_board"},
 };
 
 /** Projection bounds used by the character-editor skater preview. */
@@ -5276,22 +4732,15 @@ static SLight Skater_CreateLight
  */
 SPart Part[120] __attribute__((section(".data"))) = {};
 
-/**
- * `.ctors` table slot for this owner's hand-written global constructor.
- *
- * GCC emits this entry itself for a compiler-generated constructor, but this owner's
- * hook is written by hand, so the entry has to be declared explicitly; the
- * recovered application object order reproduces the target's table sequence.
- */
-static void (*Create_GlobalCtorSlot)(void)
-    __attribute__((section(".ctors"))) = Create_GlobalInit_BodyPart;
 
-/**
- * `.dtors` table slot for this owner's hand-written global destructor.
- *
- * GCC emits this entry itself for a compiler-generated destructor, but this owner's
- * hook is written by hand, so the entry has to be declared explicitly; the
- * recovered application object order reproduces the target's table sequence.
- */
-static void (*Create_GlobalDtorSlot)(void)
-    __attribute__((section(".dtors"))) = Create_GlobalDtor_BodyPart;
+namespace CreateAnimationOwners
+{
+extern "C"
+{
+/** Default animation range copied into a newly created skater. */
+static CreateAnimHdr8 sDefaultAnimHdrs[1]
+    __attribute__((section(".sdata"), aligned(2))) = {
+        {{0, -1, -1, 9999}},
+};
+}
+}

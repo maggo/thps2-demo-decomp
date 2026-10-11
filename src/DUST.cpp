@@ -3,12 +3,14 @@
 // Functions: 11 reconstructed entries
 // Address range: 0x8006B6C0 - 0x8006BFBC
 //
-// Compiled with cc1plus (GCC 2.91.66-psx). Compiler auto-mangles symbol names.
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 
 // === Forward type declarations ===
 // Empty struct bodies allow by-value/by-reference parameters in C++
 
+#include "CCLASS_POLY.h"
+#define DUST_POLYMORPHIC_LAYOUT
 #define BIT_DUST_MANAGER_LAYOUT
 #define BIT_DUST_CONSTRUCTOR_DECLARATIONS
 #include "BIT.h"
@@ -28,7 +30,7 @@ inline void *operator new(unsigned int, void *storage)
 struct CBruce : DustBruceLayout {};
 
 /** Absolute-address view used by the particle animation call site. */
-extern char DAT_800dab10[];
+extern char s_SmokeAnim[];
 
 namespace DustAddressViewOwner
 {
@@ -36,40 +38,11 @@ extern "C"
 {
 
 /** Particle animation selected for dust puffs. */
-char DAT_800dab10[8]
+char s_SmokeAnim[8]
     __attribute__((section(".sdata"))) = "smoke";
 
 }
 }
-
-// GCC 2.x emits a private copy of `CClass::~CClass` beside a private base
-// vtable in every owner that derives from CClass.  `MAIN.SYM` records 25 such
-// `_._6CClass` copies, so the copy is file-local here.  It sits immediately
-// after the animation name, which is why that array is eight bytes and not the
-// sixteen its declaration used to claim.
-extern "C"
-{
-static void __DOT__6CClass_8006BF8C(CClass *, int);
-}
-
-// C++ forbids taking a destructor's address, so the public vtable slot uses
-// an addressable declaration of the symbol this owner already defines.
-void Dust_DestructorAbi(Dust *dust, int inCharge) asm("_._4Dust");
-
-// Consecutive eight-byte-aligned small-data words per vtable rather than
-// arrays, so -G8 still yields the target's `addiu $vX, $gp, off`.
-// MAIN.SYM names Dust's public vtable, while the private base table is
-// owner-local.
-int __vt_4Dust
-    __attribute__((section(".sdata"), aligned(8))) = 0;
-static int Dust_VTableIndex = 0;
-static int Dust_VTableDtor = (int)&Dust_DestructorAbi;
-
-static int __vt_4Dust_base
-    __attribute__((section(".sdata"), aligned(8))) = 0;
-static int Dust_BaseVTableIndex = 0;
-static int Dust_BaseVTableDtor = (int)&__DOT__6CClass_8006BF8C;
-
 
 // === Function implementations (address order) ===
 
@@ -82,7 +55,6 @@ static int Dust_BaseVTableDtor = (int)&__DOT__6CClass_8006BF8C;
  *
  */
 Dust::Dust() {
-    CClass.vtable = &__vt_4Dust;
     int i = 0;
     do {
         mDustStack[i] = 0;
@@ -104,7 +76,6 @@ Dust::Dust() {
  */
 Dust::~Dust() {
     int i = 0;
-    CClass.vtable = &__vt_4Dust;
     if (mDustCount > 0) {
         do {
             if (mDustStack[i] != 0) {
@@ -116,7 +87,6 @@ Dust::~Dust() {
         } while (i < mDustCount);
     }
     mDustCount = 0;
-    CClass.vtable = &__vt_4Dust_base;
 }
 
 
@@ -255,7 +225,7 @@ void Dust::Update(CBruce *pBruce) {
             // Normal mode
             apply_random_offset(*pResult, randomOffset, 12);
         }
-        pDust->CFT4Bit.SetAnim(DAT_800dab10);
+        pDust->CFT4Bit.SetAnim(s_SmokeAnim);
         pDust->CFT4Bit.SetSemiTransparent();
         pDust->CFT4Bit.ChooseRandomFrame();
         unsigned short finalScale = (unsigned short)scale;
@@ -282,42 +252,26 @@ void Dust::Update(CBruce *pBruce) {
  * @param pDust  Dust to operate on.
  */
 void Dust::insert_dust(CFlatBit *pDust) {
-    // Clean locals reschedule the full replacement path (40 real and two
-    // relocation mismatches), so retain the target's count/index registers.
-    register int count asm("$3") = mDustCount;
-    if (count < 12) {
-        register int idx asm("$2");
-        idx = count * 4;
-        DUST_STACK_SLOT_AT_BYTE_OFFSET(this, idx) = pDust;
-        mDustCount = mDustCount + 1;
+    if (mDustCount < 12) {
+        mDustStack[mDustCount] = pDust;
+        ++mDustCount;
         return;
     }
-
     int unusedSlot = -1;
     int dimmestColor = 65535;
-    int i = 0;
     CFlatBit **base = mDustStack;
-    if (count > 0) {
-        int countLoop = count;
-        CFlatBit **slot = base;
-        do {
-            struct CFlatBit *oldDust = *slot;
-            int newColor = (int)oldDust->CFT4Bit.mColour.Components.mRed
-                         + (int)oldDust->CFT4Bit.mColour.Components.mGreen
-                         + (int)oldDust->CFT4Bit.mColour.Components.mBlue;
-            if (newColor < dimmestColor) {
-                dimmestColor = newColor;
-                unusedSlot = i;
-            }
-            i++;
-            slot++;
-        } while (i < countLoop);
+    for (int i = 0; i < mDustCount; i++) {
+        CFlatBit *oldDust = base[i];
+        int newColor = (int)oldDust->CFT4Bit.mColour.Components.mRed
+                     + (int)oldDust->CFT4Bit.mColour.Components.mGreen
+                     + (int)oldDust->CFT4Bit.mColour.Components.mBlue;
+        if (newColor < dimmestColor) {
+            dimmestColor = newColor;
+            unusedSlot = i;
+        }
     }
-
-    int offset = unusedSlot * 4;
-    CFlatBit **target =
-        (CFlatBit **)((char *)base + offset);
-    struct CFlatBit *oldDust = *target;
+    CFlatBit **target = &base[unusedSlot];
+    CFlatBit *oldDust = *target;
     if (oldDust != 0) {
         oldDust->CFT4Bit.CBit._vf->destroy(&oldDust->CFT4Bit.CBit, 3);
     }
@@ -444,14 +398,8 @@ void Dust::get_bail_terrain_parameters(
         *pRandomOffset = 4;
         break;
     case 2:
-    case 4:
     case 5:
-    case 7:
     case 8:
-    case 9:
-    case 10:
-    case 11:
-    case 12:
     case 13:
         *pScale = 64;
         *pTint = 64;
@@ -555,17 +503,4 @@ void Dust::apply_random_offset(
     offset = neg_half + r;
     sh = offset << sh;
     pos.vz = pos.vz + sh;
-}
-
-/**
- * Destroy the owner-local CClass base and optionally release its storage.
- *
- * GCC emitted this private copy last in the owner's text, so it remains at
- * the end of the translation unit.
- */
-static void __DOT__6CClass_8006BF8C(CClass *self, int flags) {
-    self->vtable = &__vt_4Dust_base;
-    if (flags & 1) {
-        CClass::operator delete(self);
-    }
 }

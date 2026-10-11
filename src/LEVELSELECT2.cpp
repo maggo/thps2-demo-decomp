@@ -3,7 +3,7 @@
 // Functions: 31 reconstructed functions
 // Address range: 0x8007FC88 - 0x80081FCC
 //
-// Compiled with cc1plus (GCC 2.91.66-psx). Compiler auto-mangles symbol names.
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 // Owner-local declarations attributed to LEVELSELECT2.cpp by MAIN.SYM.
 
@@ -23,6 +23,9 @@ typedef short undefined2;
 typedef int undefined4;
 typedef unsigned long ulong;
 typedef unsigned char undefined3[3];
+
+#define SCREENTOOLS_POLYMORPHIC_LAYOUT
+#include "SCREENTOOLS.h"
 
 struct CBit;
 struct CGlow;
@@ -57,11 +60,6 @@ struct SDoubleBuffer;
 #include "GAMEFMVSTATE.h"
 // LevelGenerator owns the shared GridCellWidth object.
 
-#define SCREENTOOLS_AGGREGATE_LAYOUT
-#define SCREENTOOLS_AGGREGATE_LAYOUT_ONLY
-#include "SCREENTOOLS.h"
-#undef SCREENTOOLS_AGGREGATE_LAYOUT_ONLY
-#undef SCREENTOOLS_AGGREGATE_LAYOUT
 #include "GAMEFMV.h"
 #include <STDDEF.H>
 #include <LIBGTE.H>
@@ -77,8 +75,6 @@ struct NameScreenElement;
 struct PromptScreenElement;
 struct CareerScreenElement;
 struct SkaterNameScreenElement;
-struct SlicedImage2;
-struct Sprite2;
 struct VideoScreenElement;
 #define SPOOLER_ABSOLUTE_MANAGER_DECLARATION
 #include "SPOOLER.h"
@@ -112,76 +108,6 @@ struct LevelSelectDoubleBuffer {
 #include "M3DMATHS.h"
 #undef M3DMATHS_TYPED_API
 #include "IMAGE.h"
-/** Typed construction, screen-hierarchy, font, and spooler entry points. */
-#define SCREENTOOLS_DECLARE_SCREEN_ELEMENT_CONSTRUCTOR
-#define SCREENTOOLS_DECLARE_SCREEN_ELEMENT_LIST_CONSTRUCTOR
-#include "SCREENTOOLS.h"
-#define LevelSelect_ConstructScreenElement __13ScreenElementiiii
-#define LevelSelect_ConstructScreenElementList __17ScreenElementListiiii
-#define SCREENTOOLS_DECLARE_SCREEN_ELEMENT_LIST_DESTRUCTOR
-#include "SCREENTOOLS.h"
-#define SCREENTOOLS_DECLARE_SCREEN_ELEMENT_DESTRUCTOR
-#include "SCREENTOOLS.h"
-
-#define SCREENTOOLS_DECLARE_TEXT_SCREEN_ELEMENT_CONSTRUCTOR
-#include "SCREENTOOLS.h"
-#define LevelSelect_ConstructTextScreenElement \
-    __17TextScreenElementPcP4Fontiiii
-#define SCREENTOOLS_DECLARE_TEXT_SCREEN_ELEMENT_DESTRUCTOR
-#include "SCREENTOOLS.h"
-extern "C" void draw__17TextScreenElementii(
-    TextScreenElement *element, int x, int y);
-#define LevelSelect_DrawTextScreenElement draw__17TextScreenElementii
-
-#define SCREENTOOLS_DECLARE_SPRITE_SCREEN_ELEMENT_CONSTRUCTOR
-#include "SCREENTOOLS.h"
-#define LevelSelect_ConstructSpriteScreenElement \
-    __19SpriteScreenElementPciiiiii
-/** Typed aliases for constructors whose storage is allocated by CClass. */
-namespace LevelSelectConstructorAbi
-{
-extern "C" LevelSelectScreen *__17LevelSelectScreen(
-    LevelSelectScreen *screen);
-extern "C" SkaterNameScreenElement *__23SkaterNameScreenElementbiiii(
-    SkaterNameScreenElement *element, bool secondPlayer,
-    int homeX, int homeY, int screenX, int screenY);
-extern "C" GlobeScreenElement *__18GlobeScreenElementiiii(
-    GlobeScreenElement *element,
-    int homeX, int homeY, int screenX, int screenY);
-extern "C" NameScreenElement *__17NameScreenElementPcP4Fontiiii(
-    NameScreenElement *element, char *text, Font *font,
-    int homeX, int homeY, int screenX, int screenY);
-extern "C" LevelNameScreenElement *__22LevelNameScreenElementiiii(
-    LevelNameScreenElement *element,
-    int homeX, int homeY, int screenX, int screenY);
-extern "C" VideoScreenElement *__18VideoScreenElementiiii(
-    VideoScreenElement *element,
-    int homeX, int homeY, int screenX, int screenY);
-extern "C" GoalScreenElement *__17GoalScreenElementiiii(
-    GoalScreenElement *element,
-    int homeX, int homeY, int screenX, int screenY);
-}
-
-#define LevelSelect_ConstructLevelSelectScreen \
-    LevelSelectConstructorAbi::__17LevelSelectScreen
-#define LevelSelect_ConstructSkaterNameScreenElement \
-    LevelSelectConstructorAbi::__23SkaterNameScreenElementbiiii
-#define LevelSelect_ConstructGlobeScreenElement \
-    LevelSelectConstructorAbi::__18GlobeScreenElementiiii
-#define LevelSelect_ConstructNameScreenElement \
-    LevelSelectConstructorAbi::__17NameScreenElementPcP4Fontiiii
-extern "C" CareerScreenElement *__19CareerScreenElementP4Fontiiii(
-    CareerScreenElement *element, Font *font,
-    int homeX, int homeY, int screenX, int screenY);
-#define LevelSelect_ConstructCareerScreenElement \
-    __19CareerScreenElementP4Fontiiii
-#define LevelSelect_ConstructLevelNameScreenElement \
-    LevelSelectConstructorAbi::__22LevelNameScreenElementiiii
-#define LevelSelect_ConstructVideoScreenElement \
-    LevelSelectConstructorAbi::__18VideoScreenElementiiii
-#define LevelSelect_ConstructGoalScreenElement \
-    LevelSelectConstructorAbi::__17GoalScreenElementiiii
-
 typedef char levelselect_item_size_must_be_36[
     (sizeof(Item) == 36) ? 1 : -1];
 typedef char levelselect_button_size_must_be_16[
@@ -199,119 +125,7 @@ typedef char levelselect_double_buffer_size_must_be_148[
 #include "UTILS.h"
 #include <STDIO.H>
 
-/** Placement construction for embedded polymorphic objects. */
-inline void *operator new(unsigned int, void *address)
-{
-    return address;
-}
-
 // === Forward type declarations ===
-
-#include "IMAGEBASE.h"
-
-struct Slice;
-
-/** Sliced image storage inherited by front-end sprites. */
-struct SlicedImage2 : Image {
-    Slice *SliceTab;
-    short W;
-    short H;
-    short SliceW;
-    short SliceH;
-    short SliceCountX;
-    short SliceCountY;
-    /** True after owned pixel buffers have been allocated for the slices. */
-    bool InMemory;
-    /** True after the slice rectangles have been allocated in VRAM. */
-    bool Packed;
-    int BppShift;
-    unsigned short Clut;
-
-    void pack();
-    void unpack();
-    int screenWidth();
-    int screenHeight();
-};
-
-/** Goal-screen sprite with the original Image/SlicedImage2 base layout. */
-struct Sprite2 : SlicedImage2 {
-    /** Allocate sprite storage through the shared CClass arena. */
-    static void *operator new(unsigned int size) throw()
-    {
-        return ::CClass::operator new(size);
-    }
-    /** Build a sprite from a bitmap file. */
-    Sprite2(char *name, int pack, int sliceWidth, int sliceHeight);
-    /** Build a sprite from an in-memory bitmap. */
-    Sprite2(unsigned char *data, int pack, int sliceWidth, int sliceHeight);
-};
-
-/** Original polymorphic class prefix used by Font assignment. */
-struct LevelSelectClassAssignmentBase {
-    virtual ~LevelSelectClassAssignmentBase();
-};
-
-/** Polymorphic view used to recover the original Font assignment semantics. */
-struct LevelSelectFontAssignmentView : LevelSelectClassAssignmentBase {
-    int JustX;
-    int JustY;
-    int SpaceX;
-    int SpaceY;
-    int R;
-    int G;
-    int B;
-    void *Aliased;
-    void *Shadow;
-    int ShadowDx;
-    int ShadowDy;
-    int CharMap;
-    int FixedWidth;
-    int Scale;
-    FontCharacter *CharTab;
-    int NumChars;
-    int Clut;
-    TextEffect *CurrentTextEffect;
-    unsigned char OldR;
-    unsigned char OldG;
-    unsigned char OldB;
-};
-
-/**
- * POD font storage embedded by SkaterNameScreenElement.
- *
- * The target destructor tears this Font down explicitly before its screen-list
- * base.  This non-polymorphic view preserves that recovered order without a
- * second compiler-generated subobject destructor.
- */
-struct LevelSelectSkaterFontStorage {
-    int *vtable;
-    int JustX;
-    int JustY;
-    int SpaceX;
-    int SpaceY;
-    int R;
-    int G;
-    int B;
-    void *Aliased;
-    void *Shadow;
-    int ShadowDx;
-    int ShadowDy;
-    int CharMap;
-    int FixedWidth;
-    int Scale;
-    FontCharacter *CharTab;
-    int NumChars;
-    int Clut;
-    TextEffect *CurrentTextEffect;
-    unsigned char OldR;
-    unsigned char OldG;
-    unsigned char OldB;
-    unsigned char Pad;
-};
-
-typedef char levelselect_skater_font_storage_size_must_be_80[
-    (sizeof(LevelSelectSkaterFontStorage) == 80) ? 1 : -1];
-
 
 typedef char levelselect_image_size_must_be_28[
     (sizeof(Image) == 28) ? 1 : -1];
@@ -319,33 +133,6 @@ typedef char levelselect_sliced_image_size_must_be_60[
     (sizeof(SlicedImage2) == 60) ? 1 : -1];
 typedef char levelselect_sprite_size_must_be_60[
     (sizeof(Sprite2) == 60) ? 1 : -1];
-typedef char levelselect_font_assignment_view_size_must_be_80[
-    (sizeof(LevelSelectFontAssignmentView) == 80) ? 1 : -1];
-
-/** Goal selector and its eight streamed goal-image sprites. */
-struct GoalScreenElement {
-    struct ScreenElement ScreenElement;
-    int mW;
-    int mH;
-    int mState;
-    int mLevel;
-    int mLastLevel;
-    int mTargetLevel;
-    int mFreeLastCount;
-    struct Sprite2 (*mpSprite[15]);
-    int mSpoolID[15];
-    int mGoalOffsX;
-    int mGoalOffsY;
-    int mLeavingX;
-    int mLeavingDir;
-    int mNextDir;
-
-    GoalScreenElement(int, int, int, int);
-    ~GoalScreenElement();
-    void SetLevel(int level, int dir);
-    void draw(int x, int y);
-    void update();
-};
 
 /** Little-endian views used by the PSX texture and VRAM interfaces. */
 union LevelSelectPackedInt {
@@ -355,79 +142,64 @@ union LevelSelectPackedInt {
     u8 lowByte;
 };
 
-
-/** Video preview, mask sprites, playback state, and textured quad. */
-struct VideoScreenElement {
-    struct ScreenElementList ScreenElementList;
-    int mLevel;
-    int mNewLevel;
-    int mState;
-    int mCount;
-    LevelSelectPackedInt mVideoVramX;
-    LevelSelectPackedInt mVideoVramY;
-    LevelSelectPackedInt mVideoW;
-    LevelSelectPackedInt mVideoH;
-    POLY_FT4 *mVideoPoly;
-    struct Sprite2 (*mVideoSprite[2]);
-    int mVideoOffsX;
-    int mVideoOffsY;
-
-    VideoScreenElement(int homeX, int homeY, int screenX, int screenY);
-    ~VideoScreenElement();
-    void SetLevel(int level);
-    void draw(int x, int y);
-    void update();
-};
-
-
-/** Animated text row used by the level and city labels. */
-struct NameScreenElement {
-    struct TextScreenElement TextScreenElement;
-
-    NameScreenElement(char *, Font *, int, int, int, int);
-    ~NameScreenElement();
-    void update();
-};
-
 #include "PROMPTSCREENELEMENT.h"
 
-/** Career-medal row used by the level-select screen. */
-struct CareerScreenElement {
-    ScreenElementList ScreenElementList;
+/** Career-medal row (owned by PLAYERSELECT) used by the level-select screen. */
+struct CareerScreenElement : ScreenElementList {
     ScreenElement *mpMedalIcons[3];
     int mDelay[9];
-};
 
-
-/** Composite park/city label with its two local fonts. */
-struct LevelNameScreenElement {
-    struct ScreenElementList ScreenElementList;
-    struct TextScreenElement *mpPark;
-    struct TextScreenElement *mpCity;
-    FontStorage mFont1;
-    FontStorage mFont2;
-    int mOriginalHomeX;
-    int mSpacing;
-    int mLevel;
-    int mTargetLevel;
-    int mState;
-
-    LevelNameScreenElement(int, int, int, int);
-    ~LevelNameScreenElement();
-    void SetLevel(int level);
+    CareerScreenElement(Font *font, int homeX, int homeY, int screenX,
+                        int screenY);
+    virtual ~CareerScreenElement();
     void update();
+    void draw(int x, int y);
+    void refresh();
 };
 
+/*
+ * The exe has the owner tables in the order Goal, Video, Name, LevelName,
+ * Globe, SkaterName, LevelSelectScreen; GCC emits them in reverse declaration
+ * order, so the classes are declared LevelSelectScreen first.
+ */
+
+/** Complete level-selection screen and its child elements. */
+struct LevelSelectScreen : ScreenElementList {
+    struct LevelNameScreenElement *mpLevelName;
+    struct GlobeScreenElement *mpGlobe;
+    struct VideoScreenElement *mpVideo;
+    struct GoalScreenElement *mpGoal;
+    Sprite2 *mBackground;
+    Font mFont1;
+    Font mFont2;
+
+    LevelSelectScreen();
+    virtual ~LevelSelectScreen();
+    void draw();
+    void update();
+    void refresh();
+    int isDone(int *return_value);
+};
+
+/** One- or two-player skater portrait/name row. */
+struct SkaterNameScreenElement : ScreenElementList {
+    SpriteScreenElement *mpFace;
+    TextScreenElement *mpName;
+    Font mFont;
+
+    SkaterNameScreenElement(bool secondPlayer,
+                            int homeX, int homeY, int screenX, int screenY);
+    virtual ~SkaterNameScreenElement();
+};
 
 /** Globe preview and its crosshair overlay. */
-struct GlobeScreenElement {
-    struct ScreenElement ScreenElement;
+struct GlobeScreenElement : ScreenElement {
     struct Item mGlobeItem;
     union {
         int mGlobeRegion;
         unsigned char mGlobeRegionByte;
     };
-    struct Sprite2 *mpCrosshair;
+    Sprite2 *mpCrosshair;
     int mCrossY;
     int mTargetCrossY;
     union {
@@ -437,45 +209,81 @@ struct GlobeScreenElement {
     int mTargetGlobeRot;
 
     GlobeScreenElement(int, int, int, int);
-    ~GlobeScreenElement();
+    virtual ~GlobeScreenElement();
     void SetLevel(int level);
     void draw(int x, int y);
     void update();
 };
 
-/** Complete level-selection screen and its child elements. */
-struct LevelSelectScreen {
-    struct ScreenElementList ScreenElementList;
-    struct LevelNameScreenElement *mpLevelName;
-    struct GlobeScreenElement *mpGlobe;
-    struct VideoScreenElement *mpVideo;
-    struct GoalScreenElement *mpGoal;
-    struct Sprite2 *mBackground;
-    FontStorage mFont1;
-    FontStorage mFont2;
+/** Composite park/city label with its two local fonts. */
+struct LevelNameScreenElement : ScreenElementList {
+    TextScreenElement *mpPark;
+    TextScreenElement *mpCity;
+    Font mFont1;
+    Font mFont2;
+    int mOriginalHomeX;
+    int mSpacing;
+    int mLevel;
+    int mTargetLevel;
+    int mState;
 
-    LevelSelectScreen();
-    ~LevelSelectScreen();
-    void draw();
+    LevelNameScreenElement(int, int, int, int);
+    virtual ~LevelNameScreenElement();
+    void SetLevel(int level);
     void update();
-    void refresh();
-    int isDone(int *return_value);
-    /** Release level-select storage through the shared CClass arena. */
-    static void operator delete(void *p) { ::CClass::operator delete(p); }
 };
 
-/** One- or two-player skater portrait/name row. */
-struct SkaterNameScreenElement {
-    struct ScreenElementList ScreenElementList;
-    struct SpriteScreenElement *mpFace;
-    struct TextScreenElement *mpName;
-    LevelSelectSkaterFontStorage mFont;
+/** Animated text row used by the level and city labels. */
+struct NameScreenElement : TextScreenElement {
+    NameScreenElement(char *, Font *, int, int, int, int);
+    virtual ~NameScreenElement();
+    void update();
+};
 
-    SkaterNameScreenElement(bool secondPlayer,
-                            int homeX, int homeY, int screenX, int screenY);
-    ~SkaterNameScreenElement();
-    /** Release skater-name storage through the shared CClass arena. */
-    static void operator delete(void *p) { ::CClass::operator delete(p); }
+/** Video preview, mask sprites, playback state, and textured quad. */
+struct VideoScreenElement : ScreenElementList {
+    int mLevel;
+    int mNewLevel;
+    int mState;
+    int mCount;
+    LevelSelectPackedInt mVideoVramX;
+    LevelSelectPackedInt mVideoVramY;
+    LevelSelectPackedInt mVideoW;
+    LevelSelectPackedInt mVideoH;
+    POLY_FT4 *mVideoPoly;
+    Sprite2 *mVideoSprite[2];
+    int mVideoOffsX;
+    int mVideoOffsY;
+
+    VideoScreenElement(int homeX, int homeY, int screenX, int screenY);
+    virtual ~VideoScreenElement();
+    void SetLevel(int level);
+    void draw(int x, int y);
+    void update();
+};
+
+/** Goal selector and its eight streamed goal-image sprites. */
+struct GoalScreenElement : ScreenElement {
+    int mW;
+    int mH;
+    int mState;
+    int mLevel;
+    int mLastLevel;
+    int mTargetLevel;
+    int mFreeLastCount;
+    Sprite2 *mpSprite[15];
+    int mSpoolID[15];
+    int mGoalOffsX;
+    int mGoalOffsY;
+    int mLeavingX;
+    int mLeavingDir;
+    int mNextDir;
+
+    GoalScreenElement(int, int, int, int);
+    virtual ~GoalScreenElement();
+    void SetLevel(int level, int dir);
+    void draw(int x, int y);
+    void update();
 };
 
 typedef char levelselect_goal_element_size_must_be_204[
@@ -536,11 +344,11 @@ static int SelectedLevel __attribute__((section(".sdata"))) = 0;
  * directly through their complete owner definitions below; both forms retain
  * the target's small-data versus absolute-address split.
  */
-extern char s_select_800dbe24[];
-extern char s_accept_800dbe3c[];
-extern char DAT_800dbe54[];
-extern char s_globe_800dbe6c[];
-extern char s_mar_bmp_800dbe84[];
+extern char s_Select_LevelSelect[];
+extern char s_Accept_LevelSelect[];
+extern char s_Back_LevelSelect[];
+extern char s_Globe[];
+extern char s_MarBmp[];
 
 /**
  * Owner-local font and image-name storage in its original `.sdata` order.
@@ -554,178 +362,46 @@ namespace LevelSelectAddressViewOwners
 {
 extern "C"
 {
-static char s_mainf_fnt_800dbdd8[]
+static char s_MainfFnt_LevelSelect[]
     __attribute__((section(".sdata"), aligned(4))) = "mainf.fnt";
-static char s_s2font2_fnt_800dbde4[]
+static char s_S2font2Fnt_LevelSelect[]
     __attribute__((section(".sdata"), aligned(4))) = "s2font2.fnt";
-static char s_s2font1_fnt_800dbdf0[]
+static char s_S2font1Fnt[]
     __attribute__((section(".sdata"), aligned(4))) = "s2font1.fnt";
-static char s_ingame1_fnt_800dbdfc[]
+static char s_Ingame1Fnt[]
     __attribute__((section(".sdata"), aligned(4))) = "ingame1.fnt";
-static char s_s2bgd3_bmp_800dbe08[]
+static char s_S2bgd3Bmp[]
     __attribute__((section(".sdata"), aligned(4))) = "s2bgd3.bmp";
-static char s_s2prmpt4_bmp_800dbe14[]
+static char s_S2prmpt4Bmp_LevelSelect[]
     __attribute__((section(".sdata"), aligned(4))) = "s2prmpt4.bmp";
-static char s_select_800dbe24[]
+static char s_Select_LevelSelect[]
     __attribute__((section(".sdata"), aligned(4))) = "select";
-static char s_s2prmpt1_bmp_800dbe2c[]
+static char s_S2prmpt1Bmp_LevelSelect[]
     __attribute__((section(".sdata"), aligned(4))) = "s2prmpt1.bmp";
-static char s_accept_800dbe3c[]
+static char s_Accept_LevelSelect[]
     __attribute__((section(".sdata"), aligned(4))) = "accept";
-static char s_s2prmpt2_bmp_800dbe44[]
+static char s_S2prmpt2Bmp_LevelSelect[]
     __attribute__((section(".sdata"), aligned(4))) = "s2prmpt2.bmp";
-static char DAT_800dbe54[]
+static char s_Back_LevelSelect[]
     __attribute__((section(".sdata"), aligned(4))) = "back";
-static char s_s2versus_bmp_800dbe5c[]
+static char s_S2versusBmp[]
     __attribute__((section(".sdata"), aligned(4))) = "s2versus.bmp";
-static char s_globe_800dbe6c[]
+static char s_Globe[]
     __attribute__((section(".sdata"), aligned(4))) = "globe";
-static char s_s2crossh_bmp_800dbe74[]
+static char s_S2crosshBmp[]
     __attribute__((section(".sdata"), aligned(4))) = "s2crossh.bmp";
-static char s_mar_bmp_800dbe84[]
+static char s_MarBmp[]
     __attribute__((section(".sdata"), aligned(4))) = "mar.bmp";
-static char s_levna_bmp_800dbe8c[]
+static char s_LevnaBmp[]
     __attribute__((section(".sdata"), aligned(4))) = "levna.bmp";
-static char s_s2win5_bmp_800dbe98[]
+static char s_S2win5Bmp[]
     __attribute__((section(".sdata"), aligned(4))) = "s2win5.bmp";
-static char s_s2levl00_bmp_800dbea4[]
+static char s_S2levl00Bmp[]
     __attribute__((section(".sdata"), aligned(4))) = "s2levl00.bmp";
-static char s_s2levl0_d_bmp_800dbeb4[]
+static char s_S2levl0NumBmp[]
     __attribute__((section(".sdata"), aligned(4))) = "s2levl0%d.bmp";
 }
 }
-// === Additional extern declarations for destructors ===
-typedef void (*LevelSelectVirtualFunction)(void);
-#define FRONTSCREENS_DECLARE_LEVELSELECT_DESTRUCTOR_ABI
-#include "FRONTSCREENS.h"
-#define FRONTSCREENS_DECLARE_LEVELSELECT_OWNER_VTABLES
-#include "FRONTSCREENS.h"
-
-/**
- * Dispatch tables owned by the level-selection front end.
- *
- * The trailing null in each table is part of the original GCC 2 layout.  The
- * compiler-generated VideoScreenElement switch table follows these seven
- * tables in the same read-only section.
- */
-LevelSelectVirtualFunction const __vt_17GoalScreenElement[]
-    __attribute__((aligned(8))) = {
-        0,
-        0,
-        (LevelSelectVirtualFunction)LevelSelectGoalDestructorVtable,
-        (LevelSelectVirtualFunction)(void (*)(GoalScreenElement *))
-            &GoalScreenElement::update,
-        (LevelSelectVirtualFunction)(void (*)(GoalScreenElement *, int, int))
-            &GoalScreenElement::draw,
-        (LevelSelectVirtualFunction)&ScreenElement::width,
-        (LevelSelectVirtualFunction)&ScreenElement::refresh,
-        0,
-    };
-
-LevelSelectVirtualFunction const __vt_18VideoScreenElement[]
-    __attribute__((aligned(8))) = {
-        0,
-        0,
-        (LevelSelectVirtualFunction)LevelSelectVideoDestructorVtable,
-        (LevelSelectVirtualFunction)(void (*)(VideoScreenElement *))
-            &VideoScreenElement::update,
-        (LevelSelectVirtualFunction)(void (*)(VideoScreenElement *, int, int))
-            &VideoScreenElement::draw,
-        (LevelSelectVirtualFunction)&ScreenElement::width,
-        (LevelSelectVirtualFunction)&ScreenElement::refresh,
-        0,
-    };
-
-LevelSelectVirtualFunction const __vt_17NameScreenElement[]
-    __attribute__((aligned(8))) = {
-        0,
-        0,
-        (LevelSelectVirtualFunction)LevelSelectNameDestructorVtable,
-        (LevelSelectVirtualFunction)(void (*)(NameScreenElement *))
-            &NameScreenElement::update,
-        (LevelSelectVirtualFunction)LevelSelect_DrawTextScreenElement,
-        (LevelSelectVirtualFunction)&TextScreenElement::width,
-        (LevelSelectVirtualFunction)&ScreenElement::refresh,
-        0,
-    };
-
-LevelSelectVirtualFunction const __vt_22LevelNameScreenElement[]
-    __attribute__((aligned(8))) = {
-        0,
-        0,
-        (LevelSelectVirtualFunction)LevelSelectLevelNameDestructorVtable,
-        (LevelSelectVirtualFunction)(void (*)(LevelNameScreenElement *))
-            &LevelNameScreenElement::update,
-        (LevelSelectVirtualFunction)(void (*)(ScreenElementList *, int, int))
-            &ScreenElementList::draw,
-        (LevelSelectVirtualFunction)&ScreenElement::width,
-        (LevelSelectVirtualFunction)&ScreenElement::refresh,
-        0,
-    };
-
-LevelSelectVirtualFunction const __vt_18GlobeScreenElement[]
-    __attribute__((aligned(8))) = {
-        0,
-        0,
-        (LevelSelectVirtualFunction)LevelSelectGlobeDestructorVtable,
-        (LevelSelectVirtualFunction)(void (*)(GlobeScreenElement *))
-            &GlobeScreenElement::update,
-        (LevelSelectVirtualFunction)(void (*)(GlobeScreenElement *, int, int))
-            &GlobeScreenElement::draw,
-        (LevelSelectVirtualFunction)&ScreenElement::width,
-        (LevelSelectVirtualFunction)&ScreenElement::refresh,
-        0,
-    };
-
-LevelSelectVirtualFunction const __vt_23SkaterNameScreenElement[]
-    __attribute__((aligned(8))) = {
-        0,
-        0,
-        (LevelSelectVirtualFunction)SkaterNameScreenElementDestructorVtable,
-        (LevelSelectVirtualFunction)(void (*)(ScreenElementList *))
-            &ScreenElementList::update,
-        (LevelSelectVirtualFunction)(void (*)(ScreenElementList *, int, int))
-            &ScreenElementList::draw,
-        (LevelSelectVirtualFunction)&ScreenElement::width,
-        (LevelSelectVirtualFunction)&ScreenElement::refresh,
-        0,
-    };
-
-LevelSelectVirtualFunction const __vt_17LevelSelectScreen[]
-    __attribute__((aligned(8))) = {
-        0,
-        0,
-        (LevelSelectVirtualFunction)LevelSelectScreenDestructorVtable,
-        (LevelSelectVirtualFunction)(void (*)(LevelSelectScreen *))
-            &LevelSelectScreen::update,
-        (LevelSelectVirtualFunction)(void (*)(ScreenElementList *, int, int))
-            &ScreenElementList::draw,
-        (LevelSelectVirtualFunction)&ScreenElement::width,
-        (LevelSelectVirtualFunction)(void (*)(LevelSelectScreen *))
-            &LevelSelectScreen::refresh,
-        0,
-    };
-
-/** Invoke the deleting-destructor slot shared by CClass-derived objects. */
-static inline void LevelSelect_DeleteVirtual(void *object)
-{
-    if (object != 0)
-    {
-        CClass *base = (CClass *)object;
-        typedef void (*DeletingDestructor)(void *, int);
-        ((DeletingDestructor)base->vtable[2])(object, 3);
-    }
-}
-
-/** Invoke the draw slot shared by the front-end screen hierarchy. */
-static inline void LevelSelect_DrawVirtual(void *object,
-                                           int x, int y, int flags)
-{
-    CClass *base = (CClass *)object;
-    typedef void (*DrawFunction)(void *, int, int, int);
-    ((DrawFunction)base->vtable[5])(object, x, y, flags);
-}
-
 /** Read the low halfword of an integer-backed PSX screen coordinate. */
 static inline u16 LevelSelect_LowHalf(const int &value)
 {
@@ -752,20 +428,15 @@ int LevelSelect2_Main(void)
     Pal_RemoveUnusedPalettes();
     Pack_DefragmentFully();
     FontManager::LoadFont(
-        LevelSelectAddressViewOwners::s_mainf_fnt_800dbdd8);
+        LevelSelectAddressViewOwners::s_MainfFnt_LevelSelect);
     FontManager::LoadFont(
-        LevelSelectAddressViewOwners::s_s2font2_fnt_800dbde4);
+        LevelSelectAddressViewOwners::s_S2font2Fnt_LevelSelect);
     FontManager::LoadFont(
-        LevelSelectAddressViewOwners::s_s2font1_fnt_800dbdf0);
+        LevelSelectAddressViewOwners::s_S2font1Fnt);
     FontManager::LoadFont(
-        LevelSelectAddressViewOwners::s_ingame1_fnt_800dbdfc);
+        LevelSelectAddressViewOwners::s_Ingame1Fnt);
 
-    LevelSelectScreen *pScreen =
-        (LevelSelectScreen *)::CClass::operator new(sizeof(LevelSelectScreen));
-    if (pScreen != 0)
-    {
-        pScreen = LevelSelect_ConstructLevelSelectScreen(pScreen);
-    }
+    LevelSelectScreen *pScreen = new LevelSelectScreen;
 
     Pad_ClearTriggers(&Pad[0]);
     Pad_ClearTriggers(&Pad[1]);
@@ -783,10 +454,7 @@ int LevelSelect2_Main(void)
         CalcPolyBufferEnd();
         Pad_Update();
 
-        LevelSelectVirtualFunction fn =
-            ((LevelSelectVirtualFunction *)pScreen->ScreenElementList
-                 .ScreenElement.CClass.vtable)[3];
-        ((void (*)(LevelSelectScreen *))fn)(pScreen);
+        pScreen->update();
         pScreen->draw();
         DrawSync(0);
         Pause(1);
@@ -799,16 +467,16 @@ int LevelSelect2_Main(void)
     }
 
     FontManager::UnloadFont(
-        LevelSelectAddressViewOwners::s_mainf_fnt_800dbdd8);
+        LevelSelectAddressViewOwners::s_MainfFnt_LevelSelect);
     FontManager::UnloadFont(
-        LevelSelectAddressViewOwners::s_s2font2_fnt_800dbde4);
+        LevelSelectAddressViewOwners::s_S2font2Fnt_LevelSelect);
     FontManager::UnloadFont(
-        LevelSelectAddressViewOwners::s_s2font1_fnt_800dbdf0);
+        LevelSelectAddressViewOwners::s_S2font1Fnt);
     FontManager::UnloadFont(
-        LevelSelectAddressViewOwners::s_ingame1_fnt_800dbdfc);
+        LevelSelectAddressViewOwners::s_Ingame1Fnt);
     Db_SkyColor = oldSkyColor;
 
-    LevelSelect_DeleteVirtual(pScreen);
+    delete pScreen;
 
     return return_value;
 }
@@ -822,26 +490,19 @@ int LevelSelect2_Main(void)
  *
  * @return `this` pointer (GCC 2.x ctor convention).
  */
-LevelSelectScreen::LevelSelectScreen()
+LevelSelectScreen::LevelSelectScreen() : ScreenElementList(0, 0, -1, -1)
 {
-    LevelSelect_ConstructScreenElementList(
-        &ScreenElementList, 0, 0, -1, -1);
-    ScreenElementList.ScreenElement.CClass.vtable =
-        (int *)__vt_17LevelSelectScreen;
-    ::new (FontFromStorage(&mFont1)) Font;
-    ::new (FontFromStorage(&mFont2)) Font;
 
     Sprite2 *sprite = new Sprite2(
-        LevelSelectAddressViewOwners::s_s2bgd3_bmp_800dbe08,
+        LevelSelectAddressViewOwners::s_S2bgd3Bmp,
         1, 0, 0);
     mBackground = sprite;
 
     FontManager::GetFont(
-        LevelSelectAddressViewOwners::s_mainf_fnt_800dbdd8);
+        LevelSelectAddressViewOwners::s_MainfFnt_LevelSelect);
     Font *sourceFont = FontManager::GetFont(
-        LevelSelectAddressViewOwners::s_s2font2_fnt_800dbde4);
-    *(LevelSelectFontAssignmentView *)&mFont2 =
-        *(LevelSelectFontAssignmentView *)sourceFont;
+        LevelSelectAddressViewOwners::s_S2font2Fnt_LevelSelect);
+    mFont2 = *sourceFont;
 
     mFont2.JustX = 0;
     mFont2.JustY = 3;
@@ -855,133 +516,79 @@ LevelSelectScreen::LevelSelectScreen()
 
     PromptScreenElement *pPromptElement[3];
     PromptScreenElement *item = new PromptScreenElement(
-        LevelSelectAddressViewOwners::s_s2prmpt4_bmp_800dbe14,
-        s_select_800dbe24,
-        FontFromStorage(&mFont2), 115, 220, -1, 260);
+        LevelSelectAddressViewOwners::s_S2prmpt4Bmp_LevelSelect,
+        s_Select_LevelSelect,
+        &mFont2, 115, 220, -1, 260);
     pPromptElement[0] = item;
 
     item = new PromptScreenElement(
-        LevelSelectAddressViewOwners::s_s2prmpt1_bmp_800dbe2c,
-        s_accept_800dbe3c,
-        FontFromStorage(&mFont2), 228, 220, -1, 260);
+        LevelSelectAddressViewOwners::s_S2prmpt1Bmp_LevelSelect,
+        s_Accept_LevelSelect,
+        &mFont2, 228, 220, -1, 260);
     pPromptElement[1] = item;
 
     item = new PromptScreenElement(
-        LevelSelectAddressViewOwners::s_s2prmpt2_bmp_800dbe44,
-        DAT_800dbe54,
-        FontFromStorage(&mFont2), 333, 220, -1, 260);
+        LevelSelectAddressViewOwners::s_S2prmpt2Bmp_LevelSelect,
+        s_Back_LevelSelect,
+        &mFont2, 333, 220, -1, 260);
     pPromptElement[2] = item;
 
     int i = 0;
     do
     {
-        ScreenElementList.addItem(
-            &pPromptElement[i]->ScreenElementList.ScreenElement);
+        addItem(
+            pPromptElement[i]);
         i++;
     } while (i < 3);
 
     if (FrontEnd2_GameMode == 1)
     {
-        CareerScreenElement *item = (CareerScreenElement *)
-            ::CClass::operator new(sizeof(CareerScreenElement));
-        if (item != 0)
-        {
-            item = LevelSelect_ConstructCareerScreenElement(
-                item, FontFromStorage(&mFont2), 244, 133, 512, 133);
-        }
-        ScreenElementList.addItem(
-            &item->ScreenElementList.ScreenElement);
+        CareerScreenElement *item = new CareerScreenElement(&mFont2, 244, 133, 512, 133);
+        addItem(
+            item);
     }
 
     if (FrontEnd2_GameMode == 1)
     {
-        SkaterNameScreenElement *item2 = (SkaterNameScreenElement *)
-            ::CClass::operator new(sizeof(SkaterNameScreenElement));
-        if (item2 != 0)
-        {
-            item2 = LevelSelect_ConstructSkaterNameScreenElement(
-                item2, false, 427, 119, 640, 119);
-        }
-        ScreenElementList.addItem((ScreenElement *)item2);
+        SkaterNameScreenElement *item2 = new SkaterNameScreenElement(false, 427, 119, 640, 119);
+        addItem(item2);
     }
     else if (FrontEnd2_TwoPlayer != 0)
     {
-        SkaterNameScreenElement *item2 = (SkaterNameScreenElement *)
-            ::CClass::operator new(sizeof(SkaterNameScreenElement));
-        if (item2 != 0)
-        {
-            item2 = LevelSelect_ConstructSkaterNameScreenElement(
-                item2, false, 427, 126, 640, -1);
-        }
-        ScreenElementList.addItem((ScreenElement *)item2);
+        SkaterNameScreenElement *item2 = new SkaterNameScreenElement(false, 427, 126, 640, -1);
+        addItem(item2);
 
-        item2 = (SkaterNameScreenElement *)
-            ::CClass::operator new(sizeof(SkaterNameScreenElement));
-        if (item2 != 0)
-        {
-            item2 = LevelSelect_ConstructSkaterNameScreenElement(
-                item2, true, 427, 180, 640, -1);
-        }
-        ScreenElementList.addItem((ScreenElement *)item2);
+        item2 = new SkaterNameScreenElement(true, 427, 180, 640, -1);
+        addItem(item2);
     }
     else
     {
-        SkaterNameScreenElement *item2 = (SkaterNameScreenElement *)
-            ::CClass::operator new(sizeof(SkaterNameScreenElement));
-        if (item2 != 0)
-        {
-            item2 = LevelSelect_ConstructSkaterNameScreenElement(
-                item2, false, 427, 180, 640, 180);
-        }
-        ScreenElementList.addItem((ScreenElement *)item2);
+        SkaterNameScreenElement *item2 = new SkaterNameScreenElement(false, 427, 180, 640, 180);
+        addItem(item2);
     }
 
     {
-        GlobeScreenElement *item = (GlobeScreenElement *)
-            ::CClass::operator new(sizeof(GlobeScreenElement));
-        if (item != 0)
-        {
-            item = LevelSelect_ConstructGlobeScreenElement(
-                item, 367, 70, -1, -1);
-        }
+        GlobeScreenElement *item = new GlobeScreenElement(367, 70, -1, -1);
         mpGlobe = item;
-        ScreenElementList.addItem((ScreenElement *)item);
+        addItem(item);
     }
 
     {
-        LevelNameScreenElement *item = (LevelNameScreenElement *)
-            ::CClass::operator new(sizeof(LevelNameScreenElement));
-        if (item != 0)
-        {
-            item = LevelSelect_ConstructLevelNameScreenElement(
-                item, 56, 35, -1, -1);
-        }
+        LevelNameScreenElement *item = new LevelNameScreenElement(56, 35, -1, -1);
         mpLevelName = item;
-        ScreenElementList.addItem((ScreenElement *)item);
+        addItem(item);
     }
 
     {
-        VideoScreenElement *item = (VideoScreenElement *)
-            ::CClass::operator new(sizeof(VideoScreenElement));
-        if (item != 0)
-        {
-            item = LevelSelect_ConstructVideoScreenElement(
-                item, 61, 126, -128, 126);
-        }
+        VideoScreenElement *item = new VideoScreenElement(61, 126, -128, 126);
         mpVideo = item;
-        ScreenElementList.addItem((ScreenElement *)item);
+        addItem(item);
     }
 
     {
-        GoalScreenElement *item = (GoalScreenElement *)
-            ::CClass::operator new(sizeof(GoalScreenElement));
-        if (item != 0)
-        {
-            item = LevelSelect_ConstructGoalScreenElement(
-                item, 65, 46, -1, -1);
-        }
+        GoalScreenElement *item = new GoalScreenElement(65, 46, -1, -1);
         mpGoal = item;
-        ScreenElementList.addItem((ScreenElement *)item);
+        addItem(item);
     }
 }
 
@@ -995,12 +602,7 @@ LevelSelectScreen::LevelSelectScreen()
  */
 LevelSelectScreen::~LevelSelectScreen()
 {
-    ScreenElementList.ScreenElement.CClass.vtable =
-        (int *)__vt_17LevelSelectScreen;
-    LevelSelect_DeleteVirtual(mBackground);
-    FontFromStorage(&mFont2)->~Font();
-    FontFromStorage(&mFont1)->~Font();
-    ScreenElementList_DestroyAbi(&ScreenElementList, 0);
+    delete mBackground;
 }
 
 /**
@@ -1013,8 +615,8 @@ LevelSelectScreen::~LevelSelectScreen()
  */
 void LevelSelectScreen::draw()
 {
-    ScreenElementList.draw(0, 0);
-    LevelSelect_DrawVirtual(mBackground, 0, 0, 1);
+    ScreenElementList::draw(0, 0);
+    mBackground->draw(0, 0, 1);
 }
 
 /**
@@ -1061,7 +663,7 @@ void LevelSelectScreen::update()
         mpGoal->SetLevel(SelectedLevel, 0);
     }
 
-    ScreenElementList.update();
+    ScreenElementList::update();
 }
 
 /**
@@ -1088,37 +690,27 @@ void LevelSelectScreen::refresh()
  */
 int LevelSelectScreen::isDone(int *return_value)
 {
-    int v;
-    int ret;
     if (Pad[0].X.Triggered != 0 || Pad[0].Start.Triggered != 0)
     {
         Pad[0].Start.Triggered = 0;
         Pad[0].X.Triggered = 0;
-        int sel = SelectedLevel;
-        signed char field = Levels[sel].STR;
-        if (field != -27)
+        if ((signed char)Levels[SelectedLevel].STR != -27)
         {
             SFX_PlayX(0x92, 0x2000, 0);
             return 0;
         }
         SFX_PlayX(0x91, 0x2000, 0);
-        v = SelectedLevel;
-        ret = 1;
-        goto done;
+        *return_value = SelectedLevel;
+        return 1;
     }
-    if (Pad[0].Triangle.Triggered == 0)
+    else if (Pad[0].Triangle.Triggered != 0)
     {
-        return 0;
+        SFX_PlayX(0x93, 0x2000, 0);
+        Pad[0].Triangle.Triggered = 0;
+        *return_value = -1;
+        return 1;
     }
-    SFX_PlayX(0x93, 0x2000, 0);
-    ret = 1;
-    // Preserve the joined-path return lifetime emitted by the original GCC 2.
-    asm volatile("" : "+r"(ret));
-    v = -1;
-    Pad[0].Triangle.Triggered = 0;
-done:
-    *return_value = v;
-    return ret;
+    return 0;
 }
 
 /**
@@ -1133,19 +725,13 @@ done:
 SkaterNameScreenElement::SkaterNameScreenElement(
     bool secondPlayer,
     int homeX, int homeY, int screenX, int screenY)
+    : ScreenElementList(homeX, homeY, screenX, screenY)
 {
-    LevelSelect_ConstructScreenElementList(
-        &ScreenElementList, homeX, homeY, screenX, screenY);
-
-    Font *font = (Font *)&mFont;
-    ScreenElementList.ScreenElement.CClass.vtable =
-        (int *)__vt_23SkaterNameScreenElement;
-    ::new (font) Font;
+    Font *font = &mFont;
 
     Font *sourceFont = FontManager::GetFont(
-        LevelSelectAddressViewOwners::s_s2font1_fnt_800dbdf0);
-    *(LevelSelectFontAssignmentView *)&mFont =
-        *(LevelSelectFontAssignmentView *)sourceFont;
+        LevelSelectAddressViewOwners::s_S2font1Fnt);
+    mFont = *sourceFont;
 
     mFont.JustX = 2;
     mFont.JustY = 2;
@@ -1159,66 +745,26 @@ SkaterNameScreenElement::SkaterNameScreenElement(
 
     if (secondPlayer)
     {
-        SpriteScreenElement *pElement = (SpriteScreenElement *)
-            ::CClass::operator new(sizeof(SpriteScreenElement));
-        if (pElement != 0)
-        {
-            pElement = LevelSelect_ConstructSpriteScreenElement(
-                pElement,
-                Stats[SelectedSkater2].PortraitName,
-                0, -32, -1, -1, 0, 0);
-        }
+        SpriteScreenElement *pElement = new SpriteScreenElement(Stats[SelectedSkater2].PortraitName, 0, -32, -1, -1, 0, 0);
         mpFace = pElement;
 
-        TextScreenElement *name = (TextScreenElement *)
-            ::CClass::operator new(sizeof(TextScreenElement));
-        if (name != 0)
-        {
-            name = LevelSelect_ConstructTextScreenElement(
-                name,
-                Stats[SelectedSkater2].Name,
-                font, -2, 17, -2, -30);
-        }
+        TextScreenElement *name = new TextScreenElement(Stats[SelectedSkater2].Name, font, -2, 17, -2, -30);
         mpName = name;
 
-        SpriteScreenElement *versus = (SpriteScreenElement *)
-            ::CClass::operator new(sizeof(SpriteScreenElement));
-        if (versus != 0)
-        {
-            versus = LevelSelect_ConstructSpriteScreenElement(
-                versus,
-                LevelSelectAddressViewOwners::s_s2versus_bmp_800dbe5c,
-                -76, -36, -1, -1, 0, 0);
-        }
-        ScreenElementList.addItem((ScreenElement *)versus);
+        SpriteScreenElement *versus = new SpriteScreenElement(LevelSelectAddressViewOwners::s_S2versusBmp, -76, -36, -1, -1, 0, 0);
+        addItem(versus);
     }
     else
     {
-        SpriteScreenElement *pElement = (SpriteScreenElement *)
-            ::CClass::operator new(sizeof(SpriteScreenElement));
-        if (pElement != 0)
-        {
-            pElement = LevelSelect_ConstructSpriteScreenElement(
-                pElement,
-                Stats[SelectedSkater].PortraitName,
-                0, -32, -1, -1, 0, 0);
-        }
+        SpriteScreenElement *pElement = new SpriteScreenElement(Stats[SelectedSkater].PortraitName, 0, -32, -1, -1, 0, 0);
         mpFace = pElement;
 
-        TextScreenElement *name = (TextScreenElement *)
-            ::CClass::operator new(sizeof(TextScreenElement));
-        if (name != 0)
-        {
-            name = LevelSelect_ConstructTextScreenElement(
-                name,
-                Stats[SelectedSkater].Name,
-                font, -2, 17, -2, -30);
-        }
+        TextScreenElement *name = new TextScreenElement(Stats[SelectedSkater].Name, font, -2, 17, -2, -30);
         mpName = name;
     }
 
-    ScreenElementList.addItem(&mpFace->ScreenElement);
-    ScreenElementList.addItem(&mpName->ScreenElement);
+    addItem(mpFace);
+    addItem(mpName);
 }
 
 /**
@@ -1231,10 +777,6 @@ SkaterNameScreenElement::SkaterNameScreenElement(
  */
 SkaterNameScreenElement::~SkaterNameScreenElement()
 {
-    ScreenElementList.ScreenElement.CClass.vtable =
-        (int *)__vt_23SkaterNameScreenElement;
-    reinterpret_cast<Font *>(&mFont)->~Font();
-    ScreenElementList_DestroyAbi(&ScreenElementList, 0);
 }
 
 /**
@@ -1247,13 +789,9 @@ SkaterNameScreenElement::~SkaterNameScreenElement()
  */
 GlobeScreenElement::GlobeScreenElement(
     int homeX, int homeY, int screenX, int screenY)
+    : ScreenElement(homeX, homeY, screenX, screenY)
 {
-    LevelSelect_ConstructScreenElement(
-        &ScreenElement,
-        homeX, homeY, screenX, screenY);
-    ScreenElement.CClass.vtable = (int *)__vt_18GlobeScreenElement;
-
-    mGlobeRegion = Spool_PSX(s_globe_800dbe6c, 0, 0, 1);
+    mGlobeRegion = Spool_PSX(s_Globe, 0, 0, 1);
     Spool_Sync();
 
     Item *pItemList = &mGlobeItem;
@@ -1285,7 +823,7 @@ GlobeScreenElement::GlobeScreenElement(
     M3dInit_InitAtStart();
 
     Sprite2 *crosshair = new Sprite2(
-        LevelSelectAddressViewOwners::s_s2crossh_bmp_800dbe74,
+        LevelSelectAddressViewOwners::s_S2crosshBmp,
         1, 0, 0);
     mpCrosshair = crosshair;
     crosshair->JustX = 1;
@@ -1307,12 +845,9 @@ GlobeScreenElement::GlobeScreenElement(
  */
 GlobeScreenElement::~GlobeScreenElement()
 {
-    ScreenElement.CClass.vtable = (int *)__vt_18GlobeScreenElement;
     ClearRegion(mGlobeRegion, 1, 0);
     PSXRegion[mGlobeRegion].Filename[0] = 0;
-    LevelSelect_DeleteVirtual(mpCrosshair);
-    ScreenElement_DestroyAbi(&ScreenElement, 0);
-
+    delete mpCrosshair;
 }
 
 /**
@@ -1325,55 +860,52 @@ GlobeScreenElement::~GlobeScreenElement()
  */
 void GlobeScreenElement::update()
 {
-    // The target keeps the receiver in a2 across the complete easing update.
-    register GlobeScreenElement *self asm("$6") = this;
-    asm volatile("" : "+r"(self));
-    int diff = self->mTargetGlobeRot - self->mGlobeRot;
+    int diff = this->mTargetGlobeRot - this->mGlobeRot;
 
-    self->mGlobeItem.Angles.vy = (short)self->mGlobeRotLowHalf;
+    this->mGlobeItem.Angles.vy = (short)this->mGlobeRotLowHalf;
 
     if (diff >= 0x801)
     {
-        self->mTargetGlobeRot = self->mTargetGlobeRot - 0x1000;
+        this->mTargetGlobeRot = this->mTargetGlobeRot - 0x1000;
         diff -= 0x1000;
     }
     else if (diff < -0x800)
     {
-        self->mTargetGlobeRot = self->mTargetGlobeRot + 0x1000;
+        this->mTargetGlobeRot = this->mTargetGlobeRot + 0x1000;
         diff += 0x1000;
     }
 
     if ((unsigned int)(diff + 3) < 7)
     {
-        self->mGlobeRot = self->mTargetGlobeRot;
+        this->mGlobeRot = this->mTargetGlobeRot;
     }
 
-    int currentRotation = self->mGlobeRot + (diff >> 2);
-    self->mGlobeRot = currentRotation;
+    int currentRotation = this->mGlobeRot + (diff >> 2);
+    this->mGlobeRot = currentRotation;
     if (currentRotation < 0)
     {
-        self->mGlobeRot = currentRotation + 0x1000;
-        self->mTargetGlobeRot = self->mTargetGlobeRot + 0x1000;
+        this->mGlobeRot = currentRotation + 0x1000;
+        this->mTargetGlobeRot = this->mTargetGlobeRot + 0x1000;
     }
 
-    currentRotation = self->mGlobeRot;
+    currentRotation = this->mGlobeRot;
     if (currentRotation >= 0x1000)
     {
-        self->mGlobeRot = currentRotation - 0x1000;
-        self->mTargetGlobeRot = self->mTargetGlobeRot - 0x1000;
+        this->mGlobeRot = currentRotation - 0x1000;
+        this->mTargetGlobeRot = this->mTargetGlobeRot - 0x1000;
     }
 
-    int crossY = self->mCrossY;
-    int targetCrossY = self->mTargetCrossY;
+    int crossY = this->mCrossY;
+    int targetCrossY = this->mTargetCrossY;
     int crossDelta = targetCrossY - crossY;
     if ((unsigned int)(crossDelta + 3) < 7)
     {
-        self->mCrossY = targetCrossY;
+        this->mCrossY = targetCrossY;
         crossY = targetCrossY;
     }
     int crossStep = crossDelta >> 2;
-    self->mCrossY = crossY + crossStep;
-    self->ScreenElement.update();
+    this->mCrossY = crossY + crossStep;
+    ScreenElement::update();
 }
 
 /**
@@ -1390,16 +922,16 @@ void GlobeScreenElement::draw(int x, int y)
 {
     SViewport *vp = pViewport;
 
-    u16 cx1 = LevelSelect_LowHalf(ScreenElement.mScreenX);
+    u16 cx1 = LevelSelect_LowHalf(mScreenX);
     vp->xL = (s16)(cx1 + x - 65);
 
-    u16 cy1 = LevelSelect_LowHalf(ScreenElement.mScreenY);
+    u16 cy1 = LevelSelect_LowHalf(mScreenY);
     vp->yT = (s16)(cy1 + y - 40);
 
-    u16 cx2 = LevelSelect_LowHalf(ScreenElement.mScreenX);
+    u16 cx2 = LevelSelect_LowHalf(mScreenX);
     vp->xR = (s16)(cx2 + x + 65);
 
-    u16 cy2 = LevelSelect_LowHalf(ScreenElement.mScreenY);
+    u16 cy2 = LevelSelect_LowHalf(mScreenY);
     LevelSelectDoubleBuffer *db =
         reinterpret_cast<LevelSelectDoubleBuffer *>(pDoubleBuffer);
     vp->yB = (s16)(cy2 + y + 40);
@@ -1409,13 +941,10 @@ void GlobeScreenElement::draw(int x, int y)
     M3d_Render(&mGlobeItem);
     M3d_RenderCleanup();
     Sprite2 *obj = mpCrosshair;
-    int a1 = ScreenElement.mScreenX;
-    int a2 = ScreenElement.mScreenY;
+    int a1 = mScreenX;
+    int a2 = mScreenY;
     int crossY = mCrossY;
-    CClass *base = (CClass *)obj;
-    int *vtable = base->vtable;
-    typedef void (*DrawFunction)(Sprite2 *, int, int, int);
-    ((DrawFunction)vtable[5])(obj, a1 + x, a2 + crossY + y, 0);
+    obj->draw(a1 + x, a2 + crossY + y, 0);
 }
 
 /**
@@ -1464,19 +993,12 @@ void GlobeScreenElement::SetLevel(int level)
  * @param screenY Initial screen-space Y coordinate.
  */
 LevelNameScreenElement::LevelNameScreenElement(int homeX, int homeY, int screenX, int screenY)
+    : ScreenElementList(homeX, homeY, screenX, screenY)
 {
-    LevelSelect_ConstructScreenElementList(
-        &ScreenElementList, homeX, homeY, screenX, screenY);
-
-    ScreenElementList.ScreenElement.CClass.vtable =
-        (int *)__vt_22LevelNameScreenElement;
-    ::new (FontFromStorage(&mFont1)) Font;
-    ::new (FontFromStorage(&mFont2)) Font;
 
     Font *sourceFont = FontManager::GetFont(
-        LevelSelectAddressViewOwners::s_s2font1_fnt_800dbdf0);
-    *(LevelSelectFontAssignmentView *)&mFont1 =
-        *(LevelSelectFontAssignmentView *)sourceFont;
+        LevelSelectAddressViewOwners::s_S2font1Fnt);
+    mFont1 = *sourceFont;
 
     mFont1.JustX = 2;
     mFont1.JustY = 3;
@@ -1487,37 +1009,20 @@ LevelNameScreenElement::LevelNameScreenElement(int homeX, int homeY, int screenX
     mFont1.SpaceX = 0;
     mFont1.SpaceY = 0;
     mFont1.Scale = 0x1000;
-    *(LevelSelectFontAssignmentView *)&mFont2 =
-        *(LevelSelectFontAssignmentView *)&mFont1;
+    mFont2 = mFont1;
 
     mFont2.JustX = 0;
     mSpacing = 20;
 
-    NameScreenElement *park = (NameScreenElement *)
-        ::CClass::operator new(sizeof(NameScreenElement));
-    if (park != 0)
-    {
-        park = LevelSelect_ConstructNameScreenElement(
-            park,
-            Levels[SelectedLevel].pLevelName, FontFromStorage(&mFont1),
-            -262, 0, -1, -1);
-    }
-    mpPark = &park->TextScreenElement;
+    NameScreenElement *park = new NameScreenElement(Levels[SelectedLevel].pLevelName, &mFont1, -262, 0, -1, -1);
+    mpPark = park;
 
-    NameScreenElement *city = (NameScreenElement *)
-        ::CClass::operator new(sizeof(NameScreenElement));
-    if (city != 0)
-    {
-        city = LevelSelect_ConstructNameScreenElement(
-            city,
-            Levels[SelectedLevel].pCityName, FontFromStorage(&mFont2),
-            522, 0, -1, -1);
-    }
-    mpCity = &city->TextScreenElement;
+    NameScreenElement *city = new NameScreenElement(Levels[SelectedLevel].pCityName, &mFont2, 522, 0, -1, -1);
+    mpCity = city;
 
-    mOriginalHomeX = ScreenElementList.ScreenElement.mHomeX;
-    ScreenElementList.addItem(&mpPark->ScreenElement);
-    ScreenElementList.addItem(&mpCity->ScreenElement);
+    mOriginalHomeX = mHomeX;
+    addItem(mpPark);
+    addItem(mpCity);
     SetLevel(SelectedLevel);
 
 }
@@ -1532,12 +1037,6 @@ LevelNameScreenElement::LevelNameScreenElement(int homeX, int homeY, int screenX
  */
 LevelNameScreenElement::~LevelNameScreenElement()
 {
-    ScreenElementList.ScreenElement.CClass.vtable =
-        (int *)__vt_22LevelNameScreenElement;
-    FontFromStorage(&mFont2)->~Font();
-    FontFromStorage(&mFont1)->~Font();
-    ScreenElementList_DestroyAbi(&ScreenElementList, 0);
-
 }
 
 /**
@@ -1564,8 +1063,8 @@ void LevelNameScreenElement::SetLevel(int level)
 {
     mTargetLevel = level;
     mState = 2;
-    mpPark->ScreenElement.mHomeX = -262;
-    mpCity->ScreenElement.mHomeX = 522;
+    mpPark->mHomeX = -262;
+    mpCity->mHomeX = 522;
 }
 
 /**
@@ -1580,34 +1079,31 @@ void LevelNameScreenElement::SetLevel(int level)
  */
 void LevelNameScreenElement::update()
 {
-    ScreenElementList.update();
+    ScreenElementList::update();
 
     switch (mState)
     {
     case 0:
         mLevel = mTargetLevel;
-        mpPark->ScreenElement.mHomeX = (-mSpacing) >> 1;
-        mpCity->ScreenElement.mHomeX = mSpacing >> 1;
+        mpPark->mHomeX = (-mSpacing) >> 1;
+        mpCity->mHomeX = mSpacing >> 1;
 
         mpPark->setString(Levels[mLevel].pLevelName);
         mpCity->setString(Levels[mLevel].pCityName);
 
         {
-            TextScreenElement *park = mpPark;
-            int *vtable = park->ScreenElement.CClass.vtable;
-            typedef int (*WidthFunction)(TextScreenElement *);
-            int width = ((WidthFunction)vtable[5])(park);
+            int width = mpPark->width();
             int homeX = mOriginalHomeX + width + (mSpacing >> 1);
             mState = 1;
-            ScreenElementList.ScreenElement.mHomeX = homeX;
-            ScreenElementList.ScreenElement.mScreenX = homeX;
+            mHomeX = homeX;
+            mScreenX = homeX;
         }
         break;
 
     case 2:
-        if (mpCity->ScreenElement.mAtHome != 0)
+        if (mpCity->mAtHome != 0)
         {
-            if (mpPark->ScreenElement.mAtHome != 0)
+            if (mpPark->mAtHome != 0)
             {
                 mState = 0;
             }
@@ -1625,12 +1121,8 @@ void LevelNameScreenElement::update()
 NameScreenElement::NameScreenElement(
     char *pString, Font *pFont,
     int homeX, int homeY, int screenX, int screenY)
+    : TextScreenElement(pString, pFont, homeX, homeY, screenX, screenY)
 {
-    LevelSelect_ConstructTextScreenElement(
-        &TextScreenElement, pString, pFont,
-        homeX, homeY, screenX, screenY);
-    TextScreenElement.ScreenElement.CClass.vtable =
-        (int *)__vt_17NameScreenElement;
 }
 
 /**
@@ -1643,10 +1135,6 @@ NameScreenElement::NameScreenElement(
  */
 NameScreenElement::~NameScreenElement()
 {
-    TextScreenElement.ScreenElement.CClass.vtable =
-        (int *)__vt_17NameScreenElement;
-    TextScreenElement_DestroyAbi(&TextScreenElement, 0);
-
 }
 
 /**
@@ -1657,7 +1145,7 @@ NameScreenElement::~NameScreenElement()
  */
 void NameScreenElement::update()
 {
-    ScreenElement *elem = &TextScreenElement.ScreenElement;
+    ScreenElement *elem = this;
     int distX;
     int distY;
 
@@ -1711,35 +1199,23 @@ void NameScreenElement::update()
  * @param screenY  Screen-space Y coordinate.
  */
 VideoScreenElement::VideoScreenElement(int homeX, int homeY, int screenX, int screenY)
+    : ScreenElementList(homeX, homeY, screenX, screenY)
 {
-    LevelSelect_ConstructScreenElementList(
-        &ScreenElementList, homeX, homeY, screenX, screenY);
-    ScreenElementList.ScreenElement.CClass.vtable =
-        (int *)__vt_18VideoScreenElement;
-
     {
-        Sprite2 *sprite = new Sprite2(s_mar_bmp_800dbe84, 1, 0, 0);
+        Sprite2 *sprite = new Sprite2(s_MarBmp, 1, 0, 0);
         mVideoSprite[0] = sprite;
     }
 
     {
         Sprite2 *sprite = new Sprite2(
-            LevelSelectAddressViewOwners::s_levna_bmp_800dbe8c,
+            LevelSelectAddressViewOwners::s_LevnaBmp,
             1, 0, 0);
         mVideoSprite[1] = sprite;
     }
 
     {
-        SpriteScreenElement *item = (SpriteScreenElement *)
-            ::CClass::operator new(sizeof(SpriteScreenElement));
-        if (item != 0)
-        {
-            item = LevelSelect_ConstructSpriteScreenElement(
-                item,
-                LevelSelectAddressViewOwners::s_s2win5_bmp_800dbe98,
-                0, 0, -1, -1, 0, 0);
-        }
-        ScreenElementList.addItem(&item->ScreenElement);
+        SpriteScreenElement *item = new SpriteScreenElement(LevelSelectAddressViewOwners::s_S2win5Bmp, 0, 0, -1, -1, 0, 0);
+        addItem(item);
     }
 
     mVideoW.value = 176;
@@ -1805,14 +1281,10 @@ VideoScreenElement::VideoScreenElement(int homeX, int homeY, int screenX, int sc
  */
 VideoScreenElement::~VideoScreenElement()
 {
-    ScreenElementList.ScreenElement.CClass.vtable =
-        (int *)__vt_18VideoScreenElement;
-    LevelSelect_DeleteVirtual(mVideoSprite[0]);
-    LevelSelect_DeleteVirtual(mVideoSprite[1]);
+    delete mVideoSprite[0];
+    delete mVideoSprite[1];
     Mem_Delete(mVideoPoly);
     Pack_Unpack(mVideoVramX.lowSignedHalf, mVideoVramY.lowSignedHalf);
-    ScreenElementList_DestroyAbi(&ScreenElementList, 0);
-
 }
 
 /**
@@ -1827,8 +1299,8 @@ VideoScreenElement::~VideoScreenElement()
  */
 void VideoScreenElement::draw(int x, int y)
 {
-    int video_x = ScreenElementList.ScreenElement.mScreenX + x + mVideoOffsX;
-    int video_y = ScreenElementList.ScreenElement.mScreenY + y + mVideoOffsY;
+    int video_x = mScreenX + x + mVideoOffsX;
+    int video_y = mScreenY + y + mVideoOffsY;
 
     if ((unsigned int)(mState - 3) < 2)
     {
@@ -1857,20 +1329,15 @@ void VideoScreenElement::draw(int x, int y)
         int level = mLevel;
         SLevel *entry = &table[level];
         signed char movie = entry->STR;
-        typedef void (*DrawFunction)(Sprite2 *, int, int, int);
         if (movie == -27)
         {
             Sprite2 *sprite = mVideoSprite[0];
-            int *vtable = sprite->CClass.vtable;
-            ((DrawFunction)vtable[5])(
-                sprite, video_x, video_y, 0);
+            sprite->draw(video_x, video_y, 0);
         }
         else
         {
             Sprite2 *sprite = mVideoSprite[1];
-            int *vtable = sprite->CClass.vtable;
-            ((DrawFunction)vtable[5])(
-                sprite, video_x, video_y, 0);
+            sprite->draw(video_x, video_y, 0);
         }
     }
 
@@ -1894,7 +1361,7 @@ void VideoScreenElement::draw(int x, int y)
         }
     }
 
-    ScreenElementList.draw(x, y);
+    ScreenElementList::draw(x, y);
 }
 
 /**
@@ -1973,7 +1440,7 @@ void VideoScreenElement::update()
         break;
     }
     }
-    ScreenElementList.update();
+    ScreenElementList::update();
 }
 
 /**
@@ -2000,13 +1467,10 @@ void VideoScreenElement::SetLevel(int level)
  *
  */
 GoalScreenElement::GoalScreenElement(int homeX, int homeY, int screenX, int screenY)
+    : ScreenElement(homeX, homeY, screenX, screenY)
 {
-    LevelSelect_ConstructScreenElement(
-        &ScreenElement, homeX, homeY, screenX, screenY);
-    ScreenElement.CClass.vtable = (int *)__vt_17GoalScreenElement;
-
     unsigned int size = FileIO_Open(
-        LevelSelectAddressViewOwners::s_s2levl00_bmp_800dbea4);
+        LevelSelectAddressViewOwners::s_S2levl00Bmp);
     unsigned char *bmpBuf = (unsigned char *)Mem_New(size, 1, 1);
     FileIO_Load(bmpBuf);
     FileIO_Sync();
@@ -2047,7 +1511,7 @@ GoalScreenElement::GoalScreenElement(int homeX, int homeY, int screenX, int scre
     {
         int num = order[i];
         sprintf(name,
-                LevelSelectAddressViewOwners::s_s2levl0_d_bmp_800dbeb4,
+                LevelSelectAddressViewOwners::s_S2levl0NumBmp,
                 num % 9 + 1);
         mSpoolID[num] = Spooler::SpoolMgr->AddFile(name, 0);
         i++;
@@ -2067,18 +1531,15 @@ GoalScreenElement::GoalScreenElement(int homeX, int homeY, int screenX, int scre
  */
 GoalScreenElement::~GoalScreenElement()
 {
-    ScreenElement.CClass.vtable = (int *)__vt_17GoalScreenElement;
     int i = 0;
     Sprite2 **ptr = mpSprite;
     do
     {
-        LevelSelect_DeleteVirtual(*ptr);
+        delete *ptr;
         i++;
         ptr++;
     } while (i < LevelSelectLevelCount);
     Spooler::SpoolMgr->Reset();
-    ScreenElement_DestroyAbi(&ScreenElement, 0);
-
 }
 
 /**
@@ -2101,9 +1562,7 @@ void GoalScreenElement::update()
         {
             void *theData = Spooler::SpoolMgr->GetFile(mSpoolID[i]);
             Sprite2 *sprite = mpSprite[i];
-            int *vtable = sprite->CClass.vtable;
-            typedef void (*SetDataFunction)(Sprite2 *, void *);
-            ((SetDataFunction)vtable[4])(sprite, theData);
+            sprite->setData(theData);
             Mem_Delete(theData);
         }
     }
@@ -2164,7 +1623,7 @@ void GoalScreenElement::update()
         break;
     }
 
-    ScreenElement.update();
+    ScreenElement::update();
 }
 
 /**
@@ -2183,34 +1642,30 @@ void GoalScreenElement::draw(int x, int y)
     SetClippingBox2(0, 0, 512, 256);
     if (mState == 1)
     {
-        int sx = ScreenElement.mScreenX;
+        int sx = mScreenX;
         int offsetX = mGoalOffsX;
         int offsetX2 = mLeavingX;
         int idx = mLastLevel;
-        int sy = ScreenElement.mScreenY;
+        int sy = mScreenY;
         sx = sx + x + offsetX + offsetX2;
         Sprite2 *item = mpSprite[idx];
-        int *vtable = item->CClass.vtable;
         int offsetY = mGoalOffsY;
         sy = sy + y + offsetY;
-        typedef void (*DrawFunction)(Sprite2 *, int, int, int);
-        ((DrawFunction)vtable[5])(item, sx, sy, 0);
+        item->draw(sx, sy, 0);
     }
-    int sx2 = ScreenElement.mScreenX;
+    int sx2 = mScreenX;
     int offsetX3 = mGoalOffsX;
     int idx3 = mLevel;
-    int sy2 = ScreenElement.mScreenY;
+    int sy2 = mScreenY;
     sx2 = sx2 + x + offsetX3;
     Sprite2 *item2 = mpSprite[idx3];
-    int *vtable2 = item2->CClass.vtable;
     int offsetY2 = mGoalOffsY;
     sy2 = sy2 + y + offsetY2;
-    typedef void (*DrawFunction)(Sprite2 *, int, int, int);
-    ((DrawFunction)vtable2[5])(item2, sx2, sy2, 0);
+    item2->draw(sx2, sy2, 0);
     int clipW = mW;
     int clipH = mH;
-    int cx = ScreenElement.mScreenX;
-    int cy = ScreenElement.mScreenY;
+    int cx = mScreenX;
+    int cy = mScreenY;
     SetClippingBox2(cx + x, cy + y, clipW, clipH);
 }
 

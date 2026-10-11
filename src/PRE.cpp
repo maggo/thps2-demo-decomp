@@ -1,21 +1,14 @@
-// PRE archive loading, ownership, and file lookup.
+// PRE.cpp -- PRE archive loading, ownership, and file lookup.
+// Original: PRE.CPP
+// Functions: 11
+// Address range: 0x8005A6E8 - 0x8005AC28
+//
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#define PRE_POLYMORPHIC_LAYOUT
 #include "PRE.h"
 #include "PREAPI.h"
 #include "MEM.h"
-
-/** Virtual prefix used when releasing the archive manager. */
-struct PreManagerVTable {
-    void (*reserved0)(PREManager *manager);
-    void (*reserved1)(PREManager *manager);
-    void (*destroy)(PREManager *manager, int flags);
-};
-
-/** Invoke PREManager's deleting destructor through its named vtable slot. */
-static inline void PreManager_Destroy(PREManager *manager) {
-    PreManagerVTable *vtable = (PreManagerVTable *)manager->CClass.vtable;
-    vtable->destroy(manager, 3);
-}
 
 typedef char pre_manager_size_must_be_324[
     (sizeof(PREManager) == 324) ? 1 : -1];
@@ -47,44 +40,8 @@ static char PRE_fmt_s[4]
 }
 }
 
-// GCC 2.x emits a private copy of `CClass::~CClass` beside a private base
-// vtable in every owner that derives from CClass.  `MAIN.SYM` records 25 such
-// `_._6CClass` copies and names no base vtable, so both are file-local here.
-// The filesystem-safe spelling keeps the per-address target assembly reachable.
-extern "C" {
-static void __DOT__6CClass_8005AC28(CClass *self, int flags);
-}
-
-// C++ forbids taking a destructor's address, so the public vtable slot uses an
-// addressable declaration of the symbol this owner already defines.
-struct PREManager;
-void Pre_DestructorAbi(PREManager *manager, int inCharge)
-    asm("_._10PREManager");
-
-// Consecutive eight-byte-aligned small-data words per vtable rather than
-// arrays, so -G8 still yields the target's `addiu $vX, $gp, off` form.
-int __vt_10PREManager
-    __attribute__((section(".sdata"), aligned(8))) = 0;
-static int Pre_VTableIndex __attribute__((section(".sdata"))) = 0;
-static void (*Pre_VTableDtor)(PREManager *, int)
-    __attribute__((section(".sdata"))) = Pre_DestructorAbi;
-
-static int Pre_BaseVTableWord
-    __attribute__((section(".sdata"), aligned(8))) = 0;
-static int Pre_BaseVTableIndex __attribute__((section(".sdata"))) = 0;
-static void (*Pre_BaseVTableDtor)(CClass *, int)
-    __attribute__((section(".sdata"))) = __DOT__6CClass_8005AC28;
-
 // Additional external functions
 
-// === Extern "C" forward declarations ===
-struct PREManager;
-namespace PreManagerConstructorAbi
-{
-/** Addressable constructor entry used by PRE_Init. */
-extern "C" PREManager *__10PREManager(PREManager *manager);
-}
-#define PreManager_Construct PreManagerConstructorAbi::__10PREManager
 #include "FILEIO.h"
 #include <STDIO.H>
 #include <STRINGS.H>
@@ -94,60 +51,28 @@ extern "C" PREManager *__10PREManager(PREManager *manager);
 /** Allocate and publish the global PRE archive manager. */
 void PRE_Init(void)
 {
-    PREManager *manager = (PREManager *)PREManager::operator new(sizeof(PREManager));
-    if (manager != 0)
-    {
-        manager = PreManager_Construct(manager);
-    }
-    PREMgr = manager;
+    PREMgr = new PREManager;
 }
 
 /** Destroy the global PRE archive manager and clear its handle. */
 void PRE_Cleanup(void)
 {
-    PREManager *manager = PREMgr;
-    if (manager != 0)
-    {
-        PreManager_Destroy(manager);
-    }
+    delete PREMgr;
     PREMgr = 0;
 }
 
 /** Initialize every archive slot and its corresponding filename. */
-PREManager *PreManager_Construct(PREManager *self)
+PREManager::PREManager()
 {
-    self->CClass.vtable = &__vt_10PREManager;
-    int i = 0;
-    // A natural loop moves this address setup behind both field cursors. This
-    // four-instruction slice preserves the original order and relocations,
-    // replacing the former 16-instruction whole-function assembly body.
-    char *emptyNamePage;
-    asm("lui\t%0,%%hi(PRE_null_arr)" : "=r"(emptyNamePage));
-    char *name = self->mPreName[0];
-    char **slot = self->mPre;
-    int more;
-    do
-    {
-        *slot = 0;
-        slot++;
-        i++;
-        asm volatile(
-            "lbu\t$3,%%lo(PRE_null_arr)(%2)\n\t"
-            "slt\t%0,%1,16\n\t"
-            "sb\t$3,0(%3)"
-            : "=r"(more)
-            : "r"(i), "r"(emptyNamePage), "r"(name)
-            : "$3", "memory");
-        name += PREManager::NameLength;
-    } while (more);
-    return self;
+    for (int i = 0; i < PREManager::SlotCount; ++i) {
+        mPre[i] = 0;
+        mPreName[i][0] = PRE_null_arr[0];
+    }
 }
 
 /** Release every loaded archive owned by this manager. */
 PREManager::~PREManager()
 {
-    CClass.vtable = &__vt_10PREManager;
-
     {
         int i = 0;
         char **slot = mPre;
@@ -163,8 +88,6 @@ PREManager::~PREManager()
             slot++;
         } while (i < PREManager::SlotCount);
     }
-
-    CClass.vtable = &Pre_BaseVTableWord;
 }
 
 /** Start loading an archive, then wait for the transfer to complete. */
@@ -262,8 +185,7 @@ check2:
 void PREManager::unloadPRE(char *pre_name)
 {
     int slot = 0;
-    // GCC otherwise schedules this absolute-address setup after the two field
-    // cursors, unlike the original compiler output.
+    // FIXME(match): register pin — $19 forces the loop-invariant `lui PRE_null_arr` to be scheduled before the two field cursors (unpinned: lui comes after, score 4); tried: null_base variable first/last, pointer-copy forms, comma expression, decl orders.
     register char *null_base asm("$19") = PRE_null_arr;
     char **slots = mPre;
     char *names = mPreName[0];
@@ -393,14 +315,3 @@ static char PRE_full_msg[28]
     __attribute__((section(".rdata"))) = "\nOut of PREManager slots";
 static char PRE_open_err[28]
     __attribute__((section(".rdata"))) = "\nMemory error loading %s";
-
-// GCC emitted this private `CClass::~CClass` copy last in the owner's
-// text, so it stays at the end of the translation unit.
-static void __DOT__6CClass_8005AC28(CClass *self, int flags)
-{
-    self->vtable = &Pre_BaseVTableWord;
-    if (flags & 1)
-    {
-        CClass::operator delete(self);
-    }
-}

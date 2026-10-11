@@ -1,11 +1,13 @@
 // LOCALTXT.cpp -- Localized frontend text data owned by localtxt.obj.
 // Original: localtxt.obj
+//
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 #include "LOCALTXT.h"
 
 // Each private name below gives one target literal stable storage. The table
 // deliberately reuses three of those names, preserving the target's shared
-// relocations. GCC 2.91.66 selects .sdata for strings of at most 16 bytes with
+// relocations. GCC 2.91.60 selects .sdata for strings of at most 16 bytes with
 // this TU's recovered -G16 setting.
 #define DEFINE_LOCAL_TEXT(name, value) \
     static const char name##Storage[] = value; \

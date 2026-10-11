@@ -3,7 +3,7 @@
 // Functions: 11 reconstructed entries
 // Address range: 0x8004DC70 - 0x8004E4D4
 //
-// Compiled with cc1plus (GCC 2.91.66-psx). Compiler auto-mangles symbol names.
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 #include "DEBUG.h"
 #include "GAMEFMV.h"
@@ -26,8 +26,7 @@ extern char FileSubDirName;
 
 // Source-owned WAD directory and absolute-addressed views
 /** In-memory copy of the WAD directory, populated during FileIO_Init. */
-char Directory[22528]
-    __attribute__((section(".data"))) = {0};
+char Directory[22528] = {0};
 #include "PREMGR.h"
 #define REDBOOKSTATE_DECLARE_VSYNC_SECTOR_CHECK
 #define REDBOOKSTATE_DECLARE_XA_MODE_SET
@@ -125,8 +124,7 @@ static unsigned long *Dest
     __attribute__((section(".sbss")));
 static int NumSectors
     __attribute__((section(".sbss")));
-static int Start
-    __attribute__((section(".sbss")));
+static int Start;
 
 // Public owner interface. Keep this encounter point aligned with the
 // original forward-declaration block.
@@ -169,9 +167,8 @@ char *FileIO_OpenLoad(char *pName) {
  * @return 1 if the file is present, 0 at the directory sentinel.
  */
 int CD_There(char *filename) {
-    register unsigned char *name asm("$7") = (unsigned char *)filename;
-    asm volatile("" : "+r"(name));
     unsigned char *table = (unsigned char *)Directory;
+    unsigned char *name = (unsigned char *)filename;
     unsigned char c1, c2;
     int aligned;
     int align_mask;
@@ -386,17 +383,10 @@ int FileIO_Open(const char *filename) {
     len = *(int *)header;
     FileIO_Size = len;
     NumSectors = (len + 2048 - 1) / 2048;
-    {
-        // $5 pin: the sector-rounded size must live in $a1 (not reuse len's
-        // $v0) so the Pad lbu can schedule ahead of the sll/store sequence.
-        register int rounded asm("$5") = NumSectors * 2048;
-
-        FileSize = rounded;
-        FileOpen = 1;
-
-        if (Pad[0].LeftTwo.Pressed != 0) {
-            printf((const char *)FileIO_OpenDbgStr);
-        }
+    FileSize = NumSectors * 2048;
+    FileOpen = 1;
+    if (Pad[0].LeftTwo.Pressed != 0) {
+        printf((const char *)FileIO_OpenDbgStr, FileSize);
     }
 
     Debug_String(const_cast<char *>(filename), 0x20F, FileIO_DebugFmt);
@@ -520,14 +510,11 @@ case3:
             } else {
                 if (status < 0) {
                     ReadSyncFailures++;
-                    ReadError = 1;
-                    if (ReadSyncFailures < 5) goto do_retry;
-                    {
-                        int busyOne = 1;
-                        asm volatile("" : "+r"(busyOne));
+                    if (ReadSyncFailures >= 5) {
                         ReadSyncFailures = 0;
-                        Loading = busyOne;
+                        Loading = 1;
                     }
+                    ReadError = 1;
                 } else {
                     // result == 0: read complete
                     CurrentPos = FileSize;

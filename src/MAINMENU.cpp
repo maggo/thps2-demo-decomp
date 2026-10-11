@@ -3,130 +3,30 @@
 // Functions: 12
 // Address range: 0x80081FF0 - 0x800829E8
 //
-// Compiled with cc1plus (GCC 2.91.66-psx). Compiler auto-mangles symbol names.
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 typedef unsigned char u8;
-struct MainMenuScreen;
 
-#include "FRONTSCREENS.h"
-
-#define SCREENTOOLS_AGGREGATE_LAYOUT
-#define SCREENTOOLS_AGGREGATE_LAYOUT_ONLY
+#define SCREENTOOLS_POLYMORPHIC_LAYOUT
 #include "SCREENTOOLS.h"
-#undef SCREENTOOLS_AGGREGATE_LAYOUT_ONLY
-#undef SCREENTOOLS_AGGREGATE_LAYOUT
-
-struct RotateSprite;
-struct TextMenuWrapper;
-
-#include "IMAGEBASE.h"
-
-/** Packed/sliced image storage shared by front-end sprites. */
-struct SlicedImage2 : Image {
-    void *SliceTab;
-    short W;
-    short H;
-    short SliceW;
-    short SliceH;
-    short SliceCountX;
-    short SliceCountY;
-    /** True after owned pixel buffers have been allocated for the slices. */
-    bool InMemory;
-    /** True after the slice rectangles have been allocated in VRAM. */
-    bool Packed;
-    int BppShift;
-    unsigned short Clut;
-};
-
-/** Complete Sprite2 storage allocated by the menu owner. */
-struct Sprite2 : SlicedImage2 {
-    static void *operator new(unsigned int size) throw()
-    {
-        return ::CClass::operator new(size);
-    }
-    /** Build a sprite from a bitmap file. */
-    Sprite2(char *name, int pack, int sliceWidth, int sliceHeight);
-};
-
-/** Rotatable sprite whose final byte selects its aspect behavior. */
-struct RotateSprite : Sprite2 {
-    unsigned char AspectType;
-
-    /** Build a rotatable sprite from a bitmap file. */
-    RotateSprite(char *filename, int pack, int sliceWidth, int sliceHeight);
-};
-
+#include "FRONTSCREENS.h"
 #include "PROMPTSCREENELEMENT.h"
 
-/** Original seven-slot dispatch prefix shared by front-end elements. */
-struct MainMenuScreenElementDispatchTable {
-    void *mReserved0;
-    void *mReserved1;
-    void (*Destroy)(void *, int);
-    void (*Update)(void *);
-    void (*Draw)(void *, int, int);
-    int (*Width)(void *);
-    void (*Refresh)(void *);
-};
-
-/** Sprite dispatch prefix whose draw slot also accepts a rotation/flag. */
-struct MainMenuSpriteDispatchTable {
-    void *mReserved0;
-    void *mReserved1;
-    void (*Destroy)(void *, int);
-    void *mSetData;
-    void *mReserved4;
-    void (*Draw)(void *, int, int, int);
-};
-
-/** Read the shared sprite dispatch prefix from a Sprite2 object. */
-static inline MainMenuSpriteDispatchTable *GetSpriteDispatch(Sprite2 *sprite)
-{
-    return (MainMenuSpriteDispatchTable *)
-        sprite->CClass.vtable;
-}
-
-/** Read the shared sprite dispatch prefix from a RotateSprite object. */
-static inline MainMenuSpriteDispatchTable *GetSpriteDispatch(
-    RotateSprite *sprite)
-{
-    return (MainMenuSpriteDispatchTable *)
-        sprite->CClass.vtable;
-}
-
-/** Rotating menu-wheel element and selection state. */
-struct WheelElementList {
-    struct ScreenElementList ScreenElementList;
-    struct RotateSprite *Wheel;
-    int CurrentRot;
-    int TargetRot;
-    int NumSlots;
-    /** Full runtime slot plus the persisted low-byte view used by the dtor. */
-    union {
-        int Slot;
-        unsigned char SlotByte;
-    };
-
-    /** Advance wheel input and child screen elements. */
-    void update();
-    /** Draw the wheel and its child screen elements. */
-    void draw(int x, int y);
-    ~WheelElementList();
-    /** Releases wheel-list storage through the original CClass allocator. */
-    static void operator delete(void *p) { ::CClass::operator delete(p); }
-};
+struct TextMenuWrapper;
+struct WheelElementList;
 
 /** Main-menu screen and its owned UI resources. */
-struct MainMenuScreen {
-    struct ScreenElementList ScreenElementList;
-    struct FrontPreLoaderStorage mFrontPreLoader;
+struct MainMenuScreen : ScreenElementList {
+    FrontPreLoader mFrontPreLoader;
     void *FinishUp;
-    FontStorage TheFont;
-    struct TextMenuWrapper *Menu;
-    struct Sprite2 *mBackground;
-    struct WheelElementList *mWheel;
-    FontStorage mFont1;
+    Font TheFont;
+    TextMenuWrapper *Menu;
+    Sprite2 *mBackground;
+    WheelElementList *mWheel;
+    Font mFont1;
 
+    MainMenuScreen();
+    virtual ~MainMenuScreen();
     /** Begin the preload phase for a selected menu command. */
     void InitEndProcess(int returnValue);
     /** Draw and advance the active preload phase. */
@@ -137,165 +37,47 @@ struct MainMenuScreen {
     void draw();
     /** Update every child element in the main-menu screen. */
     void update();
-    ~MainMenuScreen();
-    /** Releases main-menu storage through the original CClass allocator. */
-    static void operator delete(void *p) { ::CClass::operator delete(p); }
 };
 
-/** Exact callable types stored in WheelElementList's target vtable. */
-struct WheelElementListVtable {
-    void *mReserved0;
-    void *mReserved1;
-    void (*Destroy)(WheelElementList *, int);
-    void (*Update)(WheelElementList *);
-    void (*Draw)(WheelElementList *, int, int);
-    int (*Width)(ScreenElement *);
-    void (*Refresh)(ScreenElement *);
-};
+/** Rotating menu-wheel element and selection state. */
+struct WheelElementList : ScreenElementList {
+    RotateSprite *Wheel;
+    int CurrentRot;
+    int TargetRot;
+    int NumSlots;
+    /** Full runtime slot plus the persisted low-byte view used by the dtor. */
+    union {
+        int Slot;
+        unsigned char SlotByte;
+    };
 
-/** Exact callable types stored in MainMenuScreen's target vtable. */
-struct MainMenuScreenVtable {
-    void *mReserved0;
-    void *mReserved1;
-    void (*Destroy)(MainMenuScreen *, int);
-    void (*Update)(MainMenuScreen *);
-    void (*Draw)(ScreenElementList *, int, int);
-    int (*Width)(ScreenElement *);
-    void (*Refresh)(ScreenElement *);
+    WheelElementList(int homeX, int homeY, int screenX, int screenY);
+    virtual ~WheelElementList();
+    /** Advance wheel input and child screen elements. */
+    void update();
+    /** Draw the wheel and its child screen elements. */
+    void draw(int x, int y);
 };
-
-/** Read the manually reconstructed dispatch table for a main-menu screen. */
-static inline MainMenuScreenElementDispatchTable *GetScreenDispatch(
-    MainMenuScreen *pScreen)
-{
-    return (MainMenuScreenElementDispatchTable *)
-        pScreen->ScreenElementList.ScreenElement.CClass.vtable;
-}
 
 typedef char mainmenu_wheel_size_must_be_124[
     (sizeof(WheelElementList) == 124) ? 1 : -1];
 typedef char mainmenu_screen_size_must_be_332[
     (sizeof(MainMenuScreen) == 332) ? 1 : -1];
-typedef char mainmenu_image_size_must_be_28[
-    (sizeof(Image) == 28) ? 1 : -1];
-typedef char mainmenu_sliced_image_size_must_be_60[
-    (sizeof(SlicedImage2) == 60) ? 1 : -1];
-typedef char mainmenu_sprite_size_must_be_60[
-    (sizeof(Sprite2) == 60) ? 1 : -1];
-typedef char mainmenu_rotate_sprite_size_must_be_64[
-    (sizeof(RotateSprite) == 64) ? 1 : -1];
 typedef char mainmenu_prompt_size_must_be_104[
     (sizeof(PromptScreenElement) == 104) ? 1 : -1];
-typedef char mainmenu_wheel_vtable_size_must_be_28[
-    (sizeof(WheelElementListVtable) == 28) ? 1 : -1];
-typedef char mainmenu_screen_vtable_size_must_be_28[
-    (sizeof(MainMenuScreenVtable) == 28) ? 1 : -1];
 
 #include "SFX.h"
 #include "MAIN.h"
 #include "PACK.h"
 #include "PAD.h"
-#include "SCREENTOOLS.h"
 #include "UTILS.h"
 #include <STDDEF.H>
 #include <LIBGTE.H>
 #include <LIBGPU.H>
-
-/** Placement construction for explicitly managed Font storage. */
-inline void *operator new(unsigned int, void *address)
-{
-    return address;
-}
-
-/** Polymorphic base used to preserve a destination Font's dispatch pointer. */
-struct MainMenuFontAssignmentBase {
-    virtual ~MainMenuFontAssignmentBase();
-};
-
-/** Owner-local view of Font, whose inherited vptr is preserved on assignment. */
-struct MainMenuFontAssignmentView : MainMenuFontAssignmentBase {
-    int JustX;
-    int JustY;
-    int SpaceX;
-    int SpaceY;
-    int R;
-    int G;
-    int B;
-    void *Aliased;
-    void *Shadow;
-    int ShadowDx;
-    int ShadowDy;
-    int CharMap;
-    int FixedWidth;
-    int Scale;
-    struct FontCharacter *CharTab;
-    int NumChars;
-    int Clut;
-    struct TextEffect *CurrentTextEffect;
-    unsigned char OldR;
-    unsigned char OldG;
-    unsigned char OldB;
-};
-
-typedef char mainmenu_font_view_size_must_be_80[
-    (sizeof(MainMenuFontAssignmentView) == 80) ? 1 : -1];
-
-/** Allocate one typed object through the original CClass arena. */
-template <class T>
-static inline T *AllocateCClass()
-{
-    return (T *)::CClass::operator new(sizeof(T));
-}
-
-#define SCREENTOOLS_DECLARE_SCREEN_ELEMENT_LIST_CONSTRUCTOR
-#include "SCREENTOOLS.h"
-#define SCREENTOOLS_DECLARE_SCREEN_ELEMENT_LIST_DESTRUCTOR
-#include "SCREENTOOLS.h"
-#define SCREENTOOLS_DECLARE_SPRITE_SCREEN_ELEMENT_CONSTRUCTOR
-#include "SCREENTOOLS.h"
-#include "IMAGE.h"
-
 #include "DB.h"
 #include "SPOOL.h"
 #include "PAL.h"
 #include "FRONTEND2.h"
-
-#define FRONTSCREENS_DECLARE_MAIN_MENU_CONSTRUCTOR_ABI
-#include "FRONTSCREENS.h"
-#define MainMenuScreen_ctor MainMenuConstructorABI::__14MainMenuScreen
-extern "C" WheelElementList *__16WheelElementListiiii(
-    WheelElementList *, int, int, int, int);
-
-#define FRONTSCREENS_DECLARE_MAIN_MENU_DESTRUCTOR_ABI
-#include "FRONTSCREENS.h"
-
-/**
- * MAINMENU's screen-element dispatch tables in original read-only order.
- *
- * Both classes override destruction and update. WheelElementList also
- * overrides draw, while MainMenuScreen retains ScreenElementList::draw.
- */
-WheelElementListVtable __vt_16WheelElementList
-    __attribute__((section(".rdata"), aligned(8))) = {
-        0,
-        0,
-        &WheelElementList_destructor_slot,
-        (void (*)(WheelElementList *))&WheelElementList::update,
-        (void (*)(WheelElementList *, int, int))&WheelElementList::draw,
-        (int (*)(ScreenElement *))&ScreenElement::width,
-        (void (*)(ScreenElement *))&ScreenElement::refresh,
-};
-
-MainMenuScreenVtable __vt_14MainMenuScreen
-    __attribute__((section(".rdata"), aligned(8))) = {
-        0,
-        0,
-        &MainMenuScreen_destructor_slot,
-        (void (*)(MainMenuScreen *))&MainMenuScreen::update,
-        (void (*)(ScreenElementList *, int, int))&ScreenElementList::draw,
-        (int (*)(ScreenElement *))&ScreenElement::width,
-        (void (*)(ScreenElement *))&ScreenElement::refresh,
-};
 
 /** MAINMENU's initialized small-data contribution in original order. */
 u8 MainMenu_LastSelection
@@ -351,11 +133,7 @@ int MainMenu_Main(void)
     Pal_RemoveUnusedPalettes();
     Pack_DefragmentFully();
 
-    MainMenuScreen *pScreen = AllocateCClass<MainMenuScreen>();
-    if (pScreen != 0)
-    {
-        pScreen = MainMenuScreen_ctor(pScreen);
-    }
+    MainMenuScreen *pScreen = new MainMenuScreen;
 
     Pad_ClearTriggers(&Pad[0]);
     Pad_ClearTriggers(&Pad[1]);
@@ -383,7 +161,7 @@ int MainMenu_Main(void)
             pScreen->InitEndProcess(return_value);
         }
 
-        GetScreenDispatch(pScreen)->Update(pScreen);
+        pScreen->update();
 
         if (pScreen->EndProcess() != 0)
         {
@@ -406,10 +184,7 @@ int MainMenu_Main(void)
 
     Db_SkyColor = oldSkyColor;
 
-    if (pScreen != 0)
-    {
-        GetScreenDispatch(pScreen)->Destroy(pScreen, 3);
-    }
+    delete pScreen;
 
     return return_value;
 }
@@ -425,7 +200,7 @@ void MainMenuScreen::InitEndProcess(int return_value)
 {
     if ((unsigned int)(return_value - 0x20) < 2 || return_value == 0x28)
     {
-        FrontPreLoaderFromStorage(&mFrontPreLoader)->BeginLoad(1);
+        mFrontPreLoader.BeginLoad(1);
     }
 }
 
@@ -445,10 +220,8 @@ int MainMenuScreen::EndProcess()
     }
     else
     {
-        FontFromStorage(&TheFont)->draw(
-            256, 129, EndProcess_str, 0);
-        result = FrontPreLoaderFromStorage(
-            &mFrontPreLoader)->DoneLoading();
+        TheFont.draw(256, 129, EndProcess_str, 0);
+        result = mFrontPreLoader.DoneLoading();
     }
     return result;
 }
@@ -461,72 +234,47 @@ int MainMenuScreen::EndProcess()
  * @param self Storage allocated for the screen.
  * @return The constructed screen.
  */
-MainMenuScreen *MainMenuScreen_ctor(MainMenuScreen *self)
+MainMenuScreen::MainMenuScreen() : ScreenElementList(0, 0, -1, -1)
 {
-    __17ScreenElementListiiii(&self->ScreenElementList, 0, 0, -1, -1);
-    self->ScreenElementList.ScreenElement.CClass.vtable =
-        (int *)&__vt_14MainMenuScreen;
-
-    ::new (FrontPreLoaderFromStorage(&self->mFrontPreLoader))
-        FrontPreLoader;
-
-    ::new (FontFromStorage(&self->TheFont)) Font;
-    ::new (FontFromStorage(&self->mFont1)) Font;
-
     // Create the full-screen background sprite.
-    Sprite2 *flatBit = new Sprite2(MainMenuBmpName, 1, 0, 0);
-    self->mBackground = flatBit;
+    mBackground = new Sprite2(MainMenuBmpName, 1, 0, 0);
 
     // Create and attach the rotating menu wheel.
-    WheelElementList *wheel = AllocateCClass<WheelElementList>();
-    if (wheel != 0)
-    {
-        wheel = __16WheelElementListiiii(wheel, 255, 129, -110, 128);
-    }
-    self->mWheel = wheel;
-    self->ScreenElementList.addItem(
-        &wheel->ScreenElementList.ScreenElement);
+    mWheel = new WheelElementList(255, 129, -110, 128);
+    addItem(mWheel);
 
     // Load and configure the loading-message font.
     Font *fontData1 = FontManager::LoadFont(MainMenuFont1);
-    *(MainMenuFontAssignmentView *)&self->TheFont =
-        *(MainMenuFontAssignmentView *)fontData1;
-    self->TheFont.JustX = 1;
-    self->TheFont.JustY = 1;
-    self->TheFont.Scale = 0x800;
-    self->TheFont.R = 0x40;
-    self->TheFont.G = 0x40;
-    self->TheFont.B = 0xFF;
-    self->FinishUp = 0;
+    TheFont = *fontData1;
+    TheFont.JustX = 1;
+    TheFont.JustY = 1;
+    TheFont.Scale = 0x800;
+    TheFont.R = 0x40;
+    TheFont.G = 0x40;
+    TheFont.B = 0xFF;
+    FinishUp = 0;
 
     // Load and configure the prompt font.
     Font *fontData2 = FontManager::LoadFont(MainMenuFont2);
-    *(MainMenuFontAssignmentView *)&self->mFont1 =
-        *(MainMenuFontAssignmentView *)fontData2;
-    self->mFont1.JustX = 0;
-    self->mFont1.JustY = 3;
-    FontFromStorage(&self->mFont1)->setRGB(128, 128, 128);
+    mFont1 = *fontData2;
+    mFont1.JustX = 0;
+    mFont1.JustY = 3;
+    mFont1.setRGB(128, 128, 128);
 
     // Create the select prompt.
-    self->mFont1.Shadow = 0;
-    self->mFont1.SpaceX = 0;
-    self->mFont1.SpaceY = 0;
-    self->mFont1.Scale = 0x1000;
+    mFont1.Shadow = 0;
+    mFont1.SpaceX = 0;
+    mFont1.SpaceY = 0;
+    mFont1.Scale = 0x1000;
 
     PromptScreenElement *pPromptElement = new PromptScreenElement(
-        MainMenuItemNames, MainMenuItemNames2,
-        FontFromStorage(&self->mFont1), 159, 220, -1, 260);
-    self->ScreenElementList.addItem(
-        &pPromptElement->ScreenElementList.ScreenElement);
+        MainMenuItemNames, MainMenuItemNames2, &mFont1, 159, 220, -1, 260);
+    addItem(pPromptElement);
 
     // Create the accept prompt.
     pPromptElement = new PromptScreenElement(
-        MainMenuBmpName2, MainMenuBmpName3,
-        FontFromStorage(&self->mFont1), 272, 220, -1, 260);
-    self->ScreenElementList.addItem(
-        &pPromptElement->ScreenElementList.ScreenElement);
-
-    return self;
+        MainMenuBmpName2, MainMenuBmpName3, &mFont1, 272, 220, -1, 260);
+    addItem(pPromptElement);
 }
 
 /**
@@ -536,19 +284,9 @@ MainMenuScreen *MainMenuScreen_ctor(MainMenuScreen *self)
  */
 MainMenuScreen::~MainMenuScreen()
 {
-    ScreenElementList.ScreenElement.CClass.vtable =
-        (int *)&__vt_14MainMenuScreen;
-    Sprite2 *background = mBackground;
-    if (background != 0)
-    {
-        GetSpriteDispatch(background)->Destroy(background, 3);
-    }
+    delete mBackground;
     FontManager::UnloadFont(MainMenuFont1);
     FontManager::UnloadFont(MainMenuFont2);
-    FontFromStorage(&mFont1)->~Font();
-    FontFromStorage(&TheFont)->~Font();
-    FrontPreLoaderFromStorage(&mFrontPreLoader)->~FrontPreLoader();
-    ScreenElementList_DestroyAbi(&ScreenElementList, 0);
 }
 
 /**
@@ -559,9 +297,8 @@ MainMenuScreen::~MainMenuScreen()
  */
 void MainMenuScreen::draw()
 {
-    ScreenElementList.draw(0, 0);
-    Sprite2 *background = mBackground;
-    GetSpriteDispatch(background)->Draw(background, 0, 0, 1);
+    ScreenElementList::draw(0, 0);
+    mBackground->draw(0, 0, 1);
 }
 
 /**
@@ -572,7 +309,7 @@ void MainMenuScreen::draw()
  */
 void MainMenuScreen::update()
 {
-    ScreenElementList.update();
+    ScreenElementList::update();
 }
 
 /**
@@ -624,43 +361,25 @@ int MainMenuScreen::isDone(int *return_value)
  * @param screenY  Screen-space Y coordinate.
  * @return The constructed wheel element list.
  */
-WheelElementList *__16WheelElementListiiii(
-    WheelElementList *self, int homeX, int homeY, int screenX, int screenY)
+WheelElementList::WheelElementList(int homeX, int homeY, int screenX,
+                                   int screenY)
+    : ScreenElementList(homeX, homeY, screenX, screenY)
 {
-    __17ScreenElementListiiii(
-        &self->ScreenElementList, homeX, homeY, screenX, screenY);
-    self->ScreenElementList.ScreenElement.CClass.vtable =
-        (int *)&__vt_16WheelElementList;
-
     // Create the rotating wheel sprite.
-    RotateSprite *wheelElem = AllocateCClass<RotateSprite>();
-    if (wheelElem != 0)
-    {
-        wheelElem = ::new (wheelElem) RotateSprite(
-            WheelBmpName, 1, 0, 0);
-    }
-    self->Wheel = wheelElem;
-    wheelElem->JustX = 1;
-    self->Wheel->JustY = 1;
+    Wheel = new RotateSprite(WheelBmpName, 1, 0, 0);
+    Wheel->JustX = 1;
+    Wheel->JustY = 1;
 
     // Create the fixed arrow overlay.
-    SpriteScreenElement *item = AllocateCClass<SpriteScreenElement>();
-    if (item != 0)
-    {
-        item = __19SpriteScreenElementPciiiiii(
-            item, WheelItemNames, 1, -81, 0, 0, 1, 1);
-    }
-    self->ScreenElementList.addItem(&item->ScreenElement);
+    addItem(new SpriteScreenElement(WheelItemNames, 1, -81, 0, 0, 1, 1));
 
     // Restore the previous selection and its target angle.
     int lastSel = MainMenu_LastSelection;
-    self->NumSlots = 7;
-    self->Slot = lastSel;
+    NumSlots = 7;
+    Slot = lastSel;
     int entry = RotMap[lastSel][0];
-    self->TargetRot = entry;
-    self->CurrentRot = entry;
-
-    return self;
+    TargetRot = entry;
+    CurrentRot = entry;
 }
 
 /**
@@ -671,14 +390,7 @@ WheelElementList *__16WheelElementListiiii(
 WheelElementList::~WheelElementList()
 {
     MainMenu_LastSelection = SlotByte;
-    ScreenElementList.ScreenElement.CClass.vtable =
-        (int *)&__vt_16WheelElementList;
-    RotateSprite *wheel = Wheel;
-    if (wheel != 0)
-    {
-        GetSpriteDispatch(wheel)->Destroy(wheel, 3);
-    }
-    ScreenElementList_DestroyAbi(&ScreenElementList, 0);
+    delete Wheel;
 }
 
 /**
@@ -791,7 +503,7 @@ void WheelElementList::update()
         TargetRot = t + 0x1000;
     }
 
-    ScreenElementList.update();
+    ScreenElementList::update();
 }
 
 /**
@@ -804,11 +516,6 @@ void WheelElementList::update()
  */
 void WheelElementList::draw(int x, int y)
 {
-    ScreenElementList.draw(x, y);
-    RotateSprite *wheel = Wheel;
-    int screenX = ScreenElementList.ScreenElement.mScreenX;
-    int screenY = ScreenElementList.ScreenElement.mScreenY;
-    int rotation = CurrentRot;
-    GetSpriteDispatch(wheel)->Draw(
-        wheel, screenX + x, screenY + y, rotation);
+    ScreenElementList::draw(x, y);
+    Wheel->draw(mScreenX + x, mScreenY + y, CurrentRot);
 }

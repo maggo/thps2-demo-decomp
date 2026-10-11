@@ -3,26 +3,15 @@
 // Functions: 15 recovered functions
 // Address range: 0x8005A090 - 0x8005A6E8
 //
-// Compiled with cc1plus (GCC 2.91.66-psx). Compiler auto-mangles symbol names.
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "CCLASS_POLY.h"
+#define SPOOLER_POLYMORPHIC_LAYOUT
 #include "FILEIO.h"
 #include "SPOOLER.h"
 
 /** Return caller-owned storage for an ordinary placement construction. */
 inline void *operator new(unsigned int, void *storage) { return storage; }
-
-/** Prefix of the GCC 2.x dispatch table used for deleting destruction. */
-struct SpoolerDispatchTable {
-    void *mReserved0;
-    void *mReserved1;
-    void (*Destroy)(Spooler *instance, int flags);
-};
-
-/** Return the typed dispatch prefix stored in the composed CClass base. */
-static inline SpoolerDispatchTable *GetSpoolerDispatch(Spooler *instance)
-{
-    return (SpoolerDispatchTable *)instance->CClass.vtable;
-}
 
 /** Advance a cursor that walks one fixed field through the item array. */
 template <class Field>
@@ -42,11 +31,11 @@ static inline Field *NextSpoolItemField(Field *field)
 Spooler *Spooler::SpoolMgr = 0;
 
 /** Filename and platform suffixes used by the spooler in original order. */
-static char DAT_800da698[4]
+static char s_FileNameFormat[4]
     __attribute__((section(".sdata"))) = "%s";
-static char DAT_800da69c[4]
+static char s_Ext_psx[4]
     __attribute__((section(".sdata"))) = "psx";
-static char DAT_800da6a0[4]
+static char s_Ext_PSX[4]
     __attribute__((section(".sdata"))) = "PSX";
 
 // Keep the call sites opaque to the literals' owner definitions above.  The
@@ -55,36 +44,6 @@ static char DAT_800da6a0[4]
 // incorrectly choose gp-relative addressing.
 #define SPOOLER_DECLARE_OWNER_ADDRESS_VIEWS
 #include "SPOOLER.h"
-
-// Vtables
-// GCC 2.x emits a private copy of `CClass::~CClass` beside a private base
-// vtable in every owner that derives from CClass.  `MAIN.SYM` records 25 such
-// `_._6CClass` copies and names no base vtable, so both are file-local here.
-// The filesystem-safe spelling keeps the per-address target assembly reachable.
-extern "C" {
-static void __DOT__6CClass_8005A6B8(CClass *instance, int flags);
-}
-
-// C++ forbids taking a destructor's address, so the manual vtable slot retains
-// an owner-local addressable view of the natural destructor symbol.
-void Spooler_DestructorAbi(Spooler *instance, int flags)
-    asm("_._7Spooler");
-
-typedef void (*SpoolerDestructorSlot)(Spooler *, int);
-typedef void (*CClassDestructorSlot)(CClass *, int);
-
-// Consecutive eight-byte-aligned small-data words per vtable rather than
-// arrays, so -G8 still yields the target's `addiu $vX, $gp, off` form.
-int __vt_7Spooler
-    __attribute__((section(".sdata"), aligned(8))) = 0;
-static int Spooler_VTableIndex = 0;
-static SpoolerDestructorSlot Spooler_VTableDtor = Spooler_DestructorAbi;
-
-static int __vt_7Spooler_base
-    __attribute__((section(".sdata"), aligned(8))) = 0;
-static int Spooler_BaseVTableIndex = 0;
-static CClassDestructorSlot Spooler_BaseVTableDtor =
-    __DOT__6CClass_8005A6B8;
 
 // === Function implementations (address order) ===
 
@@ -119,7 +78,7 @@ void Spooler::Cleanup()
 {
     if (SpoolMgr != 0)
     {
-        GetSpoolerDispatch(SpoolMgr)->Destroy(SpoolMgr, 3);
+        delete SpoolMgr;
         SpoolMgr = 0;
     }
 }
@@ -175,7 +134,6 @@ Spooler::Spooler()
     unsigned char **data = &mItem[0].pData;
     void **available = &mItem[0].isAvailable;
 
-    CClass.vtable = &__vt_7Spooler;
     mNumItems = 0;
     mCurrentItem = 0;
     mStatus = 0;
@@ -201,10 +159,7 @@ Spooler::Spooler()
  */
 Spooler::~Spooler()
 {
-    CClass.vtable = &__vt_7Spooler;
     this->Reset();
-    CClass.vtable = &__vt_7Spooler_base;
-
 }
 
 /**
@@ -263,7 +218,7 @@ void Spooler::Reset()
 int Spooler::AddFile(char *filename, int ignoreExt)
 {
     int n;
-    sprintf(mItem[mNumItems].name, SpoolerAddressViews::DAT_800da698, filename);
+    sprintf(mItem[mNumItems].name, SpoolerAddressViews::s_FileNameFormat, filename);
 
     n = 0;
     if (*filename != '.')
@@ -277,8 +232,8 @@ int Spooler::AddFile(char *filename, int ignoreExt)
     if (ignoreExt == 0)
     {
         char *extension = filename + n + 1;
-        if (strcmp(extension, SpoolerAddressViews::DAT_800da69c) == 0 ||
-            strcmp(extension, SpoolerAddressViews::DAT_800da6a0) == 0)
+        if (strcmp(extension, SpoolerAddressViews::s_Ext_psx) == 0 ||
+            strcmp(extension, SpoolerAddressViews::s_Ext_PSX) == 0)
         {
             mItem[mNumItems].type = 1;
             mItem[mNumItems].name[n] = 0;
@@ -442,20 +397,5 @@ void Spooler::KillFile(int slot)
             mItem[slot].pData = 0;
             mItem[slot].isAvailable = 0;
         }
-    }
-}
-
-/**
- * Restore the private base dispatch table and optionally free the object.
- *
- * GCC emitted this private `CClass::~CClass` copy last in the owner's text,
- * so it stays at the end of the translation unit.
- */
-static void __DOT__6CClass_8005A6B8(CClass *instance, int flags)
-{
-    instance->vtable = &__vt_7Spooler_base;
-    if (flags & 1)
-    {
-        ::CClass::operator delete(instance);
     }
 }

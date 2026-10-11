@@ -3,7 +3,7 @@
 // Functions: 13 reconstructed entries
 // Address range: 0x8004B6EC - 0x8004BF04
 //
-// Compiled with cc1plus (GCC 2.91.66-psx). Compiler auto-mangles symbol names.
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 // Owner-local declarations attributed to PAL.cpp by MAIN.SYM.
 typedef unsigned char u8;
@@ -395,10 +395,6 @@ int Get256SlotNumber(unsigned short clut) {
 /**
  * Load palette data into VRAM while detecting and remapping transparency.
  *
- * The `$4` entry cursor, empty scheduling constraint, and explicit 16-bit
- * normalization remain load-bearing under GCC 2.91. Clean-source variants
- * were measured before retaining each one.
- *
  * Address:   0x8004BC24, Size: 608 bytes (152 instructions)
  * Mangled:   Pal_LoadPalette__FUiPUiUci
  * Demangled: tag_S_Pal *Pal_LoadPalette(unsigned int, unsigned int *, unsigned char, int)
@@ -415,11 +411,9 @@ tag_S_Pal *Pal_LoadPalette(
     unsigned int checksum, unsigned int *pData, unsigned char flags, int Remap) {
     tag_S_Pal *pNew;
     int transparent_encountered;
-    register u16 *pEntry asm("$4");
-    int i;
+    u16 *pEntry;
     int transparent_index;
     int entries;
-    u16 color;
     RECT rec;
 
     pNew = NewPaletteEntry(checksum);
@@ -434,33 +428,26 @@ tag_S_Pal *Pal_LoadPalette(
     }
 
     transparent_index = 0;
-    i = 0;
-    if (entries != 0) {
-        do {
-            color = *pEntry;
-            if ((color & 0x7FFF) == 0x7C1F) {
-                // Transparent key color (magenta)
-                if (transparent_encountered == 0) {
-                    *pEntry = 0;
-                    transparent_index = i;
-                    transparent_encountered = 1;
+    {
+        int i = 0;
+        if (entries != 0) {
+            do {
+                if ((*pEntry & 0x7FFF) == 0x7C1F) {
+                    // Transparent key color (magenta)
+                    if (transparent_encountered == 0) {
+                        *pEntry = 0;
+                        transparent_index = i;
+                        transparent_encountered = 1;
+                    }
+                } else {
+                    if (transparent_encountered || *pEntry == 0 || TransparentPalForEditor) {
+                        *pEntry |= 0x8000;
+                    }
                 }
-            } else {
-                if (transparent_encountered != 0) goto store_color;
-                {
-                    u16 colorTest;
-                    asm("andi %0, %1, 0xFFFF"
-                        : "=r"(colorTest) : "r"(color));
-                    if (colorTest == 0) goto store_color;
-                }
-                if (TransparentPalForEditor != 0) {
-                    store_color:
-                    *pEntry = color | 0x8000;
-                }
-            }
-            i = i + 1;
-            pEntry = pEntry + 1;
-        } while (i < entries);
+                i = i + 1;
+                pEntry = pEntry + 1;
+            } while (i < entries);
+        }
     }
 
     // Swap transparent color to index 0
@@ -478,9 +465,8 @@ tag_S_Pal *Pal_LoadPalette(
     // If no transparent found, set STP bit on all colors
     if (transparent_encountered == 0) {
         pEntry = reinterpret_cast<u16 *>(pData);
-        asm("");
+        int i = 0;
         if (transparent_encountered < entries) {
-            i = 0;
             do {
                 i = i + 1;
                 *pEntry = *pEntry | 0x8000;

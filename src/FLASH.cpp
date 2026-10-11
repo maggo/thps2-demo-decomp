@@ -2,6 +2,8 @@
 // Original: FLASH.CPP
 // Functions: 6
 // Address range: 0x8002F4EC - 0x8002F6A0
+//
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 #include "FLASH.h"
 #define DB_BUFFER_LAYOUT

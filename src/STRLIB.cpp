@@ -1,4 +1,9 @@
-// String helpers used by game-script parsing.
+// STRLIB.cpp -- String helpers used by game-script parsing.
+// Original: STRLIB.CPP
+// Functions: 3
+// Address range: 0x8006C9D0 - 0x8006CAAC
+//
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 #include "STRLIB.h"
 
@@ -24,8 +29,7 @@ scan:
     return 0;
 found:
     {
-        // MAIN.SYM places pH in $a3. Measured ordinary-local variants make
-        // GCC swap it with the character temporary (six real mismatches).
+        // FIXME(match): register pin — pH must be $a3 (MAIN.SYM) but unpinned it swaps with the character temp ($a2/$a3, score 6); tried: declaration order, char temps declared up front, return-pointer local, for/while forms, cperm.
         register char *pH asm("$7") = pHay;
         char *pN = pNeedle;
 inner:

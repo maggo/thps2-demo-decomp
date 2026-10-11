@@ -3,7 +3,7 @@
 // Functions: 2 reconstructed
 // Address range: 0x8005AC58 - 0x8005ACB8
 //
-// Compiled with cc1plus (GCC 2.91.66-psx). Compiler auto-mangles symbol names.
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 
 

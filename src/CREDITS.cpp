@@ -2,6 +2,8 @@
 // Original: CREDITS.CPP
 // Functions: 1 compiler-generated static initializer
 // Address range: 0x80089824 - 0x80089824
+//
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 #include "SLIGHT.h"
 

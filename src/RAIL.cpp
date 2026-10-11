@@ -3,8 +3,9 @@
 // Functions: 16
 // Address range: 0x8005086C - 0x800515EC
 //
-// Compiled with cc1plus (GCC 2.91.66-psx). Compiler auto-mangles symbol names.
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#include "CCLASS_POLY.h"
 #define RAIL_OWNER_DECLARATIONS
 #include "RAIL.h"
 #undef RAIL_OWNER_DECLARATIONS
@@ -55,12 +56,6 @@ enum {
     ((TotalRailNodes = (count)) ? ((savedCount) = (count)) \
                                 : ((savedCount) = (count)))
 
-/** Virtual prefix used to retire an allocated rail segment. */
-struct RailVTable {
-    void (*reserved0)(CRail *rail);
-    void (*reserved1)(CRail *rail);
-    void (*destroy)(CRail *rail, int flags);
-};
 
 /** Alias-compatible view of the two list links used during insertion. */
 struct RailLinkAlias {
@@ -88,17 +83,10 @@ typedef char rail_node_sort_size_check[
 typedef char rail_object_size_check[
     (sizeof(CRail) == 40) ? 1 : -1];
 
-/** Dispatch destruction through CRail's named virtual slot. */
-static inline void Rail_Destroy(CRail *rail) {
-    RailVTable *vtable = (RailVTable *)rail->vtable;
-    vtable->destroy(rail, 3);
-}
-
 /*
  * The destructor's first vtable write must retain the original all-types alias
  * edge against RailList; otherwise GCC hoists it ahead of the target prologue.
  */
-#define RAIL_VTABLE_ALIAS(object) (*(int **)(object))
 
 /** The triangle-button prefix read by the rail acquisition pass. */
 struct SControlRailOwner {
@@ -161,57 +149,10 @@ typedef char CBruceRailOwner_minimum_size_check[
 #include "TRIG.h"
 #include "MIPS.h"
 
-// === External function declarations ===
-namespace RailVectorAbi
-{
-extern "C" void __pl__FRC7CVectorT0(
-    CVector *, const CVector &, const CVector &);
-}
-#define CVector_AddRefs_rail RailVectorAbi::__pl__FRC7CVectorT0
-#define M3DMATHS_ABI_ONLY
-#define M3DMATHS_DECLARE_VECTOR_SUBTRACT
-#define M3DMATHS_VECTOR_SUBTRACT_DECLARATION \
-    extern void CVector_SubRefs_rail( \
-        CVector *, const CVector &, const CVector &)
-#include "M3DMATHS.h"
-#undef M3DMATHS_ABI_ONLY
 #include "CVECTOROPS.h"
 
-// === Extern "C" gp-relative globals ===
-// GCC 2.x emits a private copy of `CClass::~CClass` beside a private base
-// vtable in every owner that derives from CClass.  `MAIN.SYM` records 25 such
-// `_._6CClass` copies and names no base vtable, so both are file-local here.
-// The address-qualified target spelling is also a legal private C identifier.
-extern "C" {
-static void __DOT__6CClass_80051EDC(CClass *self, int flags);
-}
-
-// C++ forbids taking a destructor's address, so the public vtable slot uses an
-// addressable declaration of the symbol this owner already defines.
-void Rail_DestructorAbi(CRail *self, int flags)
-    asm("_._5CRail");
-
-// Three consecutive eight-byte-aligned small-data words per vtable rather than
-// arrays, so -G8 still yields the target's `addiu $vX, $gp, off` form.
-int __vt_5CRail
-    __attribute__((section(".sdata"), aligned(8))) = 0;
-static int Rail_VTableIndex = 0;
-static void (*Rail_VTableDtor)(CRail *, int) = Rail_DestructorAbi;
-
-static int Rail_BaseVTableWord
-    __attribute__((section(".sdata"), aligned(8))) = 0;
-static int Rail_BaseVTableIndex = 0;
-static void (*Rail_BaseVTableDtor)(CClass *, int) =
-    __DOT__6CClass_80051EDC;
 
 // === External function declarations ===
-// Const-qualified view of the same object.  The lookup-table base read in
-// CRail::CRail must float above the bounding-box stores; through the plain
-// declaration cc1plus keeps a may-alias edge from `this->mBBox*` to the global
-// load and pins it just before its use.  A const object is RTX_UNCHANGING, so
-// the edge disappears and the load lands where the original has it.
-extern short **const OffsetList_c asm("OffsetList")
-    __attribute__((section(".data")));
 #include "MECHLIST.h"
 
 // === Owner-local free function declarations ===
@@ -423,7 +364,7 @@ void Rail_KillRail(int node)
                 // control flow around the virtual destructor call.
                 if (pRail != 0)
                 {
-                    Rail_Destroy(pRail);
+                    delete pRail;
                 }
                 return;
             }
@@ -621,7 +562,7 @@ void Rail_Init(void)
 {
     while (RailList != 0)
     {
-        Rail_Destroy(RailList);
+        delete RailList;
     }
     RailList = 0;
 }
@@ -646,7 +587,7 @@ void Rail_DeleteAll(void)
             // though the enclosing condition already proved this iteration.
             if (pRail != 0)
             {
-                Rail_Destroy(pRail);
+                delete pRail;
             }
             pRail = pNext;
         } while (pRail != 0);
@@ -664,8 +605,6 @@ void Rail_DeleteAll(void)
 CRail::CRail(int node_index)
 {
     CVector NodePos;
-
-    vtable = &__vt_5CRail;
 
     // Insert this rail at the head of the global doubly linked list.  Holding
     // the old head in a local is what lets `mStartNode` be stored before the
@@ -693,7 +632,10 @@ CRail::CRail(int node_index)
     // values in the successful-link block below. Those lifetimes also recover
     // the target's stack slots for every named local and aggregate temporary.
     int CurrentNode = mStartNode;
-    *OffsetList_c[CurrentNode] = 11;
+    // Read the lookup-table base through a const-qualified view: the load must
+    // float above the bounding-box stores, which a plain (mutable) access
+    // pins just before its use through a may-alias edge from `this->mBBox*`.
+    *(*(short **const *)&OffsetList)[CurrentNode] = 11;
 
     do
     {
@@ -881,10 +823,7 @@ CRail::CRail(int node_index)
  */
 CRail::~CRail()
 {
-    CClass *base = this;
-    CRail *head = RailList;
-    RAIL_VTABLE_ALIAS(this) = &__vt_5CRail;
-    if (head == this)
+    if (RailList == this)
     {
         RailList = mpNext;
     }
@@ -902,7 +841,6 @@ CRail::~CRail()
             next->mpPrevious = mpPrevious;
         }
     }
-    base->vtable = &Rail_BaseVTableWord;
 }
 
 /**
@@ -1057,11 +995,10 @@ void Rail_Update(void)
                                  PHYSICS_ON_INVISIBLE_RAIL_OWNER) ||
                             RailPos.vy >= pSkater->CSuper.CBody.CItem.mPos.vy)
                         {
-                            CVector SegDir;
+                            CVector SegDir = SegTo - SegFrom;
                             CVector SkaterVel;
                             int VelocityDotSegment;
 
-                            CVector_SubRefs_rail(&SegDir, SegTo, SegFrom);
                             SkaterVel = *(CVector *)&pSkater->CSuper.CBody.mVel;
                             M3dUtils_NormaliseVector(&SegDir);
                             VelocityDotSegment =
@@ -1115,25 +1052,19 @@ void Rail_Update(void)
                                 CVector EndPos;
                                 CVector MidPos;
                                 CVector Stick;
-                                CVector result;
                                 int temp;
-                                SLineInfo line_info;
-                                int leftside;
-                                int rightside;
 
                                 Trig_GetPosition(StartPos, CurrentNode);
                                 Trig_GetPosition(EndPos, NextNode);
                                 int ledge_right = 2;
-                                CVector_AddRefs_rail(&result, StartPos, EndPos);
-                                MidPos = result;
+                                MidPos = StartPos + EndPos;
                                 MidPos /= 2;
                                 MidPos -= StartPos;
                                 MidPos /= 2;
                                 MidPos += StartPos;
                                 MidPos.vy -= RAIL_COLLISION_INSET;
 
-                                CVector_SubRefs_rail(&result, EndPos, StartPos);
-                                Stick = result;
+                                Stick = EndPos - StartPos;
                                 Stick.vy = 0;
                                 M3dUtils_NormaliseVector(&Stick);
                                 temp = Stick.vx;
@@ -1141,6 +1072,9 @@ void Rail_Update(void)
                                 Stick.vz = -temp;
                                 Stick *= 10;
 
+                                SLineInfo line_info;
+                                int leftside;
+                                int rightside;
                                 line_info.pItem = 0;
                                 BulletCollisionCheck = ledge_left;
                                 Stick.vx *= 2;
@@ -1226,17 +1160,4 @@ void Rail_Update(void)
             }
         }
     }
-}
-
-// GCC emitted this private `CClass::~CClass` copy last in the owner's
-// text, so it stays at the end of the translation unit.
-extern "C" {
-static void __DOT__6CClass_80051EDC(CClass *self, int flags)
-{
-    self->vtable = &Rail_BaseVTableWord;
-    if (flags & 1)
-    {
-        CClass::operator delete(self);
-    }
-}
 }

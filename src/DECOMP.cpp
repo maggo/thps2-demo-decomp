@@ -2,6 +2,8 @@
 // Original: DECOMP.CPP
 // Functions: 2
 // Address range: 0x80023B38 - 0x80023ED0
+//
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 #include "MEM.h"
 #include "M3DUTILS.h"
@@ -194,20 +196,18 @@ unsigned char *DecompressStream(
             } while (i < Segs);
         }
         if (RemainderLength != 0) {
+            int lim = RemainderLength - 1;
             short NewVal = *pSource++;
-            int Off;
-            NewVal = NewVal + (*pSource++ << 8);
-            Off = NewVal - v;
-            short Inc = Off / RemainderLength;
-            register int rlim asm("$7") = RemainderLength - 1;
-            int j = 0;                            /* $a0 */
-            if (rlim > 0) {
+            NewVal += *pSource++ << 8;
+            short Inc = (NewVal - v) / RemainderLength;
+            int j = 0;
+            if (lim > 0) {
                 do {
                     v = v + Inc;
                     *pDest = v;
                     j++;
                     pDest = pDest + StepSize;
-                } while (j < rlim);
+                } while (j < lim);
             }
             *pDest = NewVal;
         }
@@ -227,24 +227,20 @@ unsigned char *DecompressStream(
         *pDest = Val;
         pDest = pDest + StepSize;
         if (Segs > 0) {
-            int shiftAmt;
-            shiftAmt = 32 - Bits;
+            int shiftAmt = 32 - Bits;
             int lim = Interval - 1;
             do {
-                register unsigned int b0 asm("$7") = pSource[0];
-                register unsigned int b1 asm("$4") = pSource[1];
-                unsigned int b2 = pSource[2];
-                register int k asm("$7");
-                { register unsigned int sh0 asm("$2") = b0 << 8; k = sh0 | b1; }
-                { register unsigned int sh1 asm("$3") = static_cast<unsigned int>(k) << 8; k = sh1 | b2; }
-                k = static_cast<int>(static_cast<unsigned int>(k) << (Off + 8)) >> shiftAmt;
+                int k = pSource[0];
+                k = (k << 8) | pSource[1];
+                k = (k << 8) | pSource[2];
+                k <<= Off + 8;
+                k >>= shiftAmt;
+                short NewVal = Val + k;
+                int d = Off + Bits;
+                pSource = pSource + (d >> 3);
+                Off = d & 7;
                 short Inc = k / Interval;
-                { int d = Off + Bits;
-                  pSource = pSource + (d >> 3);
-                  Off = d & 7; }
                 int j = 0;
-                short NewVal;
-                { register int et asm("$2") = Val + k; NewVal = et; }
                 if (lim > 0) {
                     do {
                         Val = Val + Inc;
@@ -260,22 +256,18 @@ unsigned char *DecompressStream(
             } while (i < Segs);
         }
         if (RemainderLength != 0) {
-            register unsigned int b0 asm("$7") = pSource[0];
-            register unsigned int b1 asm("$4") = pSource[1];
-            unsigned int b2 = pSource[2];
-            int k;
-            { register unsigned int sh0 asm("$2") = b0 << 8; k = sh0 | b1; }
-            { register unsigned int sh1 asm("$3") = static_cast<unsigned int>(k) << 8; k = sh1 | b2; }
-            k = static_cast<int>(static_cast<unsigned int>(k) << (Off + 8));
+            int k = pSource[0];
+            k = (k << 8) | pSource[1];
+            k = (k << 8) | pSource[2];
+            k <<= Off + 8;
             k >>= 32 - Bits;
-            short Inc = k / RemainderLength;
-            { int d = Off + Bits;
-              pSource = pSource + (d >> 3);
-              Off = d & 7; }
-            int j = 0;
             short NewVal = Val + k;
-            register int rlim asm("$5");
-            { register int r asm("$25") = RemainderLength; asm("" : "+r"(r) : "r"(NewVal)); rlim = r - 1; }
+            int d = Off + Bits;
+            pSource = pSource + (d >> 3);
+            Off = d & 7;
+            short Inc = k / RemainderLength;
+            int rlim = RemainderLength - 1;
+            int j = 0;
             if (rlim > 0) {
                 do {
                     Val = Val + Inc;

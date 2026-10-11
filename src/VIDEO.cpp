@@ -3,7 +3,7 @@
 // Functions: 32 reconstructed entries
 // Address range: 0x80060EF4 - 0x800632B4
 //
-// Compiled with cc1plus (GCC 2.91.66-psx). Compiler auto-mangles symbol names.
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 #define VIDEO_OWNER_DECLARATIONS
 #include "VIDEO.h"
@@ -453,48 +453,24 @@ static void PutNBits(SVideoInfo *VInfo, long v, int n) {
         return;
     }
 
-    int bitsLeft = VInfo->BitsLeft;
-    if (bitsLeft < n) {
-        // The stream cursor's target allocation is load-bearing under GCC 2.91.
-        int WordBits = VideoWordBits;
-        n -= bitsLeft;
-        int shift = WordBits - bitsLeft;
-        ulong shifted = static_cast<ulong>(v) << shift;
-        v >>= bitsLeft;
-        int bits = VInfo->Bits;
-        register ulong *pWord asm("$4") = VInfo->pStream;
-        bits &= (1 << shift) - 1;
-        bits |= shifted;
-        VInfo->Bits = bits;
-        *pWord = bits;
-        pWord++;
-        VInfo->pStream = pWord;
+    if (VInfo->BitsLeft < n) {
+        VInfo->Bits &= (1 << (VideoWordBits - VInfo->BitsLeft)) - 1;
+        VInfo->Bits |= v << (VideoWordBits - VInfo->BitsLeft);
+        n -= VInfo->BitsLeft;
+        v >>= VInfo->BitsLeft;
+        *VInfo->pStream++ = VInfo->Bits;
         VInfo->Bits = 0;
-        VInfo->BitsLeft = WordBits;
-        bitsLeft = WordBits;
+        VInfo->BitsLeft = VideoWordBits;
     }
 
-    int remaining = bitsLeft - n;
-    register int WordBits2 asm("$6") = VideoWordBits;
-    int shift2 = WordBits2 - bitsLeft;
-    int mask2 = (1 << shift2) - 1;
-    // Preserve the two scheduling dependencies used by the target compiler.
-    // Removing either barrier reorders the remaining-bit calculation.
-    asm volatile("" : "+r"(mask2));
-    int bits2 = VInfo->Bits;
-    register int shifted2 asm("$4") = static_cast<ulong>(v) << shift2;
-    VInfo->BitsLeft = remaining;
-    bits2 &= mask2;
-    bits2 |= shifted2;
-    VInfo->Bits = bits2;
-    if (remaining == 0) {
-        ulong *pWord = VInfo->pStream;
-        *pWord = bits2;
-        pWord++;
-        VInfo->pStream = pWord;
-        asm volatile("" : "+r"(remaining));
+    VInfo->Bits &= (1 << (VideoWordBits - VInfo->BitsLeft)) - 1;
+    VInfo->Bits |= v << (VideoWordBits - VInfo->BitsLeft);
+    VInfo->BitsLeft -= n;
+
+    if (VInfo->BitsLeft == 0) {
+        *VInfo->pStream++ = VInfo->Bits;
         VInfo->Bits = 0;
-        VInfo->BitsLeft = WordBits2;
+        VInfo->BitsLeft = VideoWordBits;
     }
 }
 
@@ -531,42 +507,25 @@ static void FlushBits(SVideoInfo *VInfo) {
  * @return result
  */
 static long GetNBitsUnsigned(SVideoInfo *VInfo, int n) {
-    int bitsLeft = VInfo->BitsLeft;
     unsigned long res;
-    if (bitsLeft != 0) goto past_refill;
-    {
-        bitsLeft = VideoWordBits;
-        // A normal local, a literal store, and a direct field refill all make
-        // GCC allocate a different refill path; keep the proven target pin.
-        register int WordBits asm("$3") = VideoWordBits;
-        ulong *pWord = VInfo->pStream;
-        int word = *pWord;
-        pWord = pWord + 1;
-        VInfo->pStream = pWord;
-        VInfo->BitsLeft = WordBits;
-        VInfo->Bits = word;
+
+    if (VInfo->BitsLeft == 0) {
+        VInfo->Bits = *VInfo->pStream++;
+        VInfo->BitsLeft = VideoWordBits;
     }
-past_refill:
-    if (bitsLeft < n) goto cross_word;
-    {
-        VInfo->BitsLeft = bitsLeft - n;
+
+    if (VInfo->BitsLeft >= n) {
+        VInfo->BitsLeft -= n;
         res = VInfo->Bits & ((1 << n) - 1);
-        VInfo->Bits = static_cast<unsigned int>(VInfo->Bits) >> n;
-        goto done;
-    }
-cross_word:
-    {
-        n = n - bitsLeft;
-        ulong *pWord = VInfo->pStream;
-        res = VInfo->Bits & ((1 << bitsLeft) - 1);
-        VInfo->Bits = *pWord;
-        pWord = pWord + 1;
-        VInfo->pStream = pWord;
-        VInfo->BitsLeft = VideoWordBits - n;
-        res = res | ((VInfo->Bits & ((1 << n) - 1)) << bitsLeft);
         VInfo->Bits >>= n;
+    } else {
+        res = VInfo->Bits & ((1 << VInfo->BitsLeft) - 1);
+        n -= VInfo->BitsLeft;
+        VInfo->Bits = *VInfo->pStream++;
+        res |= (VInfo->Bits & ((1 << n) - 1)) << VInfo->BitsLeft;
+        VInfo->Bits >>= n;
+        VInfo->BitsLeft = VideoWordBits - n;
     }
-done:
     return res;
 }
 
@@ -602,23 +561,14 @@ static long GetNBitsSigned(SVideoInfo *VInfo, int n) {
  * @return bitBuf & 1
  */
 static long GetBit(SVideoInfo *VInfo) {
-    int bitsLeft = VInfo->BitsLeft;
-    if (bitsLeft != 0) goto past_refill;
-    {
-        // See GetNBitsUnsigned: this refill constant is register-sensitive.
-        register int WordBits asm("$3") = VideoWordBits;
-        bitsLeft = VideoWordBits;
-        ulong *pWord = VInfo->pStream;
-        int word = *pWord;
-        VInfo->pStream = pWord + 1;
-        VInfo->BitsLeft = WordBits;
-        VInfo->Bits = word;
+    if (VInfo->BitsLeft == 0) {
+        VInfo->Bits = *VInfo->pStream++;
+        VInfo->BitsLeft = VideoWordBits;
     }
-past_refill:;
-    int word = VInfo->Bits;
-    VInfo->BitsLeft = bitsLeft - 1;
-    VInfo->Bits = static_cast<u32>(word) >> 1;
-    return word & 1;
+    VInfo->BitsLeft--;
+    long bit = VInfo->Bits & 1;
+    VInfo->Bits >>= 1;
+    return bit;
 }
 
 

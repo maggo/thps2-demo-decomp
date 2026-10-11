@@ -3,15 +3,11 @@
 // Functions: 108 reconstructed entries
 // Address range: 0x800370EC - 0x8003E690
 //
-// Compiled with cc1plus (GCC 2.91.66-psx). Compiler auto-mangles symbol names.
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
-#define __SKIP_CBIT_EXTERNS__
-
-#define __SKIP_CQUADBIT_EXTERNS__
-
-#define __SKIP_CRIBBON_EXTERNS__
-
-#define __SKIP_CCHUNKBIT_EXTERNS__
+#define CVECTOR_COMPONENT_CTORS
+#define CCLASS_POLY_BIT_FAMILY
+#include "CCLASS_POLY.h"
 
 #define BIT_GLOW_ELEMENT_LAYOUT
 #define BIT_OWNER_DECLARATIONS
@@ -35,59 +31,16 @@ inline void *operator new(unsigned int, void *storage)
 
 struct tag_S_Pal;
 
-/** Virtual slots shared by every transient bit-effect subtype. */
-struct CBitVTable {
-    void *mReserved[2];
-    void (*Destroy)(CBit *, int);
-    void (*Move)(CBit *);
-    void (*Display)(CBit *);
-};
-
 #include "TEXTURE.h"
 
 #include "SANIMFRAME.h"
-
-/** Base state shared by every transient bit effect. */
-struct CBit {
-    struct CBit *mPrevious;
-    struct CBit *mNext;
-    short mAge;
-    unsigned short mLifetime;
-    struct CVector mTweenPos;
-    struct CVector mPos;
-    struct CVector mVel;
-    struct CVector mAcc;
-    struct CFriction mFric;
-    unsigned char mDead;
-    unsigned short mFrigDeltaZ;
-    unsigned char mProtected;
-    unsigned char mType;
-    void **_vf;
-
-    /** Construct the base transient-bit state. */
-    CBit();
-    /** Allocate zero-initialized storage from the transient-bit heap. */
-    static void *operator new(unsigned int size);
-    ~CBit();
-    /** Insert this bit at the head of a transient-bit list. */
-    void AttachTo(void *list);
-    /** Remove this bit from a transient-bit list. */
-    void DeleteFrom(void *list);
-    /** Mark this bit for removal. */
-    void Die();
-    /** Assign the bit's world-space position. */
-    void SetPos(const CVector &position);
-    /** Default movement hook for transient bits. */
-    void Move();
-    /** Releases transient-bit storage through the owning allocator. */
-    static void operator delete(void *p);
-};
 
 #include "CSPECIALDISPLAY.h"
 
 #include "CNONRENDEREDBIT.h"
 
-/** Textured four-point particle state. */
+#include "SRIBBONPOINT.h"
+
 struct CFT4Bit : CBit {
     short mTransDecay;
     short mScaleDecay;
@@ -126,11 +79,8 @@ struct CFT4Bit : CBit {
     int Shrink(int die);
     /** Fade the particle tint and optionally retire the particle. */
     int Fade(int die);
-    /** Releases textured-bit storage through the CBit allocator. */
-    static void operator delete(void *p) { CBit::operator delete(p); }
 };
 
-/** Four-corner world-space particle. */
 struct CQuadBit : CBit {
     struct CVector mPosB;
     struct CVector mPosC;
@@ -153,132 +103,10 @@ struct CQuadBit : CBit {
     void SetSemiTransparent();
     /** Assign a grayscale transparency value to the quad. */
     void SetTransparency(unsigned char transparency);
-    /** Releases quad storage through the CBit allocator. */
-    static void operator delete(void *p) { CBit::operator delete(p); }
     void OrientUsing(const struct CVector &position,
                      const SVECTOR &normal,
                      int dx, int dy, int angle);
 };
-
-struct CFlatBit : CFT4Bit {
-    short mAngle;
-    short mAngVel;
-    short mAngAcc;
-    unsigned short mAngFric;
-    unsigned int mPostScale;
-    unsigned char mForcedPriority;
-    unsigned char mSemiTransparencyRate;
-    unsigned short mCLUT;
-
-    /** Construct and attach a flat textured particle. */
-    CFlatBit();
-    ~CFlatBit();
-    /** Releases flat-bit storage through the CBit allocator. */
-    static void operator delete(void *p) { CBit::operator delete(p); }
-};
-
-struct CLinked2EndedBit : CFT4Bit {
-    struct CVector mEndPosA;
-    struct CVector mEndPosB;
-
-    /** Construct and attach a linked two-ended transient bit. */
-    CLinked2EndedBit();
-    ~CLinked2EndedBit();
-    /** Releases linked-bit storage through the CBit allocator. */
-    static void operator delete(void *p) { CBit::operator delete(p); }
-};
-
-struct CPixel : CBit {
-    unsigned int tag;
-    unsigned char r0;
-    unsigned char g0;
-    unsigned char b0;
-    unsigned char code;
-    unsigned int mWidthHeight;
-
-    CPixel();
-    ~CPixel();
-    /** Releases pixel storage through the CBit allocator. */
-    static void operator delete(void *p) { CBit::operator delete(p); }
-};
-
-struct CSpark : CPixel {
-    unsigned char mFadeR;
-    unsigned char mFadeG;
-    unsigned char mFadeB;
-    int mFloorY;
-
-    CSpark(struct CVector &position, int velocity, int gravity, int life);
-    ~CSpark();
-    /** Advance the spark and fade its colour channels. */
-    void Move();
-    /** Releases spark storage through the CBit allocator. */
-    static void operator delete(void *p) { CBit::operator delete(p); }
-};
-
-struct CSimpleAnim : CFlatBit {
-    int mDie;
-    int mDieFrame;
-
-    ~CSimpleAnim();
-    /** Advance the animation and retire it at the configured frame. */
-    void Move();
-    /** Releases animated-bit storage through the CBit allocator. */
-    static void operator delete(void *p) { CBit::operator delete(p); }
-};
-
-#include "CMOTIONBLUR.h"
-
-struct CMotionBlurImmortal : CMotionBlur {
-    ~CMotionBlurImmortal();
-    /** Advance the immortal blur without retiring it on shrink or fade. */
-    void Move();
-    /** Releases immortal motion-blur storage through the CBit allocator. */
-    static void operator delete(void *p) { CBit::operator delete(p); }
-};
-
-/** One animated segment owned by a ribbon effect. */
-struct CRibbonBit : CLinked2EndedBit {
-    CRibbonBit();
-    ~CRibbonBit();
-    /** Advance the ribbon segment's animation frame. */
-    void Move();
-    /** Releases ribbon-segment storage through the CBit allocator. */
-    static void operator delete(void *p) { CBit::operator delete(p); }
-};
-
-#include "SRIBBONPOINT.h"
-
-#include "CRIBBON.h"
-
-#include "CGLOW.h"
-
-#include "CWOBBLYGLOW.h"
-
-#include "SLINESEG.h"
-
-#include "CPOLYLINE.h"
-
-#include "CGPOLYLINE.h"
-
-#include "CGLINE.h"
-
-/**
- * Scratchpad layout used by M3dAsm_ClipLine.
- *
- * The assembly consumes two input vectors at offsets 0x00 and 0x0c, exposes
- * the two screen words used by BIT at 0x18 and 0x1c, and uses the remaining
- * words through offset 0x5c as private clipping workspace.
- */
-struct SClipLineBuf {
-    struct CVector Input[2];
-    unsigned int Output[2];
-    unsigned int Workspace[16];
-};
-
-#include "CCHUNKBIT.h"
-
-#include "CSMOKETRAIL.h"
 
 struct CGenPoly : CBit {
     unsigned short mGouraud;
@@ -303,17 +131,95 @@ struct CGenPoly : CBit {
     unsigned int mTexWin;
 
     ~CGenPoly();
-    /** Releases generated-polygon storage through the CBit allocator. */
-    static void operator delete(void *p) { CBit::operator delete(p); }
+};
+
+#include "CCHUNKBIT.h"
+
+#include "CGLOW.h"
+
+#include "CWOBBLYGLOW.h"
+
+struct CFlatBit : CFT4Bit {
+    short mAngle;
+    short mAngVel;
+    short mAngAcc;
+    unsigned short mAngFric;
+    unsigned int mPostScale;
+    unsigned char mForcedPriority;
+    unsigned char mSemiTransparencyRate;
+    unsigned short mCLUT;
+
+    /** Construct and attach a flat textured particle. */
+    CFlatBit();
+    ~CFlatBit();
+};
+
+struct CLinked2EndedBit : CFT4Bit {
+    struct CVector mEndPosA;
+    struct CVector mEndPosB;
+
+    /** Construct and attach a linked two-ended transient bit. */
+    CLinked2EndedBit();
+    ~CLinked2EndedBit();
+};
+
+struct CPixel : CBit {
+    unsigned int tag;
+    unsigned char r0;
+    unsigned char g0;
+    unsigned char b0;
+    unsigned char code;
+    unsigned int mWidthHeight;
+
+    CPixel();
+    ~CPixel();
+};
+
+struct CSpark : CPixel {
+    unsigned char mFadeR;
+    unsigned char mFadeG;
+    unsigned char mFadeB;
+    int mFloorY;
+
+    CSpark(struct CVector &position, int velocity, int gravity, int life);
+    ~CSpark();
+    /** Advance the spark and fade its colour channels. */
+    void Move();
+};
+
+struct CSimpleAnim : CFlatBit {
+    int mDie;
+    int mDieFrame;
+
+    ~CSimpleAnim();
+    /** Advance the animation and retire it at the configured frame. */
+    void Move();
+};
+
+#include "CMOTIONBLUR.h"
+
+struct CMotionBlurImmortal : CMotionBlur {
+    ~CMotionBlurImmortal();
+    /** Advance the immortal blur without retiring it on shrink or fade. */
+    void Move();
 };
 
 struct CFrag : CFlatBit {
     ~CFrag();
     /** Advance fragment physics and retire it at the end of its lifetime. */
     void Move();
-    /** Releases fragment storage through the CBit allocator. */
-    static void operator delete(void *p) { CBit::operator delete(p); }
 };
+
+struct CRibbonBit : CLinked2EndedBit {
+    CRibbonBit();
+    ~CRibbonBit();
+    /** Advance the ribbon segment's animation frame. */
+    void Move();
+};
+
+#include "CRIBBON.h"
+
+#include "CSMOKETRAIL.h"
 
 struct CGouraudRibbon : CSpecialDisplay {
     int mTrail;
@@ -323,11 +229,11 @@ struct CGouraudRibbon : CSpecialDisplay {
     ~CGouraudRibbon();
     /** Render the Gouraud-shaded ribbon into the current primitive buffer. */
     void Display();
-    /** Releases Gouraud-ribbon storage through the CBit allocator. */
-    static void operator delete(void *p) { CBit::operator delete(p); }
 };
 
 struct CGlassBit : CBit {
+    CGlassBit(const CVector &Pos, const CVector &Vel, int GroundY,
+              u8 r, u8 g, u8 b, int dx, int dy, int dz);
     struct CVector mPosA;
     struct CVector mPosB;
     struct CVector mPosC;
@@ -343,11 +249,23 @@ struct CGlassBit : CBit {
     ~CGlassBit();
     /** Advance fragment physics and its bounce/fade lifecycle. */
     void Move();
-    /** Releases glass-fragment storage through the CBit allocator. */
-    static void operator delete(void *p) { CBit::operator delete(p); }
 };
 
 #include "CTEXTUREDRIBBON.h"
+
+#include "SLINESEG.h"
+
+#include "CPOLYLINE.h"
+
+#include "CGPOLYLINE.h"
+
+#include "CGLINE.h"
+
+struct SClipLineBuf {
+    struct CVector Input[2];
+    unsigned int Output[2];
+    unsigned int Workspace[16];
+};
 
 /** Scratchpad projection record used by both ribbon display routines. */
 struct SCalcBuffer {
@@ -396,6 +314,11 @@ typedef char Bit_SCalcBuffer_size_must_be_28[(sizeof(SCalcBuffer) == 28) ? 1 : -
 #include "MEM.h"
 #include <LIBGPU.H>
 
+/** Bytes currently owned by the transient-bit allocator. */
+int TotalBitUsage = 0;
+/** Number of currently live transient bits. */
+int BitCount = 0;
+
 /** Enable the transient bit-effect cache by default. */
 int UseCacheForBits __attribute__((section(".sdata"))) = 1;
 
@@ -404,7 +327,7 @@ int UseCacheForBits __attribute__((section(".sdata"))) = 1;
  * Keep the constructor-facing declaration opaque while the owner-local
  * definition below supplies the same assembler label without an XDEF.
  */
-extern char DAT_800d9970[];
+extern char s_Ribbon[];
 
 // Absolute-addressed globals (force lui/addiu, not gp-relative)
 #define RCOSSIN_DECL_TYPE int
@@ -426,10 +349,6 @@ struct SSinCos
 #ifndef getScratchAddr
 #define getScratchAddr(offset) ((u32 *)(0x1f800000 + (offset) * 4))
 #endif
-
-// === Extern vtable symbols ===
-#define BIT_DECLARE_VTABLE_ADDRESSES
-#include "BIT.h"
 
 // BIT init tables and their small-data animation-name strings.
 static char *AnimNames[6] = {
@@ -454,8 +373,8 @@ SAnimFrame *QuickAnimLookup[6] = {
  * colour defaults that follow them.
  */
 Texture *pShadowTexture __attribute__((section(".sdata"))) = 0;
-CSVector SparkTrajectory __attribute__((section(".sdata"))) = {0, 0, 0};
-CSVector SparkTrajectoryCone __attribute__((section(".sdata"))) = {0, 0, 0};
+CSVector SparkTrajectory __attribute__((section(".sdata")));
+CSVector SparkTrajectoryCone __attribute__((section(".sdata")));
 unsigned int SparkSize __attribute__((section(".sdata"))) = 1;
 void *SparkSemiTrans __attribute__((section(".sdata"))) = (void *)1;
 CVECTOR SparkRGB __attribute__((section(".sdata"))) = {0x80, 0x80, 0x80, 0};
@@ -464,7 +383,7 @@ namespace BitAddressViewOwners
 {
 extern "C"
 {
-static char DAT_800d9970[8]
+static char s_Ribbon[8]
     __attribute__((section(".sdata"))) = "Ribbon";
 }
 }
@@ -488,69 +407,6 @@ struct SDoubleBuffer
 #include "M3DASM.h"
 
 #include "CVECTOROPS.h"
-
-// === Extern "C" forward declarations ===
-#define BIT_DECLARE_BASE_CONSTRUCTOR
-#include "BIT.h"
-#define CBit_ctor BitConstructorABI::__4CBit
-#define BIT_DECLARE_FT4_CONSTRUCTOR
-#include "BIT.h"
-#define CFT4Bit_ctor BitConstructorABI::__7CFT4Bit
-#define BIT_DECLARE_LINKED_2_ENDED_CONSTRUCTOR
-#include "BIT.h"
-#define CLinked2EndedBit_ctor BitConstructorABI::__16CLinked2EndedBit
-#define BIT_DECLARE_MOTION_BLUR_CONSTRUCTOR
-#include "BIT.h"
-#define CMotionBlur_ctor \
-    BitMotionBlurConstructorABI::__11CMotionBlurRC7CVectorR7CVectorPciii
-#define BIT_DECLARE_RIBBON_BIT_CONSTRUCTOR
-#include "BIT.h"
-#define CRibbonBit_ctor BitConstructorABI::__10CRibbonBit
-
-// C++ cannot take a destructor's address, so BIT keeps owner-local address
-// views of the natural destructor symbols used by its manual vtables.
-/** Address the CTexturedRibbon deleting destructor from its owner vtable. */
-void CTexturedRibbon_dtor(CTexturedRibbon *ribbon, int inCharge)
-    asm("_._15CTexturedRibbon");
-/** Address the CGouraudRibbon deleting destructor from its owner vtable. */
-void CGouraudRibbon_dtor(CGouraudRibbon *ribbon, int inCharge)
-    asm("_._14CGouraudRibbon");
-/** Address the CSpecialDisplay deleting destructor from its owner vtable. */
-void CSpecialDisplay_dtor(CSpecialDisplay *display, int inCharge)
-    asm("_._15CSpecialDisplay");
-
-/**
- * Ribbon and special-display dispatch tables in the BIT owner.
- *
- * GCC 2.x aligns each five-word table to eight bytes, leaving one zero word
- * between adjacent tables. The last table ends without trailing owner data.
- */
-int __vt_15CTexturedRibbon[5]
-    __attribute__((section(".rdata"), aligned(8))) = {
-        0,
-        0,
-        (int)&CTexturedRibbon_dtor,
-        (int)(void (*)(CBit *))&CBit::Move,
-        (int)(void (*)(CTexturedRibbon *))&CTexturedRibbon::Display,
-};
-
-int __vt_14CGouraudRibbon[5]
-    __attribute__((section(".rdata"), aligned(8))) = {
-        0,
-        0,
-        (int)&CGouraudRibbon_dtor,
-        (int)(void (*)(CBit *))&CBit::Move,
-        (int)(void (*)(CGouraudRibbon *))&CGouraudRibbon::Display,
-};
-
-int __vt_15CSpecialDisplay[5]
-    __attribute__((section(".rdata"), aligned(8))) = {
-        0,
-        0,
-        (int)&CSpecialDisplay_dtor,
-        (int)(void (*)(CBit *))&CBit::Move,
-        (int)(void (*)(CSpecialDisplay *))&CSpecialDisplay::Display,
-};
 
 // === Function implementations (address order) ===
 
@@ -632,22 +488,21 @@ void Bit_Init(void)
 void DeleteBitList(CBit *pList)
 {
     CBit *pNext;
-    if (pList == 0)
-        goto done;
-    pNext = pList->mNext;
-    do
+    if (pList != 0)
     {
-        if (pList->mProtected == 0 && pList != 0)
+        pNext = pList->mNext;
+        while (1)
         {
-            CBitVTable *vtable = (CBitVTable *)pList->_vf;
-            vtable->Destroy(pList, 3);
+            if (pList->mProtected == 0 && pList != 0)
+            {
+                delete pList;
+            }
+            if (pNext == 0)
+                break;
+            pList = pNext;
+            pNext = pNext->mNext;
         }
-        if (pNext == 0)
-            goto done;
-        pList = pNext;
-        pNext = pNext->mNext;
-    } while (1);
-done:;
+    }
 }
 
 /**
@@ -687,22 +542,21 @@ void Bit_DeleteAll(void)
 static void RemoveDeadBits(CBit *pBit)
 {
     CBit *pNext;
-    if (pBit == 0)
-        goto done;
-    pNext = pBit->mNext;
-    do
+    if (pBit != 0)
     {
-        if (pBit->mDead != 0 && pBit != 0)
+        pNext = pBit->mNext;
+        while (1)
         {
-            CBitVTable *vtable = (CBitVTable *)pBit->_vf;
-            vtable->Destroy(pBit, 3);
+            if (pBit->mDead != 0 && pBit != 0)
+            {
+                delete pBit;
+            }
+            if (pNext == 0)
+                break;
+            pBit = pNext;
+            pNext = pNext->mNext;
         }
-        if (pNext == 0)
-            goto done;
-        pBit = pNext;
-        pNext = pNext->mNext;
-    } while (1);
-done:;
+    }
 }
 
 /**
@@ -889,13 +743,12 @@ void CBit::SetPos(const CVector &pos)
  * @param _this  Object being operated on.
  * @return `this` pointer (GCC 2.x ctor convention).
  */
-CBit *CBit_ctor(CBit *self)
+CBit::CBit()
 {
-    self->_vf = (void **)&__vt_4CBit;
-    self->mFric.Set(1, 1, 1);
+
+    mFric.Set(1, 1, 1);
     int cnt = BitCount;
     BitCount = cnt + 1;
-    return self;
 }
 
 /**
@@ -910,7 +763,7 @@ CBit *CBit_ctor(CBit *self)
 CBit::~CBit()
 {
     int cnt = BitCount;
-    _vf = (void **)&__vt_4CBit;
+
     BitCount = cnt - 1;
 }
 
@@ -925,7 +778,7 @@ CBit::~CBit()
  */
 CSpecialDisplay::CSpecialDisplay()
 {
-    _vf = (void **)__vt_15CSpecialDisplay;
+
     AttachTo(&SpecialDisplayList);
 }
 
@@ -940,7 +793,7 @@ CSpecialDisplay::CSpecialDisplay()
  */
 CSpecialDisplay::~CSpecialDisplay()
 {
-    _vf = (void **)__vt_15CSpecialDisplay;
+
     DeleteFrom(&SpecialDisplayList);
 }
 
@@ -955,7 +808,7 @@ CSpecialDisplay::~CSpecialDisplay()
  */
 CNonRenderedBit::CNonRenderedBit()
 {
-    _vf = (void **)&__vt_15CNonRenderedBit;
+
     AttachTo(&NonRenderedBitList);
 }
 
@@ -970,7 +823,7 @@ CNonRenderedBit::CNonRenderedBit()
  */
 CNonRenderedBit::~CNonRenderedBit()
 {
-    _vf = (void **)&__vt_15CNonRenderedBit;
+
     DeleteFrom(&NonRenderedBitList);
 }
 
@@ -985,14 +838,12 @@ CNonRenderedBit::~CNonRenderedBit()
  * @param self  Object being operated on.
  * @return `this` pointer (GCC 2.x ctor convention).
  */
-CFT4Bit *CFT4Bit_ctor(CFT4Bit *self)
+CFT4Bit::CFT4Bit()
 {
-    CBit_ctor(self);
-    self->_vf = (void **)&__vt_7CFT4Bit;
-    self->mAnimSpeed = 0x80;
-    self->mScale = 0x190;
-    self->mCodeBGR = 0x2C808080;
-    return self;
+
+    mAnimSpeed = 0x80;
+    mScale = 0x190;
+    mCodeBGR = 0x2C808080;
 }
 
 /**
@@ -1008,7 +859,7 @@ CFT4Bit *CFT4Bit_ctor(CFT4Bit *self)
  */
 CFT4Bit::~CFT4Bit()
 {
-    _vf = (void **)&__vt_7CFT4Bit;
+
 }
 
 /**
@@ -1056,10 +907,7 @@ void CFT4Bit::SetSemiTransparent()
  */
 void CFT4Bit::SetTint(u8 r, u8 g, u8 b)
 {
-    u32 mask = 0xFF000000;
-    register u32 val asm("$2") = mCodeBGR;
-    val = (val & mask) | ((u32)b << 16) | ((u32)g << 8) | r;
-    mCodeBGR = val;
+    mCodeBGR = (mCodeBGR & 0xFF000000) | ((u32)b << 16) | ((u32)g << 8) | r;
 }
 
 /**
@@ -1253,7 +1101,8 @@ int CFT4Bit::Fade(int die)
     int b = (color >> 16) & 0xff;
     int r = *(u8 *)&mCodeBGR;
     int decay = mTransDecay;
-    u16 decay_u = *(u16 *)&mTransDecay;
+    u16 decay_u;
+    u16 decay_raw = *(u16 *)&mTransDecay;
     if (r < decay)
     {
         r = 0;
@@ -1263,6 +1112,7 @@ int CFT4Bit::Fade(int die)
         int d = *(u8 *)&mTransDecay;
         r = (r - d) & 0xff;
     }
+    decay_u = decay_raw;
     int decay2 = (int)(s16)decay_u;
     if (g < decay2)
     {
@@ -1273,7 +1123,6 @@ int CFT4Bit::Fade(int die)
         int d = *(u8 *)&mTransDecay;
         g = (g - d) & 0xff;
     }
-    asm("" : "+r"(decay_u));
     int decay3 = (int)(s16)decay_u;
     if (b < decay3)
     {
@@ -1300,7 +1149,7 @@ int CFT4Bit::Fade(int die)
  */
 CQuadBit::CQuadBit()
 {
-    _vf = (void **)&__vt_8CQuadBit;
+
     mCodeBGR = 0x2C808080;
     AttachTo(&QuadBitList);
 }
@@ -1318,7 +1167,7 @@ CQuadBit::CQuadBit()
  */
 CQuadBit::~CQuadBit()
 {
-    _vf = (void **)&__vt_8CQuadBit;
+
     DeleteFrom(&QuadBitList);
 }
 
@@ -1386,16 +1235,7 @@ void CQuadBit::SetSemiTransparent()
  */
 void CQuadBit::SetTransparency(u8 t)
 {
-    register u32 byte asm("$5") = t;
-    asm("" : "+r"(byte));
-    u32 mask = 0xFF000000;
-    u32 color = mCodeBGR;
-    u32 hi = byte << 16;
-    color = color & mask;
-    color = color | hi;
-    color = color | (byte << 8);
-    color = color | byte;
-    mCodeBGR = color;
+    mCodeBGR = (mCodeBGR & 0xFF000000) | ((u32)t << 16) | ((u32)t << 8) | t;
 }
 
 /**
@@ -1449,7 +1289,7 @@ void CQuadBit::OrientUsing(const CVector &Position, const SVECTOR &Normal,
  */
 CGenPoly::~CGenPoly()
 {
-    _vf = (void **)&__vt_8CGenPoly;
+
     DeleteFrom(&GenPolyList);
 }
 
@@ -1489,7 +1329,7 @@ struct Bit_Vector : CVector
  */
 CChunkBit::CChunkBit(const CSVector &a, const CSVector &b, const CSVector &c)
 {
-    _vf = (void **)&__vt_9CChunkBit;
+
     mType = 6;
     mPosA.vx = a.vx;
     mPosA.vy = a.vy;
@@ -1526,7 +1366,7 @@ CChunkBit::CChunkBit(const CSVector &a, const CSVector &b, const CSVector &c)
  */
 CChunkBit::~CChunkBit()
 {
-    _vf = (void **)&__vt_9CChunkBit;
+
     DeleteFrom(&ChunkBitList);
 }
 
@@ -1611,78 +1451,23 @@ void CChunkBit::SetUVs(u16 Clut, u16 TPage,
  */
 void CChunkBit::CalculateWorldCoords()
 {
-    CChunkBit *self = this;
     MATRIX Transform;
-    M3dMaths_RotMatrixYXZ((SVECTOR *)&self->mAngles, &Transform);
+    M3dMaths_RotMatrixYXZ((SVECTOR *)&mAngles, &Transform);
     SetRotMatrix(&Transform);
-    M3dAsm_SetTransVector(reinterpret_cast<Vector *>(&self->mPos));
+    M3dAsm_SetTransVector(reinterpret_cast<Vector *>(&mPos));
 
-    int *src;
-    int *dst;
-
-    // Transform vertex 0: mPosA -> mWorldPosA
-    src = (int *)&self->mPosA;
-    asm(
-        "lwc2 $0, 0(%0)\n\t"
-        "lwc2 $1, 4(%0)\n\t"
-        "nop\n\t"
-        "nop\n\t"
-        ".word 0x4A480012\n\t"
-        : "+r"(src));
-    dst = (int *)&self->mWorldPosA;
-    asm(
-        "swc2 $25, 0(%0)\n\t"
-        "swc2 $26, 4(%0)\n\t"
-        "swc2 $27, 8(%0)\n\t"
-        : : "r"(dst), "r"(src));
-
-    // Transform vertex 1: mPosB -> mWorldPosB
-    src = (int *)&self->mPosB;
-    asm(
-        "lwc2 $0, 0(%0)\n\t"
-        "lwc2 $1, 4(%0)\n\t"
-        "nop\n\t"
-        "nop\n\t"
-        ".word 0x4A480012\n\t"
-        : "+r"(src));
-    dst = (int *)&self->mWorldPosB;
-    asm(
-        "swc2 $25, 0(%0)\n\t"
-        "swc2 $26, 4(%0)\n\t"
-        "swc2 $27, 8(%0)\n\t"
-        : : "r"(dst), "r"(src));
-
-    // Transform vertex 2: mPosC -> mWorldPosC
-    src = (int *)&self->mPosC;
-    asm(
-        "lwc2 $0, 0(%0)\n\t"
-        "lwc2 $1, 4(%0)\n\t"
-        "nop\n\t"
-        "nop\n\t"
-        ".word 0x4A480012\n\t"
-        : "+r"(src));
-    dst = (int *)&self->mWorldPosC;
-    asm(
-        "swc2 $25, 0(%0)\n\t"
-        "swc2 $26, 4(%0)\n\t"
-        "swc2 $27, 8(%0)\n\t"
-        : : "r"(dst), "r"(src));
-
-    // Transform vertex 3: mPosD -> mWorldPosD
-    src = (int *)&self->mPosD;
-    asm(
-        "lwc2 $0, 0(%0)\n\t"
-        "lwc2 $1, 4(%0)\n\t"
-        "nop\n\t"
-        "nop\n\t"
-        ".word 0x4A480012\n\t"
-        : : "r"(src));
-    self = (CChunkBit *)&self->mWorldPosD;
-    asm(
-        "swc2 $25, 0(%0)\n\t"
-        "swc2 $26, 4(%0)\n\t"
-        "swc2 $27, 8(%0)\n\t"
-        : : "r"(self));
+    gte_ldv0(&mPosA);
+    gte_rtv0tr();
+    gte_stlvnl(&mWorldPosA);
+    gte_ldv0(&mPosB);
+    gte_rtv0tr();
+    gte_stlvnl(&mWorldPosB);
+    gte_ldv0(&mPosC);
+    gte_rtv0tr();
+    gte_stlvnl(&mWorldPosC);
+    gte_ldv0(&mPosD);
+    gte_rtv0tr();
+    gte_stlvnl(&mWorldPosD);
 }
 
 
@@ -1702,7 +1487,7 @@ CGlow::CGlow(u32 NumPoints, u32 NumFringes)
 {
     CGlow *glow = this;
     int numSections = NumPoints * 2;
-    glow->_vf = (void **)&__vt_5CGlow;
+
     glow->mNumSections = numSections;
     glow->mNumFringes = NumFringes;
     glow->mStepAngle = (short)(0x1000u / (u32)numSections);
@@ -1711,24 +1496,15 @@ CGlow::CGlow(u32 NumPoints, u32 NumFringes)
         (numSections + numSections * NumFringes) * sizeof(SSection), 0, 1);
     glow->mpSections = sections;
     int allocSize = Mem_GetBlockSize(sections);
-    int i = 0;
-    register int count asm("$4") = glow->mNumSections * glow->mNumFringes;
+    int i;
     int usage = TotalBitUsage;
     usage = usage + 4;
     usage = usage + allocSize;
     TotalBitUsage = usage;
     glow->mpFringes = (SFringeQuad *)(glow->mpSections + glow->mNumSections);
-    if (count != 0)
+    for (i = 0; (u32)i < (u32)(glow->mNumSections * glow->mNumFringes); i++)
     {
-        u32 fringeCode = 0x3a000000;
-        do
-        {
-            glow->mpFringes[i].CodeBGR = fringeCode;
-            i++;
-            int loopSections = glow->mNumSections;
-            register int loopFringes asm("$3") = glow->mNumFringes;
-            count = loopSections * loopFringes;
-        } while ((u32)i < (u32)count);
+        glow->mpFringes[i].CodeBGR = 0x3a000000;
     }
     glow->mCentreCodeBGR = 0x32000000;
     glow->mMask = -1;
@@ -1759,17 +1535,8 @@ CGlow::CGlow(
     u8 r0, u8 g0, u8 b0, u8 r1, u8 g1, u8 b1)
     : CBit()
 {
-    int self = (int)this;
-    CGlow *glow = (CGlow *)self;
-    int rad = InnerRadius;
-    u8 cR = r0;
-    u8 cG = g0;
-    u8 cB = b0;
-    u8 fR = r1;
-    u8 fG = g1;
-    u8 fB = b1;
+    CGlow *glow = this;
 
-    glow->_vf = (void **)&__vt_5CGlow;
     glow->mNumSections = 8;
     glow->mStepAngle = 0x200;
     glow->mNumFringes = 1;
@@ -1783,60 +1550,18 @@ CGlow::CGlow(
 
     glow->mPos = Pos;
 
-    /*
-     * Keep the ring fields representation-addressed after initialization.
-     * The target reuses one index for all three rings and initializes the
-     * centre colour before taking the section-count snapshot for the next
-     * phase.
-     */
-    u32 i = 0;
-    if (*(u32 *)(self + 0x50) != 0)
-    {
-        do
-        {
-            int base = *(int *)(self + 0x48);
-            *(int *)(i * 8 + base) = rad;
-            i++;
-        } while (i < *(u32 *)(self + 0x50));
-    }
+    for (u32 i = 0; i < glow->mNumSections; i++)
+        glow->mpSections[i].Radius = InnerRadius;
 
-    i = 0;
-    u32 centreBlue = (u32)cB << 16;
-    u32 centreGreen = ((u32)cG << 8) | 0x32000000;
-    u32 centreGB = centreBlue | centreGreen;
-    u32 centreColor = centreGB | cR;
-    u32 PadBGR = ((u32)fB << 16) | ((u32)fG << 8) | fR;
-    *(u32 *)(self + 0x58) = centreColor;
-    u32 count = *(u32 *)(self + 0x50);
-    u32 fringeCount = count;
-    PadBGR = PadBGR | fR;
+    glow->mCentreCodeBGR = 0x32000000 | ((u32)b0 << 16) | ((u32)g0 << 8) | r0;
+    u32 PadBGR = ((u32)b1 << 16) | ((u32)g1 << 8) | r1;
+    for (u32 i = 0; i < glow->mNumSections; i++)
+        glow->mpSections[i].PadBGR = PadBGR;
 
-    if (count == 0)
+    for (u32 i = 0; i < glow->mNumSections; i++)
     {
-        goto check_fringes;
-    }
-
-    do
-    {
-        int base = *(int *)(self + 0x48);
-        *(u32 *)(i * 8 + base + 4) = PadBGR;
-        count = *(u32 *)(self + 0x50);
-        fringeCount = count;
-        i++;
-    } while (i < count);
-
-check_fringes:
-    i = 0;
-    if (fringeCount != 0)
-    {
-        do
-        {
-            int offset = i << 3;
-            *(int *)(offset + *(int *)(self + 0x4c)) = FringeRadius;
-            offset = offset + *(int *)(self + 0x4c);
-            *(u32 *)(offset + 4) = 0x3A000000;
-            i++;
-        } while (i < *(u32 *)(self + 0x50));
+        glow->mpFringes[i].Width = FringeRadius;
+        glow->mpFringes[i].CodeBGR = 0x3A000000;
     }
 
     glow->mMask = -1;
@@ -1854,7 +1579,7 @@ check_fringes:
  */
 CGlow::~CGlow()
 {
-    _vf = (void **)&__vt_5CGlow;
+
     int size = Mem_GetBlockSize(mpSections);
     int usage = TotalBitUsage;
     SSection *ptr2 = mpSections;
@@ -1949,24 +1674,9 @@ void CGlow::SetCentreRGB(u8 r, u8 g, u8 b)
  */
 void CGlow::SetRGB(u8 r, u8 g, u8 b)
 {
-    u32 i = 0;
-    register CGlow *self asm("$9") = this;
-    asm volatile("" : "+r"(self));
-    u32 rr = r & 0xff;
-    u32 gg = g & 0xff;
-    u32 bb = b & 0xff;
-    bb = bb << 16;
-    gg = gg << 8;
-    u32 PadBGR = bb | gg;
-    u32 count = self->mNumSections;
-    PadBGR = PadBGR | rr;
-    if (count == 0)
-        return;
-    do
-    {
-        self->mpSections[i].PadBGR = PadBGR;
-        i++;
-    } while (i < self->mNumSections);
+    u32 PadBGR = ((u32)b << 16) | ((u32)g << 8) | r;
+    for (u32 i = 0; i < mNumSections; i++)
+        mpSections[i].PadBGR = PadBGR;
 }
 
 /**
@@ -2055,7 +1765,7 @@ CWobblyGlow::CWobblyGlow(
 {
     CWobblyGlow *glow = this;
     int product = InnerRadius * Amp;
-    glow->_vf = (void **)&__vt_11CWobblyGlow;
+
     glow->mInnerRadius = InnerRadius;
     if (product < 0)
     {
@@ -2095,38 +1805,11 @@ CWobblyGlow::CWobblyGlow(
  */
 void CWobblyGlow::Move()
 {
-    u32 count = mNumSections;
-    u32 i = 0;
-    if (count == 0)
-        return;
-    register s16 *sineBase asm("$10") = (s16 *)&rcossin_tbl;
-    int *angles = mT;
-    int *velocities = mInc;
-    do
+    for (u32 i = 0; i < mNumSections; i++)
     {
-        int angle = *angles + *velocities;
-        *angles = angle;
-        int byteOff = (angle & 0xFFF) << 2;
-        s16 sine = *(s16 *)(byteOff + (int)sineBase);
-        int amplitude = mAmplitude;
-        int product = amplitude * sine;
-        int radiusBase = (int)mpSections;
-        int *radiusPtr = (int *)(i * 8 + radiusBase);
-        if (product < 0)
-        {
-            product = product + 0xFFF;
-        }
-        angles++;
-        int baseRadius = mInnerRadius;
-        int wobble = product >> 12;
-        *radiusPtr = baseRadius + wobble;
-
-        register u32 reloadCount asm("$4") = mNumSections;
-        asm volatile("" : "+r"(reloadCount));
-        count = reloadCount;
-        i++;
-        velocities++;
-    } while (i < count);
+        mT[i] += mInc[i];
+        mpSections[i].Radius = mInnerRadius + ((mAmplitude * Sine(mT[i])) / 4096);
+    }
 }
 
 /**
@@ -2140,7 +1823,7 @@ void CWobblyGlow::Move()
  */
 CFlatBit::CFlatBit()
 {
-    _vf = (void **)&__vt_8CFlatBit;
+
     AttachTo(&FlatBitList);
     mSemiTransparencyRate = 0x20;
     mAngFric = 1;
@@ -2160,7 +1843,7 @@ CFlatBit::CFlatBit()
  */
 CFlatBit::~CFlatBit()
 {
-    _vf = (void **)&__vt_8CFlatBit;
+
     DeleteFrom(&FlatBitList);
 }
 
@@ -2175,12 +1858,10 @@ CFlatBit::~CFlatBit()
  * @param self  Object being operated on.
  * @return `this` pointer (GCC 2.x ctor convention).
  */
-CLinked2EndedBit *CLinked2EndedBit_ctor(CLinked2EndedBit *self)
+CLinked2EndedBit::CLinked2EndedBit()
 {
-    CFT4Bit_ctor(self);
-    self->_vf = (void **)&__vt_16CLinked2EndedBit;
-    self->AttachTo(&Linked2EndedBitList);
-    return self;
+
+    AttachTo(&Linked2EndedBitList);
 }
 
 /**
@@ -2196,7 +1877,7 @@ CLinked2EndedBit *CLinked2EndedBit_ctor(CLinked2EndedBit *self)
  */
 CLinked2EndedBit::~CLinked2EndedBit()
 {
-    _vf = (void **)&__vt_16CLinked2EndedBit;
+
     DeleteFrom(&Linked2EndedBitList);
 }
 
@@ -2213,7 +1894,7 @@ CLinked2EndedBit::~CLinked2EndedBit()
  */
 CPixel::CPixel()
 {
-    _vf = (void **)&__vt_6CPixel;
+
     AttachTo(&PixelList);
 }
 
@@ -2228,7 +1909,7 @@ CPixel::CPixel()
  */
 CPixel::~CPixel()
 {
-    _vf = (void **)&__vt_6CPixel;
+
     DeleteFrom(&PixelList);
 }
 
@@ -2373,7 +2054,7 @@ void Bit_SetSparkFadeRGB(unsigned char r, unsigned char g, unsigned char b)
 CSpark::CSpark(CVector &pos, int vel, int gravity, int life)
 {
     int sizeMode = SparkSize & 0xf;
-    _vf = (void **)&__vt_6CSpark;
+
     if (sizeMode == 1)
     {
         code = 0x68;
@@ -2414,7 +2095,7 @@ CSpark::CSpark(CVector &pos, int vel, int gravity, int life)
  */
 CSpark::~CSpark()
 {
-    _vf = (void **)&__vt_6CSpark;
+
 }
 
 /**
@@ -2486,7 +2167,7 @@ void CSpark::Move()
  */
 CSimpleAnim::~CSimpleAnim()
 {
-    _vf = (void **)&__vt_11CSimpleAnim;
+
 }
 
 /**
@@ -2501,38 +2182,18 @@ CSimpleAnim::~CSimpleAnim()
 void CSimpleAnim::Move()
 {
     IncFrame();
+    if (mDie != 0)
     {
-        int loopMode = mDie;
-        if (loopMode != 0)
-        {
-            s8 frame = (signed char)mFrame;
-            int limit = mDieFrame;
-            if (frame >= limit)
-            {
-                Die();
-            }
-        }
-        else
-        {
-            s8 frame = (signed char)mFrame;
-            u8 maxFrames = mNumFrames;
-            if (frame < (int)maxFrames)
-                goto done_anim;
-            {
-                int negTwo = -2;
-                int mode = mDieFrame;
-                if (mode == negTwo)
-                {
-                    SetFrame(maxFrames - 1);
-                }
-                else
-                {
-                    SetFrame(0);
-                }
-            }
-        }
+        if ((s8)mFrame >= mDieFrame)
+            Die();
     }
-done_anim:;
+    else if ((s8)mFrame >= (int)mNumFrames)
+    {
+        if (mDieFrame == -2)
+            SetFrame(mNumFrames - 1);
+        else
+            SetFrame(0);
+    }
 }
 
 /**
@@ -2552,20 +2213,18 @@ done_anim:;
  * @param transdecay  Tint removed per update.
  * @return `this` pointer (GCC 2.x ctor convention).
  */
-CMotionBlur *CMotionBlur_ctor(
-    CMotionBlur *self, CVector *pos, CVector *vel, char *pAnimName,
+CMotionBlur::CMotionBlur(
+    const CVector &pos, CVector &vel, char *pAnimName,
     int initialscale, int scaledecay, int transdecay)
 {
-    ::new (self) CFlatBit();
-    self->_vf = (void **)&__vt_11CMotionBlur;
-    self->mPos = *pos;
-    self->mVel = *vel;
-    self->SetAnim(pAnimName);
-    self->SetSemiTransparent();
-    self->mScale = (s16)initialscale;
-    self->mScaleDecay = (s16)scaledecay;
-    self->mTransDecay = (s16)transdecay;
-    return self;
+
+    mPos = pos;
+    mVel = vel;
+    SetAnim(pAnimName);
+    SetSemiTransparent();
+    mScale = (s16)initialscale;
+    mScaleDecay = (s16)scaledecay;
+    mTransDecay = (s16)transdecay;
 }
 
 /**
@@ -2580,7 +2239,7 @@ CMotionBlur *CMotionBlur_ctor(
  */
 CMotionBlur::~CMotionBlur()
 {
-    _vf = (void **)&__vt_11CMotionBlur;
+
 }
 
 /**
@@ -2616,7 +2275,7 @@ void CMotionBlur::Move()
  */
 CMotionBlurImmortal::~CMotionBlurImmortal()
 {
-    _vf = (void **)&__vt_19CMotionBlurImmortal;
+
 }
 
 /**
@@ -2652,7 +2311,7 @@ void CMotionBlurImmortal::Move()
  */
 CFrag::~CFrag()
 {
-    _vf = (void **)&__vt_5CFrag;
+
 }
 
 /**
@@ -2666,58 +2325,21 @@ CFrag::~CFrag()
  */
 void CFrag::Move()
 {
-    register int v0 asm("$2") = mPos.vx;
-    int a1 = mVel.vx;
-    register int v1 asm("$3") = mPos.vy;
-    int a2 = mVel.vy;
-    register int a3 asm("$7") = mVel.vz;
-    register int a0 asm("$4") = mAcc.vy;
-    v0 = v0 + a1;
-    v1 = v1 + a2;
-    mPos.vx = v0;
-    v0 = mPos.vz;
-    a2 = a2 + a0;
-    mPos.vy = v1;
-    v1 = mAcc.vx;
-    a0 = mFric.vz;
-    a1 = a1 + v1;
-    v1 = mAcc.vz;
-    v0 = v0 + a3;
-    mPos.vz = v0;
-    v0 = mFric.vx;
-    mVel.vy = a2;
-    mVel.vx = a1;
-    a3 = a3 + v1;
-    v0 = a1 >> v0;
-    a1 = a1 - v0;
-    v1 = mFric.vy;
-    v0 = *(u8 *)&mFrame;
-    a0 = a3 >> a0;
-    mVel.vz = a3;
-    a3 = a3 - a0;
-    mVel.vx = a1;
-    mVel.vz = a3;
-    v1 = a2 >> v1;
-    a2 = a2 - v1;
-    v0 = v0 + 1;
-    mFrame = v0;
-    v0 = (s8)v0;
-    v1 = mNumFrames;
-    mVel.vy = a2;
-    if (v0 >= v1)
-    {
-        v0 = v1 - 1;
-        mFrame = v0;
-    }
-    v0 = *(u16 *)&mAge;
-    v1 = mLifetime;
-    v0 = v0 + 1;
-    mAge = v0;
-    v0 = (s16)v0;
-    if (v0 >= v1)
-    {
+    mPos.vx += mVel.vx;
+    mPos.vy += mVel.vy;
+    mPos.vz += mVel.vz;
+    mVel.vx += mAcc.vx;
+    mVel.vy += mAcc.vy;
+    mVel.vz += mAcc.vz;
+    mVel.vx -= mVel.vx >> mFric.vx;
+    mVel.vy -= mVel.vy >> mFric.vy;
+    mVel.vz -= mVel.vz >> mFric.vz;
+    mFrame++;
+    if ((s8)mFrame >= mNumFrames)
+        mFrame = mNumFrames - 1;
+    mAge++;
+    if (mAge >= mLifetime)
         Die();
-    }
 }
 
 /**
@@ -2731,7 +2353,7 @@ void CFrag::Move()
  */
 CRibbonBit::CRibbonBit()
 {
-    _vf = (void **)&__vt_10CRibbonBit;
+
 }
 
 /**
@@ -2745,7 +2367,7 @@ CRibbonBit::CRibbonBit()
  */
 CRibbonBit::~CRibbonBit()
 {
-    _vf = (void **)&__vt_10CRibbonBit;
+
 }
 
 /**
@@ -2785,7 +2407,7 @@ CRibbon::CRibbon(const CVector &pos, int numbits, int pointsperbit,
                  char *pMiddleAnimName, char *pEndAnimName, int scale,
                  int semitrans)
 {
-    _vf = (void **)&__vt_7CRibbon;
+
     mNumBits = numbits;
     mPointsPerBit = pointsperbit - 1;
     mNumPoints = numbits * (pointsperbit - 1) + 1;
@@ -2817,7 +2439,7 @@ CRibbon::CRibbon(const CVector &pos, int numbits, int pointsperbit,
             CBit::operator new(sizeof(CRibbonBit)));
         if (child != 0)
         {
-            child = CRibbonBit_ctor(child);
+            child = ::new (child) CRibbonBit;
         }
         *slot = child;
         ((CBit *)mBits[i])->mProtected = 1;
@@ -2845,7 +2467,7 @@ CRibbon::CRibbon(const CVector &pos, int numbits, int pointsperbit,
 CRibbon::~CRibbon()
 {
     int i = 0;
-    _vf = (void **)&__vt_7CRibbon;
+
     int count = mNumBits;
     if (count > 0)
     {
@@ -2854,8 +2476,7 @@ CRibbon::~CRibbon()
             CRibbonBit *child = mBits[i];
             if (child != 0)
             {
-                CBitVTable *vtable = (CBitVTable *)child->_vf;
-                vtable->Destroy(child, 3);
+                delete child;
                 count = mNumBits;
             }
             i++;
@@ -2996,15 +2617,15 @@ void CRibbon::SetPos(CVector &pos)
 CSmokeTrail::CSmokeTrail(
     CVector &pos, int numbits, int r, int g, int b)
     : CRibbon(pos, numbits, 2,
-              DAT_800d9970,
-              DAT_800d9970, 0x190, 1)
+              s_Ribbon,
+              s_Ribbon, 0x190, 1)
 {
     int count = mNumBits;
     int decr = r / count;
     int decg = g / count;
     int decb = b / count;
     int i = 0;
-    _vf = (void **)&__vt_11CSmokeTrail;
+
     if (count > 0)
     {
         do
@@ -3034,7 +2655,7 @@ CSmokeTrail::CSmokeTrail(
  */
 CSmokeTrail::~CSmokeTrail()
 {
-    _vf = (void **)&__vt_11CSmokeTrail;
+
 }
 
 /**
@@ -3094,51 +2715,49 @@ void CSmokeTrail::Move()
  * @param dz  Random Z extent around the origin.
  * @return `this` pointer (GCC 2.x ctor convention).
  */
-CGlassBit *CGlassBit_Construct(
-    CGlassBit *self, const CVector &Pos, const CVector &Vel, int GroundY,
+CGlassBit::CGlassBit(
+    const CVector &Pos, const CVector &Vel, int GroundY,
     u8 r, u8 g, u8 b, int dx, int dy, int dz)
 {
-    CBit_ctor(self);
-    self->_vf = (void **)&__vt_9CGlassBit;
-    self->AttachTo(&GlassList);
+
+    AttachTo(&GlassList);
     int u = dx * 2 + 1;
     int v = dy * 2 + 1;
     int w = dz * 2 + 1;
 
-    self->mPos = Pos;
+    mPos = Pos;
 
     int rnd = Rnd(u);
-    self->mPosA.vx = Pos.vx + (rnd - dx) * 0x1000;
+    mPosA.vx = Pos.vx + (rnd - dx) * 0x1000;
     rnd = Rnd(v);
-    self->mPosA.vy = Pos.vy + (rnd - dy) * 0x1000;
+    mPosA.vy = Pos.vy + (rnd - dy) * 0x1000;
     rnd = Rnd(w);
-    self->mPosA.vz = Pos.vz + (rnd - dz) * 0x1000;
+    mPosA.vz = Pos.vz + (rnd - dz) * 0x1000;
 
     rnd = Rnd(u);
-    self->mPosB.vx = Pos.vx + (rnd - dx) * 0x1000;
+    mPosB.vx = Pos.vx + (rnd - dx) * 0x1000;
     rnd = Rnd(v);
-    self->mPosB.vy = Pos.vy + (rnd - dy) * 0x1000;
+    mPosB.vy = Pos.vy + (rnd - dy) * 0x1000;
     rnd = Rnd(w);
-    self->mPosB.vz = Pos.vz + (rnd - dz) * 0x1000;
+    mPosB.vz = Pos.vz + (rnd - dz) * 0x1000;
 
     rnd = Rnd(u);
-    self->mPosC.vx = Pos.vx + (rnd - dx) * 0x1000;
+    mPosC.vx = Pos.vx + (rnd - dx) * 0x1000;
     rnd = Rnd(v);
-    self->mPosC.vy = Pos.vy + (rnd - dy) * 0x1000;
+    mPosC.vy = Pos.vy + (rnd - dy) * 0x1000;
     rnd = Rnd(w);
-    self->mPosC.vz = Pos.vz + (rnd - dz) * 0x1000;
+    mPosC.vz = Pos.vz + (rnd - dz) * 0x1000;
 
-    self->mVel = Vel;
-    self->mGroundY = GroundY;
-    self->mDefaultR = r >> 2;
-    self->mDefaultG = g >> 2;
-    self->mDefaultB = b >> 2;
-    self->mR = r >> 2;
-    self->mG = g >> 2;
-    self->mB = b >> 2;
-    self->mLifetime = (u16)(Rnd(30) + 30);
-    self->mFadeRate = 4;
-    return self;
+    mVel = Vel;
+    mGroundY = GroundY;
+    mDefaultR = r >> 2;
+    mDefaultG = g >> 2;
+    mDefaultB = b >> 2;
+    mR = r >> 2;
+    mG = g >> 2;
+    mB = b >> 2;
+    mLifetime = (u16)(Rnd(30) + 30);
+    mFadeRate = 4;
 }
 
 /**
@@ -3153,7 +2772,7 @@ CGlassBit *CGlassBit_Construct(
  */
 CGlassBit::~CGlassBit()
 {
-    _vf = (void **)&__vt_9CGlassBit;
+
     DeleteFrom(&GlassList);
 }
 
@@ -3254,8 +2873,7 @@ void MoveList(CBit *pBit)
     {
         if (pBit->mDead == 0)
         {
-            CBitVTable *vtable = (CBitVTable *)pBit->_vf;
-            vtable->Move(pBit);
+            pBit->Move();
         }
         pBit = pBit->mNext;
     }
@@ -3323,7 +2941,7 @@ void Bit_Display(void)
          pSpecial != 0;
          pSpecial = (CSpecialDisplay *)pSpecial->mNext)
     {
-        ((CBitVTable *)pSpecial->_vf)->Display(pSpecial);
+        pSpecial->Display();
     }
 
     for (pGlow = GlowList;
@@ -3387,21 +3005,17 @@ void Bit_Display(void)
             CentreY == -1024 || CentreY == 1023)
             continue;
 
-        u32 *OTPos = (u32 *)((RotCoords.vz & 0x3ffc) +
-                             (int)pDoubleBuffer->ViewportOT);
+        u32 *OTPos;
         DVECTOR *pBufA = (DVECTOR *)getScratchAddr(0);
         DVECTOR *pBufB = (DVECTOR *)getScratchAddr(1) +
                          pGlow->mNumFringes;
-        int RadA;
-        int x;
-        int y;
-
-        int Rad = pSection[n - 1].Radius;
+        OTPos = (u32 *)((int)pDoubleBuffer->ViewportOT +
+                        (RotCoords.vz & 0x3ffc));
+        int radius = (pSection[n - 1].Radius * 400) / (unsigned int)RotCoords.vz;
         int MSin = Sine(Ang) * 400 / 256;
         int MCos = Cosine(Ang);
-        RadA = (Rad * 400) / (unsigned int)RotCoords.vz;
-        x = CentreX + RadA * MSin / 4096;
-        y = CentreY - RadA * MCos / 4096;
+        int x = CentreX + radius * MSin / 4096;
+        int y = CentreY - radius * MCos / 4096;
         if (x > 612)
             x = 612;
         if (x < -100)
@@ -3413,6 +3027,8 @@ void Bit_Display(void)
         pBufA[0].vx = x;
         pBufA[0].vy = y;
 
+        int RadA;
+        int Rad = pSection[n - 1].Radius;
         SFringeQuad *pFringe = pGlow->mpFringes + n - 1;
         for (int f = 0; f < pGlow->mNumFringes; ++f)
         {
@@ -3456,7 +3072,6 @@ void Bit_Display(void)
                 y = -100;
             pBufB[0].vx = x;
             pBufB[0].vy = y;
-
             u32 b = pGlow->mSkipTriangles;
             if (!b)
             {
@@ -3700,15 +3315,15 @@ void Bit_Display(void)
         unsigned int *ptr;
         unsigned char Flipped;
         int OffX;
-        int OffY;
+        // FIXME(match): register pin — OffY in $t4 steers the whole Bit_Display allocation (unpinned: score 738); tried: unpin all five pins+barriers together (score 46), statement-order variants, fable_bitdisplay1-6.
+        register int OffY asm("$12");
         unsigned int Width;
         unsigned int Height;
         unsigned int x_post_scale;
-        unsigned int y_post_scale;
 
         Temp.vx = (pFlatBit->mPos.vx >> 12) - camera_pos.vx;
         Temp.vy = (pFlatBit->mPos.vy >> 12) - camera_pos.vy;
-        Temp.vz = (pFlatBit->mPos.vz >> 12) - camera_pos.vz;
+        Temp.vz = (pFlatBit->mPos.vz >> 12) - camera_pos.vz; unsigned int y_post_scale;
         gte_ldlv0(&Temp);
         gte_rtps();
 
@@ -3744,6 +3359,8 @@ void Bit_Display(void)
         if (pFlatBit->mCLUT != 0)
             foo1 = (foo1 & 0xffff) | ((u32)pFlatBit->mCLUT << 16);
         *(u32 *)&apoly->u0 = foo1;
+        // FIXME(match): asm barrier — keeps the foo1 store ahead of the 0xff9fffff mask lui/ori (unpinned: sched shifts one store, 2 insns off); tried: removal with other sites, statement reordering.
+        asm volatile("");
         *(u32 *)&apoly->u1 = (foo2 & 0xff9fffff) |
                              ((u32)pFlatBit->mSemiTransparencyRate << 16);
         *(u32 *)&apoly->u2 = foo3;
@@ -3759,36 +3376,52 @@ void Bit_Display(void)
         }
 
         ptr = (unsigned int *)&apoly->x0;
-        Width = pFlatBit->mpPSXFrame->Width;
-        Height = pFlatBit->mpPSXFrame->Height;
-        Flipped = pFlatBit->mBitFlags & 1;
-        OffX = pFlatBit->mpPSXFrame->OffX;
-        OffY = pFlatBit->mpPSXFrame->OffY;
+        SAnimFrame *Frame = pFlatBit->mpPSXFrame;
+        Width = Frame->Width;
+        Height = Frame->Height;
+        // FIXME(match): asm barrier — orders the Frame->OffX load after the mBitFlags lbu and keeps Width live (unpinned: 3 insns off); tried: removal, Flipped statement-order variants.
+        asm("" : "+r"(Frame) : "r"(Width));
+        {
+            // FIXME(match): register pin — RawFlags in $v0 (unpinned: score 2); tried: removal, Flipped statement-order variants.
+            register unsigned char RawFlags asm("$2") = pFlatBit->mBitFlags;
+            Flipped = RawFlags & 1;
+        }
+        OffX = Frame->OffX;
+        OffY = Frame->OffY;
         x_post_scale = Scale * (pFlatBit->mPostScale & 0xffff);
         y_post_scale = Scale * (pFlatBit->mPostScale >> 16);
         if (Angle == 0)
         {
-            OffX *= Scale;
+            __typeof__(Scale * OffX) __pt940865 = Scale * OffX; OffX = __pt940865;
             OffX <<= 9;
             OffX >>= 16;
-            int Y1 = (Scale * OffY >> 7) << 16;
+            // FIXME(match): register pin — yp in $v1 (unpinned: score 12); tried: removal, expression splitting.
+            register unsigned int yp asm("$3") = Scale * OffY;
+            int Y1 = (yp >> 7) << 16;
             y0x0 += Y1 + OffX;
-            Width *= Scale;
-            Width >>= 7;
-            Height *= Scale;
-            Height >>= 7;
-            Height <<= 16;
+            {
+                unsigned int w = Scale * Width;
+                Width = w >> 7;
+            }
+            Height = (Scale * Height >> 7) << 16;
             if (Width < 5)
                 Width = 2;
+            unsigned int FrameWidth = Width;
+            // FIXME(match): register pin — Width in $t5 via a shadowing copy of FrameWidth (unpinned: score 45); tried: removal.
+            register unsigned int Width asm("$13") = FrameWidth;
             if (Height < 0x50000)
                 Height = 0x10000;
 
             if (!Flipped)
             {
                 ptr[0] = y0x0;
-                ptr[2] = y0x0 + Width;
-                ptr[4] = y0x0 + Height;
-                ptr[6] = y0x0 + Width + Height;
+                {
+                    // FIXME(match): register pin — yw in $v1 shared across the ptr[2]/ptr[6] stores (unpinned: score 4); tried: removal.
+                    register unsigned int yw asm("$3") = y0x0 + Width;
+                    ptr[2] = yw;
+                    ptr[4] = y0x0 + Height;
+                    ptr[6] = yw + Height;
+                }
             }
             else
             {
@@ -3810,8 +3443,9 @@ void Bit_Display(void)
             int yhsin = ysin + Height * sin;
             int xwcos = xcos + Width * cos;
             int yhcos = ycos + Height * cos;
-            unsigned int x_scale = x_post_scale >> 12;
+            unsigned int x_scale;
             unsigned int y_scale = y_post_scale >> 12;
+            x_scale = x_post_scale >> 12;
 
             if (!Flipped)
             {
@@ -3952,10 +3586,10 @@ void Bit_Display(void)
          pQuad != 0;
          pQuad = (CQuadBit *)pQuad->mNext)
     {
-        long ZedB;
+        
         long ZedC;
         long ZedD;
-        long MaxZed;
+        long MaxZed; long ZedB;
         Texture *stored;
         POLY_FT4 *apoly;
         unsigned char *newppoly;
@@ -4242,7 +3876,7 @@ void Bit_Display(void)
         gte_rtps();
         long zed;
 
-        if ((pPixel->mWidthHeight & 0xf) == 1)
+        if (1 == (pPixel->mWidthHeight & 0xf))
         {
             TILE_1 *atile = (TILE_1 *)pPoly;
             unsigned char *newppoly = (unsigned char *)(atile + 1);
@@ -4296,7 +3930,7 @@ void Bit_Display(void)
     int StoredA1x = 0;
     int StoredA1y = 0;
     int StoredA2x = 0;
-    int StoredA2y = 0;
+    int StoredA2y; StoredA2y = 0;
     int StoredAx = 0;
     int StoredAy = 0;
     int Broken = 0;
@@ -4335,7 +3969,7 @@ void Bit_Display(void)
         int d;
 
         NeedToTransformA =
-            ((pLinked2EndedBit->mBitFlags & 0x10) != 0) || Broken;
+            (0 != (pLinked2EndedBit->mBitFlags & 0x10)) || Broken;
 
         if (NeedToTransformA)
         {
@@ -4448,7 +4082,7 @@ void Bit_Display(void)
             Loop2y = A2y;
         }
 
-        if (pLinked2EndedBit->mBitFlags & 0x20)
+        if (0x20 & pLinked2EndedBit->mBitFlags)
         {
             B1x = Loop1x;
             B1y = Loop1y;
@@ -4534,7 +4168,7 @@ void Bit_Display(void)
  */
 CGouraudRibbon::~CGouraudRibbon()
 {
-    _vf = (void **)__vt_14CGouraudRibbon;
+
     int size = Mem_GetBlockSize(mpPoints);
     int usage = TotalBitUsage;
     SRibbonPoint *ptr2 = mpPoints;
@@ -4826,7 +4460,7 @@ CTexturedRibbon::CTexturedRibbon(int NumPoints, int LeaveTrail)
     : CSpecialDisplay()
 {
     int allocSize = NumPoints * sizeof(SRibbonPoint);
-    _vf = (void **)__vt_15CTexturedRibbon;
+
     mNumPoints = NumPoints;
     SRibbonPoint *buf = (SRibbonPoint *)Mem_New(allocSize, 0, 1);
     mpPoints = buf;
@@ -4864,7 +4498,7 @@ CTexturedRibbon::CTexturedRibbon(int NumPoints, int LeaveTrail)
  */
 CTexturedRibbon::~CTexturedRibbon()
 {
-    _vf = (void **)__vt_15CTexturedRibbon;
+
     int size = Mem_GetBlockSize(mpPoints);
     int usage = TotalBitUsage;
     SRibbonPoint *ptr2 = mpPoints;
@@ -5198,49 +4832,22 @@ void CTexturedRibbon::Display()
 }
 }
 
-/**
- * Empty startup hook emitted for the BIT translation unit.
- *
- * `TotalBitUsage` is zero-initialized in BSS, so the original hook has no
- * dynamic initialization work to perform.
- *
- * Address: 0x8003E620
- * Mangled: _GLOBAL_.I.TotalBitUsage
- */
-void Bit_GlobalInit_TotalBitUsage(void)
-    asm("_GLOBAL_.I.TotalBitUsage");
-void Bit_GlobalInit_TotalBitUsage(void)
-{
-}
-
-/**
- * `.ctors` slot for the hook above.
- *
- * GCC emits this table entry itself for a compiler-generated initializer, but
- * this owner's hook is hand-written, so the entry has to be declared. The
- * recovered application object order reproduces the target's 16-entry
- * constructor sequence.
- */
-static void (*Bit_GlobalCtorSlot)(void)
-    __attribute__((section(".ctors"))) = Bit_GlobalInit_TotalBitUsage;
-
-/** Destroy an oscillating glow and restore its derived vtable first. */
-CWobblyGlow::~CWobblyGlow()
-{
-    _vf = (void **)&__vt_11CWobblyGlow;
-}
-
-/** Default movement hook for a plain radial glow. */
-void CGlow::Move()
+/** Default movement hook for a transient bit. */
+inline void CBit::Move()
 {
 }
 
 /** Default display hook for a special-display bit. */
-void CSpecialDisplay::Display()
+inline void CSpecialDisplay::Display()
 {
 }
 
-/** Default movement hook for a transient bit. */
-void CBit::Move()
+/** Default movement hook for a plain radial glow. */
+inline void CGlow::Move()
+{
+}
+
+/** Destroy an oscillating glow. */
+inline CWobblyGlow::~CWobblyGlow()
 {
 }

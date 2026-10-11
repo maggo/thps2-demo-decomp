@@ -3,7 +3,7 @@
 // Functions: 28 reconstructed entries
 // Address range: 0x8004EF00 - 0x8004F784
 //
-// Compiled with cc1plus (GCC 2.91.66-psx). Compiler auto-mangles symbol names.
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 //
 // CVector::Length uses the PS1 GTE SQR command to square its fixed-point
 // components. Scalar arithmetic, including all vector division, remains C++.

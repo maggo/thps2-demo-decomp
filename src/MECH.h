@@ -5,11 +5,13 @@
 struct CBruce;
 struct CBruceCtorSlice;
 
+#ifndef MECH_OWNER_DECLARATIONS
 /** Construct a skater in caller-provided gameplay storage. */
 namespace CBruceConstructorABI
 {
 extern "C" CBruceCtorSlice *__6CBruce(CBruceCtorSlice *bruce);
 }
+#endif
 
 /** One checksum/count entry in the skater's recent-event history. */
 struct SHistory {

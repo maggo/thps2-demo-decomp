@@ -3,7 +3,7 @@
 // Functions: 9
 // Address range: 0x80020AAC - 0x80021224
 //
-// Compiled with cc1plus (GCC 2.91.66-psx). Compiler auto-mangles symbol names.
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 typedef unsigned char u8;
 typedef unsigned short u16;
@@ -296,15 +296,15 @@ void Crowd_Boo(int Volume)
 {
     short vl;
     short vr;
-    int iVar1;
-    int iVar2;
+    int leftJitter;
+    int rightJitter;
 
     if ((Levels[GLevel].Crowd != 0) && (GGame == 1))
     {
-        iVar1 = Rnd(0x14);
-        vl = (short)((Volume * (iVar1 + 0x5a)) / 100);
-        iVar2 = Rnd(0x14);
-        vr = (short)((Volume * (iVar2 + 0x5a)) / 100);
+        leftJitter = Rnd(0x14);
+        vl = (short)((Volume * (leftJitter + 0x5a)) / 100);
+        rightJitter = Rnd(0x14);
+        vr = (short)((Volume * (rightJitter + 0x5a)) / 100);
         SFX_PlayLR(0x32, vl, vr, 0);
     }
 }

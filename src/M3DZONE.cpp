@@ -1,4 +1,9 @@
-// Environment collision-zone setup and grid traversal.
+// M3DZONE.cpp -- Environment collision-zone setup and grid traversal.
+// Original: M3DZONE.CPP
+// Functions: 5
+// Address range: 0x80093FA8 - 0x80094AB8
+//
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 #include "M3DZONE.h"
 #include "globals.h"

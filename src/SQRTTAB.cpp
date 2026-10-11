@@ -1,5 +1,7 @@
 // SQRTTAB.cpp -- Reconstructed data-only translation unit
 // Original: sqrttab.obj
+//
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 enum
 {

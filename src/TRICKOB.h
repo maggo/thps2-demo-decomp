@@ -39,7 +39,7 @@ void TrickOb_Update(void);
 #define TRICKOB_OWNER_DECLARATIONS_HEAD_EMITTED
 #define TRICKOB_OWNER_DECLARATIONS_ACTIVE
 
-#include "globals.h"
+#include "CCLASS_POLY.h" /* only TRICKOB.cpp (polymorphic) sets TRICKOB_OWNER_DECLARATIONS */
 
 #endif // TRICKOB_OWNER_DECLARATIONS_HEAD_EMITTED
 
@@ -58,9 +58,14 @@ void TrickOb_Update(void);
 #define TRICKOB_LAYOUT_EMITTED
 
 /** One active trick trigger linked into the owner-local trick list. */
+#ifdef TRICKOB_POLYMORPHIC_LAYOUT
+struct CTrickOb : CClass
+{
+#else
 struct CTrickOb
 {
     CClass CClass;
+#endif
     unsigned int mChecksum;
     unsigned short mNode;
     unsigned char mState;
@@ -71,12 +76,16 @@ struct CTrickOb
 
     /** Constructs and links one trigger object. */
     CTrickOb(unsigned short node, unsigned short delayLevel);
+#ifdef TRICKOB_POLYMORPHIC_LAYOUT
+    virtual ~CTrickOb();
+#else
     /** Unlinks this trigger from the active trick-object list. */
     ~CTrickOb();
     /** Releases trigger storage through the owning CClass allocator. */
     static void operator delete(void *p) {
         ::CClass::operator delete(p);
     }
+#endif
 };
 
 #endif // TRICKOB_LAYOUT && !TRICKOB_LAYOUT_EMITTED

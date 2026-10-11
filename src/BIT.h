@@ -358,8 +358,12 @@ struct CFlatBit {
 typedef int DustCloudCount;
 
 /** Dust particle stack and terrain-generation state. */
+#ifdef DUST_POLYMORPHIC_LAYOUT
+struct Dust : CClass {
+#else
 struct Dust {
     struct CClass CClass;
+#endif
     struct CFlatBit *mDustStack[12];
     int mDustCount;
     int mDustType;
@@ -367,11 +371,15 @@ struct Dust {
 
     /** Initialize an empty dust-particle manager. */
     Dust();
+#ifdef DUST_POLYMORPHIC_LAYOUT
+    virtual ~Dust();
+#else
     ~Dust();
     /** Release manager storage through the original CClass allocator. */
     static void operator delete(void *p) {
         ::CClass::operator delete(p);
     }
+#endif
 
     /** Reset the pending cloud count and select a dust-generation mode. */
     void Reset(int terrainType, int dustType);
@@ -397,10 +405,6 @@ struct Dust {
     /** Apply independent random horizontal offsets to a particle position. */
     void apply_random_offset(CVector &position, int range, int shift);
 };
-
-/** Preserve the target's byte-scaled slot address without exposing it in code. */
-#define DUST_STACK_SLOT_AT_BYTE_OFFSET(owner, byteOffset) \
-    (*(CFlatBit **)((char *)(owner) + (byteOffset) + sizeof(CClass)))
 
 /** CBruce fields read while carrying dust particles with the skater. */
 struct DustBruceLayout {

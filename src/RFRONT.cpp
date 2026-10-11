@@ -3,7 +3,7 @@
 // Functions: 19 recovered functions
 // Address range: 0x8002131C - 0x80023B14
 //
-// Compiled with cc1plus (GCC 2.91.66-psx). Compiler auto-mangles symbol names.
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 #include "FRONT.h"
 #define RFRONT_OWNER_DECLARATIONS
@@ -135,14 +135,6 @@ struct RFrontNameStorageView
 {
     char saveGameName[11];
     char ownerState[0x95];
-    char storedCareerName[11];
-};
-
-/** Slice covering the load/save actions and stored career name. */
-struct RFrontStoredCareerStateView
-{
-    ELoadAction loadAction;
-    ESaveAction saveAction;
     char storedCareerName[11];
 };
 
@@ -423,8 +415,6 @@ static int MCResolution = RFRONT_STANDARD_WIDTH;
  * MAIN.SYM classifies both definitions as rfront.obj statics and records the
  * compiler's target-local suffixes in the linked image.
  */
-static int Delay asm("Delay.311");
-static int Retries asm("Retries.312");
 
 /**
  * Owner-local memory-card prompt state.
@@ -453,8 +443,6 @@ int VertMenuItemIndex[15] __attribute__((section(".data"))) = {0};
 RFrontCachedBackground BGCache[10]
     __attribute__((section(".data"))) = {{0}};
 
-/** Career name copied to and from the active save-name buffer. */
-char StoredCareerName[11] __attribute__((section(".sbss")));
 }
 
 /** RFRONT-owned immutable memory-card status strings in target order. */
@@ -579,37 +567,11 @@ void Front_DirtyRectText(int x, int y, const char * pText) {
  * Restore every captured menu-text background before the next redraw.
  */
 void Front_RestoreBackground(void) {
-    int i = 0;
-    int limit = FreeSprite;
-    if (limit <= 0) goto done;
-    {
-        int neg1 = -1;
-        Sprite **base = &BGCache[0].pSprite;
-        short *y = &BGCache[0].y;
-        short *x = &BGCache[0].x;
-        int offset = 0;
-        int *status = &BGCache[0].captureStatus;
-        do {
-            // Keep the index first: GCC otherwise commutes this addu.
-            int val = *reinterpret_cast<int *>(
-                offset + reinterpret_cast<int>(status));
-            register int captured asm("$3") = 2;
-            if (val == captured) {
-                (*base)->draw(*x, *y, 0, neg1, neg1, neg1);
-                limit = FreeSprite;
-            }
-            base = reinterpret_cast<Sprite **>(
-                reinterpret_cast<char *>(base) + sizeof(RFrontCachedBackground));
-            y = reinterpret_cast<short *>(
-                reinterpret_cast<char *>(y) + sizeof(RFrontCachedBackground));
-            x = reinterpret_cast<short *>(
-                reinterpret_cast<char *>(x) + sizeof(RFrontCachedBackground));
-            i++;
-            offset += sizeof(RFrontCachedBackground);
-        } while (i < limit);
+    for (int i = 0; i < FreeSprite; i++) {
+        if (BGCache[i].captureStatus == 2) {
+            BGCache[i].pSprite->draw(BGCache[i].x, BGCache[i].y, 0, -1, -1, -1);
+        }
     }
-done:
-    ;
 }
 
 
@@ -617,33 +579,14 @@ done:
  * Destroy all cached background sprites and reset the cache.
  */
 void Front_FreeBackground(void) {
-    int i = 0;
-    if (FreeSprite <= 0) goto done;
-    {
-        RFrontCachedBackground *tmp = BGCache;
-        int *clear = &tmp->captureStatus;
-        Sprite **base = &tmp->pSprite;
-        do {
-            Sprite *sprite = *base;
-            if (sprite != 0) {
-                reinterpret_cast<RFrontSpriteVTable *>(
-                    sprite->CClass.vtable)->destroy(sprite, 3);
-            }
-            *clear = 0;
-            // Separate interior-field cursors reproduce the target's s1/s0
-            // walk; whole-record cursors changed 27 of 36 instructions.
-            clear = reinterpret_cast<int *>(
-                reinterpret_cast<char *>(clear) + sizeof(RFrontCachedBackground));
-            base = reinterpret_cast<Sprite **>(
-                reinterpret_cast<char *>(base) + sizeof(RFrontCachedBackground));
-            {
-                int limit = FreeSprite;
-                i++;
-                if (i >= limit) break;
-            }
-        } while (1);
+    for (int i = 0; i < FreeSprite; i++) {
+        Sprite *sprite = BGCache[i].pSprite;
+        if (sprite != 0) {
+            reinterpret_cast<RFrontSpriteVTable *>(
+                sprite->CClass.vtable)->destroy(sprite, 3);
+        }
+        BGCache[i].captureStatus = 0;
     }
-done:
     FreeSprite = 0;
 }
 
@@ -691,27 +634,20 @@ void Front_SetSaveAction(ESaveAction SaveAction) {
  * @param pASCII  ASCII to operate on.
  */
 void Front_ExtractASCIINameFromSJIS(char * pSJIS, char * pASCII) {
-    int i = 0;
-    int sjis82 = 0x82;
-    int sjis81 = 0x81;
-    int space = 0x20;
-    loop:
-    {
+    for (int i = 0; i < 10; i++) {
         int c = *reinterpret_cast<unsigned char *>(pSJIS);
         if (c == 0) {
             *pASCII = 0;
             return;
         }
-        if (c == sjis82) {
+        if (c == 0x82) {
             int c2 = reinterpret_cast<unsigned char *>(pSJIS)[1];
             pSJIS += 2;
             *pASCII++ = c2 - 0x1f;
-        } else if (c == sjis81) {
-            *pASCII++ = space;
+        } else if (c == 0x81) {
+            *pASCII++ = 0x20;
             pSJIS += 2;
         }
-        i++;
-        if (i < 10) goto loop;
     }
 }
 
@@ -721,88 +657,39 @@ void Front_ExtractASCIINameFromSJIS(char * pSJIS, char * pASCII) {
  *
  * @param SJISName Destination card-title buffer.
  */
+#define SAVE_NAME ((unsigned char *)&RFrontSaveNameViews::SaveGameName)
 void Front_SetSJISName(char * SJISName) {
-    register int i asm("$5") = 9;
-    int buf = reinterpret_cast<int>(&RFrontSaveNameViews::SaveGameName);
-    char *p;
-    unsigned char c;
-
+    int i = 9;
     do {
-        p = reinterpret_cast<char *>(i + buf);
-        c = static_cast<unsigned char>(*p);
-        if (c != 0x20) {
-            if (c != 0) goto fill_phase;
-        }
+        if (SAVE_NAME[i] != 0x20 && SAVE_NAME[i] != 0) goto fill_phase;
+        SAVE_NAME[i] = 0;
         i--;
-        *p = 0;
     } while (i > 0);
-
 fill_phase:
     if (i >= 0) {
-        register int buf2 asm("$7") =
-            reinterpret_cast<int>(&RFrontSaveNameViews::SaveGameName);
-        int sp = 0x20;
-        p = reinterpret_cast<char *>(i + buf2);
         do {
-            c = static_cast<unsigned char>(*p);
-            if (c == 0) {
-                *p = static_cast<unsigned char>(sp);
-            }
+            if (SAVE_NAME[i] == 0) SAVE_NAME[i] = 0x20;
             i--;
-            p = reinterpret_cast<char *>(i + buf2);
         } while (i >= 0);
     }
-
-    {
-        register int j asm("$5") = 0;
-        register int bp asm("$11") =
-            reinterpret_cast<int>(&RFrontSaveNameViews::SaveGameName);
-        register int K82 asm("$10") = 0x82;
-        register int K20 asm("$9") = 0x20;
-        register int K81 asm("$8") = 0x81;
-        int K40 = 0x40;
-        register unsigned char *q asm("$6");
-        // These two boundaries retain the target's constant-load order and
-        // keep the initial j + buffer address addition explicit. A single
-        // combined boundary commutes five instructions; none changes memory.
-        asm("" : "+r"(j), "+r"(bp), "+r"(K82),
-                 "+r"(K20), "+r"(K81));
-        q = reinterpret_cast<unsigned char *>(j + bp);
-loop3:
-        {
-            unsigned int v0 = *q;
-            unsigned int v1 = v0 & 0xff;
-            if (v1 == 0) {
-                *SJISName = 0;
-                return;
-            }
-            v0 = v0 - 'A';
-            if (static_cast<unsigned int>(v0 & 0xff) < 26) {
-                *SJISName = static_cast<unsigned char>(K82);
-                v0 = *q;
-                SJISName++;
-                v0 = v0 + 0x1f;
-                *SJISName = static_cast<unsigned char>(v0);
-                goto bump;
-            }
-            if (v1 != static_cast<unsigned int>(K20)) goto no_bump;
-            *SJISName = static_cast<unsigned char>(K81);
-            SJISName++;
-            *SJISName = static_cast<unsigned char>(K40);
-bump:
-            SJISName++;
-no_bump:
-            ;
+    for (i = 0; i < 10; i++) {
+        unsigned int v0 = SAVE_NAME[i];
+        unsigned int v1 = v0 & 0xff;
+        if (v1 == 0) {
+            *SJISName = 0;
+            return;
         }
-        j++;
-        if (j < 10) {
-            q = reinterpret_cast<unsigned char *>(j + bp);
-            goto loop3;
+        v0 = v0 - 'A';
+        if ((v0 & 0xff) < 26) {
+            *SJISName++ = 0x82;
+            *SJISName++ = SAVE_NAME[i] + 0x1f;
+        } else if (v1 == 0x20) {
+            *SJISName++ = 0x81;
+            *SJISName++ = 0x40;
         }
     }
-
-    return;
 }
+#undef SAVE_NAME
 
 
 /**
@@ -1109,6 +996,15 @@ static int Career
 static char RFrontDemoFileName[]
     __attribute__((section(".sdata"), aligned(4))) = "demoX.rec";
 
+extern "C" {
+/** Memory-card payload and operation selected by the front end (RFRONT owns both). */
+ELoadAction GLoadAction = LOAD_VIDEO;
+ESaveAction GSaveAction = SAVE_VIDEO;
+
+/** Career name copied to and from the active save-name buffer. */
+char StoredCareerName[11] __attribute__((section(".sdata"))) = {0};
+}
+
 
 /**
  * Draw the high-resolution memory-card state and its file-selection menu.
@@ -1242,7 +1138,7 @@ void Front_MemCardHiResDisplay(void) {
     case LVSTATUS_SELECTFILE:
     {
         // Preserve the target local-common identity used by the native linker.
-        static char msg[32] asm("msg.28");
+        static char msg[32];
 
         if (pVertMenu == 0)
         {
@@ -1367,28 +1263,12 @@ void Front_MemCardHiResDisplay(void) {
  * @return 1 when the name is blank, otherwise 0.
  */
 int NameWasBlank(void) {
-    int i = 0;
-    register char *buf asm("$5") = &RFrontSaveNameViews::SaveGameName;
-    asm("" : "+r"(buf), "+r"(i));
-    int space = ' ';
-    char *p;
-    // The target keeps the buffer and cursor in $a1/$v0. Three ordinary
-    // pointer-loop forms changed five of this function's 19 instructions.
-    p = reinterpret_cast<char *>(
-        i + reinterpret_cast<int>(buf));
-loop:
-    {
-        int c = *reinterpret_cast<unsigned char *>(p);
+    for (int i = 0; i < 10; i++) {
+        int c = (&RFrontSaveNameViews::SaveGameName)[i];
         if (c == 0)
             return 1;
-        if (c != space)
+        if (c != ' ')
             return 0;
-        i++;
-        if (i < 10) {
-            p = reinterpret_cast<char *>(
-                i + reinterpret_cast<int>(buf));
-            goto loop;
-        }
     }
     return 1;
 }
@@ -1436,12 +1316,11 @@ void FillInDefaultName(void) {
  * @return The state appropriate to the current save and competition context.
  */
 static EPausedStatus SaveReturnState(void) {
-    if (GSaveAction != SAVE_VIDEO) goto paused;
-    if (InCompetition() == 0) goto ret_f;
-    if (Competition_IsOver() == 0) return STATUS_ENDHEATVIDEOMENU;
-ret_f:
-    return STATUS_VIDEOSCREEN;
-paused:
+    if (GSaveAction == SAVE_VIDEO) {
+        if (InCompetition() != 0 && Competition_IsOver() == 0)
+            return STATUS_ENDHEATVIDEOMENU;
+        return STATUS_VIDEOSCREEN;
+    }
     return static_cast<EPausedStatus>(GReturnToState);
 }
 
@@ -1451,6 +1330,8 @@ paused:
  * state that should run on the next frame.
  */
 EPausedStatus Front_MemCardUpdate(void) {
+    static int Delay;
+    static int Retries;
     int Activated;
     int GoBack;
     int AnyButton;
@@ -1955,10 +1836,8 @@ EPausedStatus Front_MemCardUpdate(void) {
                 GLoadedCareerIsSaved = GSaveAction;
                 do
                 {
-                    reinterpret_cast<RFrontStoredCareerStateView *>(
-                        &GLoadAction)
-                        ->storedCareerName[i] =
-                            (&RFrontSaveNameViews::SaveGameName)[i];
+                    (&RFrontSaveNameViews::StoredCareerName)[i] =
+                        (&RFrontSaveNameViews::SaveGameName)[i];
                     ++i;
                 } while (i < 10);
             }

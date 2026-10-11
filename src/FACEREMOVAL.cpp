@@ -1,4 +1,9 @@
-// Face-clipping and embedded-area helpers used by generated model geometry.
+// FACEREMOVAL.cpp -- Face-clipping and embedded-area helpers used by generated model geometry.
+// Original: FACEREMOVAL.CPP
+// Functions: 8
+// Address range: 0x80051F0C - 0x80052D70
+//
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 #define FACEREMOVAL_OWNER_DECLARATIONS
 #include "FACEREMOVAL.h"

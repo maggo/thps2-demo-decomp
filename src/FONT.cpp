@@ -1,4 +1,9 @@
-// Immediate-mode debug font queue and renderer.
+// FONT.cpp -- Immediate-mode debug font queue and renderer.
+// Original: FONT.CPP
+// Functions: 7
+// Address range: 0x8004D580 - 0x8004DC70
+//
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 #define FONT_OWNER_DECLARATIONS
 #include "FONT.h"

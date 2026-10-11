@@ -2,7 +2,8 @@
 // Original: PLAYERSELECT.CPP
 // Functions: 53 reconstructed
 // Address range: 0x8008AC80 - 0x8008EECC
-// Compiled with cc1plus (GCC 2.91.66-psx). Compiler auto-mangles symbol names.
+//
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 // Owner-local declarations attributed to PLAYERSELECT.cpp by MAIN.SYM.
 typedef unsigned char u8;
@@ -21,6 +22,9 @@ typedef short undefined2;
 typedef int undefined4;
 typedef unsigned long ulong;
 typedef unsigned char undefined3[3];
+
+#define SCREENTOOLS_POLYMORPHIC_LAYOUT
+#include "SCREENTOOLS.h"
 
 struct CBit;
 struct CGlow;
@@ -52,11 +56,6 @@ struct SkaterScreenElement;
 #include "STATSTABLE.h"
 // Owner-local object layouts used by PLAYERSELECT.cpp.
 
-#define SCREENTOOLS_AGGREGATE_LAYOUT
-#define SCREENTOOLS_AGGREGATE_LAYOUT_ONLY
-#include "SCREENTOOLS.h"
-#undef SCREENTOOLS_AGGREGATE_LAYOUT_ONLY
-#undef SCREENTOOLS_AGGREGATE_LAYOUT
 #include "CITEM.h"
 #define OB_LAYOUT_ONLY
 #define OB_OWNER_LAYOUT
@@ -84,7 +83,6 @@ struct SModel;
 
 #include "SCAMERA.h"
 
-#include "IMAGEBASE.h"
 
 /** Display-buffer slice through the preview ordering table and top scanline. */
 struct PlayerSelectDoubleBuffer {
@@ -121,25 +119,6 @@ struct PlayerSelectRegionModelsColumn {
     unsigned char NextRegion[60];
 };
 
-/** Sliced-image base services used by front-end sprites. */
-struct SlicedImage2 : Image {
-    unsigned char opaque[32];
-
-    void pack();
-    void unpack();
-};
-
-/** Front-end sprite storage allocated through the original CClass arena. */
-struct Sprite2 : SlicedImage2 {
-
-    static void *operator new(unsigned int size) throw()
-    {
-        return ::CClass::operator new(size);
-    }
-    Sprite2(char *fileName, int useVram, int width, int height);
-    Sprite2(unsigned char *data, int useVram, int x, int y);
-};
-
 /** Front-end skater object constructed through the original CItem arena. */
 struct CSuper : CSuperOwner {
     static void *operator new(unsigned int size) throw()
@@ -152,34 +131,10 @@ struct CSuper : CSuperOwner {
     void CycleAnim(int animation, signed char direction);
 };
 
-/** Original polymorphic prefix needed for Font assignment semantics. */
-struct PlayerSelectClassAssignmentBase {
-    virtual ~PlayerSelectClassAssignmentBase();
-};
-
-/** Owner-local Font view whose assignment preserves the destination vtable. */
-struct PlayerSelectFontAssignmentView : PlayerSelectClassAssignmentBase {
-    int JustX;
-    int JustY;
-    int SpaceX;
-    int SpaceY;
-    int R;
-    int G;
-    int B;
-    void *Aliased;
-    void *Shadow;
-    int ShadowDx;
-    int ShadowDy;
-    int CharMap;
-    int FixedWidth;
-    int Scale;
-    struct FontCharacter *CharTab;
-    int NumChars;
-    int Clut;
-    struct TextEffect *CurrentTextEffect;
-    unsigned char OldR;
-    unsigned char OldG;
-    unsigned char OldB;
+/** Virtual-destructor view of the CItem family: its vptr sits at offset 72. */
+struct PlayerSelectItemDestroyView {
+    unsigned char mReserved[72];
+    virtual ~PlayerSelectItemDestroyView();
 };
 
 /** Proven item-pose prefix of the front-end skater model. */
@@ -243,19 +198,85 @@ struct SStats {
 };
 
 /** Model-and-animation presentation element for the active skater. */
-struct SkaterScreenElement {
-    struct ScreenElementList ScreenElementList;
+/** Top-level player-select screen and its child panes. */
+struct PlayerSelectScreen : ScreenElementList {
+    Sprite2 *mBackground;
+    Font mFont1;
+    Font mFont2;
+    Font mFont3;
+    int mMulti;
+    int mMaxPlayers;
+    struct SkaterScreenElement *mpSkaterScreenElement;
+    ScreenElement *mpCareerScreenElement;
+    struct BioScreenElement *mpBioScreenElement;
+    struct MultiPlayerScreenElement *mpMultiScreenElement;
+
+    PlayerSelectScreen(int gameMode);
+    virtual ~PlayerSelectScreen();
+    void init(int gameMode);
+    void draw();
+    void update();
+    void refresh();
+    int handlePress();
+};
+
+/** Animated numeric score row. */
+struct ScoreScreenElement : ScreenElementList {
+    int mTargetValue;
+    int mValue;
+    TextScreenElement *mpScoreElement;
+    Font *mpFont;
+
+    ScoreScreenElement(int value, Font *pFont, int x, int y);
+    virtual ~ScoreScreenElement();
+    void draw(int x, int y);
+    void setValue(int value);
+    void update();
+};
+
+#include "PROMPTSCREENELEMENT.h"
+
+/** Career totals and earned-medal display for the selected skater. */
+struct CareerScreenElement : ScreenElementList {
+    ScreenElement *mpMedalIcons[3];
+    int mDelay[9];
+
+    CareerScreenElement(Font *pFont, int homeX, int homeY, int screenX, int screenY);
+    virtual ~CareerScreenElement();
+    void draw(int x, int y);
+    void refresh();
+    void update();
+};
+
+/** Scrollable biography pane for the selected skater. */
+struct BioScreenElement : ScreenElementList {
+    int mSize;
+    ScreenElement *mpBioText[16];
+    int mBioTextCount;
+    Font *mpFont;
+
+    BioScreenElement(Font *pFont, int homeX, int homeY, int screenX, int screenY);
+    virtual ~BioScreenElement();
+    void HandleDown();
+    void HandleUp();
+    void draw(int x, int y);
+    void refresh();
+    void update();
+};
+
+/** Model-and-animation presentation element for the active skater. */
+struct SkaterScreenElement : ScreenElementList {
     int mSkaterChanged;
     int mShowCard;
     struct CSuper *mpFrontEndSkater[14];
     int mFlash;
-    struct ScreenElement *mpIcon[1];
+    ScreenElement *mpIcon[1];
     int mSpoolID[42];
-    struct Sprite2 *mpFaceSprite[14];
-    struct Font *mpFont;
+    Sprite2 *mpFaceSprite[14];
+    Font *mpFont;
     int mFullWindow;
-    struct ScreenElement *mpSkaterWindow;
-    struct Sprite2 *mpIconSprite[8];
+    ScreenElement *mpSkaterWindow;
+    Sprite2 *mpIconSprite[8];
     int mAnimRegion;
     int mModelRegionGeneric;
     unsigned int *mModelFile[14];
@@ -268,17 +289,9 @@ struct SkaterScreenElement {
     char *mpModelHierData[14];
     int mSkaterLoaded[14];
 
-    static void *operator new(unsigned int size) throw()
-    {
-        return ::CClass::operator new(size);
-    }
-    static void operator delete(void *storage)
-    {
-        ::CClass::operator delete(storage);
-    }
-    SkaterScreenElement(int fullWindow, struct Font *pFont,
+    SkaterScreenElement(int fullWindow, Font *pFont,
                         int homeX, int homeY, int screenX, int screenY);
-    ~SkaterScreenElement();
+    virtual ~SkaterScreenElement();
     void RotateSkater(int angle);
     void LoadAllIcons();
     void UpdateSpoolItems();
@@ -292,47 +305,28 @@ struct SkaterScreenElement {
     void draw(int x, int y);
 };
 
-/** Top-level player-select screen and its child panes. */
-struct PlayerSelectScreen {
-    struct ScreenElementList ScreenElementList;
-    struct Sprite2 *mBackground;
-    struct PlayerSelectFontAssignmentView mFont1;
-    struct PlayerSelectFontAssignmentView mFont2;
-    struct PlayerSelectFontAssignmentView mFont3;
-    int mMulti;
-    int mMaxPlayers;
-    struct SkaterScreenElement *mpSkaterScreenElement;
-    struct ScreenElement *mpCareerScreenElement;
-    struct BioScreenElement *mpBioScreenElement;
-    struct MultiPlayerScreenElement *mpMultiScreenElement;
+/** Ten-meter ability display for the selected skater. */
+struct StatsScreenElement : ScreenElementList {
+    SpriteScreenElement *mpDots;
 
-    void init(int gameMode);
-    void draw();
+    StatsScreenElement(int homeX, int homeY, int screenX, int screenY);
+    virtual ~StatsScreenElement();
+    void draw(int x, int y);
     void update();
+};
+
+/** Multiplayer player-number prompt and selection state. */
+struct MultiPlayerScreenElement : ScreenElementList {
+    Font *mpFont;
+    int mFlash;
+
+    MultiPlayerScreenElement(Font *pFont, int homeX, int homeY, int screenX, int screenY);
+    virtual ~MultiPlayerScreenElement();
+    void ResetStartingLocation();
     void refresh();
-    int handlePress();
+    void update();
 };
 
-/** Original seven-slot dispatch prefix shared by front-end elements. */
-struct ScreenElementDispatchTable {
-    void *mReserved0;
-    void *mReserved1;
-    void (*Destroy)(void *, int);
-    void (*Update)(void *);
-    void (*Draw)(void *, int, int);
-    int (*Width)(void *);
-    void (*Refresh)(void *);
-};
-
-/** Sprite dispatch prefix whose final slot accepts the draw-first flag. */
-struct Sprite2DispatchTable {
-    void *mReserved0;
-    void *mReserved1;
-    void (*Destroy)(void *, int);
-    void *mSetData;
-    void *mReserved4;
-    void (*Draw)(void *, int, int, int);
-};
 
 typedef char playerselect_board_size_must_be_32[
     (sizeof(SBoard) == 32) ? 1 : -1];
@@ -356,12 +350,8 @@ typedef char playerselect_skater_element_size_must_be_2648[
     (sizeof(SkaterScreenElement) == 2648) ? 1 : -1];
 typedef char playerselect_screen_size_must_be_372[
     (sizeof(PlayerSelectScreen) == 372) ? 1 : -1];
-typedef char playerselect_screen_dispatch_size_must_be_28[
-    (sizeof(ScreenElementDispatchTable) == 28) ? 1 : -1];
-typedef char playerselect_sprite_dispatch_size_must_be_24[
-    (sizeof(Sprite2DispatchTable) == 24) ? 1 : -1];
-typedef char playerselect_font_assignment_view_size_must_be_80[
-    (sizeof(PlayerSelectFontAssignmentView) == 80) ? 1 : -1];
+typedef char playerselect_font_size_must_be_80[
+    (sizeof(Font) == 80) ? 1 : -1];
 
 #include "OB.h"
 #include "CBODY.h"
@@ -380,39 +370,34 @@ typedef char playerselect_font_assignment_view_size_must_be_80[
 #include <STDIO.H>
 #include <STRINGS.H>
 
-/** Placement construction for explicitly managed Font storage. */
-inline void *operator new(unsigned int, void *address)
-{
-    return address;
-}
 
 // === External declarations ===
 /** Incomplete views of the spool filename and part-prefix format strings. */
-extern char s__s_psh_800dc4b0[];
-extern char s__spart__800dc4b8[];
-extern char s__s_psx_800dc4c0[];
+extern char s_PshExt[];
+extern char s_SpartFmt[];
+extern char s_PsxExt[];
 #include "SPOOLPARTPREFIX.h"
 /** Incomplete views of loading, animation, and multiplayer resources. */
-extern char s_Loading____800dc4a4[];
-extern char s_s2dots_bmp_800dc4f0[];
-extern char s_dummy_800dc4fc[];
-extern char s_choose_skater_800dc504[];
-extern char s_anims_fe_800dc4c8[];
-extern char s_anims_cs_psx_800dc4d4[];
-extern char DAT_800dc4e4[];
-extern char DAT_800dc4e8[];
+extern char s_Loading[];
+extern char s_S2dotsBmp[];
+extern char s_Dummy[];
+extern char s_ChooseSkater[];
+extern char s_AnimsFe[];
+extern char s_AnimsCsPsx[];
+extern char s_FilenameFmt[];
+extern char FrontEndAnimVec[];
 // 0x800DC4EC is PlayerSelect_FrontEndAnimations+4, not a standalone object.
 /** Incomplete views of the player-select prompt and navigation resources. */
-extern char s_s2bgd1_bmp_800dc318[];
-extern char s_s2prmpt4_bmp_800dc324[];
-extern char s_select_800dc334[];
-extern char s_s2prmpt5_bmp_800dc33c[];
-extern char s_scroll_bio_800dc34c[];
-extern char s_s2prmpt1_bmp_800dc358[];
-extern char s_accept_800dc368[];
-extern char s_s2prmpt2_bmp_800dc370[];
-extern char s_back_800dc380[];
-extern char s_TEAM_CHICKEN_800dc388[];
+extern char s_S2bgd1Bmp[];
+extern char s_S2prmpt4Bmp_PlayerSelect[];
+extern char s_Select_PlayerSelect[];
+extern char s_S2prmpt5Bmp[];
+extern char s_ScrollBio[];
+extern char s_S2prmpt1Bmp_PlayerSelect[];
+extern char s_Accept_PlayerSelect[];
+extern char s_S2prmpt2Bmp_PlayerSelect[];
+extern char s_Back_PlayerSelect[];
+extern char s_TeamChicken[];
 
 // === PlayerSelect-owned initialized data ===
 
@@ -458,117 +443,20 @@ static SViewport *pViewport
  * expressions preserves the original pointer data without baking addresses.
  */
 ICON_INFO mIconInfo[8] __attribute__((section(".data"))) = {
-    {(char *)(s__spart__800daa1c + 0x1A30), -63, 14, 154, 62, 1, 0},
-    {(char *)(s__spart__800daa1c + 0x1A3C), -60, 14, 154, 62, 1, 0},
-    {(char *)(s__spart__800daa1c + 0x1A48), -48, 79, 154, 62, 1, 0},
-    {(char *)(s__spart__800daa1c + 0x1A54), -34, 76, 154, 62, 1, 0},
-    {(char *)(s__spart__800daa1c + 0x1A54), -34, 76, 154, 62, 1, 0},
-    {(char *)(s__spart__800daa1c + 0x1A60), -52, 100, 154, 62, 1, 0},
-    {(char *)(s__spart__800daa1c + 0x1A6C), -44, 100, 154, 62, 1, 0},
-    {(char *)(s__spart__800daa1c + 0x1A78), 36, 34, -53, 15, 1, 0},
+    {(char *)(s_SpartPrefixFormat + 0x1A30), -63, 14, 154, 62, 1, 0},
+    {(char *)(s_SpartPrefixFormat + 0x1A3C), -60, 14, 154, 62, 1, 0},
+    {(char *)(s_SpartPrefixFormat + 0x1A48), -48, 79, 154, 62, 1, 0},
+    {(char *)(s_SpartPrefixFormat + 0x1A54), -34, 76, 154, 62, 1, 0},
+    {(char *)(s_SpartPrefixFormat + 0x1A54), -34, 76, 154, 62, 1, 0},
+    {(char *)(s_SpartPrefixFormat + 0x1A60), -52, 100, 154, 62, 1, 0},
+    {(char *)(s_SpartPrefixFormat + 0x1A6C), -44, 100, 154, 62, 1, 0},
+    {(char *)(s_SpartPrefixFormat + 0x1A78), 36, 34, -53, 15, 1, 0},
 };
 
 /** Selected skaters for the current multiplayer setup. */
 int MultiPlayerList[8] __attribute__((section(".data"))) = {0};
 }
 
-// === Player-select screen-element layouts ===
-
-#include "PROMPTSCREENELEMENT.h"
-
-
-/** Multiplayer player-number prompt and selection state. */
-struct MultiPlayerScreenElement {
-    struct ScreenElementList ScreenElementList;
-    struct Font *mpFont;
-    int mFlash;
-
-    static void *operator new(unsigned int size) throw()
-    {
-        return ::CClass::operator new(size);
-    }
-    MultiPlayerScreenElement(Font *pFont, int homeX, int homeY, int screenX, int screenY);
-    ~MultiPlayerScreenElement();
-    void ResetStartingLocation();
-    void refresh();
-    void update();
-};
-
-
-/** Ten-meter ability display for the selected skater. */
-struct StatsScreenElement {
-    struct ScreenElementList ScreenElementList;
-    struct SpriteScreenElement *mpDots;
-
-    static void *operator new(unsigned int size) throw()
-    {
-        return ::CClass::operator new(size);
-    }
-    StatsScreenElement(int homeX, int homeY, int screenX, int screenY);
-    ~StatsScreenElement();
-    void draw(int x, int y);
-    void update();
-};
-
-
-/** Scrollable biography pane for the selected skater. */
-struct BioScreenElement {
-    struct ScreenElementList ScreenElementList;
-    int mSize;
-    struct ScreenElement *mpBioText[16];
-    int mBioTextCount;
-    struct Font *mpFont;
-
-    static void *operator new(unsigned int size) throw()
-    {
-        return ::CClass::operator new(size);
-    }
-    BioScreenElement(Font *pFont, int homeX, int homeY, int screenX, int screenY);
-    ~BioScreenElement();
-    void HandleDown();
-    void HandleUp();
-    void draw(int x, int y);
-    void refresh();
-    void update();
-};
-
-
-/** Career totals and earned-medal display for the selected skater. */
-struct CareerScreenElement {
-    struct ScreenElementList ScreenElementList;
-    struct ScreenElement *mpMedalIcons[3];
-    int mDelay[9];
-
-    static void *operator new(unsigned int size) throw()
-    {
-        return ::CClass::operator new(size);
-    }
-    CareerScreenElement(Font *pFont, int homeX, int homeY, int screenX, int screenY);
-    ~CareerScreenElement();
-    void draw(int x, int y);
-    void refresh();
-    void update();
-};
-
-
-/** Animated numeric score row. */
-struct ScoreScreenElement {
-    struct ScreenElementList ScreenElementList;
-    int mTargetValue;
-    int mValue;
-    struct TextScreenElement *mpScoreElement;
-    struct Font *mpFont;
-
-    static void *operator new(unsigned int size) throw()
-    {
-        return ::CClass::operator new(size);
-    }
-    ScoreScreenElement(int value, Font *pFont, int x, int y);
-    ~ScoreScreenElement();
-    void draw(int x, int y);
-    void setValue(int value);
-    void update();
-};
 
 typedef char playerselect_prompt_element_size_must_be_104[
     (sizeof(PromptScreenElement) == 104) ? 1 : -1];
@@ -592,35 +480,16 @@ char *Spool_LoadPSH2(char *fileBuffer, char *baseName, char **nameList, int *nam
 void Spool_StripAnimFile(char *fileData);
 
 // === Typed collaborator declarations ===
-#define SCREENTOOLS_DECLARE_TEXT_SCREEN_ELEMENT_CONSTRUCTOR
-#define SCREENTOOLS_DECLARE_SPRITE_SCREEN_ELEMENT_CONSTRUCTOR
-#include "SCREENTOOLS.h"
-#define PlayerSelect_ConstructTextElement \
-    __17TextScreenElementPcP4Fontiiii
-#define PlayerSelect_ConstructSpriteElement \
-    __19SpriteScreenElementPciiiiii
 /** Incomplete views of score and multiplayer label format strings. */
-extern char s__7d_800dc3a8[];
-extern char s_player__d_800dc514[];
+extern char s_ValueFmt7d[];
+extern char s_PlayerNumFmt[];
 
 #include "IMAGE.h"
 
-// === ABI bridges for collaborators not yet exposed as natural C++ classes ===
-extern "C" PlayerSelectScreen *__18PlayerSelectScreeni(
-    PlayerSelectScreen *, int);
-#define PlayerSelectScreen_ctor __18PlayerSelectScreeni
-#define FRONTSCREENS_DECLARE_PLAYERSELECT_SCREEN_DESTRUCTOR_ABI
-#include "FRONTSCREENS.h"
-#define SCREENTOOLS_DECLARE_SCREEN_ELEMENT_LIST_DESTRUCTOR
-#include "SCREENTOOLS.h"
 // === draw() helper declarations ===
 #include "PDOUBLEBUFFER.h"
 
 
-// === PlayerSelect-owned virtual dispatch tables ===
-
-#define FRONTSCREENS_DECLARE_PLAYERSELECT_ELEMENT_DESTRUCTOR_ABI
-#include "FRONTSCREENS.h"
 namespace PlayerSelectAddressViewOwners
 {
 extern "C"
@@ -631,116 +500,10 @@ extern "C"
  * The explicit extent preserves the target's five trailing alignment bytes
  * before the screen-element dispatch tables.
  */
-static char s_loading_pre_file_manually_800b4068[32]
+static char s_LoadingPreFileManually[32]
     __attribute__((section(".rdata"), aligned(8))) =
         "loading pre file manually\n";
 }
-}
-
-extern "C" {
-
-/**
- * Player-select screen-element dispatch tables in original read-only order.
- *
- * GCC 2.x emits seven words per table and aligns each table to eight bytes,
- * leaving one zero padding word between adjacent tables.
- */
-int __vt_24MultiPlayerScreenElement[7]
-    __attribute__((section(".rdata"), aligned(8))) = {
-        0,
-        0,
-        (int)&PlayerSelect_MultiPlayerDestructorVtable,
-        (int)(void (*)(MultiPlayerScreenElement *))
-            &MultiPlayerScreenElement::update,
-        (int)(void (*)(ScreenElementList *, int, int))
-            &ScreenElementList::draw,
-        (int)(int (*)(ScreenElement *))&ScreenElement::width,
-        (int)(void (*)(MultiPlayerScreenElement *))
-            &MultiPlayerScreenElement::refresh,
-};
-
-int __vt_18StatsScreenElement[7]
-    __attribute__((section(".rdata"), aligned(8))) = {
-        0,
-        0,
-        (int)&PlayerSelect_StatsDestructorVtable,
-        (int)(void (*)(StatsScreenElement *))&StatsScreenElement::update,
-        (int)(void (*)(StatsScreenElement *, int, int))
-            &StatsScreenElement::draw,
-        (int)(int (*)(ScreenElement *))&ScreenElement::width,
-        (int)(void (*)(ScreenElement *))&ScreenElement::refresh,
-};
-
-int __vt_19SkaterScreenElement[7]
-    __attribute__((section(".rdata"), aligned(8))) = {
-        0,
-        0,
-        (int)&PlayerSelect_SkaterDestructorVtable,
-        (int)(void (*)(SkaterScreenElement *))&SkaterScreenElement::update,
-        (int)(void (*)(SkaterScreenElement *, int, int))
-            &SkaterScreenElement::draw,
-        (int)(int (*)(ScreenElement *))&ScreenElement::width,
-        (int)(void (*)(SkaterScreenElement *))&SkaterScreenElement::refresh,
-};
-
-int __vt_16BioScreenElement[7]
-    __attribute__((section(".rdata"), aligned(8))) = {
-        0,
-        0,
-        (int)&PlayerSelect_BioDestructorVtable,
-        (int)(void (*)(BioScreenElement *))&BioScreenElement::update,
-        (int)(void (*)(BioScreenElement *, int, int))&BioScreenElement::draw,
-        (int)(int (*)(ScreenElement *))&ScreenElement::width,
-        (int)(void (*)(BioScreenElement *))&BioScreenElement::refresh,
-};
-
-int __vt_19CareerScreenElement[7]
-    __attribute__((section(".rdata"), aligned(8))) = {
-        0,
-        0,
-        (int)&PlayerSelect_CareerDestructorVtable,
-        (int)(void (*)(CareerScreenElement *))&CareerScreenElement::update,
-        (int)(void (*)(CareerScreenElement *, int, int))
-            &CareerScreenElement::draw,
-        (int)(int (*)(ScreenElement *))&ScreenElement::width,
-        (int)(void (*)(CareerScreenElement *))&CareerScreenElement::refresh,
-};
-
-int __vt_19PromptScreenElement[7]
-    __attribute__((section(".rdata"), aligned(8))) = {
-        0,
-        0,
-        (int)&PlayerSelect_PromptDestructorVtable,
-        (int)(void (*)(ScreenElementList *))&ScreenElementList::update,
-        (int)(void (*)(ScreenElementList *, int, int))
-            &ScreenElementList::draw,
-        (int)(int (*)(PromptScreenElement *))&PromptScreenElement::width,
-        (int)(void (*)(ScreenElement *))&ScreenElement::refresh,
-};
-
-int __vt_18ScoreScreenElement[7]
-    __attribute__((section(".rdata"), aligned(8))) = {
-        0,
-        0,
-        (int)&PlayerSelect_ScoreDestructorVtable,
-        (int)(void (*)(ScoreScreenElement *))&ScoreScreenElement::update,
-        (int)(void (*)(ScoreScreenElement *, int, int))
-            &ScoreScreenElement::draw,
-        (int)(int (*)(ScreenElement *))&ScreenElement::width,
-        (int)(void (*)(ScreenElement *))&ScreenElement::refresh,
-};
-
-int __vt_18PlayerSelectScreen[7]
-    __attribute__((section(".rdata"), aligned(8))) = {
-        0,
-        0,
-        (int)&PlayerSelectScreen_dtor,
-        (int)(void (*)(PlayerSelectScreen *))&PlayerSelectScreen::update,
-        (int)(void (*)(ScreenElementList *, int, int))
-            &ScreenElementList::draw,
-        (int)(int (*)(ScreenElement *))&ScreenElement::width,
-        (int)(void (*)(PlayerSelectScreen *))&PlayerSelectScreen::refresh,
-};
 }
 
 
@@ -761,35 +524,6 @@ typedef char playerselect_character_progress_size_must_be_32[
 typedef char playerselect_career_prefix_size_must_be_456[
     (sizeof(SPlayerSelectCareerOverlay) == 456) ? 1 : -1];
 
-/** Owner-local virtual interface for the ScreenElement vtable prefix. */
-struct PlayerSelectDrawableView {
-    virtual void slot0();
-    virtual void slot1();
-    virtual void draw(int x, int y);
-};
-
-/** Dispatches a draw through the original ScreenElement vtable prefix. */
-static inline void PlayerSelect_DrawElement(
-    ScreenElement *element, int x, int y)
-{
-    ((PlayerSelectDrawableView *)element)->draw(x, y);
-}
-
-/** Returns an element's width through the original dispatch-table slot. */
-static inline int PlayerSelect_GetElementWidth(ScreenElement *element)
-{
-    return ((ScreenElementDispatchTable *)element->CClass.vtable)->Width(
-        element);
-}
-
-/** Virtual Sprite2 prefix used to replace the bitmap data of face sprites. */
-struct PlayerSelectSpriteDataView
-{
-    virtual void slot0();
-    virtual void slot1();
-    virtual void setData(void *data);
-    virtual void draw(int x, int y, int drawFirst);
-};
 
 // === PlayerSelect-owned font resources ===
 
@@ -798,7 +532,7 @@ namespace PlayerSelectAddressViewOwners
 {
 extern "C"
 {
-static char s_player_pre_800dc2e8[12]
+static char s_PlayerPre[12]
     __attribute__((section(".sdata"), aligned(4))) = "player.pre";
 }
 }
@@ -811,7 +545,7 @@ static char PSFont3[12]
 
 // === Absolute-addressed globals ===
 /** Incomplete view of the player-select load-character prompt. */
-extern char s_LOAD_CHARACTER_800dc398[];
+extern char s_LoadCharacter[];
 
 // === Additional collaborator functions ===
 #include "CREATE.h"
@@ -835,21 +569,10 @@ extern char s_LOAD_CHARACTER_800dc398[];
  * @param gameMode  Front-end mode used to choose single- or multiplayer panes.
  * @return `this` pointer (GCC 2.x ctor convention).
  */
-#define SCREENTOOLS_DECLARE_SCREEN_ELEMENT_LIST_CONSTRUCTOR
-#include "SCREENTOOLS.h"
-#define ScreenElementListBase_ctor __17ScreenElementListiiii
-PlayerSelectScreen *PlayerSelectScreen_ctor(
-    PlayerSelectScreen *_this, int gameMode)
+PlayerSelectScreen::PlayerSelectScreen(int gameMode)
+    : ScreenElementList(0, 0, -1, -1)
 {
-    ScreenElementListBase_ctor(&_this->ScreenElementList, 0, 0, -1, -1);
-    PlayerSelectFontAssignmentView *font1 = &_this->mFont1;
-    _this->ScreenElementList.ScreenElement.CClass.vtable =
-        __vt_18PlayerSelectScreen;
-    ::new (reinterpret_cast<Font *>(font1)) Font;
-    ::new (reinterpret_cast<Font *>(&_this->mFont2)) Font;
-    ::new (reinterpret_cast<Font *>(&_this->mFont3)) Font;
-    _this->init(gameMode);
-    return _this;
+    init(gameMode);
 }
 
 /**
@@ -868,43 +591,40 @@ void PlayerSelectScreen::init(int gameMode)
     mMulti = !((unsigned int)(gameMode - 1) < 3);
     PREManager *preManager = PREMgr;
     if (preManager->inPRE(
-            PlayerSelectAddressViewOwners::s_player_pre_800dc2e8) == 0)
+            PlayerSelectAddressViewOwners::s_PlayerPre) == 0)
     {
         printf(
             PlayerSelectAddressViewOwners::
-                s_loading_pre_file_manually_800b4068);
+                s_LoadingPreFileManually);
         PREMgr->loadPRE(
-            PlayerSelectAddressViewOwners::s_player_pre_800dc2e8);
+            PlayerSelectAddressViewOwners::s_PlayerPre);
     }
 
     mCASTexturesSpooled = 0;
     Create_InitSkaterFrontEnd();
 
-    mFont1 = *(PlayerSelectFontAssignmentView *)
-        FontManager::LoadFont(PSFont2);
+    mFont1 = *FontManager::LoadFont(PSFont2);
     mFont1.JustX = 0;
     mFont1.JustY = 3;
-    reinterpret_cast<Font *>(&mFont1)->setRGB(0x80, 0x80, 0x80);
+    mFont1.setRGB(0x80, 0x80, 0x80);
     mFont1.Shadow = 0;
     mFont1.SpaceX = 0;
     mFont1.SpaceY = 0;
     mFont1.Scale = 0x1000;
 
-    mFont2 = *(PlayerSelectFontAssignmentView *)
-        FontManager::LoadFont(PSFont1);
+    mFont2 = *FontManager::LoadFont(PSFont1);
     mFont2.JustX = 0;
     mFont2.JustY = 3;
-    reinterpret_cast<Font *>(&mFont2)->setRGB(0x80, 0x80, 0x80);
+    mFont2.setRGB(0x80, 0x80, 0x80);
     mFont2.Shadow = 0;
     mFont2.SpaceX = -1;
     mFont2.SpaceY = 0;
     mFont2.Scale = 0x1000;
 
-    mFont3 = *(PlayerSelectFontAssignmentView *)
-        FontManager::LoadFont(PSFont3);
+    mFont3 = *FontManager::LoadFont(PSFont3);
     mFont3.JustX = 0;
     mFont3.JustY = 3;
-    reinterpret_cast<Font *>(&mFont3)->setRGB(0xff, 0xff, 0xff);
+    mFont3.setRGB(0xff, 0xff, 0xff);
     mFont3.Shadow = 0;
     mFont3.SpaceX = 1;
     mFont3.SpaceY = 0;
@@ -912,7 +632,7 @@ void PlayerSelectScreen::init(int gameMode)
     mFont3.CharMap = 2;
 
     mBackground = new Sprite2(
-        s_s2bgd1_bmp_800dc318, 1, 0x40, 0x40);
+        s_S2bgd1Bmp, 1, 0x40, 0x40);
 
     ScreenElement *item[16];
     {
@@ -926,30 +646,23 @@ void PlayerSelectScreen::init(int gameMode)
     }
 
     item[0] = (ScreenElement *)new PromptScreenElement(
-        s_s2prmpt4_bmp_800dc324, s_select_800dc334,
-        (Font *)&mFont1, 0x36, 0xdc, -1, 0x104);
+        s_S2prmpt4Bmp_PlayerSelect, s_Select_PlayerSelect,
+        &mFont1, 0x36, 0xdc, -1, 0x104);
 
     item[1] = (ScreenElement *)new PromptScreenElement(
-        s_s2prmpt5_bmp_800dc33c, s_scroll_bio_800dc34c,
-        (Font *)&mFont1, 0xa4, 0xdc, -1, 0x104);
+        s_S2prmpt5Bmp, s_ScrollBio,
+        &mFont1, 0xa4, 0xdc, -1, 0x104);
 
     item[2] = (ScreenElement *)new PromptScreenElement(
-        s_s2prmpt1_bmp_800dc358, s_accept_800dc368,
-        (Font *)&mFont1, 0x125, 0xdc, -1, 0x104);
+        s_S2prmpt1Bmp_PlayerSelect, s_Accept_PlayerSelect,
+        &mFont1, 0x125, 0xdc, -1, 0x104);
 
     item[3] = (ScreenElement *)new PromptScreenElement(
-        s_s2prmpt2_bmp_800dc370, s_back_800dc380,
-        (Font *)&mFont1, 0x18b, 0xdc, -1, 0x104);
+        s_S2prmpt2Bmp_PlayerSelect, s_Back_PlayerSelect,
+        &mFont1, 0x18b, 0xdc, -1, 0x104);
 
     {
-        TextScreenElement *element = (TextScreenElement *)
-            ::CClass::operator new(sizeof(TextScreenElement));
-        if (element != 0)
-        {
-            element = PlayerSelect_ConstructTextElement(
-                element, s_TEAM_CHICKEN_800dc388,
-                (Font *)&mFont2, 0x42, 0x23, -1, -1);
-        }
+        TextScreenElement *element = (TextScreenElement *)new TextScreenElement(s_TeamChicken, &mFont2, 0x42, 0x23, -1, -1);
         item[5] = (ScreenElement *)element;
     }
 
@@ -962,7 +675,7 @@ void PlayerSelectScreen::init(int gameMode)
     if (mMulti != 0)
     {
         mpMultiScreenElement = new MultiPlayerScreenElement(
-            (Font *)&mFont2, 0x10e, 0xa3, 0x200, 0xa3);
+            &mFont2, 0x10e, 0xa3, 0x200, 0xa3);
 
         if ((gameMode == 5) || (gameMode == 8) || (gameMode == 9))
         {
@@ -977,13 +690,13 @@ void PlayerSelectScreen::init(int gameMode)
     else if (gameMode != 3)
     {
         CareerScreenElement *element = new CareerScreenElement(
-            (Font *)&mFont1, 0xf4, 0x85, 0x200, 0x85);
+            &mFont1, 0xf4, 0x85, 0x200, 0x85);
         mpCareerScreenElement = (ScreenElement *)element;
         item[7] = mpCareerScreenElement;
     }
 
     mpBioScreenElement = new BioScreenElement(
-        (Font *)&mFont3, 0x41, 0x7f, -0x200, 0x7f);
+        &mFont3, 0x41, 0x7f, -0x200, 0x7f);
     item[8] = (ScreenElement *)mpBioScreenElement;
 
     {
@@ -993,7 +706,7 @@ void PlayerSelectScreen::init(int gameMode)
         {
             if (*slot != 0)
             {
-                ScreenElementList.addItem(*slot);
+                addItem(*slot);
             }
             i++;
             slot++;
@@ -1001,23 +714,18 @@ void PlayerSelectScreen::init(int gameMode)
     }
 
     SkaterScreenElement *skaterElement = new SkaterScreenElement(
-        gameMode == 3, (Font *)&mFont1,
+        gameMode == 3, &mFont1,
         0x154, 0x10, 0x154, -0xc8);
     item[9] = (ScreenElement *)skaterElement;
-    ScreenElementList.addItem(item[9]);
+    addItem(item[9]);
     mpSkaterScreenElement = (SkaterScreenElement *)item[9];
 
     Create_BeginSpooling();
 
-    {
-        ScreenElementDispatchTable *vtable =
-            (ScreenElementDispatchTable *)
-                ScreenElementList.ScreenElement.CClass.vtable;
-        vtable->Refresh(this);
-    }
+    refresh();
     mpSkaterScreenElement->refreshSkater();
     PREMgr->unloadPRE(
-        PlayerSelectAddressViewOwners::s_player_pre_800dc2e8);
+        PlayerSelectAddressViewOwners::s_PlayerPre);
 }
 
 /**
@@ -1029,18 +737,11 @@ void PlayerSelectScreen::init(int gameMode)
  * @param _this  Player-select screen storage to destroy.
  * @param flag  GCC 2.x in-charge flag (bit 0 → also invoke `operator delete` on `this`).
  */
-void PlayerSelectScreen_dtor(
-    PlayerSelectScreen *_this, int flag)
+PlayerSelectScreen::~PlayerSelectScreen()
 {
-    _this->ScreenElementList.ScreenElement.CClass.vtable =
-        __vt_18PlayerSelectScreen;
-    Sprite2 *obj = _this->mBackground;
-    if (obj != 0)
+    if (mBackground != 0)
     {
-        Sprite2DispatchTable *vtbl =
-            (Sprite2DispatchTable *)obj->CClass.vtable;
-        void (*dtor)(void *, int) = vtbl->Destroy;
-        dtor(obj, 3);
+        delete mBackground;
     }
     FontManager::UnloadFont(PSFont1);
     FontManager::UnloadFont(PSFont2);
@@ -1050,14 +751,6 @@ void PlayerSelectScreen_dtor(
     Spool_RemoveUnusedTextures();
     Pal_RemoveUnusedPalettes();
     Pack_DefragmentFully();
-    reinterpret_cast<Font *>(&_this->mFont3)->~Font();
-    reinterpret_cast<Font *>(&_this->mFont2)->~Font();
-    reinterpret_cast<Font *>(&_this->mFont1)->~Font();
-    ScreenElementList_DestroyAbi(&_this->ScreenElementList, 0);
-    if (flag & 1)
-    {
-        ::CClass::operator delete(_this);
-    }
 }
 
 /**
@@ -1070,9 +763,8 @@ void PlayerSelectScreen_dtor(
  */
 void PlayerSelectScreen::draw()
 {
-    ScreenElementList.draw(0, 0);
-    ((Sprite2DispatchTable *)mBackground->CClass.vtable)->Draw(
-        mBackground, 0, 0, 1);
+    ScreenElementList::draw(0, 0);
+    mBackground->draw(0, 0, 1);
 }
 
 /**
@@ -1099,7 +791,7 @@ void PlayerSelectScreen::update()
         mpSkaterScreenElement->UpdateSpoolItems();
     }
 
-    ScreenElementList.update();
+    ScreenElementList::update();
 }
 
 /**
@@ -1114,43 +806,28 @@ void PlayerSelectScreen::refresh()
 {
     if (mpSkaterScreenElement->mShowCard != 0)
     {
-        ((TextScreenElement *)ScreenElementList.mpItem[4])
-            ->setString(s_LOAD_CHARACTER_800dc398);
+        ((TextScreenElement *)mpItem[4])
+            ->setString(s_LoadCharacter);
     }
     else
     {
-        ((TextScreenElement *)ScreenElementList.mpItem[4])
+        ((TextScreenElement *)mpItem[4])
             ->setString(Stats[SelectedSkater].Name);
     }
 
     if (mpCareerScreenElement != 0)
     {
-        ((ScreenElementDispatchTable *)mpCareerScreenElement->CClass.vtable)
-            ->Refresh(mpCareerScreenElement);
+        mpCareerScreenElement->refresh();
     }
 
     if (mpMultiScreenElement != 0)
     {
-        ((ScreenElementDispatchTable *)
-             mpMultiScreenElement->ScreenElementList.ScreenElement.CClass.vtable)
-            ->Refresh(mpMultiScreenElement);
+        mpMultiScreenElement->refresh();
     }
 
-    ((ScreenElementDispatchTable *)
-         mpBioScreenElement->ScreenElementList.ScreenElement.CClass.vtable)
-        ->Refresh(mpBioScreenElement);
+    mpBioScreenElement->refresh();
 
-    ((ScreenElementDispatchTable *)
-         mpSkaterScreenElement->ScreenElementList.ScreenElement.CClass.vtable)
-        ->Refresh(mpSkaterScreenElement);
-}
-
-/** Refresh the whole player-select screen through its virtual interface. */
-static inline void PlayerSelect_RefreshScreen(PlayerSelectScreen *screen)
-{
-    ((ScreenElementDispatchTable *)
-         screen->ScreenElementList.ScreenElement.CClass.vtable)
-        ->Refresh(screen);
+    mpSkaterScreenElement->refresh();
 }
 
 /**
@@ -1208,7 +885,7 @@ int PlayerSelectScreen::handlePress()
                 mpSkaterScreenElement->mShowCard = 1;
             }
         }
-        PlayerSelect_RefreshScreen(this);
+        refresh();
     }
     else if (Pad[SELECTED_CONTROLLER].Right.Triggered != 0)
     {
@@ -1229,7 +906,7 @@ int PlayerSelectScreen::handlePress()
                     SelectedSkater = 0;
             }
         }
-        PlayerSelect_RefreshScreen(this);
+        refresh();
     }
     else if (mpSkaterScreenElement->mSkaterChanged != 0)
     {
@@ -1276,7 +953,7 @@ int PlayerSelectScreen::handlePress()
             MultiPlayerList[MultiPlayerListCount] = selectedSkater;
             ++MultiPlayerListCount;
             mpMultiScreenElement->ResetStartingLocation();
-            PlayerSelect_RefreshScreen(this);
+            refresh();
         }
 
         if (Pad[SELECTED_CONTROLLER].Triangle.Triggered != 0)
@@ -1296,7 +973,7 @@ int PlayerSelectScreen::handlePress()
 
             SelectedSkater = MultiPlayerList[MultiPlayerListCount];
             mpMultiScreenElement->ResetStartingLocation();
-            PlayerSelect_RefreshScreen(this);
+            refresh();
         }
 
         if (Pad[SELECTED_CONTROLLER].Select.Triggered != 0)
@@ -1380,11 +1057,7 @@ int PlayerSelect_Main(int gameMode)
     Db_SkyColor = 0;
     Db_UpdateSky();
 
-    PlayerSelectScreen *pPlayerSelectScreen =
-        (PlayerSelectScreen *)::CClass::operator new(sizeof(PlayerSelectScreen));
-    if (pPlayerSelectScreen != 0)
-        pPlayerSelectScreen =
-            PlayerSelectScreen_ctor(pPlayerSelectScreen, gameMode);
+    PlayerSelectScreen *pPlayerSelectScreen = new PlayerSelectScreen(gameMode);
 
     Pad_ClearTriggers(&Pad[0]);
     Pad_ClearTriggers(&Pad[1]);
@@ -1400,9 +1073,7 @@ int PlayerSelect_Main(int gameMode)
         GStartTime = Vblanks;
         Db_FlipClear();
         Pad_Update();
-        ((ScreenElementDispatchTable *)
-             pPlayerSelectScreen->ScreenElementList.ScreenElement.CClass.vtable)
-            ->Update(pPlayerSelectScreen);
+        pPlayerSelectScreen->update();
         pPlayerSelectScreen->draw();
         DrawSync(0);
         Pause(1);
@@ -1417,9 +1088,7 @@ int PlayerSelect_Main(int gameMode)
     Db_SkyColor = oldSkyColor;
     if (pPlayerSelectScreen != 0)
     {
-        ((ScreenElementDispatchTable *)
-             pPlayerSelectScreen->ScreenElementList.ScreenElement.CClass.vtable)
-            ->Destroy(pPlayerSelectScreen, 3);
+        delete pPlayerSelectScreen;
     }
 
     if (press == 2)
@@ -1442,40 +1111,22 @@ int PlayerSelect_Main(int gameMode)
  * @param screenX  Screen-space X coordinate.
  * @param screenY  Screen-space Y coordinate.
  */
-PromptScreenElement::PromptScreenElement(char *pFileName, char *pString, Font *pFont, int homeX, int homeY, int screenX, int screenY)
+PromptScreenElement::PromptScreenElement(char *pFileName, char *pString, Font *pFont, int homeX, int homeY, int screenX, int screenY) : ScreenElementList(homeX, homeY, screenX, screenY)
 {
     ScreenElement *item[2];
     ScreenElement *element;
     int width;
 
-    ScreenElementListBase_ctor(
-        &ScreenElementList, homeX, homeY, screenX, screenY);
-    ScreenElementList.ScreenElement.CClass.vtable =
-        __vt_19PromptScreenElement;
 
-    element = (ScreenElement *)::CClass::operator new(
-        sizeof(SpriteScreenElement));
-    if (element != 0)
-    {
-        element = (ScreenElement *)PlayerSelect_ConstructSpriteElement(
-            (SpriteScreenElement *)element,
-            pFileName, 0, 0, -1, -1, 1, 0);
-    }
+    element = (ScreenElement *)new SpriteScreenElement(pFileName, 0, 0, -1, -1, 1, 0);
     item[0] = element;
-    ScreenElementList.addItem(item[0]);
+    addItem(item[0]);
 
-    element = (ScreenElement *)::CClass::operator new(
-        sizeof(TextScreenElement));
-    if (element != 0)
-    {
-        element = (ScreenElement *)PlayerSelect_ConstructTextElement(
-            (TextScreenElement *)element,
-            pString, pFont, 0, 0, -1, -1);
-    }
+    element = (ScreenElement *)new TextScreenElement(pString, pFont, 0, 0, -1, -1);
     item[1] = element;
-    ScreenElementList.addItem(item[1]);
+    addItem(item[1]);
 
-    width = PlayerSelect_GetElementWidth(item[0]);
+    width = item[0]->width();
     item[1]->mHomeX = item[0]->mHomeX + width + 4;
     item[1]->mHomeY += 6;
     item[1]->SnapToHomeX();
@@ -1491,9 +1142,6 @@ PromptScreenElement::PromptScreenElement(char *pFileName, char *pString, Font *p
  */
 PromptScreenElement::~PromptScreenElement()
 {
-    ScreenElementList.ScreenElement.CClass.vtable =
-        __vt_19PromptScreenElement;
-    ScreenElementList_DestroyAbi(&ScreenElementList, 0);
 
 }
 
@@ -1509,13 +1157,9 @@ PromptScreenElement::~PromptScreenElement()
  */
 int PromptScreenElement::width()
 {
-    ScreenElement *pTextElement = ScreenElementList.mpItem[1];
-    ScreenElement *pSpriteElement = ScreenElementList.mpItem[0];
-    return ((ScreenElementDispatchTable *)pTextElement->CClass.vtable)
-               ->Width(pTextElement) +
-           ((ScreenElementDispatchTable *)pSpriteElement->CClass.vtable)
-               ->Width(pSpriteElement) +
-           4;
+    ScreenElement *pTextElement = mpItem[1];
+    ScreenElement *pSpriteElement = mpItem[0];
+    return pTextElement->width() + pSpriteElement->width() + 4;
 }
 
 /**
@@ -1530,27 +1174,17 @@ int PromptScreenElement::width()
  * @param x  X coordinate.
  * @param y  Y coordinate.
  */
-ScoreScreenElement::ScoreScreenElement(int value, Font *pFont, int x, int y)
+ScoreScreenElement::ScoreScreenElement(int value, Font *pFont, int x, int y) : ScreenElementList(x, y, -1, -1)
 {
     char newString[32];
     TextScreenElement *text;
 
-    ScreenElementListBase_ctor(&ScreenElementList, x, y, -1, -1);
-    ScreenElementList.ScreenElement.CClass.vtable =
-        __vt_18ScoreScreenElement;
     mValue = 0;
     mTargetValue = value;
-    (mpFont = pFont, sprintf(newString, s__7d_800dc3a8, 0));
+    (mpFont = pFont, sprintf(newString, s_ValueFmt7d, 0));
 
-    text = (TextScreenElement *)
-        ::CClass::operator new(sizeof(TextScreenElement));
-    if (text != 0)
-    {
-        text = PlayerSelect_ConstructTextElement(
-            text,
-            newString, pFont, 0, 0, -1, -1);
-    }
-    ScreenElementList.addItem((ScreenElement *)text);
+    text = (TextScreenElement *)new TextScreenElement(newString, pFont, 0, 0, -1, -1);
+    addItem((ScreenElement *)text);
     mpScoreElement = text;
 }
 
@@ -1564,9 +1198,6 @@ ScoreScreenElement::ScoreScreenElement(int value, Font *pFont, int x, int y)
  */
 ScoreScreenElement::~ScoreScreenElement()
 {
-    ScreenElementList.ScreenElement.CClass.vtable =
-        __vt_18ScoreScreenElement;
-    ScreenElementList_DestroyAbi(&ScreenElementList, 0);
 
 }
 
@@ -1607,7 +1238,7 @@ void ScoreScreenElement::draw(int x, int y)
 {
     int oldFixedWidth = mpFont->FixedWidth;
     mpFont->FixedWidth = 1;
-    ScreenElementList.draw(x, y);
+    ScreenElementList::draw(x, y);
     mpFont->FixedWidth = oldFixedWidth;
 }
 
@@ -1636,10 +1267,10 @@ void ScoreScreenElement::update()
         }
     }
 
-    sprintf(newString, s__7d_800dc3a8, mValue);
+    sprintf(newString, s_ValueFmt7d, mValue);
 
     mpScoreElement->setString(newString);
-    ScreenElementList.ScreenElement.update();
+    ScreenElement::update();
 }
 
 /**
@@ -1658,17 +1289,13 @@ void ScoreScreenElement::update()
  * @param screenY  Screen-space Y coordinate.
  */
 CareerScreenElement::CareerScreenElement(
-    Font *pFont, int homeX, int homeY, int screenX, int screenY)
+    Font *pFont, int homeX, int homeY, int screenX, int screenY) : ScreenElementList(homeX, homeY, screenX, screenY)
 {
     ScreenElement *item[3];
     int i;
     ScreenElement **ptr;
     ScoreScreenElement *obj;
 
-    ScreenElementListBase_ctor(
-        &ScreenElementList, homeX, homeY, screenX, screenY);
-    ScreenElementList.ScreenElement.CClass.vtable =
-        __vt_19CareerScreenElement;
 
     obj = new ScoreScreenElement(0xC350, pFont, 0xAA, 0x0C);
     item[0] = (ScreenElement *)obj;
@@ -1677,14 +1304,7 @@ CareerScreenElement::CareerScreenElement(
     item[1] = (ScreenElement *)obj;
 
     {
-        SpriteScreenElement *spriteObj = (SpriteScreenElement *)
-            ::CClass::operator new(sizeof(SpriteScreenElement));
-        if (spriteObj != 0)
-        {
-            spriteObj = PlayerSelect_ConstructSpriteElement(
-                spriteObj,
-                s__spart__800daa1c + 0x1994, 0, 0, -1, -1, 0, 0);
-        }
+        SpriteScreenElement *spriteObj = (SpriteScreenElement *)new SpriteScreenElement(s_SpartPrefixFormat + 0x1994, 0, 0, -1, -1, 0, 0);
         item[2] = (ScreenElement *)spriteObj;
     }
 
@@ -1692,47 +1312,23 @@ CareerScreenElement::CareerScreenElement(
     ptr = item;
     do
     {
-        ScreenElementList.addItem(*ptr);
+        addItem(*ptr);
         ptr++;
         i++;
     } while (i < 3);
 
     {
-        SpriteScreenElement *spriteObj = (SpriteScreenElement *)
-            ::CClass::operator new(sizeof(SpriteScreenElement));
-        if (spriteObj != 0)
-        {
-            spriteObj = PlayerSelect_ConstructSpriteElement(
-                spriteObj,
-                s__spart__800daa1c + 0x19A0,
-                0x2E, 0x2E, -1, -1, 0, 0);
-        }
+        SpriteScreenElement *spriteObj = (SpriteScreenElement *)new SpriteScreenElement(s_SpartPrefixFormat + 0x19A0, 0x2E, 0x2E, -1, -1, 0, 0);
         mpMedalIcons[0] = (ScreenElement *)spriteObj;
     }
 
     {
-        SpriteScreenElement *spriteObj = (SpriteScreenElement *)
-            ::CClass::operator new(sizeof(SpriteScreenElement));
-        if (spriteObj != 0)
-        {
-            spriteObj = PlayerSelect_ConstructSpriteElement(
-                spriteObj,
-                s__spart__800daa1c + 0x19B0,
-                0x2E, 0x2E, -1, -1, 0, 0);
-        }
+        SpriteScreenElement *spriteObj = (SpriteScreenElement *)new SpriteScreenElement(s_SpartPrefixFormat + 0x19B0, 0x2E, 0x2E, -1, -1, 0, 0);
         mpMedalIcons[1] = (ScreenElement *)spriteObj;
     }
 
     {
-        SpriteScreenElement *spriteObj = (SpriteScreenElement *)
-            ::CClass::operator new(sizeof(SpriteScreenElement));
-        if (spriteObj != 0)
-        {
-            spriteObj = PlayerSelect_ConstructSpriteElement(
-                spriteObj,
-                s__spart__800daa1c + 0x19C0,
-                0x2E, 0x2E, -1, -1, 0, 0);
-        }
+        SpriteScreenElement *spriteObj = (SpriteScreenElement *)new SpriteScreenElement(s_SpartPrefixFormat + 0x19C0, 0x2E, 0x2E, -1, -1, 0, 0);
         mpMedalIcons[2] = (ScreenElement *)spriteObj;
     }
 
@@ -1748,33 +1344,21 @@ CareerScreenElement::CareerScreenElement(
  */
 CareerScreenElement::~CareerScreenElement()
 {
-    ScreenElementList.ScreenElement.CClass.vtable =
-        __vt_19CareerScreenElement;
     ScreenElement *obj = mpMedalIcons[0];
     if (obj != 0)
     {
-        ScreenElementDispatchTable *vtbl =
-            (ScreenElementDispatchTable *)obj->CClass.vtable;
-        void (*dtor)(void *, int) = vtbl->Destroy;
-        dtor(obj, 3);
+        delete obj;
     }
     obj = mpMedalIcons[1];
     if (obj != 0)
     {
-        ScreenElementDispatchTable *vtbl =
-            (ScreenElementDispatchTable *)obj->CClass.vtable;
-        void (*dtor)(void *, int) = vtbl->Destroy;
-        dtor(obj, 3);
+        delete obj;
     }
     obj = mpMedalIcons[2];
     if (obj != 0)
     {
-        ScreenElementDispatchTable *vtbl =
-            (ScreenElementDispatchTable *)obj->CClass.vtable;
-        void (*dtor)(void *, int) = vtbl->Destroy;
-        dtor(obj, 3);
+        delete obj;
     }
-    ScreenElementList_DestroyAbi(&ScreenElementList, 0);
 
 }
 
@@ -1816,22 +1400,22 @@ void CareerScreenElement::draw(int x, int y)
             switch (medal)
             {
                 case 7:
-                    ((PlayerSelectDrawableView *)t->mpMedalIcons[2])->draw(
-                        t->ScreenElementList.ScreenElement.mScreenX +
+                    t->mpMedalIcons[2]->draw(
+                        t->mScreenX +
                             x + space + itemOffset,
-                        t->ScreenElementList.ScreenElement.mScreenY + y);
+                        t->mScreenY + y);
                     break;
                 case 6:
-                    ((PlayerSelectDrawableView *)t->mpMedalIcons[1])->draw(
-                        t->ScreenElementList.ScreenElement.mScreenX +
+                    t->mpMedalIcons[1]->draw(
+                        t->mScreenX +
                             x + space + itemOffset,
-                        t->ScreenElementList.ScreenElement.mScreenY + y);
+                        t->mScreenY + y);
                     break;
                 case 5:
-                    ((PlayerSelectDrawableView *)t->mpMedalIcons[0])->draw(
-                        t->ScreenElementList.ScreenElement.mScreenX +
+                    t->mpMedalIcons[0]->draw(
+                        t->mScreenX +
                             x + space + itemOffset,
-                        t->ScreenElementList.ScreenElement.mScreenY + y);
+                        t->mScreenY + y);
                     break;
             }
         }
@@ -1841,19 +1425,17 @@ void CareerScreenElement::draw(int x, int y)
     } while (i < 9);
 
     itemOffset = 0;
-    if (t->ScreenElementList.mCount > 0)
+    if (t->mCount > 0)
     {
-        ScreenElement **items = t->ScreenElementList.mpItem;
+        ScreenElement **items = t->mpItem;
         do
         {
             ScreenElement *obj = *items;
             items = items + 1;
-            PlayerSelect_DrawElement(
-                obj,
-                t->ScreenElementList.ScreenElement.mScreenX + x,
-                t->ScreenElementList.ScreenElement.mScreenY + y);
+            obj->draw(t->mScreenX + x,
+                t->mScreenY + y);
             itemOffset = itemOffset + 1;
-        } while (itemOffset < t->ScreenElementList.mCount);
+        } while (itemOffset < t->mCount);
     }
 }
 
@@ -1867,7 +1449,7 @@ void CareerScreenElement::draw(int x, int y)
  */
 void CareerScreenElement::update()
 {
-    ScreenElementList.update();
+    ScreenElementList::update();
 }
 
 /**
@@ -1885,9 +1467,9 @@ void CareerScreenElement::refresh()
         (SPlayerSelectCareerOverlay *)&GCareer;
     int delay;
 
-    ((ScoreScreenElement *)ScreenElementList.mpItem[0])->setValue(
+    ((ScoreScreenElement *)mpItem[0])->setValue(
         career->CharacterProgress[SelectedSkater].CareerEarnings);
-    ((ScoreScreenElement *)ScreenElementList.mpItem[1])->setValue(
+    ((ScoreScreenElement *)mpItem[1])->setValue(
         career->CharacterProgress[SelectedSkater].Cash);
     int *items = mDelay;
     delay = 0;
@@ -1925,37 +1507,19 @@ void CareerScreenElement::refresh()
  * @param screenX  Screen-space X coordinate.
  * @param screenY  Screen-space Y coordinate.
  */
-BioScreenElement::BioScreenElement(Font *pFont, int homeX, int homeY, int screenX, int screenY)
+BioScreenElement::BioScreenElement(Font *pFont, int homeX, int homeY, int screenX, int screenY) : ScreenElementList(homeX, homeY, screenX, screenY)
 {
     SpriteScreenElement *obj;
     int i;
     ScreenElement **ptr;
 
-    ScreenElementListBase_ctor(
-        &ScreenElementList, homeX, homeY, screenX, screenY);
-    ScreenElementList.ScreenElement.CClass.vtable =
-        __vt_16BioScreenElement;
     mpFont = pFont;
 
-    obj = (SpriteScreenElement *)
-        ::CClass::operator new(sizeof(SpriteScreenElement));
-    if (obj != 0)
-    {
-        obj = PlayerSelect_ConstructSpriteElement(
-            obj,
-            s__spart__800daa1c + 0x19D0, 2, 0x10, -1, -1, 0, 0);
-    }
-    ScreenElementList.addItem((ScreenElement *)obj);
+    obj = (SpriteScreenElement *)new SpriteScreenElement(s_SpartPrefixFormat + 0x19D0, 2, 0x10, -1, -1, 0, 0);
+    addItem((ScreenElement *)obj);
 
-    obj = (SpriteScreenElement *)
-        ::CClass::operator new(sizeof(SpriteScreenElement));
-    if (obj != 0)
-    {
-        obj = PlayerSelect_ConstructSpriteElement(
-            obj,
-            s__spart__800daa1c + 0x19E0, 0, 0, -1, -1, 0, 0);
-    }
-    ScreenElementList.addItem((ScreenElement *)obj);
+    obj = (SpriteScreenElement *)new SpriteScreenElement(s_SpartPrefixFormat + 0x19E0, 0, 0, -1, -1, 0, 0);
+    addItem((ScreenElement *)obj);
 
     mSize = 0;
     mBioTextCount = 0;
@@ -1980,8 +1544,6 @@ BioScreenElement::BioScreenElement(Font *pFont, int homeX, int homeY, int screen
  */
 BioScreenElement::~BioScreenElement()
 {
-    ScreenElementList.ScreenElement.CClass.vtable =
-        __vt_16BioScreenElement;
     int i = 0;
     ScreenElement **ptr = mpBioText;
     do
@@ -1989,16 +1551,12 @@ BioScreenElement::~BioScreenElement()
         ScreenElement *obj = *ptr;
         if (obj != 0)
         {
-            ScreenElementDispatchTable *vtbl =
-                (ScreenElementDispatchTable *)obj->CClass.vtable;
-            void (*dtor)(void *, int) = vtbl->Destroy;
-            dtor(obj, 3);
+            delete obj;
         }
         *ptr = 0;
         i++;
         ptr++;
     } while (i < 16);
-    ScreenElementList_DestroyAbi(&ScreenElementList, 0);
 
 }
 
@@ -2031,18 +1589,16 @@ void BioScreenElement::draw(int x, int y)
 
             item = *entry;
             entry++;
-            PlayerSelect_DrawElement(
-                item,
-                t->ScreenElementList.ScreenElement.mScreenX + drawX,
-                t->ScreenElementList.ScreenElement.mScreenY + drawY);
+            item->draw(t->mScreenX + drawX,
+                t->mScreenY + drawY);
             i++;
         } while (i < t->mBioTextCount);
     }
 
     SetClippingBox2(
-        t->ScreenElementList.ScreenElement.mScreenX + 0x17,
-        t->ScreenElementList.ScreenElement.mScreenY + 0x0A, 0xA5, 0x43);
-    t->ScreenElementList.draw(drawX, drawY);
+        t->mScreenX + 0x17,
+        t->mScreenY + 0x0A, 0xA5, 0x43);
+    t->ScreenElementList::draw(drawX, drawY);
 }
 
 /**
@@ -2063,7 +1619,7 @@ void BioScreenElement::update()
     elem0 = mpBioText[0];
     counter = elem0->mHomeY;
     val = 20 - counter;
-    ScreenElementList.mpItem[0]->mHomeY =
+    mpItem[0]->mHomeY =
         ((val * 2 + val) * 16 + val) / (mSize + 5) + 16;
 
     i = mBioTextCount;
@@ -2076,16 +1632,13 @@ void BioScreenElement::update()
         do
         {
             ScreenElement *elem = *elemPtr;
-            ScreenElementDispatchTable *vtable =
-                (ScreenElementDispatchTable *)elem->CClass.vtable;
-            void (*update_fn)(void *) = vtable->Update;
-            update_fn(elem);
+            elem->update();
             elemPtr++;
             j++;
         } while (j < mBioTextCount);
     }
 
-    ScreenElementList.update();
+    ScreenElementList::update();
 }
 
 /**
@@ -2109,8 +1662,7 @@ void BioScreenElement::refresh()
         ScreenElement *item = *entry;
         if (item != 0)
         {
-            ((ScreenElementDispatchTable *)item->CClass.vtable)->Destroy(
-                item, 3);
+            delete item;
         }
         *entry = 0;
         i++;
@@ -2126,20 +1678,8 @@ void BioScreenElement::refresh()
         {
             if (**foo != '\0')
             {
-                ScreenElement *item =
-                    (ScreenElement *)::CClass::operator new(
-                        sizeof(TextScreenElement));
-                if (item != 0)
-                {
-                    item = (ScreenElement *)PlayerSelect_ConstructTextElement(
-                        (TextScreenElement *)item,
-                        *foo,
-                        mpFont,
-                        0x17,
-                        currY,
-                        -1,
-                        -1);
-                }
+                ScreenElement *item = new TextScreenElement(
+                    *foo, mpFont, 0x17, currY, -1, -1);
                 ScreenElement **slot = bioText;
                 *(slot += mBioTextCount++) = item;
             }
@@ -2151,11 +1691,11 @@ void BioScreenElement::refresh()
     mSize = currY - 0x57;
     if (mSize > 0)
     {
-        ScreenElementList.mpItem[0]->mHide = 0;
+        mpItem[0]->mHide = 0;
     }
     else
     {
-        ScreenElementList.mpItem[0]->mHide = 1;
+        mpItem[0]->mHide = 1;
     }
 }
 
@@ -2223,93 +1763,49 @@ void BioScreenElement::HandleUp()
  * @param screenY  Screen-space Y coordinate.
  */
 SkaterScreenElement::SkaterScreenElement(
-    int fullWindow, Font *pFont, int homeX, int homeY, int screenX, int screenY)
+    int fullWindow, Font *pFont, int homeX, int homeY, int screenX, int screenY) : ScreenElementList(homeX, homeY, screenX, screenY)
 {
     ScreenElement *item[4];
     Item *pItemList;
     Sprite2 **faceSprite;
     unsigned char *bmpBuf;
 
-    ScreenElementListBase_ctor(
-        &ScreenElementList, homeX, homeY, screenX, screenY);
-    ScreenElementList.ScreenElement.CClass.vtable =
-        __vt_19SkaterScreenElement;
     mpFont = pFont;
     mFullWindow = fullWindow;
     if (fullWindow == 0)
     {
         {
-            SpriteScreenElement *element = (SpriteScreenElement *)
-                ::CClass::operator new(sizeof(SpriteScreenElement));
-            if (element != 0)
-            {
-                element = PlayerSelect_ConstructSpriteElement(
-                    element,
-                    s__spart__800daa1c + 0x19EC,
-                    -0x44, 0x28, -1, -1, 0, 0);
-            }
+            SpriteScreenElement *element = (SpriteScreenElement *)new SpriteScreenElement(s_SpartPrefixFormat + 0x19EC, -0x44, 0x28, -1, -1, 0, 0);
             item[0] = (ScreenElement *)element;
         }
-        ScreenElementList.addItem(item[0]);
+        addItem(item[0]);
         {
-            SpriteScreenElement *element = (SpriteScreenElement *)
-                ::CClass::operator new(sizeof(SpriteScreenElement));
-            if (element != 0)
-            {
-                element = PlayerSelect_ConstructSpriteElement(
-                    element,
-                    s__spart__800daa1c + 0x19FC,
-                    0x96, 0x28, -1, -1, 0, 0);
-            }
+            SpriteScreenElement *element = (SpriteScreenElement *)new SpriteScreenElement(s_SpartPrefixFormat + 0x19FC, 0x96, 0x28, -1, -1, 0, 0);
             item[1] = (ScreenElement *)element;
         }
-        ScreenElementList.addItem(item[1]);
+        addItem(item[1]);
     }
     else
     {
         {
-            SpriteScreenElement *element = (SpriteScreenElement *)
-                ::CClass::operator new(sizeof(SpriteScreenElement));
-            if (element != 0)
-            {
-                element = PlayerSelect_ConstructSpriteElement(
-                    element,
-                    s__spart__800daa1c + 0x19EC,
-                    -0x44, 0x28, -1, -1, 0, 0);
-            }
+            SpriteScreenElement *element = (SpriteScreenElement *)new SpriteScreenElement(s_SpartPrefixFormat + 0x19EC, -0x44, 0x28, -1, -1, 0, 0);
             item[0] = (ScreenElement *)element;
         }
-        ScreenElementList.addItem(item[0]);
+        addItem(item[0]);
         {
-            SpriteScreenElement *element = (SpriteScreenElement *)
-                ::CClass::operator new(sizeof(SpriteScreenElement));
-            if (element != 0)
-            {
-                element = PlayerSelect_ConstructSpriteElement(
-                    element,
-                    s__spart__800daa1c + 0x19FC,
-                    0x50, 0x28, -1, -1, 0, 0);
-            }
+            SpriteScreenElement *element = (SpriteScreenElement *)new SpriteScreenElement(s_SpartPrefixFormat + 0x19FC, 0x50, 0x28, -1, -1, 0, 0);
             item[1] = (ScreenElement *)element;
         }
-        ScreenElementList.addItem(item[1]);
+        addItem(item[1]);
     }
     mpSkaterWindow = 0;
     if (mFullWindow == 0)
     {
         {
-            SpriteScreenElement *element = (SpriteScreenElement *)
-                ::CClass::operator new(sizeof(SpriteScreenElement));
-            if (element != 0)
-            {
-                element = PlayerSelect_ConstructSpriteElement(
-                    element,
-                    s__spart__800daa1c + 0x1A0C,
-                    0, 0, -1, -1, 0, 0);
-            }
+            SpriteScreenElement *element = (SpriteScreenElement *)new SpriteScreenElement(s_SpartPrefixFormat + 0x1A0C, 0, 0, -1, -1, 0, 0);
             item[3] = (ScreenElement *)element;
         }
-        ScreenElementList.addItem(item[3]);
+        addItem(item[3]);
         item[3]->mDrawFirst = 1;
         mpSkaterWindow = item[3];
     }
@@ -2337,7 +1833,7 @@ SkaterScreenElement::SkaterScreenElement(
 
     LoadAllSkaters();
     mCardRegion = Spool_PSX(
-        (char *)(s__spart__800daa1c + 0x1A18), 0, 0, 1);
+        (char *)(s_SpartPrefixFormat + 0x1A18), 0, 0, 1);
     Spool_Sync();
     mShowCard = 0;
 
@@ -2393,7 +1889,7 @@ SkaterScreenElement::SkaterScreenElement(
         LoadAllIcons();
 
         unsigned int fileSize =
-            FileIO_Open(s__spart__800daa1c + 0x1A24);
+            FileIO_Open(s_SpartPrefixFormat + 0x1A24);
         bmpBuf = (unsigned char *)Mem_New(fileSize, 0, 1);
         FileIO_Load(bmpBuf);
         FileIO_Sync();
@@ -2419,8 +1915,6 @@ SkaterScreenElement::SkaterScreenElement(
  */
 SkaterScreenElement::~SkaterScreenElement()
 {
-    ScreenElementList.ScreenElement.CClass.vtable =
-        __vt_19SkaterScreenElement;
 
     int i = 0;
     void **ptr = (void **)mpIcon;
@@ -2429,10 +1923,7 @@ SkaterScreenElement::~SkaterScreenElement()
         ScreenElement *obj = (ScreenElement *)*ptr;
         if (obj != 0)
         {
-            ScreenElementDispatchTable *vtbl =
-                (ScreenElementDispatchTable *)obj->CClass.vtable;
-            void (*dtor)(void *, int) = vtbl->Destroy;
-            dtor(obj, 3);
+            delete obj;
         }
         i++;
         ptr++;
@@ -2445,10 +1936,7 @@ SkaterScreenElement::~SkaterScreenElement()
         Sprite2 *obj = (Sprite2 *)*ptr;
         if (obj != 0)
         {
-            Sprite2DispatchTable *vtbl =
-                (Sprite2DispatchTable *)obj->CClass.vtable;
-            void (*dtor)(void *, int) = vtbl->Destroy;
-            dtor(obj, 3);
+            delete obj;
         }
         i++;
         ptr++;
@@ -2461,10 +1949,7 @@ SkaterScreenElement::~SkaterScreenElement()
         Sprite2 *obj = (Sprite2 *)*ptr;
         if (obj != 0)
         {
-            Sprite2DispatchTable *vtbl =
-                (Sprite2DispatchTable *)obj->CClass.vtable;
-            void (*dtor)(void *, int) = vtbl->Destroy;
-            dtor(obj, 3);
+            delete obj;
         }
         i++;
         ptr++;
@@ -2484,11 +1969,7 @@ SkaterScreenElement::~SkaterScreenElement()
             CSuper *obj = *skater;
             if (obj != 0)
             {
-                ScreenElementDispatchTable *vtbl =
-                    (ScreenElementDispatchTable *)
-                        obj->CBody.CItem.vtable;
-                void (*dtor)(void *, int) = vtbl->Destroy;
-                dtor(obj, 3);
+                delete (PlayerSelectItemDestroyView *)obj;
             }
 
             if (*modelFile != 0)
@@ -2512,7 +1993,6 @@ SkaterScreenElement::~SkaterScreenElement()
     PSXRegion[mAnimRegion].Filename[0] = 0;
     ClearRegion(mCardRegion, 1, 0);
     PSXRegion[mCardRegion].Filename[0] = 0;
-    ScreenElementList_DestroyAbi(&ScreenElementList, 0);
 
 }
 
@@ -2547,40 +2027,13 @@ void SkaterScreenElement::LoadAllIcons()
 
     if (mFullWindow)
     {
-        loadingText = (TextScreenElement *)
-            ::CClass::operator new(sizeof(TextScreenElement));
-        if (loadingText == 0)
-        {
-            goto LAB_8008D310;
-        }
-        loadingText = PlayerSelect_ConstructTextElement(
-            loadingText,
-            s_Loading____800dc4a4,
-            mpFont,
-            -0xF,
-            0x38,
-            -1,
-            -1);
+        loadingText = new TextScreenElement(s_Loading, mpFont, -0xF, 0x38, -1, -1);
     }
     else
     {
-        loadingText = (TextScreenElement *)
-            ::CClass::operator new(sizeof(TextScreenElement));
-        if (loadingText == 0)
-        {
-            goto LAB_8008D310;
-        }
-        loadingText = PlayerSelect_ConstructTextElement(
-            loadingText,
-            s_Loading____800dc4a4,
-            mpFont,
-            0x24,
-            0x38,
-            -1,
-            -1);
+        loadingText = new TextScreenElement(s_Loading, mpFont, 0x24, 0x38, -1, -1);
     }
 
-LAB_8008D310:
     mpIcon[0] = (ScreenElement *)loadingText;
     i = 0;
     int one = 1;
@@ -2680,11 +2133,11 @@ void SkaterScreenElement::draw(int x, int y)
                 if (mFullWindow == 0)
                 {
                     int clipX =
-                        ScreenElementList.ScreenElement.mScreenX + x +
+                        mScreenX + x +
                         mpSkaterWindow->GetScreenX() + 6;
                     SetClippingBox3(
                         clipX,
-                        ScreenElementList.ScreenElement.mScreenY + y +
+                        mScreenY + y +
                             mpSkaterWindow->GetScreenY() + 15,
                         0x83, 0x70);
                 }
@@ -2701,10 +2154,8 @@ void SkaterScreenElement::draw(int x, int y)
             ScreenElement *element = *icon;
             ++icon;
             ++i;
-            PlayerSelect_DrawElement(
-                element,
-                ScreenElementList.ScreenElement.mScreenX + x,
-                ScreenElementList.ScreenElement.mScreenY + y);
+            element->draw(mScreenX + x,
+                mScreenY + y);
         } while (i <= 0);
     }
 
@@ -2724,19 +2175,19 @@ void SkaterScreenElement::draw(int x, int y)
             {
                 if (mFullWindow == 0)
                 {
-                    ((PlayerSelectSpriteDataView *)mpIconSprite[i])->draw(
-                        ScreenElementList.ScreenElement.mScreenX + x +
+                    mpIconSprite[i]->draw(
+                        mScreenX + x +
                             mIconInfo[i].x,
-                        ScreenElementList.ScreenElement.mScreenY + y +
+                        mScreenY + y +
                             mIconInfo[i].y,
                         0);
                 }
                 else
                 {
-                    ((PlayerSelectSpriteDataView *)mpIconSprite[i])->draw(
-                        ScreenElementList.ScreenElement.mScreenX + x +
+                    mpIconSprite[i]->draw(
+                        mScreenX + x +
                             mIconInfo[i].x + mIconInfo[i].fullOffsetX,
-                        ScreenElementList.ScreenElement.mScreenY + y +
+                        mScreenY + y +
                             mIconInfo[i].y + mIconInfo[i].fullOffsetY,
                         0);
                 }
@@ -2745,18 +2196,18 @@ void SkaterScreenElement::draw(int x, int y)
     }
 
     {
-        int faceX = ScreenElementList.ScreenElement.mScreenX + x;
+        int faceX = mScreenX + x;
         int faceOffsetX = fullWindowFaceOffsetX - 0x26;
         Sprite2 *face = mpFaceSprite[SelectedSkater];
-        int faceY = ScreenElementList.ScreenElement.mScreenY + y;
+        int faceY = mScreenY + y;
         int faceOffsetY = fullWindowFaceOffsetY + 0x20;
-        ((PlayerSelectSpriteDataView *)face)->draw(
+        face->draw(
             faceX + faceOffsetX,
             faceY + faceOffsetY,
             0);
     }
 
-    ScreenElementList.draw(x, y);
+    ScreenElementList::draw(x, y);
 }
 
 /**
@@ -2796,8 +2247,8 @@ char *Spool_LoadPSH2(char *pPSHBuffer, char *pPSHName, char **pHierarchyArray, i
     char prefixString[16];
 
     // Build PSH filename and search pattern
-    sprintf(filename, s__s_psh_800dc4b0, pPSHName);
-    sprintf(prefixString, s__spart__800dc4b8, pPSHName);
+    sprintf(filename, s_PshExt, pPSHName);
+    sprintf(prefixString, s_SpartFmt, pPSHName);
     LowerCase(prefixString);
 
     // Null-terminate and lowercase the pre-loaded buffer
@@ -2888,7 +2339,7 @@ void SkaterScreenElement::UpdateSpoolItems()
             {
                 unsigned char *theData = (unsigned char *)
                     Spooler::SpoolMgr->GetFile(mSpoolID[i + 28]);
-                ((PlayerSelectSpriteDataView *)mpFaceSprite[i])->setData(
+                mpFaceSprite[i]->setData(
                     theData);
                 Mem_Delete(theData);
                 mpFaceSprite[i]->unpack();
@@ -2973,10 +2424,10 @@ void SkaterScreenElement::update()
     mFlash = counter;
 
     /* Set visibility on two UI elements: show if counter >= 21 */
-    ScreenElementList.mpItem[0]->mHide = !(counter < 21);
+    mpItem[0]->mHide = !(counter < 21);
 
     counter2 = mFlash;
-    ScreenElementList.mpItem[1]->mHide = !(counter2 < 21);
+    mpItem[1]->mHide = !(counter2 < 21);
 
     /* Check skater data availability */
     skaterIdx = mVisibleSkater;
@@ -3007,16 +2458,13 @@ _after_vis:
     do
     {
         ScreenElement *elem = (ScreenElement *)*element;
-        ScreenElementDispatchTable *vtable =
-            (ScreenElementDispatchTable *)elem->CClass.vtable;
-        void (*update_fn)(void *) = vtable->Update;
         element++;
-        update_fn(elem);
+        elem->update();
         i++;
     } while (i <= 0);
 
     /* Call base class update */
-    ScreenElementList.update();
+    ScreenElementList::update();
 
     /* Loop 2: call InterleaveAI on 14 CBody objects at offset 0x70 */
     i = 0;
@@ -3091,21 +2539,21 @@ void SkaterScreenElement::AddSpoolItems()
 
         if (num < 2)
         {
-            sprintf(filename, s__s_psx_800dc4c0, Stats[num].PSXName);
+            sprintf(filename, s_PsxExt, Stats[num].PSXName);
         }
         else
         {
-            sprintf(filename, s__s_psx_800dc4c0, Stats[0].PSXName);
+            sprintf(filename, s_PsxExt, Stats[0].PSXName);
         }
         mSpoolID[num] = Spooler::SpoolMgr->AddFile(filename, 1);
 
         if (num < 2)
         {
-            sprintf(filename, s__s_psh_800dc4b0, Stats[num].PSXName);
+            sprintf(filename, s_PshExt, Stats[num].PSXName);
         }
         else
         {
-            sprintf(filename, s__s_psh_800dc4b0, Stats[0].PSXName);
+            sprintf(filename, s_PshExt, Stats[0].PSXName);
         }
         mSpoolID[num + 14] = Spooler::SpoolMgr->AddFile(filename, 0);
         mSpoolID[num + 28] =
@@ -3130,22 +2578,22 @@ void SkaterScreenElement::AddSpoolItems()
 
             if (num < 2)
             {
-                sprintf(filename, s__s_psx_800dc4c0, Stats[num].PSXName);
+                sprintf(filename, s_PsxExt, Stats[num].PSXName);
             }
             else
             {
-                sprintf(filename, s__s_psx_800dc4c0, Stats[0].PSXName);
+                sprintf(filename, s_PsxExt, Stats[0].PSXName);
             }
             mSpoolID[num] =
                 Spooler::SpoolMgr->AddFile(filename, 1);
 
             if (num < 2)
             {
-                sprintf(filename, s__s_psh_800dc4b0, Stats[num].PSXName);
+                sprintf(filename, s_PshExt, Stats[num].PSXName);
             }
             else
             {
-                sprintf(filename, s__s_psh_800dc4b0, Stats[0].PSXName);
+                sprintf(filename, s_PshExt, Stats[0].PSXName);
             }
             mSpoolID[num + 14] =
                 Spooler::SpoolMgr->AddFile(filename, 0);
@@ -3189,13 +2637,13 @@ void SkaterScreenElement::LoadAllSkaters()
         } while (i < 14);
     }
 
-    mAnimRegion = GetReducedAnim(s_anims_fe_800dc4c8);
+    mAnimRegion = GetReducedAnim(s_AnimsFe);
     /* The original keeps the anim hierarchy table in a named local: the target
      * computes `addiu $s6,$s1,0x228` once at this call and re-uses $s6 for the
      * CalculateAnimOrder call in the loop below. */
     char **animHier = mAnimHierInfo.PSH_Hierarchy;
     mpAnimHierData = Spool_LoadPSH(
-        s_anims_fe_800dc4c8,
+        s_AnimsFe,
         animHier,
         &mAnimHierInfo.mPartCount,
         32);
@@ -3317,7 +2765,7 @@ void SkaterScreenElement::LoadAllSkaters()
 unsigned int *SkaterScreenElement::GetReducedPSXFile(char *modelFile)
 {
     char filename[16];
-    sprintf(filename, s__s_psx_800dc4c0, modelFile);
+    sprintf(filename, s_PsxExt, modelFile);
     char *pData = FileIO_OpenLoad(filename);
     Spool_StripAnimFile(pData);
     return (unsigned int *)pData;
@@ -3362,6 +2810,7 @@ void Spool_StripAnimFile(char *pPSX)
     int i;
     int j;
     {
+        // FIXME(match): register pin — $16 for dataOffset so the load lands in $s0 with `addu s0,s2,s0` operand order (unpinned: temp goes to $v0, score 8; single-pseudo pDest form gives swapped addu operands, score 3); tried: pDest as single pseudo, add reorderings/casts, moving the statement, scoped temp.
         register u32 dataOffset asm("$16") =
             ((PlayerSelectAnimFileHeader *)pPSX)->DataOffset;
         pDest = pPSX + dataOffset;
@@ -3376,6 +2825,7 @@ void Spool_StripAnimFile(char *pPSX)
     pAnim = Spool_SkipPackets((u32 *)pPSX);
 
     /* Write sentinel */
+    // FIXME(match): register pin — $2 so the -1 constant lands in $v0 not $v1 (score 2 without); tried: (u32)-1/~0u forms, reusing count/i/j for the constant, 5 local declaration orders.
     register u32 sentinel asm("$2") = (u32)-1;
     *(u32 *)pDest = sentinel;
     pDest += 4;
@@ -3559,7 +3009,7 @@ int SkaterScreenElement::GetReducedAnim(char *animFile)
     struct SVec3 { short x, y, z; };
     short FrontEndAnimations[3];
     int size;
-    char *preAnimFile = PREMgr->getFile(s_anims_cs_psx_800dc4d4, &size);
+    char *preAnimFile = PREMgr->getFile(s_AnimsCsPsx, &size);
     int AnimRegion = Spool_FreeRegion();
 
     PSXRegion[AnimRegion].pAnimFile = 0;
@@ -3570,7 +3020,7 @@ int SkaterScreenElement::GetReducedAnim(char *animFile)
     PSXRegion[AnimRegion].pHooks = 0;
     PSXRegion[AnimRegion].ppModels = 0;
 
-    sprintf(PSXRegion[AnimRegion].Filename, DAT_800dc4e4, s_anims_fe_800dc4c8);
+    sprintf(PSXRegion[AnimRegion].Filename, s_FilenameFmt, s_AnimsFe);
 
     PSXRegion[AnimRegion].TexturesInRAM = 0;
     PSXRegion[AnimRegion].KeepTexturesInRAM = 0;
@@ -3580,7 +3030,7 @@ int SkaterScreenElement::GetReducedAnim(char *animFile)
 
     ProcessNewPSX(AnimRegion);
 
-    *(struct SVec3 *)FrontEndAnimations = *(struct SVec3 *)DAT_800dc4e8;
+    *(struct SVec3 *)FrontEndAnimations = *(struct SVec3 *)FrontEndAnimVec;
     Spool_StripModel(AnimRegion, FrontEndAnimations);
     PSXRegion[AnimRegion].Usable = 2;
     return AnimRegion;
@@ -3652,21 +3102,10 @@ void SkaterScreenElement::refreshSkater()
  * @param screenX  Screen-space X coordinate.
  * @param screenY  Screen-space Y coordinate.
  */
-StatsScreenElement::StatsScreenElement(int homeX, int homeY, int screenX, int screenY)
+StatsScreenElement::StatsScreenElement(int homeX, int homeY, int screenX, int screenY) : ScreenElementList(homeX, homeY, screenX, screenY)
 {
-    ScreenElementListBase_ctor(
-        &ScreenElementList, homeX, homeY, screenX, screenY);
-    ScreenElementList.ScreenElement.CClass.vtable =
-        __vt_18StatsScreenElement;
 
-    SpriteScreenElement *obj = (SpriteScreenElement *)
-        ::CClass::operator new(sizeof(SpriteScreenElement));
-    if (obj != 0)
-    {
-        obj = PlayerSelect_ConstructSpriteElement(
-            obj,
-            s_s2dots_bmp_800dc4f0, 0, 0, -1, -1, 0, 0);
-    }
+    SpriteScreenElement *obj = (SpriteScreenElement *)new SpriteScreenElement(s_S2dotsBmp, 0, 0, -1, -1, 0, 0);
     mpDots = obj;
 }
 
@@ -3679,17 +3118,11 @@ StatsScreenElement::StatsScreenElement(int homeX, int homeY, int screenX, int sc
  */
 StatsScreenElement::~StatsScreenElement()
 {
-    ScreenElementList.ScreenElement.CClass.vtable =
-        __vt_18StatsScreenElement;
     ScreenElement *obj = (ScreenElement *)mpDots;
     if (obj != 0)
     {
-        ScreenElementDispatchTable *vtbl =
-            (ScreenElementDispatchTable *)obj->CClass.vtable;
-        void (*dtor)(void *, int) = vtbl->Destroy;
-        dtor(obj, 3);
+        delete obj;
     }
-    ScreenElementList_DestroyAbi(&ScreenElementList, 0);
 
 }
 
@@ -3711,13 +3144,11 @@ void StatsScreenElement::draw(int x, int y)
     do
     {
         SetClippingBox2(0, 0, 0x200, 0xf0);
-        ((ScreenElementDispatchTable *)
-            mpDots->ScreenElement.CClass.vtable)->Draw(
-            mpDots,
-            ScreenElementList.ScreenElement.mScreenX + x,
-            ScreenElementList.ScreenElement.mScreenY + y + i * 8);
+        mpDots->draw(
+            mScreenX + x,
+            mScreenY + y + i * 8);
         SetClippingBox2(
-            ScreenElementList.ScreenElement.mScreenX,
+            mScreenX,
             0,
             (uint)Stats[SelectedSkater].Ability[i] * 0xc,
             0xf0);
@@ -3735,8 +3166,7 @@ void StatsScreenElement::draw(int x, int y)
  */
 void StatsScreenElement::update()
 {
-    ((ScreenElementDispatchTable *)mpDots->ScreenElement.CClass.vtable)
-        ->Update(mpDots);
+    mpDots->update();
 }
 
 /**
@@ -3752,40 +3182,22 @@ void StatsScreenElement::update()
  * @param screenX  Screen-space X coordinate.
  * @param screenY  Screen-space Y coordinate.
  */
-MultiPlayerScreenElement::MultiPlayerScreenElement(Font *pFont, int homeX, int homeY, int screenX, int screenY)
+MultiPlayerScreenElement::MultiPlayerScreenElement(Font *pFont, int homeX, int homeY, int screenX, int screenY) : ScreenElementList(homeX, homeY, screenX, screenY)
 {
     char test[128];
     TextScreenElement *obj;
 
-    ScreenElementListBase_ctor(
-        &ScreenElementList, homeX, homeY, screenX, screenY);
-    ScreenElementList.ScreenElement.CClass.vtable =
-        __vt_24MultiPlayerScreenElement;
     MultiPlayerListCount = 0;
     mpFont = pFont;
     mFlash = 0;
 
-    sprintf(test, s_dummy_800dc4fc);
-    obj = (TextScreenElement *)
-        ::CClass::operator new(sizeof(TextScreenElement));
-    if (obj != 0)
-    {
-        obj = PlayerSelect_ConstructTextElement(
-            obj,
-            test, mpFont, 0x40, 6, -1, -1);
-    }
-    ScreenElementList.addItem((ScreenElement *)obj);
+    sprintf(test, s_Dummy);
+    obj = (TextScreenElement *)new TextScreenElement(test, mpFont, 0x40, 6, -1, -1);
+    addItem((ScreenElement *)obj);
 
-    sprintf(test, s_choose_skater_800dc504);
-    obj = (TextScreenElement *)
-        ::CClass::operator new(sizeof(TextScreenElement));
-    if (obj != 0)
-    {
-        obj = PlayerSelect_ConstructTextElement(
-            obj,
-            test, mpFont, 0x1A, 0x16, -1, -1);
-    }
-    ScreenElementList.addItem((ScreenElement *)obj);
+    sprintf(test, s_ChooseSkater);
+    obj = (TextScreenElement *)new TextScreenElement(test, mpFont, 0x1A, 0x16, -1, -1);
+    addItem((ScreenElement *)obj);
     this->refresh();
 }
 
@@ -3799,9 +3211,6 @@ MultiPlayerScreenElement::MultiPlayerScreenElement(Font *pFont, int homeX, int h
  */
 MultiPlayerScreenElement::~MultiPlayerScreenElement()
 {
-    ScreenElementList.ScreenElement.CClass.vtable =
-        __vt_24MultiPlayerScreenElement;
-    ScreenElementList_DestroyAbi(&ScreenElementList, 0);
 
 }
 
@@ -3815,7 +3224,7 @@ MultiPlayerScreenElement::~MultiPlayerScreenElement()
  */
 void MultiPlayerScreenElement::update()
 {
-    ScreenElementList.update();
+    ScreenElementList::update();
 }
 
 /**
@@ -3829,8 +3238,8 @@ void MultiPlayerScreenElement::update()
 void MultiPlayerScreenElement::refresh()
 {
     char test[128];
-    sprintf(test, s_player__d_800dc514, MultiPlayerListCount + 1);
-    ((TextScreenElement *)ScreenElementList.mpItem[0])->setString(test);
+    sprintf(test, s_PlayerNumFmt, MultiPlayerListCount + 1);
+    ((TextScreenElement *)mpItem[0])->setString(test);
 }
 
 /**
@@ -3844,7 +3253,7 @@ void MultiPlayerScreenElement::refresh()
  */
 void MultiPlayerScreenElement::ResetStartingLocation()
 {
-    this->ScreenElementList.ScreenElement.mScreenX = 0x200;
+    this->mScreenX = 0x200;
 }
 
 // === PlayerSelect-owned small-data literals ===
@@ -3854,68 +3263,68 @@ namespace PlayerSelectAddressViewOwners
 {
 extern "C"
 {
-static char s_s2bgd1_bmp_800dc318[12]
+static char s_S2bgd1Bmp[12]
     __attribute__((section(".sdata"), aligned(4))) = "s2bgd1.bmp";
-static char s_s2prmpt4_bmp_800dc324[16]
+static char s_S2prmpt4Bmp_PlayerSelect[16]
     __attribute__((section(".sdata"), aligned(4))) = "s2prmpt4.bmp";
-static char s_select_800dc334[8]
+static char s_Select_PlayerSelect[8]
     __attribute__((section(".sdata"), aligned(4))) = "select";
-static char s_s2prmpt5_bmp_800dc33c[16]
+static char s_S2prmpt5Bmp[16]
     __attribute__((section(".sdata"), aligned(4))) = "s2prmpt5.bmp";
-static char s_scroll_bio_800dc34c[12]
+static char s_ScrollBio[12]
     __attribute__((section(".sdata"), aligned(4))) = "scroll bio";
-static char s_s2prmpt1_bmp_800dc358[16]
+static char s_S2prmpt1Bmp_PlayerSelect[16]
     __attribute__((section(".sdata"), aligned(4))) = "s2prmpt1.bmp";
-static char s_accept_800dc368[8]
+static char s_Accept_PlayerSelect[8]
     __attribute__((section(".sdata"), aligned(4))) = "accept";
-static char s_s2prmpt2_bmp_800dc370[16]
+static char s_S2prmpt2Bmp_PlayerSelect[16]
     __attribute__((section(".sdata"), aligned(4))) = "s2prmpt2.bmp";
-static char s_back_800dc380[8]
+static char s_Back_PlayerSelect[8]
     __attribute__((section(".sdata"), aligned(4))) = "back";
-static char s_TEAM_CHICKEN_800dc388[16]
+static char s_TeamChicken[16]
     __attribute__((section(".sdata"), aligned(4))) = "TEAM CHICKEN";
-static char s_LOAD_CHARACTER_800dc398[16]
+static char s_LoadCharacter[16]
     __attribute__((section(".sdata"), aligned(4))) = "LOAD CHARACTER";
-static char s__7d_800dc3a8[8]
+static char s_ValueFmt7d[8]
     __attribute__((section(".sdata"), aligned(4))) = "$%7d";
 }
 }
 
-static char s_s2win4_bmp_800dc3b0[12]
+static char s_S2win4Bmp[12]
     __attribute__((section(".sdata"), aligned(4))) = "s2win4.bmp";
-static char s_s2medal1_bmp_800dc3bc[16]
+static char s_S2medal1Bmp[16]
     __attribute__((section(".sdata"), aligned(4))) = "s2medal1.bmp";
-static char s_s2medal2_bmp_800dc3cc[16]
+static char s_S2medal2Bmp[16]
     __attribute__((section(".sdata"), aligned(4))) = "s2medal2.bmp";
-static char s_s2medal3_bmp_800dc3dc[16]
+static char s_S2medal3Bmp[16]
     __attribute__((section(".sdata"), aligned(4))) = "s2medal3.bmp";
-static char s_s2scroll_bmp_800dc3ec[16]
+static char s_S2scrollBmp[16]
     __attribute__((section(".sdata"), aligned(4))) = "s2scroll.bmp";
-static char s_s2win3_bmp_800dc3fc[12]
+static char s_S2win3Bmp[12]
     __attribute__((section(".sdata"), aligned(4))) = "s2win3.bmp";
-static char s_s2arrow1_bmp_800dc408[16]
+static char s_S2arrow1Bmp_PlayerSelect[16]
     __attribute__((section(".sdata"), aligned(4))) = "s2arrow1.bmp";
-static char s_s2arrow2_bmp_800dc418[16]
+static char s_S2arrow2Bmp_PlayerSelect[16]
     __attribute__((section(".sdata"), aligned(4))) = "s2arrow2.bmp";
-static char s_s2win1_bmp_800dc428[12]
+static char s_S2win1Bmp[12]
     __attribute__((section(".sdata"), aligned(4))) = "s2win1.bmp";
-static char s_mem_card_800dc434[12]
+static char s_MemCard[12]
     __attribute__((section(".sdata"), aligned(4))) = "mem_card";
-static char s_s2win2_bmp_800dc440[12]
+static char s_S2win2Bmp[12]
     __attribute__((section(".sdata"), aligned(4))) = "s2win2.bmp";
-static char s_s2icon1_bmp_800dc44c[12]
+static char s_S2icon1Bmp[12]
     __attribute__((section(".sdata"), aligned(4))) = "s2icon1.bmp";
-static char s_s2icon2_bmp_800dc458[12]
+static char s_S2icon2Bmp[12]
     __attribute__((section(".sdata"), aligned(4))) = "s2icon2.bmp";
-static char s_s2icon3_bmp_800dc464[12]
+static char s_S2icon3Bmp[12]
     __attribute__((section(".sdata"), aligned(4))) = "s2icon3.bmp";
-static char s_s2icon4_bmp_800dc470[12]
+static char s_S2icon4Bmp[12]
     __attribute__((section(".sdata"), aligned(4))) = "s2icon4.bmp";
-static char s_s2icon5_bmp_800dc47c[12]
+static char s_S2icon5Bmp[12]
     __attribute__((section(".sdata"), aligned(4))) = "s2icon5.bmp";
-static char s_s2icon6_bmp_800dc488[12]
+static char s_S2icon6Bmp[12]
     __attribute__((section(".sdata"), aligned(4))) = "s2icon6.bmp";
-static char s_s2nademo_bmp_800dc494[16]
+static char s_S2nademoBmp[16]
     __attribute__((section(".sdata"), aligned(4))) = "s2nademo.bmp";
 
 /** Skater-spooling formats, animation assets, and multiplayer labels. */
@@ -3923,29 +3332,29 @@ namespace PlayerSelectAddressViewOwners
 {
 extern "C"
 {
-static char s_Loading____800dc4a4[12]
+static char s_Loading[12]
     __attribute__((section(".sdata"), aligned(4))) = "Loading...";
-static char s__s_psh_800dc4b0[8]
+static char s_PshExt[8]
     __attribute__((section(".sdata"), aligned(4))) = "%s.psh";
-static char s__spart__800dc4b8[8]
+static char s_SpartFmt[8]
     __attribute__((section(".sdata"), aligned(4))) = "%spart_";
-static char s__s_psx_800dc4c0[8]
+static char s_PsxExt[8]
     __attribute__((section(".sdata"), aligned(4))) = "%s.psx";
-static char s_anims_fe_800dc4c8[12]
+static char s_AnimsFe[12]
     __attribute__((section(".sdata"), aligned(4))) = "anims_fe";
-static char s_anims_cs_psx_800dc4d4[16]
+static char s_AnimsCsPsx[16]
     __attribute__((section(".sdata"), aligned(4))) = "anims_cs.psx";
-static char DAT_800dc4e4[4]
+static char s_FilenameFmt[4]
     __attribute__((section(".sdata"), aligned(4))) = "%s";
-static short DAT_800dc4e8[4]
+static short FrontEndAnimVec[4]
     __attribute__((section(".sdata"), aligned(4))) = {0, -1, -1, 0};
-static char s_s2dots_bmp_800dc4f0[12]
+static char s_S2dotsBmp[12]
     __attribute__((section(".sdata"), aligned(4))) = "s2dots.bmp";
-static char s_dummy_800dc4fc[8]
+static char s_Dummy[8]
     __attribute__((section(".sdata"), aligned(4))) = "dummy";
-static char s_choose_skater_800dc504[16]
+static char s_ChooseSkater[16]
     __attribute__((section(".sdata"), aligned(4))) = "choose skater";
-static char s_player__d_800dc514[12]
+static char s_PlayerNumFmt[12]
     __attribute__((section(".sdata"), aligned(4))) = "player %d";
 }
 }

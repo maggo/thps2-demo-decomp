@@ -1,5 +1,4 @@
-// Hand-maintained per-TU interface for SHATTER.cpp.
-// gen_tu_headers.py is retained only for explicit bootstrap regeneration.
+// SHATTER.h -- interface of SHATTER.cpp
 #ifndef SHATTER_INC_H
 #define SHATTER_INC_H
 

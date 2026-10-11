@@ -1,24 +1,19 @@
 // CAMERA.cpp -- Reconstructed translation unit
 // Original: CAMERA.CPP
-// Functions: 35 (34 exact matches; ReactToCollision remains in progress)
+// Functions: 35, plus three naturally emitted header destructors
 // Address range: 0x800793D0 - 0x8007E614
 //
-// Compiled with cc1plus (GCC 2.91.66-psx). Compiler auto-mangles symbol names.
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#define CVECTOR_COMPONENT_CTORS
+#define CCLASS_POLY_ITEM_FAMILY
+#include "CCLASS_POLY.h"
 #include "CAMERA.h"
 #include "MAIN.h"
 #include "STATS.h"
 #include "BADDY.h"
 #include "FRONT.h"
-#include "CITEM.h"
 #include "M3DZONE.h"
-
-/**
- * Owner-local camera, body, quaternion, and collision layouts recovered from
- * MAIN_STRUCTS. The legacy compiler pragma is load-bearing: removing it
- * changes virtual emission and regresses multiple otherwise exact functions.
- */
-#pragma interface
 
 #include <STDDEF.H>
 #include <LIBGTE.H>
@@ -26,79 +21,6 @@
 #define M3DCOLIJ_LINE_INFO_LAYOUT
 #include "M3DCOLIJ.h"
 #undef M3DCOLIJ_LINE_INFO_LAYOUT
-
-/** Raw polymorphic-object prefix used by aggregate owner overlays. */
-struct CameraClassStorage {
-    void **_vf;
-
-    CameraClassStorage() {}
-    CameraClassStorage(void **vtable) : _vf(vtable) {}
-};
-
-/** Original polymorphic base used by value-passed CQuat objects. */
-struct CClass {
-    CClass();
-    CClass(void **vtable);
-    virtual ~CClass();
-};
-
-struct SLight;
-
-/** CItem prefix needed for the camera object's inherited position. */
-struct CameraCItemOwner {
-    u16 mFlags;
-    u16 mInquiry;
-    struct CVector mPos;
-    struct CSVector mAngles;
-    u16 mModel;
-    s8 mDummyFrame;
-    u8 mTintIndex;
-    u8 mDummyAnim;
-    u8 mRegion;
-    struct CameraCItemOwner *mNextItem;
-    u32 mRGB;
-    struct CSVector mScale;
-    u8 padding_after_mScale[2];
-    u32 mTRN;
-    struct CameraCItemOwner *mPreviousItem;
-    u32 mStoredRGB;
-    u8 mPredatorEffectType;
-    u8 mPredatorEffectFade;
-    u16 mType;
-    SLight *mpLight;
-    u16 mFlashTimer;
-    s16 mFlash_dR;
-    s16 mFlash_dG;
-    s16 mFlash_dB;
-    void **_vf;
-};
-
-/** Exact-sized CBody overlay; only CItem is inspected in this owner. */
-struct CBody : CameraCItemOwner {
-    void *mppOriginalList;
-    u16 mInputFlags;
-    u16 mCBodyFlags;
-    struct CVector mVel;
-    u8 opaque_before_mRMinor[0xb4 - 0x60];
-    u16 mRMinor;
-    u8 opaque_after_mRMinor[264 - 0xb6];
-
-    CBody();
-    /** Mark this body for deletion. */
-    void Die();
-    /** Run this body's per-frame behavior. */
-    void EveryFrame();
-    /** Configure this body's lighting state. */
-    void DoLightingSetup();
-    /** Apply a hit and report whether it was accepted. */
-    int Hit(int damage, const CVector &knock, int whatHit);
-    /** Release body-owned resources. */
-    void DeleteStuff();
-    /** Insert this body at the head of a linked body list. */
-    void AttachTo(CBody **list);
-    /** Remove this body from a linked body list. */
-    void DeleteFrom(CBody **list);
-};
 
 /** Fixed-point quaternion object (20 bytes). */
 struct CQuat : CClass {
@@ -110,18 +32,16 @@ struct CQuat : CClass {
     CQuat();
 };
 
-/** One animated quaternion parameter (28 bytes). */
-struct t9AnimParam1Z5CQuat {
-    struct CameraClassStorage CClass;
+template<class T>
+struct AnimParam : CClass {
     u32 *mTimer;
-    struct CQuat mParam;
-
-    t9AnimParam1Z5CQuat(u32 *timer);
+    T mParam;
+    AnimParam(u32 *timer) : mTimer(timer), mParam() {}
+    virtual ~AnimParam() {}
 };
 
 /** Camera tripod, lens, and focus snapshot (184 bytes). */
-struct CamPos {
-    struct CClass CClass;
+struct CamPos : CClass {
     /** Whether to derive the tripod position from the tracked body. */
     bool calc_mTripod;
     struct CBody *mTripod;
@@ -144,7 +64,7 @@ struct CamPos {
     MATRIX mTrans;
 
     CamPos();
-    ~CamPos();
+    virtual ~CamPos();
     /** Draw this camera-pose record's tracked values. */
     void Display(u16 x, u16 y, u8 r, u8 g, u8 b);
     /** Draw the shared headings for camera-pose debug values. */
@@ -262,6 +182,7 @@ struct CCamera : CBody {
     int loose_cam_timer;
 
     CCamera(struct CBody *tripod, u16 mike_index);
+    virtual ~CCamera();
     /** Set the left/right collision-ray distance. */
     void SetCollisionRayLR(int ray);
     /** Set the rear collision-ray distance. */
@@ -294,10 +215,12 @@ struct CCamera : CBody {
     void SetCamZOffset(s16 offset, u16 frames);
     /** Return the current fixed-point projection zoom. */
     int GetZoom();
+    /** Set the zoom target immediately or interpolate it over the frame count. */
+    void SetZoom(u16 zoom, u16 time);
     /** Update the owner-local camera tweak menu. */
     void TweakMenu();
     /** Update tracking, tweak controls, and shake response each frame. */
-    void AI();
+    virtual void AI();
     /** Update ordinary camera tracking. */
     void CM_Normal();
     /** Enter the competition-intro camera mode. */
@@ -311,7 +234,7 @@ struct CCamera : CBody {
 };
 
 typedef char Camera_CClass_size_must_be_4[(sizeof(CClass) == 4) ? 1 : -1];
-typedef char Camera_CItem_size_must_be_76[(sizeof(CameraCItemOwner) == 76) ? 1 : -1];
+typedef char Camera_CItem_size_must_be_76[(sizeof(CItem) == 76) ? 1 : -1];
 typedef char Camera_CBody_size_must_be_264[(sizeof(CBody) == 264) ? 1 : -1];
 typedef char Camera_Quat_size_must_be_20[(sizeof(CQuat) == 20) ? 1 : -1];
 typedef char Camera_AnimQuat_size_must_be_28[
@@ -400,22 +323,11 @@ inline void Camera_RebuildOldOffset(
     camera.old_offset.vz = (positionZ << 12) - camera.mTripodPos.vz;
 }
 
-/** Install a recovered GCC 2.x table pointer on a CClass-derived value. */
-inline void Camera_SetClassVtable(CClass &object, int vtable) {
-    *(int *)&object = vtable;
-}
-
 // === Free function declarations ===
 #include "CAMERAAPI.h"
 
 // === External function declarations ===
 void Competition_ResetMarquee(void);
-#define CBODY_ABI_ONLY
-#define CBODY_DECLARE_DESTRUCTOR
-#define CBODY_DESTRUCTOR_NAME Camera_DestroyBody
-#define CBODY_DESTRUCTOR_RECEIVER CBody
-#include "CBODY.h"
-#undef CBODY_ABI_ONLY
 #include "CVECTOROPS.h"
 #define CAMERALIST_OWNER_DECLARATIONS
 #include "CAMERALIST.h"
@@ -425,26 +337,22 @@ void Competition_ResetMarquee(void);
  * Owner-local debug text declared before its users and defined later in the
  * original small-data order. Address-derived labels are bound once here.
  */
-static char DAT_800DBB28[];
-static char DAT_800DBB30[];
-static char DAT_800DBB38[];
-static char DAT_800DBB44[];
-static char DAT_800DBB4C[];
-static char DAT_800DBB50[];
-static char DAT_800DBB54[];
-static char DAT_800DBB58[];
-static char DAT_800DBB60[];
-static char DAT_800DBB70[];
-static char DAT_800DBB00[];
-static char DAT_800DBB08[];
+static char s_Follow[];
+static char s_Fixed[];
+static char s_Quaternion[];
+static char s_Tripod[];
+static char s_X[];
+static char s_Y[];
+static char s_Z[];
+static char s_StickO[];
+static char s_StickLength[];
+static char s_StickOffset[];
+static char s_PosA[];
+static char s_PosB[];
 void Competition_MarqueeDisplay(void);
 #include "M3DMATHS.h"
 #include "GSKATER_STATE.h"
 #include "GENERATELEVEL.h"
-extern int __vt_7CCamera[];  // absolute: 0x800B39D0
-#include "CAMERAVTABLES.h"
-#define CAMERA_DECLARE_CAMPOS_VTABLE_ABI
-#include "CAMERA.h"
 /** Packed fixed-point sine/cosine table used by camera shake. */
 struct CameraSinCos {
     s16 Sin;
@@ -455,44 +363,10 @@ struct CameraSinCos {
 #include "RCOSSIN.h"
 #define Camera_Sine(angle) \
     ((&rcossin_tbl)[(angle) & 0xfff].Sin)
-/** Construct the original polymorphic base. */
-inline CClass::CClass() {}
-
-/** Construct the polymorphic base with an owner-selected virtual table. */
-inline CClass::CClass(void **vtable) {
-    *(void ***)this = vtable;
-}
-
-/** Tear down the original polymorphic base. */
-inline CClass::~CClass() {}
-
 /** Construct an identity quaternion. */
-inline CQuat::CQuat() : CClass(), x(0), y(0), z(0), w(0x1000) {}
+inline CQuat::CQuat() : x(0), y(0), z(0), w(0x1000) {}
 
-/** Natural free-service interface owned by QUAT. */
 #include "QUAT_API.h"
-
-/** Bind an animated quaternion to its owning timer and construct its value. */
-inline t9AnimParam1Z5CQuat::t9AnimParam1Z5CQuat(u32 *t)
-    : CClass((void **)&__vt_t9AnimParam1Z5CQuat), mTimer(t), mParam() {}
-
-/** Owner-local form of CVector's inline three-component constructor. */
-struct CameraGlobalVector {
-    int vx;
-    int vy;
-    int vz;
-
-    CameraGlobalVector(int x, int y, int z) : vx(x), vy(y), vz(z) {}
-};
-
-/** Owner-local form of CSVector's inline three-component constructor. */
-struct CameraGlobalSVector {
-    s16 vx;
-    s16 vy;
-    s16 vz;
-
-    CameraGlobalSVector(s16 x, s16 y, s16 z) : vx(x), vy(y), vz(z) {}
-};
 
 /** Base camera distance; also anchors CAMERA.CPP's global initializer name. */
 int camDist __attribute__((section(".sdata"))) = 658;
@@ -510,42 +384,55 @@ static int camZOffsetDeltaTimer __attribute__((section(".sdata"))) = 0;
 static int Mick_CameraTweak __attribute__((section(".sdata"))) = 0;
 int Camera_Preset __attribute__((section(".sdata"))) = 2;
 
-static CameraGlobalVector LoosePosition
-    = CameraGlobalVector(0, -0x190000, 0);
-static CameraGlobalVector LooseFocus
-    = CameraGlobalVector(0, -0x64000, 0);
-static CameraGlobalVector StartPosition
-    = CameraGlobalVector(0, -0xa0000, -0x3b6000);
-static CameraGlobalVector StartFocus
-    = CameraGlobalVector(0, -0x64000, 0);
-static CameraGlobalVector NormalPosition
-    = CameraGlobalVector(0, -0x96000, 0x28a000);
-static CameraGlobalVector NormalFocus
-    = CameraGlobalVector(0, -0x64000, 0);
-static CameraGlobalVector FarPosition
-    = CameraGlobalVector(0, -0x44c000, 0x514000);
-static CameraGlobalVector FarFocus
-    = CameraGlobalVector(0, -0x64000, -0x320000);
-static CameraGlobalVector OverheadPosition
-    = CameraGlobalVector(0, -0x8ca000, 0x190000);
-static CameraGlobalVector OverheadFocus
-    = CameraGlobalVector(0, -0x64000, -0x12c000);
-static CameraGlobalVector FlyFocus
-    = CameraGlobalVector(0, 0x64000, -0x6d60000);
-static CameraGlobalVector DemoFocus
-    = CameraGlobalVector(0, -0x64000, 0);
-static CameraGlobalSVector cameraBigShakeAmp asm("BigShakeAmp")
-    = CameraGlobalSVector(25, 0, 50);
-static CameraGlobalSVector cameraMediumShakeAmp asm("MediumShakeAmp")
-    = CameraGlobalSVector(0, 0, 30);
-static CameraGlobalSVector cameraSmallShakeAmp asm("SmallShakeAmp")
-    = CameraGlobalSVector(0, 0, 25);
-static CFriction cameraLandShakeDecay asm("LandShakeDecay")
+/** Camera tuning deltas and CAMERA's private random stream (GLOBALS.H statics, MAIN.SYM order). */
+static int camXZDistDelta;
+static int camYDistDelta;
+static int camAngleDelta;
+static int camAngleDeltaTimer;
+static int camAngleTarget;
+static int camXOffsetDelta;
+static int camYOffsetDelta;
+static int camZOffsetDelta;
+static int RandSeed;
+static int RandA;
+static int RandB;
+
+static CVector LoosePosition
+    = CVector(0, -0x190000, 0);
+static CVector LooseFocus
+    = CVector(0, -0x64000, 0);
+static CVector StartPosition
+    = CVector(0, -0xa0000, -0x3b6000);
+static CVector StartFocus
+    = CVector(0, -0x64000, 0);
+static CVector NormalPosition
+    = CVector(0, -0x96000, 0x28a000);
+static CVector NormalFocus
+    = CVector(0, -0x64000, 0);
+static CVector FarPosition
+    = CVector(0, -0x44c000, 0x514000);
+static CVector FarFocus
+    = CVector(0, -0x64000, -0x320000);
+static CVector OverheadPosition
+    = CVector(0, -0x8ca000, 0x190000);
+static CVector OverheadFocus
+    = CVector(0, -0x64000, -0x12c000);
+static CVector FlyFocus
+    = CVector(0, 0x64000, -0x6d60000);
+static CVector DemoFocus
+    = CVector(0, -0x64000, 0);
+static CSVector BigShakeAmp
+    = CSVector(25, 0, 50);
+static CSVector MediumShakeAmp
+    = CSVector(0, 0, 30);
+static CSVector SmallShakeAmp
+    = CSVector(0, 0, 25);
+static CFriction LandShakeDecay
     = CFriction(3, 0, 3);
-static CameraGlobalSVector cameraLandShakeSpeed asm("LandShakeSpeed")
-    = CameraGlobalSVector(600, 0, 600);
-static CameraGlobalVector UpDownPosition
-    = CameraGlobalVector(0, -0x6e000, 0);
+static CSVector LandShakeSpeed
+    = CSVector(600, 0, 600);
+static CVector UpDownPosition
+    = CVector(0, -0x6e000, 0);
 
 /** Camera presets and their display names, in the original data order. */
 SPresetCamera Presets[5] __attribute__((section(".data"))) = {
@@ -569,12 +456,8 @@ MATRIX tm __attribute__((section(".data"))) = {};
 
 
 // === Extern "C" forward declarations ===
-/* GCC 2.x receives both `unsigned short` arguments promoted in registers;
- * this ABI shim keeps that promoted view so the target's truncation order is
- * preserved. A true-u16 definition hoists the zoom mask and misses twice. */
 #define CAMERA_DECLARE_OWNER_ABI
 #include "CAMERA.h"
-#define Camera_SetZoom CameraRawABI::SetZoom__7CCameraUsUs
 // === Function implementations (address order) ===
 
 /**
@@ -593,12 +476,6 @@ void Camera_InitialRand(int a) {
 }
 
 
-/** Install CCamera's derived virtual table before initializing its first member. */
-static inline u16 Camera_InitializeDerivedBase(CCamera *camera, u16 mikeIndex) {
-    camera->_vf = (void **)__vt_7CCamera;
-    return mikeIndex;
-}
-
 /**
  * Construct a gameplay camera around a tripod body and controller index.
  *
@@ -606,7 +483,7 @@ static inline u16 Camera_InitializeDerivedBase(CCamera *camera, u16 mikeIndex) {
  * @param mike_index Initial rendered-camera slot; corrected from the tripod's pad.
  */
 CCamera::CCamera(struct CBody *tripod, u16 mike_index)
-    : mMikeIndex(Camera_InitializeDerivedBase(this, mike_index)),
+    : mMikeIndex(mike_index),
       mTripod(tripod),
       mCalcTripod(true),
       new_focus(false),
@@ -649,20 +526,15 @@ CCamera::CCamera(struct CBody *tripod, u16 mike_index)
 
     vFront = CVector(0, 0, 0x1000);
 
-    in_pool_timer = 0x3e8;
     big_air = false;
+    in_pool_timer = 0x3e8;
     extra_YRot = 0;
-    {
-        // Three ordinary pointer/reference forms shift 21 instructions in the
-        // constructor; the recovered compiler keeps this source temporary in v1.
-        register CBody *tripod asm("$3") = mTripod;
-        mTripodPos = tripod->mPos;
-    }
-    Camera_Preset = 2;
+    mTripodPos = mTripod->mPos;
     mTripodTime = 0;
     mFocusPos = mFocus->mPos;
     mFocusTime = 0;
     mType = 0x63;
+    Camera_Preset = 2;
 
     SPresetCamera *base = Presets;
     SPresetCamera *preset = base + 2;
@@ -685,68 +557,15 @@ CCamera::CCamera(struct CBody *tripod, u16 mike_index)
  * Debug label retained by the original CAMERA object between its constructor
  * diagnostic and virtual dispatch table.
  */
-static char s_jump_compensation_800b39bc[]
+static char s_JumpCompensation[]
     __attribute__((section(".rdata"), aligned(4))) =
         "jump compensation";
 
-/** Addressable destructor entry used by CAMERA's owner-local virtual table. */
-void Camera_Destroy(CCamera *camera, int inCharge) asm("_._7CCamera");
-
-/**
- * Virtual dispatch table for the gameplay camera specialization.
- *
- * The inherited CBody operations follow CCamera's destructor and AI override
- * in the original GCC 2.x table layout.
- */
-int __vt_7CCamera[9] __attribute__((section(".rdata"), aligned(4))) = {
-    0,
-    0,
-    (int)&Camera_Destroy,
-    (int)(void (*)(CBody *))&CBody::Die,
-    (int)(void (*)(CCamera *))&CCamera::AI,
-    (int)(void (*)(CBody *))&CBody::EveryFrame,
-    (int)(void (*)(CBody *))&CBody::DoLightingSetup,
-    (int)(int (*)(CBody *, int, const CVector &, int))&CBody::Hit,
-    (int)(void (*)(CBody *))&CBody::DeleteStuff,
-};
-
-
-/**
- * _._7CCamera (typed alias for the original destructor ABI)
- *
- * Address:   0x800796CC
- * Mangled:   _._7CCamera
- * Demangled: CCamera::~CCamera()
- *
- * @param camera Camera being destroyed.
- * @param __in_chrg GCC 2.x in-charge flag; bit 0 also frees the object.
- */
-void Camera_Destroy(CCamera *camera, int __in_chrg) {
-    camera->_vf = (void **)__vt_7CCamera;
-    camera->DeleteFrom(&CameraList);
-    int vt = (int)&DAT_800dbbb0;
-    int nc = NumCameras;
-    int vt2 = (int)&__vt_t9AnimParam1Z5CQuat;
-    Camera_SetClassVtable(camera->old_orientation, vt);
-    camera->testQuat.CClass._vf = (void **)vt2;
-    Camera_SetClassVtable(camera->testQuat.mParam, vt);
-    camera->testQuat.CClass._vf = (void **)vt;
-    Camera_SetClassVtable(camera->mStoppedO, vt);
-    Camera_SetClassVtable(camera->mPreFocusO, vt);
-    Camera_SetClassVtable(camera->mPrevO, vt);
-    Camera_SetClassVtable(camera->mDesiredO, vt);
-    Camera_SetClassVtable(camera->mO, vt);
-    NumCameras = nc - 1;
-    camera->mPosB.~CamPos();
-    camera->mCurrentPos.~CamPos();
-    camera->mLastPos.~CamPos();
-    camera->mPosA.~CamPos();
-    Camera_DestroyBody(camera, 0);
-    if (__in_chrg & 1) {
-        ::CItem::operator delete(camera);
-    }
+/** Destroy the camera's body-list attachment and owned value members. */
+CCamera::~CCamera() {
+    DeleteFrom(&CameraList);
+    NumCameras--;
 }
-
 
 /**
  * SetCollisionRayLR__7CCamerai
@@ -1086,7 +905,10 @@ void CCamera::ReactToCollision() {
         }
     }
 
-    setVector(&vTemp, Camera_CamDist * -0x2000, 0, 0);
+    vTemp.vx = Camera_CamDist * -0x2000;
+    vTemp.vy = vTemp.vz = 0;
+    // FIXME(match): asm barrier — keeps the vTemp stores ahead of the ApplyMatrixLV arg setup (without it addiu a0/a1/a2 hoist and an extra addiu $a0,$sp,0xB8 appears; score 16); tried: 7 vTemp assignment forms, setVector inline (18), comma-expression args (16-18).
+    asm volatile("");
     ApplyMatrixLV(&m, &vTemp, &vLeft);
     vRight.vx = -vLeft.vx;
     vRight.vy = -vLeft.vy;
@@ -1281,15 +1103,17 @@ void CCamera::ReactToCollision() {
             }
             if (((mPrevColAngBuffer[0] +
                   mColAngBuffer[0]) >> 1) != 0) {
-                ang *= ratioL;
                 if (-((mPrevColAngBuffer[1] +
                        mColAngBuffer[1]) >> 1) <
                     ((mPrevColAngBuffer[0] +
                       mColAngBuffer[0]) >> 1)) {
+                    ang *= ratioL;
                     ang >>= 12;
                     mColAngBuffer[3] = (s16)ang;
                 }
             }
+        } else {
+            mColAngBuffer[3] = 0;
         }
     }
 
@@ -1650,8 +1474,10 @@ void CCamera::MoveToDesiredPos(unsigned int normal_slerp) {
     }
 
     Spd = 0;
-    for (int i = 0; i < 6; i++) {
-        Spd += mSpeedBuffer[i];
+    int i = 0;
+    int *speed = mSpeedBuffer;
+    for (; i < 6; i++) {
+        Spd += *speed++;
     }
 
     Spd /= 6;
@@ -1917,22 +1743,15 @@ void CCamera::SetCamZOffset(s16 offset, u16 frames) {
  * Demangled: CCamera::SetZoom(unsigned short, unsigned short)
  *            Store a new zoom target immediately, or compute a per-frame zoom delta.
  *
- * @param camera Camera whose zoom is changed.
  * @param zoom Target fixed-point projection zoom.
  * @param time Number of frames over which to interpolate.
  */
-void Camera_SetZoom(CCamera *camera, int zoom, int time) {
-    CCamera *self = camera;
-    register int frameCount asm("$6") = (u16)time;
-    asm volatile("" : "+r"(self), "+r"(frameCount));
-    self->mZoomTime = frameCount;
-    zoom = (u16)zoom;
-    if (frameCount != 0) {
-        int current = self->mZoom;
-        register int den asm("$3") = (u16)frameCount;
-        self->mZoomIncrement = ((int)zoom - current) / (int)den;
+void CCamera::SetZoom(u16 zoom, u16 time) {
+    mZoomTime = time;
+    if (mZoomTime != 0) {
+        mZoomIncrement = (zoom - mZoom) / (int)mZoomTime;
     } else {
-        self->mZoom = zoom;
+        mZoom = zoom;
     }
 }
 
@@ -1965,11 +1784,11 @@ void CCamera::TweakMenu() {
     // Display labels and camera positions
     CamPos::DisplayLabels(0x64, 0x32, c8, c8, c8);
     Font_String(
-        0xc8, 0x28, DAT_800DBB00, c8, c8, c8, 0);
+        0xc8, 0x28, s_PosA, c8, c8, c8, 0);
     CamPos *camPos0 = &mPosA;
     camPos0->Display(0xc8, 0x32, 0x50, 0, 0);
     Font_String(
-        0x12c, 0x28, DAT_800DBB08, c8, c8, c8, 0);
+        0x12c, 0x28, s_PosB, c8, c8, c8, 0);
     CamPos *camPos1 = &mPosB;
     camPos1->Display(0x12c, 0x32, 0x50, 0, 0);
 
@@ -2161,9 +1980,9 @@ static u16 CameraOwnerTweakCol
     __attribute__((section(".sdata"))) = 0;
 
 /** Headings used by CCamera and CamPos's debug displays. */
-static char DAT_800DBB00[]
+static char s_PosA[]
     __attribute__((section(".sdata"), aligned(4))) = "Pos A";
-static char DAT_800DBB08[]
+static char s_PosB[]
     __attribute__((section(".sdata"), aligned(4))) = "Pos B";
 
 /* Owner-private AI state immediately follows the tweak labels in the target. */
@@ -2628,10 +2447,6 @@ void CCamera::CM_CompetitionIntro() {
         mCompIntroEndPos.vz = mPos.vz;
     }
 
-    /* The trailing legacy barrier keeps the two automatic CQuat destructor
-     * stores ahead of register restores. Removing it, adding `return`, and a
-     * do/while scope produced 6, 6, and 28 real mismatches respectively. */
-    {
     CQuat begin_o;
     CQuat end_o;
     CVector begin_pos;
@@ -2654,40 +2469,38 @@ void CCamera::CM_CompetitionIntro() {
             GSkater[0],
             VIDEO_RECORD, 1, 0x7fffffff);
         mCameraMode = 1;
+        return;
+    }
+    Competition_MarqueeDisplay();
+    begin_pos.vx =
+        Levels[GLevel].IntroStartPosX << 12;
+    begin_pos.vy =
+        Levels[GLevel].IntroStartPosY << 12;
+    begin_pos.vz =
+        Levels[GLevel].IntroStartPosZ << 12;
+    CVector offset_inc;
+    offset_inc = (begin_pos - mCompIntroEndPos) / 130;
+    CVector offset =
+        (offset_inc * 130) -
+        (mCompIntroTimer * offset_inc);
+
+    mPos.vx = mCompIntroEndPos.vx + offset.vx;
+    mPos.vy = mCompIntroEndPos.vy + offset.vy;
+    mPos.vz = mCompIntroEndPos.vz + offset.vz;
+
+    int activated = 0;
+    if (Pad[0].X.Pressed != 0 || Pad[1].X.Pressed != 0) {
+        activated = 1;
+    }
+    if (activated) {
+        mSpeedUpIntro = true;
+    }
+
+    if (mSpeedUpIntro != 0) {
+        mCompIntroTimer += 6;
     } else {
-        Competition_MarqueeDisplay();
-        begin_pos.vx =
-            Levels[GLevel].IntroStartPosX << 12;
-        begin_pos.vy =
-            Levels[GLevel].IntroStartPosY << 12;
-        begin_pos.vz =
-            Levels[GLevel].IntroStartPosZ << 12;
-        CVector offset_inc;
-        offset_inc = (begin_pos - mCompIntroEndPos) / 130;
-        CVector offset =
-            (offset_inc * 130) -
-            (mCompIntroTimer * offset_inc);
-
-        mPos.vx = mCompIntroEndPos.vx + offset.vx;
-        mPos.vy = mCompIntroEndPos.vy + offset.vy;
-        mPos.vz = mCompIntroEndPos.vz + offset.vz;
-
-        int activated = 0;
-        if (Pad[0].X.Pressed != 0 || Pad[1].X.Pressed != 0) {
-            activated = 1;
-        }
-        if (activated) {
-            mSpeedUpIntro = true;
-        }
-
-        if (mSpeedUpIntro != 0) {
-            mCompIntroTimer += 6;
-        } else {
-            mCompIntroTimer += 1;
-        }
+        mCompIntroTimer += 1;
     }
-    }
-    asm volatile("");
 }
 
 
@@ -2811,7 +2624,7 @@ void CCamera::CM_NoBigAir() {
  * Demangled: CamPos::(void)
  *
  */
-CamPos::CamPos() : CClass((void **)&__vt_6CamPos) {}
+CamPos::CamPos() {}
 
 
 /**
@@ -2824,9 +2637,7 @@ CamPos::CamPos() : CClass((void **)&__vt_6CamPos) {}
  * The compiler supplies the original hidden in-charge flag and emits the
  * target `_._6CamPos` ABI entry.
  */
-CamPos::~CamPos() {
-    Camera_SetClassVtable(CClass, (int)&__vt_6CamPos);
-}
+CamPos::~CamPos() {}
 
 
 /**
@@ -2838,7 +2649,7 @@ CamPos::~CamPos() {
 void CamPos::Display(u16 x, u16 y, u8 r, u8 g, u8 b) {
     if (calc_mTripod != 0) {
         Font_String(
-            x, y, DAT_800DBB28, r, g, b, 0);
+            x, y, s_Follow, r, g, b, 0);
         Font_Number(
             x, (u16)(y + 8), mTripod->mPos.vx >> 12,
             r, g, b, 0);
@@ -2850,7 +2661,7 @@ void CamPos::Display(u16 x, u16 y, u8 r, u8 g, u8 b) {
             r, g, b, 0);
     } else {
         Font_String(
-            x, y, DAT_800DBB30, r, g, b, 0);
+            x, y, s_Fixed, r, g, b, 0);
         Font_Number(
             x, (u16)(y + 8), mTripodPos.vx >> 12, r, g, b, 0);
         Font_Number(
@@ -2859,7 +2670,7 @@ void CamPos::Display(u16 x, u16 y, u8 r, u8 g, u8 b) {
             x, (u16)(y + 24), mTripodPos.vz >> 12, r, g, b, 0);
     }
     Font_String(
-        x, (u16)(y + 40), DAT_800DBB38, r, g, b, 0);
+        x, (u16)(y + 40), s_Quaternion, r, g, b, 0);
     Font_Number(
         x, (u16)(y + 48), mStickLength, r, g, b, 0);
     Font_Number(
@@ -2886,17 +2697,17 @@ void CamPos::Display(u16 x, u16 y, u8 r, u8 g, u8 b) {
  * @param b  Blue component (0-255).
  */
 void CamPos::DisplayLabels(u16 x, u16 y, u8 r, u8 g, u8 b) {
-    Font_String(x, y, DAT_800DBB44, r, g, b, 0);
+    Font_String(x, y, s_Tripod, r, g, b, 0);
     u16 x2 = (u16)(x + 0x14);
-    Font_String(x2, (u16)(y + 8), DAT_800DBB4C, r, g, b, 0);
-    Font_String(x2, (u16)(y + 0x10), DAT_800DBB50, r, g, b, 0);
-    Font_String(x2, (u16)(y + 0x18), DAT_800DBB54, r, g, b, 0);
-    Font_String(x, (u16)(y + 0x28), DAT_800DBB58, r, g, b, 0);
-    Font_String(x, (u16)(y + 0x30), DAT_800DBB60, r, g, b, 0);
-    Font_String(x, (u16)(y + 0x38), DAT_800DBB70, r, g, b, 0);
-    Font_String(x2, (u16)(y + 0x40), DAT_800DBB4C, r, g, b, 0);
-    Font_String(x2, (u16)(y + 0x48), DAT_800DBB50, r, g, b, 0);
-    Font_String(x2, (u16)(y + 0x50), DAT_800DBB54, r, g, b, 0);
+    Font_String(x2, (u16)(y + 8), s_X, r, g, b, 0);
+    Font_String(x2, (u16)(y + 0x10), s_Y, r, g, b, 0);
+    Font_String(x2, (u16)(y + 0x18), s_Z, r, g, b, 0);
+    Font_String(x, (u16)(y + 0x28), s_StickO, r, g, b, 0);
+    Font_String(x, (u16)(y + 0x30), s_StickLength, r, g, b, 0);
+    Font_String(x, (u16)(y + 0x38), s_StickOffset, r, g, b, 0);
+    Font_String(x2, (u16)(y + 0x40), s_X, r, g, b, 0);
+    Font_String(x2, (u16)(y + 0x48), s_Y, r, g, b, 0);
+    Font_String(x2, (u16)(y + 0x50), s_Z, r, g, b, 0);
 }
 
 
@@ -2916,40 +2727,23 @@ void CamPos::DisplayLabels(u16 x, u16 y, u8 r, u8 g, u8 b) {
 
 int yangle __attribute__((section(".sdata"))) = 0;
 
-static char DAT_800DBB28[]
+static char s_Follow[]
     __attribute__((section(".sdata"), aligned(4))) = "Follow";
-static char DAT_800DBB30[]
+static char s_Fixed[]
     __attribute__((section(".sdata"), aligned(4))) = "Fixed";
-static char DAT_800DBB38[]
+static char s_Quaternion[]
     __attribute__((section(".sdata"), aligned(4))) = "quaternion";
-static char DAT_800DBB44[]
+static char s_Tripod[]
     __attribute__((section(".sdata"), aligned(4))) = "Tripod";
-static char DAT_800DBB4C[]
+static char s_X[]
     __attribute__((section(".sdata"), aligned(4))) = "x";
-static char DAT_800DBB50[]
+static char s_Y[]
     __attribute__((section(".sdata"), aligned(4))) = "y";
-static char DAT_800DBB54[]
+static char s_Z[]
     __attribute__((section(".sdata"), aligned(4))) = "z";
-static char DAT_800DBB58[]
+static char s_StickO[]
     __attribute__((section(".sdata"), aligned(4))) = "Stick O";
-static char DAT_800DBB60[]
+static char s_StickLength[]
     __attribute__((section(".sdata"), aligned(4))) = "Stick Length";
-static char DAT_800DBB70[]
+static char s_StickOffset[]
     __attribute__((section(".sdata"), aligned(4))) = "Stick Offset";
-
-/** Owner-local address view retained solely for CameraCamPosVtableImage. */
-void CameraCamPosDestructor(void) asm("_._6CamPos");
-
-/** Destructor-only dispatch tables for CAMERA's embedded value types. */
-static unsigned int CameraAnimParamVtableImage[4]
-    __attribute__((section(".sdata"), aligned(4))) = {
-        0, 0, (unsigned int)&__DOT__t9AnimParam1Z5CQuat, 0,
-    };
-static unsigned int CameraCamPosVtableImage[4]
-    __attribute__((section(".sdata"), aligned(4))) = {
-        0, 0, (unsigned int)&CameraCamPosDestructor, 0,
-    };
-static unsigned int CameraQuatVtableImage[4]
-    __attribute__((section(".sdata"), aligned(4))) = {
-        0, 0, (unsigned int)&__DOT__5CQuat_8007E81C, 0,
-    };

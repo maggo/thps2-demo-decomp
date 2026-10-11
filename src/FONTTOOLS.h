@@ -1,5 +1,4 @@
-// Hand-maintained per-TU interface for FONTTOOLS.cpp.
-// gen_tu_headers.py is retained only for explicit bootstrap regeneration.
+// FONTTOOLS.h -- interface of FONTTOOLS.cpp
 #ifndef FONTTOOLS_INC_H
 #define FONTTOOLS_INC_H
 
@@ -30,9 +29,15 @@ struct FontCharacter {
     int Baseline;
 };
 
+#ifndef FONTTOOLS_POLYMORPHIC_LAYOUT
 /** Inert storage view for owners that explicitly manage Font lifetime. */
-struct FontStorage {
+struct FontStorage
+{
+#ifdef CCLASS_POLY_H
+    CClassData CClass;
+#else
     CClass CClass;
+#endif
     int JustX;
     int JustY;
     int SpaceX;
@@ -56,19 +61,58 @@ struct FontStorage {
     unsigned char OldB;
 };
 
+#endif
+
 /** Stateful renderer for one loaded bitmap font. */
-struct Font : FontStorage {
+struct Font
+#ifdef FONTTOOLS_POLYMORPHIC_LAYOUT
+    : CClass
+#else
+    : FontStorage
+#endif
+{
+#ifdef FONTTOOLS_POLYMORPHIC_LAYOUT
+    int JustX;
+    int JustY;
+    int SpaceX;
+    int SpaceY;
+    int R;
+    int G;
+    int B;
+    void *Aliased;
+    void *Shadow;
+    int ShadowDx;
+    int ShadowDy;
+    int CharMap;
+    int FixedWidth;
+    int Scale;
+    FontCharacter *CharTab;
+    int NumChars;
+    int Clut;
+    TextEffect *CurrentTextEffect;
+    unsigned char OldR;
+    unsigned char OldG;
+    unsigned char OldB;
+#endif
     Font();
     Font(unsigned char *buf);
     Font(const Font &source);
+#ifdef FONTTOOLS_POLYMORPHIC_LAYOUT
+    virtual
+#endif
     ~Font();
 
+#ifndef FONTTOOLS_POLYMORPHIC_LAYOUT
     /** Allocate font storage through the shared CClass arena. */
     static void *operator new(unsigned int size)
     {
         return ::CClass::operator new(size);
     }
+#endif
 
+#ifdef FONTTOOLS_POLYMORPHIC_LAYOUT
+    virtual
+#endif
     void draw(int x, int y, char *str, int drawFirst);
     int width(char *str);
     int height(char *str);
@@ -84,6 +128,7 @@ struct Font : FontStorage {
     void unload();
 };
 
+#ifndef FONTTOOLS_POLYMORPHIC_LAYOUT
 /** Target dispatch table shared by virtual Font consumers. */
 struct FontVTable {
     int baseOffset;
@@ -97,7 +142,9 @@ inline FontVTable *FontDispatch(Font *font)
 {
     return reinterpret_cast<FontVTable *>(font->CClass.vtable);
 }
+#endif
 
+#ifndef FONTTOOLS_POLYMORPHIC_LAYOUT
 /** Recover the active Font interface from explicitly managed storage. */
 inline Font *FontFromStorage(FontStorage *storage)
 {
@@ -110,10 +157,14 @@ inline const Font *FontFromStorage(const FontStorage *storage)
     return static_cast<const Font *>(storage);
 }
 
+#endif
+
 typedef char FontCharacter_size_must_be_0x10[
     (sizeof(FontCharacter) == 0x10) ? 1 : -1];
+#ifndef FONTTOOLS_POLYMORPHIC_LAYOUT
 typedef char FontStorage_size_must_be_0x50[
     (sizeof(FontStorage) == 0x50) ? 1 : -1];
+#endif
 typedef char Font_size_must_be_0x50[
     (sizeof(Font) == 0x50) ? 1 : -1];
 

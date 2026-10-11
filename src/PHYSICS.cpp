@@ -1,8 +1,9 @@
-// PHYSICS.cpp
+// PHYSICS.cpp -- Reconstructed translation unit
 // Original: PHYSICS.CPP
+// Functions: 99
 // Address range: 0x80010000 - 0x80020164
 //
-// Compiled with cc1plus (GCC 2.91.66-psx). Compiler auto-mangles symbol names.
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 #define PHYSICS_OWNER_DECLARATIONS
 #include "PHYSICS.h"
@@ -1021,8 +1022,6 @@ static inline int PhysicsMaxSpeed(CBrucePhysicsSlice *bruce);
 // === Absolute-addressed globals (use lui+lw, not $gp-relative) ===
 #define BITSTATE_DECLARE_BIT_COUNT
 #include "BITSTATE.h"
-// main.obj owns int GGame at 0x800D95DC; no GGame_abs alias is needed in PHYSICS.
-// main.obj owns int TimeScale at 0x800D97BC; no TimeScale_physics alias is needed in PHYSICS.
 #define DEFAULTANIMATIONS_SIZED_DECLARATION
 #include "DEFAULTANIMATIONS.h"
 /** Default animation IDs followed by the writable extra-animation workspace. */
@@ -1042,8 +1041,7 @@ namespace PhysicsDirectionTableOwner
 {
 extern "C"
 {
-static int DirectionTable[16]
-    __attribute__((section(".data"))) = {
+static int DirectionTable[16] = {
     0, 1, 2, 2,
     3, 5, 7, 7,
     4, 6, 8, 8,
@@ -1135,7 +1133,6 @@ int Face_Visible __attribute__((section(".sdata"))) = 0;
 int Face_Terrain __attribute__((section(".sdata"))) = 0;
 int NumExtraAnims __attribute__((section(".sdata"))) = 0;
 
-extern int last_valid_401_gp asm("last_valid.401");
 #include "ZEROVECTOR.h"
 struct Vec3 { int a, b, c; };
 // === Readable owner-local names with MAIN.SYM-proven ABI labels ===
@@ -2222,21 +2219,22 @@ void CBruce::StartGrind()
         bruce->mGrindTime = bruce->mGrindTime + 0x28;
     }
 
-    bruce->mGrindLeanDir =
-        (bruce->mGrindLeanDir
-         * (100
-            - (Cheat_StatsOverride != 0
-                   ? Cheat_StatsOverride
-                   : Stats[bruce->mSkaterType].Balance
-                         + ((bruce->mMagicTime != 0 || Cheat_Fire != 0)
-                                ? (temp = (unsigned char)
-                                              bruce->mpBoardStats->balance) + 3
-                                : (temp = (unsigned char)
-                                              bruce->mpBoardStats->balance)))
-                * 0xF)
-         / 100
-         * (bruce->mGrindTime + 0x3C))
-        / 0x50;
+    {
+        // FIXME(match): asm barrier + asm alias (leanCopy) — barrier pins the lean/override/grindTime load order, the alias forces leanCopy into its own register ($a3) so the override arm keeps the loaded $a1 and cross-jumping cannot merge the mults; tried: dropping both (17), dropping only the barrier (2: lw mGrindTime scheduled before Cheat_StatsOverride), declaration orders, grindTime+60 precompute, uchar/temp balance shapes.
+        int lean = bruce->mGrindLeanDir;
+        int override = Cheat_StatsOverride;
+        int grindTime = bruce->mGrindTime;
+        asm volatile("");
+        int leanCopy = lean;
+        asm("" : "+r"(leanCopy));
+        bruce->mGrindLeanDir =
+            (override == 0
+                 ? leanCopy * (100 - (Stats[bruce->mSkaterType].Balance
+                       + ((bruce->mMagicTime != 0 || Cheat_Fire != 0) ? 3 : 0)
+                       + (unsigned char)bruce->mpBoardStats->balance) * 15)
+                 : lean * (100 - override * 15))
+            / 100 * (grindTime + 60) / 80;
+    }
 
     bruce->mNumGrinds = bruce->mNumGrinds + 1;
 
@@ -2532,31 +2530,30 @@ void CBruce::HandleBailOnLanding(int line)
 
     if (bruce->mDoingATrick == 0)
     {
-        register int early_landing asm("$5") = bruce->mFlipNum;
+        int early_landing = bruce->mFlipNum;
         if (early_landing == 0)
             return;
     }
 
-    register int flags asm("$6") = bruce->mDoingWhatTrick;
-    register int landing asm("$5") = bruce->mFlipNum;
-    register int bail_a asm("$3") = 0;
+    register int flags = bruce->mDoingWhatTrick;
+    register int bail_a = 0;
     if ((flags & 0x2000) != 0)
     {
         bail_a = bruce->mPad->Square.Pressed != 0;
     }
 
-    register int Bailing asm("$4") = bail_a;
-    register int bail_b asm("$3") = 0;
+    register int Bailing = bail_a;
+    register int bail_b = 0;
     if ((flags & 0x4000) != 0)
     {
         bail_b = bruce->mPad->Circle.Pressed != 0;
     }
-    asm volatile("" : "+r"(flags));
 
-    register int d54_val asm("$2") = bruce->mCanStartNextTrick;
+    register int d54_val = bruce->mCanStartNextTrick;
     Bailing = Bailing | bail_b;
-    register int d54_zero asm("$2") = (d54_val == 0);
+    register int d54_zero = (d54_val == 0);
     Bailing = Bailing | d54_zero;
+    int landing = bruce->mFlipNum;
     if (landing != 0)
     {
         if (bruce->mFlipSpeed > 0)
@@ -2580,7 +2577,7 @@ check_bail:
     {
         reinterpret_cast<CBruce *>(bruce)->Bail(
             (int)bruce->mBailNumber, DO_LIMIT);
-        register int bail_count asm("$2") = bruce->mTrickBails;
+        register int bail_count = bruce->mTrickBails;
         bruce->mBailNumber = 0;
         bail_count++;
         bruce->mTrickBails = bail_count;
@@ -2701,14 +2698,14 @@ void CBruce::TriggerTrick(short *pTrick)
         reinterpret_cast<CBrucePhysicsSlice *>(this);
     CBruceScriptQueueSlice *script =
         reinterpret_cast<CBruceScriptQueueSlice *>(bruce);
-    register int one asm("$2") = 1;
+    int one = 1;
     bruce->mDoingATrick = one;
     script->mDoingAScript = one;
-    asm volatile("");
-    script->CSuper.mAnimSpeed = 0x10000;
+
     bruce->mCanStartNextTrick = 0;
     script->mpReturn = 0;
     script->mpOffTrick = 0;
+    script->CSuper.mAnimSpeed = 0x10000;
     script->mpJumpTrick = 0;
     script->mpTrick = pTrick;
     script->mRailBailNumber = 0;
@@ -3314,11 +3311,12 @@ short CBruce::GetScriptFrame(int Frame)
     }
     if (Frame >= 0)
     {
-        register int max asm("$3") = bruce->CSuper.mNumFrames - 1;
-        if (max < Frame)
+        int NewFrame = Frame;
+        if (Frame > bruce->CSuper.mNumFrames - 1)
         {
-            Frame = max;
+            NewFrame = bruce->CSuper.mNumFrames - 1;
         }
+        Frame = NewFrame;
     }
     else
     {
@@ -4206,16 +4204,16 @@ short *Trick_Skip(short *pTrick)
     {
         pTrick = (short *)((int)pTrick + 2);
         char *pSkip = (char *)pTrick;
-        asm volatile("" : "+r"(pSkip));
+        ;
         char *v1 = pSkip + 2;
         if (*(unsigned char *)pSkip != 0)
         {
-            pSkip = pSkip + 1;
+            
             while (*(unsigned char *)pSkip != 0)
             {
                 pSkip = pSkip + 1;
             }
-            v1 = pSkip + 2;
+            v1 = pSkip + 2; pSkip = pSkip + 1;
         }
         pTrick = (short *)((int)v1 & -2);
         break;
@@ -4278,12 +4276,11 @@ int EnsureGTricksLoaded(void)
         printf(PhysicsDiagnosticPool.loadTricks);
         short *base = reinterpret_cast<short *>(
             FileIO_OpenLoad(GTricksFilename));
-        register int ret asm("$2") = 1;
+        int ret = 1;
         GTricks = base;
-        register int a asm("$4") = base[0];
-        register int b asm("$5") = base[1];
+        register int a = base[0];
+        register int b = base[1];
         int c = base[2];
-        asm volatile("" : "+r"(a), "+r"(b), "+r"(c), "+r"(ret));
         GTricksKeys = (short *)(reinterpret_cast<unsigned char *>(base) + a);
         GGrindTricksList = (short *)(reinterpret_cast<unsigned char *>(base) + b);
         GBailsList = (short *)(reinterpret_cast<unsigned char *>(base) + c);
@@ -4325,10 +4322,8 @@ void ExtraAnims_Reset(void)
             pExtraAnim++;
         } while (*pExtraAnim != -1);
     }
-    short *p = pExtraAnim;
-    pExtraAnim = p + 1;
-    *(p + 1) = -1;
-    asm volatile("");
+    pExtraAnim++;
+    *pExtraAnim = -1;
     NumExtraAnims = 0;
 }
 
@@ -4425,20 +4420,20 @@ void ExtraAnims_AddSkatersAnims(void)
 
     {
         int sel = SelectedSkater;
+        register int offset = GTricksKeys[sel];
         unsigned char *tricks = reinterpret_cast<unsigned char *>(GTricks);
-        register int offset asm("$5") = GTricksKeys[sel];
         ExtraAnims_AddTrickTable((short *)(tricks + offset));
     }
 
     if (GNumberOfPlayers == 2)
     {
         int sel = SelectedSkater2;
+        register int offset = GTricksKeys[sel];
         unsigned char *tricks = reinterpret_cast<unsigned char *>(GTricks);
-        register int offset asm("$5") = GTricksKeys[sel];
         ExtraAnims_AddTrickTable((short *)(tricks + offset));
     }
 
-    if (Loaded != 0)
+    if (0 != Loaded)
     {
         UnloadGTricks();
     }
@@ -4482,47 +4477,28 @@ void CBruce::HandleTricksNew()
  */
 int InterpolateFrame(int Current, int Dest)
 {
-    int cur = Current;
+    int diff = Dest - Current;
+    int sign;
     int step;
-    register int diff asm("$3");
 
-    diff = Dest - cur;
-
-    if (cur == Dest)
+    if (Current == Dest)
     {
-        return cur;
+        return Current;
     }
-
-    if (diff < 0)
-    {
-        step = -1;
-    }
-    else
-    {
-        step = 1;
-    }
-
-    {
-        register int sign asm("$2") = diff >> 31;
-        diff = diff ^ sign;
-        diff = diff - sign;
-    }
-
+    step = (diff < 0) ? -1 : 1;
+    sign = diff >> 31;
+    diff = (diff ^ sign) - sign;
     if (diff >= 13)
     {
-        return cur + step * 5;
+        return Current + step * 5;
     }
-
-    register int small asm("$2") = (diff < 4);
-
-    if (small == 0)
+    if (!(diff < 4))
     {
         int step2 = step * 2;
         step2 = step2 + step;
-        return cur + step2;
+        return Current + step2;
     }
-
-    return cur + step;
+    return Current + step;
 }
 
 /**
@@ -8139,7 +8115,7 @@ void CBruce::HandleJump()
             if (physicsState != 4 || bruce->mJumpInhibit != 0)
             {
                 if (physicsState != 5)
-                    goto LAB_8001b5a0;
+                    goto jump_crouch_tail;
                 if (bruce->mJumpInhibit != 0)
                 {
                     return;
@@ -8147,7 +8123,7 @@ void CBruce::HandleJump()
             }
             bruce->mJumpPending = 1;
         }
-    LAB_8001b5a0:
+    jump_crouch_tail:
         if (bruce->mJumpInhibit != 0)
         {
             return;
@@ -9184,8 +9160,6 @@ void CBruce::HandleContinuousSounds()
                 PhysicsContinuousApplyGroundSound(
                     bruce, SFX_PlayX(0x39, 0x2000, 0), 100);
                 goto ground_sound_ready;
-            case 7:
-            case 9:
             case 11:
                 PhysicsContinuousApplyGroundSound(
                     bruce, SFX_PlayX(0, 0x2000, 0), 100);
@@ -9608,11 +9582,10 @@ void CBruce::CheckForTriggers()
 
     if ((check.vx | check.vy | check.vz) != 0)
     {
-        int *last_valid = &last_valid_401_gp;
-        *(Vec3 *)last_valid = *(Vec3 *)&check;
+        static CVector last_valid;
+        last_valid = check;
 
-        Utils_CalcUnit(
-            unit, *reinterpret_cast<const CVector *>(last_valid));
+        Utils_CalcUnit(unit, last_valid);
         CVector old = *(CVector *)&bruce->CSuper.CBody.mOldPos - unit * 0x10;
 
         LInfo.StartCoords.Set(old.vx, old.vy, old.vz);
@@ -10043,7 +10016,7 @@ void CBruce::HandleFlips()
 {
     CBrucePhysicsSlice *bruce =
         reinterpret_cast<CBrucePhysicsSlice *>(this);
-    register int flipCount asm("$6") = bruce->mFlipNum;
+    register int flipCount = bruce->mFlipNum;
     if (flipCount != 0)
     {
         int flipSpeed = bruce->mFlipSpeed;
@@ -10056,7 +10029,6 @@ void CBruce::HandleFlips()
         if (((newAngle ^ flipAngle) & 0x1000) != 0)
         {
             int newCount = flipCount - 1;
-            asm volatile("" : "+r"(flipCount));
             bruce->mFlipNum = newCount;
             if (newCount == 0)
             {

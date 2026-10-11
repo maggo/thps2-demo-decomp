@@ -1,6 +1,7 @@
-// MIPS.cpp -- semantic C++ reference for the original MIPS.S application module.
+// MIPS.cpp -- Semantic C++ reference for the original MIPS.S application module.
 // Original: MIPS.S
 // Address range: 0x8006B024 - 0x8006B1E4
+//
 // The canonical link object is assembled from the independently reconstructed
 // target instructions in output/asm/Mips_*.s.
 

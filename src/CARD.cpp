@@ -1,4 +1,9 @@
-// Memory-card save, replay, directory, and event handling.
+// CARD.cpp -- Memory-card save, replay, directory, and event handling.
+// Original: CARD.CPP
+// Functions: 20
+// Address range: 0x80024410 - 0x800256FC
+//
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 #include "CARD.h"
 #include "FRONT.h"
@@ -130,7 +135,7 @@ namespace CardAddressViewOwners
 {
 extern "C"
 {
-static char DAT_800d8ba4[8]
+static char s_CardFileNameFmt[8]
     __attribute__((section(".sdata"))) = "bu00:%s";
 }
 }
@@ -145,11 +150,11 @@ static char DAT_800d8ba4[8]
 #include "CARD.h"
 
 /** Memory-card wildcard used to enumerate one connector and slot. */
-static char DAT_800d8bac[12]
+static char s_CardWildcardFmt[12]
     __attribute__((section(".sdata"))) = "bu%1d%1d:*";
 
 /** Memory-card device name used by the format operation. */
-static char DAT_800d8bb8[12]
+static char s_CardDeviceFmt[12]
     __attribute__((section(".sdata"))) = "bu%1d%1d:";
 
 int CardStatusTemp = 0;
@@ -168,32 +173,32 @@ long FILE_DSCRPTR = 0;
 
 // === CARD-owned read-only data ===
 /** Development-host diagnostic printed before writing the first header. */
-static char DAT_800b03b0[36]
+static char s_WriteHeaderSizeFmt[36]
     __attribute__((section(".rdata"))) =
         "\nWriting the header buffer, size %d";
 
 /** Development-host diagnostic printed before writing the first payload. */
-static char DAT_800b03d4[36]
+static char s_WriteDataSizeFmt[36]
     __attribute__((section(".rdata"))) =
         "\nWriting the data buffer, size %d";
 
 /** Development-host diagnostic printed before writing the second header. */
-static char DAT_800b03f8[48]
+static char s_Write2PHeaderSizeFmt[48]
     __attribute__((section(".rdata"))) =
         "\nWriting the 2 player header buffer, size %d";
 
 /** Development-host diagnostic printed before writing the second payload. */
-static char DAT_800b0428[44]
+static char s_Write2PDataSizeFmt[44]
     __attribute__((section(".rdata"))) =
         "\nWriting the 2 player data buffer, size %d";
 
 /** Replay checksum diagnostic for the first player payload. */
-static char s_Checksum_error_for_1P_in_Card_Lo_800b0454[52]
+static char s_ChecksumError1P[52]
     __attribute__((section(".rdata"))) =
         "\nChecksum error for 1P in Card_LoadReplayFromCD()";
 
 /** Replay checksum diagnostic for the second player payload. */
-static char s_Checksum_error_for_2P_in_Card_Lo_800b0488[52]
+static char s_ChecksumError2P[52]
     __attribute__((section(".rdata"))) =
         "\nChecksum error for 2P in Card_LoadReplayFromCD()";
 
@@ -321,8 +326,8 @@ void SetSJISChecksum(char *SJISName, char *FName)
 {
     unsigned short *p = reinterpret_cast<unsigned short *>(SJISName);
     unsigned short word = *p;
-    // Natural accumulators allocate away from the target's incoming $a0 home.
-    register int val asm("$4") = 0;
+    unsigned short val = 0;
+    unsigned short val2;
     if (word != 0)
     {
         do
@@ -330,31 +335,14 @@ void SetSJISChecksum(char *SJISName, char *FName)
             p++;
             int highByte = word >> 8;
             word = *p;
-            int val2 = (val << 2) +
-                (static_cast<unsigned int>(val) >> 10);
-            val2 = val2 ^ highByte;
-            val = val2 & 0xFFFF;
+            val = ((val << 2) + (val >> 10)) ^ highByte;
         } while (word != 0);
     }
-    val = val & 0x3FF;
-    int val2 = val & 0x1F;
-    int upperValue = static_cast<unsigned int>(val) >> 5;
-    if (static_cast<unsigned int>(upperValue) < 26)
-    {
-        *FName = static_cast<char>(upperValue + 'A');
-    }
-    else
-    {
-        *FName = static_cast<char>(upperValue + 22);
-    }
-    if (static_cast<unsigned int>(val2) < 26)
-    {
-        FName[1] = static_cast<char>(val2 + 'A');
-    }
-    else
-    {
-        FName[1] = static_cast<char>(val2 + 22);
-    }
+    val &= 0x3FF;
+    val2 = val & 0x1F;
+    val >>= 5;
+    *FName = (val < 26) ? val + 'A' : val + 22;
+    FName[1] = (val2 < 26) ? val2 + 'A' : val2 + 22;
 }
 
 /**
@@ -571,8 +559,7 @@ int Card_Write(EFileType FileType, int NumBlocks)
         Video_SetHeader(&Card_FilePrefix(pHeaderBuf2)->Video, 1);
     }
     {
-        // Both barriers preserve GCC's target argument-evaluation order.
-        // Direct and typed-local calls swap the $a1/$a2 setup instructions.
+        // FIXME(match): asm barrier — x2 below keep the Card_SetHeader arg setup order ($a2 before the NumBlocks $a1 load); tried: direct call, typed locals for head/NumBlocks/clut/icon, comma-expression args: all score 2.
         SCardHead *pHead = &Card_FilePrefix(pHeaderBuf)->Card;
         asm volatile("" : "+r"(pHead));
         char *pClutArg = pClut;
@@ -701,15 +688,15 @@ int Card_WriteReplayToDisk(EFileType FileType, char *save_name)
     PCinit();
     fileid = PCcreat(save_name, 0) & 0xFFFF;
     PClseek(fileid, 0, 0);
-    printf(DAT_800b03b0, HeaderSize);
+    printf(s_WriteHeaderSizeFmt, HeaderSize);
     PCwrite(fileid, reinterpret_cast<char *>(pHeaderBuf), HeaderSize);
-    printf(DAT_800b03d4, DataSize);
+    printf(s_WriteDataSizeFmt, DataSize);
     PCwrite(fileid, reinterpret_cast<char *>(pDataBuf), DataSize);
     if (pHeaderBuf2 != 0)
     {
-        printf(DAT_800b03f8, CARD_HEADER_SIZE);
+        printf(s_Write2PHeaderSizeFmt, CARD_HEADER_SIZE);
         PCwrite(fileid, reinterpret_cast<char *>(pHeaderBuf2), CARD_HEADER_SIZE);
-        printf(DAT_800b0428, DataSize2);
+        printf(s_Write2PDataSizeFmt, DataSize2);
         PCwrite(fileid, reinterpret_cast<char *>(pDataBuf2), DataSize2);
     }
     PCclose(fileid);
@@ -726,9 +713,7 @@ int Card_WriteReplayToDisk(EFileType FileType, char *save_name)
  */
 int Card_Load(EFileType FileType, unsigned long *pBuf_, unsigned long *pBuf2_)
 {
-    // These aliases retain MAIN.SYM's $s3/$s6 parameter homes. GCC swaps the
-    // saved-register assignments when the parameters are used directly; the
-    // read-size home likewise determines the target loop's saved-register use.
+    // FIXME(match): register pin — x3 (pBuf $19, pBuf2 $22, ReadSize $18) force MAIN.SYM saved-register homes; unpinned gcc swaps fd/ReadSize and pBuf/FileType (score 32-43); tried: params used directly, all 5 local declaration orders.
     register unsigned long *pBuf asm("$19") = pBuf_;
     register unsigned long *pBuf2 asm("$22") = pBuf2_;
     int fd;
@@ -761,8 +746,7 @@ int Card_Load(EFileType FileType, unsigned long *pBuf_, unsigned long *pBuf2_)
     }
 
 load_failed:
-    // This inherited empty barrier keeps the failure return as its own target
-    // block; direct-return and structured alternatives merge it into load_file.
+    // FIXME(match): asm barrier — stops jump2 cross-jumping the shared `return 1` block forward; target keeps it right after the SyncToGoodState test; tried: direct return, structured forms (see results/fx_card.md).
     asm volatile("");
     return 1;
 
@@ -866,7 +850,7 @@ int Card_LoadReplayFromCD(unsigned long *pBuf, unsigned long *pBuf2, char *file_
     Chk1 = Card_FilePrefix(pBuf)->Video.Checksum;
     if (Chk1 != CalcChecksum(Card_FilePayload(pBuf), CARD_REPLAY_DATA_SIZE))
     {
-        printf(s_Checksum_error_for_1P_in_Card_Lo_800b0454);
+        printf(s_ChecksumError1P);
     }
     if (pBuf2 != 0)
     {
@@ -874,7 +858,7 @@ int Card_LoadReplayFromCD(unsigned long *pBuf, unsigned long *pBuf2, char *file_
         if (Chk1 != CalcChecksum(
                 Card_FilePayload(pBuf2), CARD_REPLAY_DATA_SIZE))
         {
-            printf(s_Checksum_error_for_2P_in_Card_Lo_800b0488);
+            printf(s_ChecksumError2P);
         }
     }
     return 0;
@@ -984,7 +968,7 @@ int Card_ReadFileHeader(char *FName, SCardHead *pHeader)
     int fd;
     int len;
 
-    sprintf(FileName, DAT_800d8ba4, FName);
+    sprintf(FileName, s_CardFileNameFmt, FName);
     i = 0;
     do
     {
@@ -1038,7 +1022,7 @@ int Card_GetDirAndFreeBlocks(int cnct, int slot)
         } while (i < CARD_DIRECTORY_ENTRIES);
     }
 
-    sprintf(key, DAT_800d8bac, cnct, slot);
+    sprintf(key, s_CardWildcardFmt, cnct, slot);
     d = SLOT_DIR;
     if (firstfile(key, d) == d)
     {
@@ -1187,7 +1171,7 @@ done:
 int Card_FormatCard(int cnct, int slot)
 {
     char fs[6];
-    sprintf(fs, DAT_800d8bb8, cnct, slot);
+    sprintf(fs, s_CardDeviceFmt, cnct, slot);
     _clear_event_x();
     int fret = format(fs);
     int ret = _card_event_x();

@@ -1,5 +1,7 @@
 // BMR.cpp -- Reconstructed data-only bmr.obj translation unit.
 // Original: bmr.obj
+//
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 #include "BMR.h"
 

@@ -1,4 +1,9 @@
-// Double-buffered display setup and GPU frame submission.
+// DB.cpp -- Double-buffered display setup and GPU frame submission.
+// Original: DB.CPP
+// Functions: 11
+// Address range: 0x8004999C - 0x8004A288
+//
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 #define DB_BUFFER_LAYOUT
 #define DB_OWNER_DECLARATIONS
@@ -194,22 +199,13 @@ void Db_Vblank(void)
  */
 void Db_WaitRender(void)
 {
-    // This initial cursor must occupy $v0 so the callback wait loop retains
-    // the target load schedule; an ordinary local changes ten instructions.
-    register SDoubleBuffer *buffer asm("$2") = pDoubleBuffer;
-    int renderNow = buffer->RenderNow;
-    pVB = buffer;
-
-    if (renderNow != 0)
+    pVB = pDoubleBuffer;
+    while (pVB->RenderNow != 0)
     {
-        do
-        {
-            Pause(1);
-            buffer = pVB;
-        } while (buffer->RenderNow != 0);
+        Pause(1);
     }
 
-    buffer = pDoubleBuffer;
+    SDoubleBuffer *buffer = pDoubleBuffer;
     if (buffer->Rendering != 0)
     {
         DrawSync(0);
@@ -244,9 +240,7 @@ void Db_Render(void)
     CompactOTagR(pDoubleBuffer->PanelOT, Db_OTSize());
 
     {
-        // The old compiler must keep this array base in $v1 across both
-        // comparisons. Ordinary/reordered locals changed 3-12 instructions,
-        // so only the base retains a legacy allocation annotation.
+        // FIXME(match): register pin — keeps the DoubleBuffer base in $v1 (unpinned: base lands in $a0, 10 insns off); tried: unpinned, 3 declaration orders, if/else and direct DoubleBuffer[i] rewrites.
         register SDoubleBuffer *buffers asm("$3") = DoubleBuffer;
         SDoubleBuffer *nextBuffer = buffers;
         SDoubleBuffer *activeBuffer = pDoubleBuffer;
@@ -416,8 +410,7 @@ void Db_DisplayDraw(void)
 after_bg:
     CompactOTagR(pDoubleBuffer->PanelOT, Db_OTSize());
 
-    // The post-compaction sample must remain in $v1; an ordinary or direct
-    // condition commutes two instructions in the final submission path.
+    // FIXME(match): register pin — keeps the Db_Background reload in $v1 (unpinned: $v0, 2 insns off); tried: unpinned, direct condition, one local reused for both tests.
     register int bg2 asm("$3") = Db_Background;
     if (bg2 != 0)
     {

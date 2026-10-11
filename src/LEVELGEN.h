@@ -1,5 +1,4 @@
-// Hand-maintained per-TU interface for LEVELGEN.cpp.
-// tools/gen_tu_headers.py is retained for bootstrapping and does not reproduce it.
+// LEVELGEN.h -- interface of LEVELGEN.cpp
 #if defined(LEVELGEN_GRID_MAP_LAYOUT_ONLY) && \
     !defined(LEVELGEN_GRID_MAP_LAYOUT)
 #error "LEVELGEN grid/map layout-only mode requires LEVELGEN_GRID_MAP_LAYOUT"
@@ -23,14 +22,6 @@
 /** Number of cells along each side of the shared editor grid. */
 extern "C" int GridSize LEVELGEN_GRID_STATE_DECL_ATTR;
 
-/** Height of one vertical editor-grid slot. */
-extern "C" int _14LevelGenerator_GridCellHeight
-    asm("_14LevelGenerator.GridCellHeight") LEVELGEN_GRID_STATE_DECL_ATTR;
-
-/** Width and depth of one editor-grid cell. */
-extern "C" int _14LevelGenerator_GridCellWidth
-    asm("_14LevelGenerator.GridCellWidth") LEVELGEN_GRID_STATE_DECL_ATTR;
-
 #undef LEVELGEN_GRID_STATE_DECL_ATTR
 
 #endif // LEVELGEN_INC_H
@@ -38,7 +29,7 @@ extern "C" int _14LevelGenerator_GridCellWidth
 
 #ifdef LEVELGEN_DECLARE_OUTPUT_NAME_ADDRESS_VIEW
 /** Absolute address view of LEVELGEN's GP-sized output-region name. */
-extern signed char DAT_800da664[] __attribute__((aligned(4)));
+extern signed char s_EditOutputRegionName[] __attribute__((aligned(4)));
 #undef LEVELGEN_DECLARE_OUTPUT_NAME_ADDRESS_VIEW
 #endif
 
@@ -133,11 +124,6 @@ struct GridCell {
     unsigned char numUsedSlots;
 };
 
-/** Shared 24-by-24 editor model-placement grid owned by LEVELGEN.cpp. */
-extern "C" GridCell _14LevelGenerator_GridTab[24][24]
-    asm("_14LevelGenerator.GridTab")
-    __attribute__((section(".data")));
-
 #endif // LEVELGEN_GRID_CELL_LAYOUT_EMITTED
 
 #if defined(LEVELGEN_OWNER_DECLARATIONS_ACTIVE) && \
@@ -203,24 +189,4 @@ struct MapCell {
 
 #ifdef LEVELGEN_OWNER_DECLARATIONS_ACTIVE
 #undef LEVELGEN_OWNER_DECLARATIONS_ACTIVE
-#endif
-
-/*
- * Re-entrant destructor ABI selector.  The owner retains its local receiver
- * and source name while sharing LevelGenerator's single target ABI label.
- */
-#if defined(LEVELGEN_DECLARE_DESTRUCTOR_ABI)
-#if !defined(LEVELGEN_DESTRUCTOR_NAME) || \
-    !defined(LEVELGEN_DESTRUCTOR_RECEIVER)
-#error "Select the LevelGenerator destructor source name and receiver type"
-#endif
-
-/** Addressable destructor entry used by LEVELGEN's owner-local vtable. */
-void LEVELGEN_DESTRUCTOR_NAME(
-    LEVELGEN_DESTRUCTOR_RECEIVER *generator, int inCharge)
-    asm("_._14LevelGenerator");
-
-#undef LEVELGEN_DESTRUCTOR_RECEIVER
-#undef LEVELGEN_DESTRUCTOR_NAME
-#undef LEVELGEN_DECLARE_DESTRUCTOR_ABI
 #endif

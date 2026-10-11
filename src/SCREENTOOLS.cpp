@@ -3,211 +3,16 @@
 // Functions: 22 reconstructed entries
 // Address range: 0x8008A4D4 - 0x8008AC80
 //
-// Compiled with cc1plus (GCC 2.91.66-psx). Compiler auto-mangles symbol names.
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 
+#define SCREENTOOLS_POLYMORPHIC_LAYOUT
 #include "SCREENTOOLS.h"
-
-// Owner-local screen-element layouts used by SCREENTOOLS.cpp.
-// Field names and offsets from original/MAIN_STRUCTS.h (permitted evidence).
-#include "FONTTOOLS.h"
-#include "globals.h"
-
-struct Slice;
-
-// Image / SlicedImage2 / Sprite2 hierarchy (MAIN_STRUCTS.h): SCREENTOOLS only
-// touches the justification bytes and the leading CClass vtable pointer, but
-// the full layouts are reproduced so sizeof(Sprite2) is the allocation size.
-#include "IMAGEBASE.h"
-
-struct SlicedImage2 : Image {
-    Slice *SliceTab;
-    short W;
-    short H;
-    short SliceW;
-    short SliceH;
-    short SliceCountX;
-    short SliceCountY;
-    /** True after owned pixel buffers have been allocated for the slices. */
-    bool InMemory;
-    /** True after the slice rectangles have been allocated in VRAM. */
-    bool Packed;
-    int BppShift;
-    unsigned short Clut;
-
-    int screenWidth();
-};
-
-struct Sprite2 : SlicedImage2 {
-    /** Allocate sprite storage through the shared CClass arena. */
-    static void *operator new(unsigned int size) throw()
-    {
-        return ::CClass::operator new(size);
-    }
-    /** Build a sprite from a bitmap file. */
-    Sprite2(char *name, int pack, int sliceWidth, int sliceHeight);
-};
-
-struct ScreenElement {
-    void **vtable;
-    int mHomeX;
-    int mHomeY;
-    int mDrawFirst;
-    int mHide;
-    int mDelay;
-    void *mAtHome;
-    int mScreenX;
-    int mScreenY;
-
-    /** Return the current screen-space X coordinate. */
-    int GetScreenX();
-    /** Return the current screen-space Y coordinate. */
-    int GetScreenY();
-    /** Advance this element toward its home position. */
-    void update();
-    /** Move the screen-space X coordinate directly to its home position. */
-    void SnapToHomeX();
-    /** Return this element's drawable width. */
-    int width();
-    /** Notify this element that its displayed content changed. */
-    void refresh();
-    ~ScreenElement();
-    /** Releases screen-element storage through the original CClass allocator. */
-    static void operator delete(void *p) { ::CClass::operator delete(p); }
-};
-
-struct ScreenElementList : ScreenElement {
-    ScreenElement *mpItem[16];
-    int mCount;
-
-    /** Add one element to the first unused list slot. */
-    void addItem(ScreenElement *element);
-    /** Update every active element in the list. */
-    void update();
-    /** Draw every active element at the supplied parent offset. */
-    void draw(int x, int y);
-    ~ScreenElementList();
-    /** Releases screen-list storage through the original CClass allocator. */
-    static void operator delete(void *p) { ::CClass::operator delete(p); }
-};
-
-struct TextScreenElement : ScreenElement {
-    char *mpString;
-    Font *mpFont;
-
-    /** Replace the owned display string with a copy of the supplied text. */
-    void setString(char *pString);
-    /** Draw the owned string at the supplied parent offset. */
-    void draw(int x, int y);
-    /** Return the rendered width of the owned string. */
-    int width();
-    ~TextScreenElement();
-    /** Releases text-element storage through the original CClass allocator. */
-    static void operator delete(void *p) { ::CClass::operator delete(p); }
-};
-
-struct SpriteScreenElement : ScreenElement {
-    Sprite2 *mSprite;
-
-    /** Draw the owned sprite at the supplied parent offset. */
-    void draw(int x, int y);
-    /** Return the on-screen width of the owned sprite. */
-    int width();
-    ~SpriteScreenElement();
-    /** Releases sprite-element storage through the original CClass allocator. */
-    static void operator delete(void *p) { ::CClass::operator delete(p); }
-};
-
-typedef char screentools_image_size_must_be_28[(sizeof(Image) == 28) ? 1 : -1];
-typedef char screentools_sliced_image2_size_must_be_60[(sizeof(SlicedImage2) == 60) ? 1 : -1];
-typedef char screentools_sprite2_size_must_be_60[(sizeof(Sprite2) == 60) ? 1 : -1];
-typedef char screentools_font_size_must_be_80[(sizeof(Font) == 80) ? 1 : -1];
-typedef char screen_element_size_must_be_36[(sizeof(ScreenElement) == 36) ? 1 : -1];
-typedef char screen_element_list_size_must_be_104[(sizeof(ScreenElementList) == 104) ? 1 : -1];
-typedef char text_screen_element_size_must_be_44[(sizeof(TextScreenElement) == 44) ? 1 : -1];
-typedef char sprite_screen_element_size_must_be_40[(sizeof(SpriteScreenElement) == 40) ? 1 : -1];
-
 #include "MEM.h"
 #include "PUREVIRTUAL.h"
 #include <STRINGS.H>
 
-// === This TU's exported functions (typed views of the mangled symbols) ===
-#define SCREENTOOLS_DECLARE_SCREEN_ELEMENT_CONSTRUCTOR
-#define SCREENTOOLS_DECLARE_SCREEN_ELEMENT_LIST_CONSTRUCTOR
-#define SCREENTOOLS_DECLARE_TEXT_SCREEN_ELEMENT_CONSTRUCTOR
-#define SCREENTOOLS_DECLARE_SPRITE_SCREEN_ELEMENT_CONSTRUCTOR
-#include "SCREENTOOLS.h"
-#define SCREENTOOLS_DECLARE_SCREEN_ELEMENT_DESTRUCTOR
-#include "SCREENTOOLS.h"
-#define SCREENTOOLS_DECLARE_SCREEN_ELEMENT_LIST_DESTRUCTOR
-#include "SCREENTOOLS.h"
-#define SCREENTOOLS_DECLARE_TEXT_SCREEN_ELEMENT_DESTRUCTOR
-#include "SCREENTOOLS.h"
-#define SCREENTOOLS_DECLARE_SPRITE_SCREEN_ELEMENT_DESTRUCTOR
-#include "SCREENTOOLS.h"
-
-/**
- * Screen-element dispatch tables in their original read-only section order.
- *
- * Each table has the two GCC 2.x header words and five virtual slots.
- * Eight-byte alignment contributes one zero padding word between tables.
- */
-int __vt_17ScreenElementList[7]
-    __attribute__((section(".rdata"), aligned(8))) = {
-        0,
-        0,
-        (int)&ScreenElementList_DestroyAbi,
-        (int)(void (*)(ScreenElementList *))&ScreenElementList::update,
-        (int)(void (*)(ScreenElementList *, int, int))&ScreenElementList::draw,
-        (int)(int (*)(ScreenElement *))&ScreenElement::width,
-        (int)(void (*)(ScreenElement *))&ScreenElement::refresh,
-};
-
-int __vt_19SpriteScreenElement[7]
-    __attribute__((section(".rdata"), aligned(8))) = {
-        0,
-        0,
-        (int)&SpriteScreenElement_destructor_slot,
-        (int)(void (*)(ScreenElement *))&ScreenElement::update,
-        (int)(void (*)(SpriteScreenElement *, int, int))&SpriteScreenElement::draw,
-        (int)(int (*)(SpriteScreenElement *))&SpriteScreenElement::width,
-        (int)(void (*)(ScreenElement *))&ScreenElement::refresh,
-};
-
-int __vt_17TextScreenElement[7]
-    __attribute__((section(".rdata"), aligned(8))) = {
-        0,
-        0,
-        (int)&TextScreenElement_DestroyAbi,
-        (int)(void (*)(ScreenElement *))&ScreenElement::update,
-        (int)(void (*)(TextScreenElement *, int, int))&TextScreenElement::draw,
-        (int)(int (*)(TextScreenElement *))&TextScreenElement::width,
-        (int)(void (*)(ScreenElement *))&ScreenElement::refresh,
-};
-
-int __vt_13ScreenElement[7]
-    __attribute__((section(".rdata"), aligned(8))) = {
-        0,
-        0,
-        (int)&ScreenElement_DestroyAbi,
-        (int)(void (*)(ScreenElement *))&ScreenElement::update,
-        (int)&__pure_virtual,
-        (int)(int (*)(ScreenElement *))&ScreenElement::width,
-        (int)(void (*)(ScreenElement *))&ScreenElement::refresh,
-};
-
-// GCC 2.x emits a private copy of `CClass::~CClass` last in every owner that
-// derives from CClass.  `MAIN.SYM` records 25 such `_._6CClass` copies and names
-// no base vtable, so both are file-local here.  ScreenElement's *public* vtable
-// lives in `.rdata` above; only this private base table is small-data.
-extern "C" {
-static void __DOT__6CClass_8008AC50(CClass *_this, int flags);
-}
-
-static int __vt_base_13ScreenElement
-    __attribute__((section(".sdata"), aligned(8))) = 0;
-static int ScreenTools_BaseVTableIndex = 0;
-static int ScreenTools_BaseVTableDtor = (int)&__DOT__6CClass_8008AC50;
+typedef char screentools_font_size_must_be_80[(sizeof(Font) == 80) ? 1 : -1];
 
 // === Function implementations (address order) ===
 
@@ -225,25 +30,22 @@ static int ScreenTools_BaseVTableDtor = (int)&__DOT__6CClass_8008AC50;
  * @param screenY  Screen-space Y coordinate, or -1 to start at home.
  * @return `this` pointer (GCC 2.x ctor convention).
  */
-ScreenElement *__13ScreenElementiiii(ScreenElement *self, int homeX, int homeY,
-                                     int screenX, int screenY) {
-    self->vtable = (void **)__vt_13ScreenElement;
-    self->mHomeX = homeX;
-    self->mHomeY = homeY;
+ScreenElement::ScreenElement(int homeX, int homeY, int screenX, int screenY) {
+    mHomeX = homeX;
+    mHomeY = homeY;
     if (screenX == -1) {
-        self->mScreenX = homeX;
+        mScreenX = homeX;
     } else {
-        self->mScreenX = screenX;
+        mScreenX = screenX;
     }
     if (screenY == -1) {
-        self->mScreenY = self->mHomeY;
+        mScreenY = mHomeY;
     } else {
-        self->mScreenY = screenY;
+        mScreenY = screenY;
     }
-    self->mDrawFirst = 0;
-    self->mHide = 0;
-    self->mDelay = 0;
-    return self;
+    mDrawFirst = 0;
+    mHide = 0;
+    mDelay = 0;
 }
 
 
@@ -255,7 +57,6 @@ ScreenElement *__13ScreenElementiiii(ScreenElement *self, int homeX, int homeY,
  *
  */
 ScreenElement::~ScreenElement() {
-    vtable = (void **)&__vt_base_13ScreenElement;
 }
 
 
@@ -393,19 +194,17 @@ int ScreenElement::GetScreenY() {
  * @param screenY  Screen-space Y coordinate.
  * @return `this` pointer (GCC 2.x ctor convention).
  */
-ScreenElementList *__17ScreenElementListiiii(
-    ScreenElementList *self, int homeX, int homeY, int screenX, int screenY) {
-    __13ScreenElementiiii(self, homeX, homeY, screenX, screenY);
+ScreenElementList::ScreenElementList(int homeX, int homeY, int screenX,
+                                     int screenY)
+    : ScreenElement(homeX, homeY, screenX, screenY) {
     int i = 0;
-    ScreenElement **ptr = self->mpItem;
-    self->vtable = (void **)__vt_17ScreenElementList;
+    ScreenElement **ptr = mpItem;
     do {
         *ptr = 0;
         i++;
         ptr++;
     } while (i < 16);
-    self->mCount = 0;
-    return self;
+    mCount = 0;
 }
 
 
@@ -418,17 +217,10 @@ ScreenElementList *__17ScreenElementListiiii(
  *
  */
 ScreenElementList::~ScreenElementList() {
-    typedef void (*DtorFunc)(ScreenElement *, int);
-    vtable = (void **)__vt_17ScreenElementList;
     int i = 0;
     ScreenElement **ptr = mpItem;
     do {
-        ScreenElement *item = *ptr;
-        if (item != 0) {
-            int *itemVTable = (int *)item->vtable;
-            DtorFunc fn = (DtorFunc)itemVTable[2];
-            fn(item, 3);
-        }
+        delete *ptr;
         i++;
         ptr++;
     } while (i < 16);
@@ -472,9 +264,7 @@ void ScreenElementList::update() {
         int i = 0;
         ScreenElement **ptr = mpItem;
         do {
-            ScreenElement *item = *ptr;
-            int *itemVTable = (int *)item->vtable;
-            ((void (*)(ScreenElement *))itemVTable[3])(item);
+            (*ptr)->update();
             ptr++;
             count = mCount;
             i++;
@@ -503,10 +293,7 @@ void ScreenElementList::draw(int x, int y) {
     do {
         ScreenElement *item = *ptr;
         ptr++;
-        int sx = mScreenX + x;
-        int sy = mScreenY + y;
-        int *itemVTable = (int *)item->vtable;
-        ((void (*)(ScreenElement *, int, int))itemVTable[4])(item, sx, sy);
+        item->draw(mScreenX + x, mScreenY + y);
         count = mCount;
         i++;
     } while (i < count);
@@ -529,17 +316,14 @@ void ScreenElementList::draw(int x, int y) {
  * @param screenY  Screen-space Y coordinate.
  * @return `this` pointer (GCC 2.x ctor convention).
  */
-TextScreenElement *__17TextScreenElementPcP4Fontiiii(
-    TextScreenElement *self, char *pString, Font *pFont, int homeX, int homeY,
-    int screenX, int screenY) {
-    __13ScreenElementiiii(self, homeX, homeY, screenX, screenY);
-    self->vtable = (void **)__vt_17TextScreenElement;
+TextScreenElement::TextScreenElement(char *pString, Font *pFont, int homeX,
+                                     int homeY, int screenX, int screenY)
+    : ScreenElement(homeX, homeY, screenX, screenY) {
     int len = strlen(pString);
     char *buf = (char *)Mem_New(len + 1, 0, 1);
-    self->mpString = buf;
+    mpString = buf;
     strcpy(buf, pString);
-    self->mpFont = pFont;
-    return self;
+    mpFont = pFont;
 }
 
 
@@ -551,7 +335,6 @@ TextScreenElement *__17TextScreenElementPcP4Fontiiii(
  *
  */
 TextScreenElement::~TextScreenElement() {
-    vtable = (void **)__vt_17TextScreenElement;
     Mem_Delete(mpString);
 }
 
@@ -585,15 +368,9 @@ void TextScreenElement::setString(char *pString) {
  * @param y  Y offset added to the element's screen position.
  */
 void TextScreenElement::draw(int x, int y) {
-    register int ty asm("$9") = y;
     if (mDelay > 0) return;
     if (mHide != 0) return;
-    Font *font = mpFont;
-    int scale = mDrawFirst;
-    int sx = mScreenX + x;
-    int sy = mScreenY + ty;
-    char *str = mpString;
-    FontDispatch(font)->draw(font, sx, sy, str, scale);
+    mpFont->draw(mScreenX + x, mScreenY + y, mpString, mDrawFirst);
 }
 
 
@@ -629,16 +406,13 @@ int TextScreenElement::width() {
  * @param justX  Horizontal justification byte for the sprite image.
  * @return `this` pointer (GCC 2.x ctor convention).
  */
-SpriteScreenElement *__19SpriteScreenElementPciiiiii(
-    SpriteScreenElement *self, char *pFileName, int homeX, int homeY,
-    int screenX, int screenY, int justY, int justX) {
-    __13ScreenElementiiii(self, homeX, homeY, screenX, screenY);
-    self->vtable = (void **)__vt_19SpriteScreenElement;
-    Sprite2 *sprite = new Sprite2(pFileName, 1, 64, 64);
-    self->mSprite = sprite;
-    self->mSprite->JustY = (char)justY;
-    self->mSprite->JustX = (char)justX;
-    return self;
+SpriteScreenElement::SpriteScreenElement(char *pFileName, int homeX, int homeY,
+                                         int screenX, int screenY, int justY,
+                                         int justX)
+    : ScreenElement(homeX, homeY, screenX, screenY) {
+    mSprite = new Sprite2(pFileName, 1, 64, 64);
+    mSprite->JustY = (char)justY;
+    mSprite->JustX = (char)justX;
 }
 
 
@@ -651,14 +425,7 @@ SpriteScreenElement *__19SpriteScreenElementPciiiiii(
  *
  */
 SpriteScreenElement::~SpriteScreenElement() {
-    typedef void (*DtorFunc)(Sprite2 *, int);
-    vtable = (void **)__vt_19SpriteScreenElement;
-    Sprite2 *sprite = mSprite;
-    if (sprite != 0) {
-        int *spriteVTable = sprite->CClass.vtable;
-        DtorFunc fn = (DtorFunc)spriteVTable[2];
-        fn(sprite, 3);
-    }
+    delete mSprite;
 }
 
 
@@ -675,12 +442,7 @@ SpriteScreenElement::~SpriteScreenElement() {
 void SpriteScreenElement::draw(int x, int y) {
     if (mDelay > 0) return;
     if (mHide != 0) return;
-    Sprite2 *sprite = mSprite;
-    int sx = mScreenX + x;
-    int sy = mScreenY + y;
-    int scale = mDrawFirst;
-    int *spriteVTable = sprite->CClass.vtable;
-    ((void (*)(Sprite2 *, int, int, int))spriteVTable[5])(sprite, sx, sy, scale);
+    mSprite->draw(mScreenX + x, mScreenY + y, mDrawFirst);
 }
 
 
@@ -695,14 +457,5 @@ void SpriteScreenElement::draw(int x, int y) {
  */
 // Shared SpriteScreenElement member function
 int SpriteScreenElement::width() {
-    return mSprite->SlicedImage2::screenWidth();
-}
-
-// GCC emitted this private `CClass::~CClass` copy last in the owner's text,
-// so it stays at the end of the translation unit.
-static void __DOT__6CClass_8008AC50(CClass *_this, int flags) {
-    _this->vtable = (int *)&__vt_base_13ScreenElement;
-    if (flags & 1) {
-        CClass::operator delete(_this);
-    }
+    return mSprite->screenWidth();
 }

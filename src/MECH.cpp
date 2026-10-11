@@ -3,7 +3,7 @@
 // Functions: 26 (all strict-exact)
 // Address range: 0x800428F4 - 0x800440E8
 //
-// Compiled with cc1plus (GCC 2.91.66-psx). Compiler auto-mangles symbol names.
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 // Owner-local declarations attributed to MECH.cpp by MAIN.SYM.
 
@@ -29,6 +29,11 @@ inline void *operator new(unsigned int, void *address)
 {
     return address;
 }
+
+#define CCLASS_POLY_ITEM_FAMILY
+#include "CCLASS_POLY.h"
+#define FONTTOOLS_POLYMORPHIC_LAYOUT
+#define TEXTEFFECT_POLYMORPHIC_LAYOUT
 
 struct CBody;
 struct CBodyOwner;
@@ -70,19 +75,6 @@ struct SHook;
 #include "M3DUTILS.h"
 #include "M3DZONE.h"
 #include "globals.h"
-#include "CITEM.h"
-// Owner-local CBruce slices for MECH.cpp.
-// These stay local until the field names and offsets are proven across
-// multiple owner TUs.
-
-#define OB_LAYOUT_ONLY
-#define OB_OWNER_LAYOUT
-#include "OB.h"
-#include "CBODY.h"
-#include "CPOWERUP.h"
-#include "POWERUP.h"
-#undef OB_OWNER_LAYOUT
-#undef OB_LAYOUT_ONLY
 #include "PAD.h"
 #include "FONTTOOLS.h"
 #include "TEXTEFFECTS.h"
@@ -106,275 +98,26 @@ struct SFaceLightingMech {
  * sub-objects destroyed by CBruce::~CBruce (layout from MAIN_STRUCTS.h;
  * the falling-text sub-objects use their shared target-proven layout).
  */
-struct CPanelDataMech {
+#define BIT_DUST_MANAGER_LAYOUT
+#define BIT_BLOOD_MANAGER_LAYOUT
+#include "BIT.h"
+#undef BIT_BLOOD_MANAGER_LAYOUT
+#undef BIT_DUST_MANAGER_LAYOUT
+
+struct CBruce;
+struct CPanelData {
+    /** Construct the panel state (owned by PANEL.cpp). */
+    CPanelData(CBruce *player);
+
     u8 _padToTimerFont[356];
-    FontStorage mTimerFont;                           // 0x164
-    FontStorage mTrickFont;                           // 0x1b4
-    FontStorage mScoreFont;                           // 0x204
+    Font mTimerFont;                                  // 0x164
+    Font mTrickFont;                                  // 0x1b4
+    Font mScoreFont;                                  // 0x204
     FallingTextEffect mFallingTextEffect;             // 0x254
     TrickTextEffect mTrickTextEffect;                 // 0x374 (TrickTextEffect)
     TextEffect *mpTextEffect;                         // 0x38c
     FallingTextEffect mOutOfBoundsText;               // 0x390
     u8 _opaqueTail[2276 - 1200];
-};
-
-/**
- * Complete-size CBruce overlay exposing only fields owned by MECH.cpp.
- * Offsets are from original/MAIN_STRUCTS.h.
- */
-struct CBruce {
-    struct CSuperOwner CSuper;                        // 0x000
-    struct CPanelDataMech mPanelData;                 // 0x190
-    u8 _padToDust[3248 - 2676];
-    u8 mDust[64];                                     // 0xcb0 (Dust)
-    u8 mBlood[92];                                    // 0xcf0 (Blood)
-    u8 _padToSkaterType[3496 - 3404];
-    int mSkaterType;                                  // 0xda8
-    u8 _padToRotationMatrix[3728 - 3500];
-    MATRIX mRotationMatrix;                           // 0xe90
-    u8 _padToSFXGrind[4164 - 3760];
-    u32 mSFXGrind;                                    // 0x1044
-    u32 mSFXGround;                                   // 0x1048
-    u8 _padToPhysicsState[4204 - 4172];
-    int mPhysicsState;                                // 0x106c
-    u8 _padToFront[4256 - 4208];
-    struct CVectorOwner mFront;                       // 0x10a0
-    struct CVectorOwner mRight;                       // 0x10ac
-    struct CVectorOwner mUp;                          // 0x10b8
-    u8 _padToGlow[4380 - 4292];
-    u8 mGlowR;                                        // 0x111c
-    u8 mGlowG;                                        // 0x111d
-    u8 mGlowB;                                        // 0x111e
-    u8 mTargetGlowR;                                  // 0x111f
-    u8 mTargetGlowG;                                  // 0x1120
-    u8 mTargetGlowB;                                  // 0x1121
-    u8 mGlowSpeed;                                    // 0x1122
-    u8 mGlowDownSpeed;                                // 0x1123
-    int mBrightness;                                  // 0x1124
-    u8 _opaqueTail[5228 - 4392];
-
-    /** Refresh the orientation basis vectors from the skater matrix. */
-    void FRUVectorsFromRotMatrix();
-    /** Add one trick occurrence to the skater's history. */
-    int History_Add(char *name, int spinAndStance);
-    /** Clear this skater's recent-event history. */
-    void History_Reset();
-    /** Find one trick occurrence in the skater's history. */
-    int History_Find(char *name, int spinAndStance);
-    /** Initialize the inherited item and load this skater's hook packet. */
-    void InitItem(char *name);
-    /** Fill one displayed-stat slot for this skater. */
-    void GetStats(int skaterSlot);
-    /** Apply dynamic lighting from one collision face. */
-    void CalculateDynamicLighting(unsigned int *face, Item *item);
-    /** Flip the skater's orientation to follow current velocity. */
-    int FlipToVelocity();
-    /** Emit one blood burst from a skater body hook. */
-    void BloodSplat(int bodyPart, int maxBloodBits);
-    /** Hide this skater's board and wheel subobjects. */
-    void BoardOff();
-    /** Show this skater's board and wheel subobjects. */
-    void BoardOn();
-    /** Advance all per-frame skater physics state. */
-    void DoPhysics();
-    /** Cast a downward ray and refresh this skater's shadow. */
-    void DoShadowCheck();
-    /** Handle a collision with another body. */
-    void CollideWithObject(CBody *body);
-    /** Cache the current analogue-stick input. */
-    void ReadAnalogueInput();
-    /** Read one model-hook position in world space. */
-    void GetHookPosition(CVector &position, u8 hook);
-    /** Update water contact and emit periodic surface ripples. */
-    void HandleWater();
-    /** Advance the glow color toward its current target. */
-    void GlowUpdate();
-    /** Set up lighting for this skater. */
-    void DoLightingSetup();
-    /** Mark this skater as dead. */
-    void Die();
-    /** Release owner-specific skater resources. */
-    void DeleteStuff();
-    /** Handle a hit against this skater. */
-    int Hit(int Damage, const CVector &knock, int whathit);
-    /** Run this skater's per-frame gameplay update. */
-    void AI();
-};
-
-/** CBruce vtable prefix through the dynamic-lighting setup callback. */
-struct CBruceVtableMech {
-    void *reserved[6];
-    void (*DoLightingSetup)(struct CBruce *);
-};
-
-/**
- * CSpark overlay: velocity inherited from CBit plus the spark's floor
- * plane.  sizeof(CSpark) == 0x5C is the allocation size passed to
- * CBit's operator new by BloodSplat.
- */
-struct CSpark {
-    /** Construct one transient spark. */
-    CSpark(CVector &position, int velocity, int gravity, int life);
-
-    u8 _padToVel[36];
-    struct CVectorOwner mVel;                         // 0x24 (CBit.mVel)
-    u8 _padToFloorY[88 - 48];
-    int mFloorY;                                      // 0x58
-};
-
-/** One unlockable board and its five stat bonuses. */
-struct SBoardMech {
-    char *BoardTexture;
-    char *BoardName;
-    char TapesToUnlock;
-    u8 _padToOllie[3];
-    union { int ollie; u8 ollieByte; };
-    union { int speed; u8 speedByte; };
-    union { int air; u8 airByte; };
-    union { int balance; u8 balanceByte; };
-    union { int turning; u8 turningByte; };
-};
-
-/** Complete skater-stat record used by MECH's board, physics, and UI paths. */
-struct SStatsMech {
-    char *PSXName;
-    char *PSXName2;
-    char *FrontName;
-    int ComboID;                                      // 0x00c
-    u8 Board;                                         // 0x010
-    u8 Wheel1;                                        // 0x011
-    u8 Wheel2;                                        // 0x012
-    u8 Head;
-    char Neck;
-    u8 _padToToughness[3];
-    int Toughness;
-    int Speed;
-    int Air;
-    int Balance;
-    int Street;
-    char *Name;
-    u32 BoardChecksum;
-    u32 WheelChecksum;
-    u32 TruckChecksum;
-    SBoardMech Boards[8];
-    u8 Ability[12];
-    char *PortraitName;
-    char **BioText;
-    int Available;
-    int FrontEndOrientation;
-};
-
-#include "SCHARACTERPROGRESS.h"
-
-/** SCareer prefix through the character-progress table used by MECH. */
-struct SCareerMech {
-    int Version;
-    int MaxTapes;
-    SCharacterProgress CharacterProgress[14];
-};
-
-/** Board-visibility slice exposing the skater type and inherited display mask. */
-struct CBruceBoardSlice {
-    struct CSuperOwner CSuper;
-    u8 pad_to_skaterType[3096];
-    int mSkaterType;
-};
-
-/** Controller-input slice exposing the pad and cached analogue axes. */
-struct CBruceInputSlice {
-    u8 pad_to_pad[3508];
-    struct SControl *mPad;
-    u8 pad_to_analogue[892];
-    u8 mAnalogue;
-    char mAX;
-    char mAY;
-};
-
-/** Fixed-capacity checksum history owned by MECH.cpp. */
-struct CBruceHistorySlice {
-    u8 pad_to_historyPos[4424];
-    int mHistoryPos;
-    struct SHistory mHistory[100];
-};
-
-/** Dynamic glow state and inherited ellipsoid-lighting fields. */
-struct CBruceGlowSlice {
-    struct CSuperOwner CSuper;
-    u8 pad_to_glow[3980];
-    u8 mGlowR;
-    u8 mGlowG;
-    u8 mGlowB;
-    u8 mTargetGlowR;
-    u8 mTargetGlowG;
-    u8 mTargetGlowB;
-    u8 mGlowSpeed;
-    u8 mGlowDownSpeed;
-
-    /** Load the aligned four-byte glow state used by the settled test. */
-    u32 PackedGlowWord() const {
-        return *(const u32 *)&mGlowR;
-    }
-
-    /** Load the adjacent target green/blue pair used by the settled test. */
-    u16 PackedTargetGlowGB() const {
-        return *(const u16 *)&mTargetGlowG;
-    }
-};
-
-/** Video recorder state needed to choose live, record, or playback input. */
-struct SVideoInfo {
-    int VideoMode;
-    u8 _opaque[188];
-};
-
-/** Inherited skater fields read or updated by the per-frame MECH AI pass. */
-struct CBruceAIBaseSlice {
-    u8 _padToPosition[4];
-    struct CVectorOwner Position;                    // 0x004
-    u8 _padToRGB[0x20 - 0x10];
-    u32 RGB;                                         // 0x020
-    u8 _padToShadowX[0x90 - 0x24];
-    int ShadowX;                                     // 0x090
-    u8 _padToShadowZ[0x98 - 0x94];
-    int ShadowZ;                                     // 0x098
-    u8 _padToAnimFlags[0xB8 - 0x9C];
-    u16 AnimFlags;                                   // 0x0b8
-    s16 GroundAngle;                                 // 0x0ba
-    u8 _padToOldPosition[0xC4 - 0xBC];
-    struct CVectorOwner OldPosition;                 // 0x0c4
-    u8 _padToEnd[0x190 - 0xD0];
-};
-
-/**
- * Per-frame AI view of CBruce, naming the small set of inherited fields used
- * by this owner while keeping the remainder opaque.
- */
-struct CBruceAISlice {
-    struct {
-        struct CBruceAIBaseSlice Base;
-    } Inherited;
-    u8 _padToBoardStats[0xA78 - 0x190];
-    struct BoardStats *mpBoardStats;                  // 0x0a78
-    u8 _padToSkaterType[0xDA8 - 0xA7C];
-    int mSkaterType;                                  // 0x0da8
-    int mIndex;                                       // 0x0dac
-    int mPlayTime;                                    // 0x0db0
-    u8 _padToRecentEvent1[0xE68 - 0xDB4];
-    int mRecentEvent1;                                // 0x0e68
-    int mRecentEvent2;                                // 0x0e6c
-    u8 _padToResponseTimer[0xEDC - 0xE70];
-    int mResponseTimer;                               // 0x0edc
-    u8 _padToMagicTime[0xF88 - 0xEE0];
-    int mMagicTime;                                   // 0x0f88
-    u8 _padToInputDelay[0x1014 - 0xF8C];
-    u8 mInputDelay;                                   // 0x1014
-    u8 _padToShadowY[0x1034 - 0x1015];
-    int mShadowY;                                     // 0x1034
-    u8 _padToPhysicsState[0x106C - 0x1038];
-    int mPhysicsState;                                // 0x106c
-    u8 _padToGroundCounter[0x1144 - 0x1070];
-    u16 mGroundCounter;                               // 0x1144
-    u8 _opaqueTail[5228 - 0x1146];
 };
 
 /** Constructor-local form of the inline three-component game vector. */
@@ -392,104 +135,186 @@ struct CVectorMechCtor {
 };
 
 #include "SLIGHT.h"
+#include "CPOWERUP.h"
+#include "POWERUP.h"
 
 /**
- * Constructor-owned CBruce layout.  Only fields initialized by MECH.cpp are
- * named; the untouched portions stay opaque until their owning methods prove
- * them independently.
+ * The skater: a CSuper with the complete 5228-byte gameplay state.  Slot
+ * overrides follow the CBody table: Die, AI, DoLightingSetup, Hit and
+ * DeleteStuff; EveryFrame is inherited.
  */
-struct CBruceCtorSlice {
-    struct {
-        struct CSuperOwner CSuper;
-    } Inherited;                                      // 0x000
-    struct CPanelDataMech mPanelData;                 // 0x190
-    void *mpCamera;                                   // 0xa74
-    struct BoardStats *mpBoardStats;                  // 0xa78
-    u8 _padToTrickGravity[2724 - 2684];
-    s16 mTrickGravity;                                // 0xaa4
-    u8 _padToDust[3248 - 2726];
-    u8 mDust[64];                                     // 0xcb0
-    u8 mBlood[92];                                    // 0xcf0
-    s16 mFrozen;                                      // 0xd4c
-    u8 _padToDoingATrick[3408 - 3406];
-    int mDoingATrick;                                 // 0xd50
-    int mCanStartNextTrick;                           // 0xd54
-    u8 _padToSkaterType[3496 - 3416];
-    int mSkaterType;                                  // 0xda8
-    int mIndex;                                       // 0xdac
-    int mPlayTime;                                    // 0xdb0
-    struct SControl *mPad;                            // 0xdb4
-    u8 _padToIsOnTaggedPoly[3568 - 3512];
-    int mIsOnTaggedPoly;                              // 0xdf0
-    int mStickToInvisible;                            // 0xdf4
-    struct CVectorOwner mLastVel;                     // 0xdf8
-    int mMaxKickSpeed;                                // 0xe04
-    int mSpeedBoost;                                  // 0xe08
-    int mCess;                                        // 0xe0c
-    int mManual;                                      // 0xe10
-    int mManIsCrouched;                               // 0xe14
-    int mManIsJumping;                                // 0xe18
-    int mJumpPending;                                 // 0xe1c
-    int mAirTime;                                     // 0xe20
-    int mJumpStrength;                                // 0xe24
-    int mLastJumpStrength;                            // 0xe28
-    int mApplyJumpForce;                              // 0xe2c
-    u8 _padToOldRotationMatrix[3696 - 3632];
-    MATRIX mOldRotationMatrix;                        // 0xe70
-    MATRIX mRotationMatrix;                           // 0xe90
-    int mDoingSharpTurn;                              // 0xeb0
-    int mTurning;                                     // 0xeb4
-    int mTapTurn;                                     // 0xeb8
-    int mPitchAngle;                                  // 0xebc
-    int mNumGrinds;                                   // 0xec0
-    int mRailType;                                    // 0xec4
-    int mOnRail;                                      // 0xec8
-    int mStickToRail;                                 // 0xecc
-    u8 _padToDontStickTimer[3832 - 3792];
-    int mDontStickTimer;                              // 0xef8
-    int mSameRailTimer;                               // 0xefc
-    int mDontStickRail;                               // 0xf00
-    u8 _padToKickLockout[3936 - 3844];
-    int mKickLockout;                                 // 0xf60
-    int mJumpSpeed;                                   // 0xf64
-    int mJumpFrame;                                   // 0xf68
-    int mWallrideTime;                                // 0xf6c
-    int mHandPlantTweaked;                            // 0xf70
-    int mBailState;                                   // 0xf74
-    int mLimitBailVel;                                // 0xf78
-    int mInBail;                                      // 0xf7c
-    int mHeadHit;                                     // 0xf80
-    int mMagicPoints;                                 // 0xf84
-    int mMagicTime;                                   // 0xf88
-    u8 _padToComboCounter[4136 - 3980];
-    int mComboCounter;                                // 0x1028
-    u8 _padToSFXGrind[4164 - 4140];
-    u32 mSFXGrind;                                    // 0x1044
-    u32 mSFXGround;                                   // 0x1048
-    u32 mSFXAir;                                      // 0x104c
-    u32 mSFXPitch;                                    // 0x1050
-    u32 mSFXVol;                                      // 0x1054
-    int mTruckSqueak;                                 // 0x1058
-    int mFootSound;                                   // 0x105c
-    int mFootSFX;                                     // 0x1060
-    int mTerrain;                                     // 0x1064
-    int mTerrainSFX;                                  // 0x1068
-    int mPhysicsState;                                // 0x106c
-    int mOldPhysicsState;                             // 0x1070
-    MATRIX mTempRotationMatrix;                       // 0x1074
-    struct CVectorOwner mTempPos;                     // 0x1094
-    struct CVectorOwner mFront;                       // 0x10a0
-    struct CVectorOwner mRight;                       // 0x10ac
-    struct CVectorOwner mUp;                          // 0x10b8
-    struct CVectorMechCtor mLastFallLine;             // 0x10c4
-    int mFallLineAdjustment;                          // 0x10d0
-    SVECTOR mLastPolyNormal;                          // 0x10d4
-    int mSameNormal;                                  // 0x10dc
-    VECTOR mOldNormal;                                // 0x10e0
-    int mLeanAngle;                                   // 0x10f0
-    int mAnimLeanAngle;                               // 0x10f4
-    u8 _opaqueTail[5228 - 4344];
+struct CBruce : CSuper {
+    CPanelData mPanelData;  // 0x190
+    void *mpCamera;  // 0xa74
+    struct BoardStats *mpBoardStats;  // 0xa78
+    u8 _pada7c[40];
+    s16 mTrickGravity;  // 0xaa4
+    u8 _padaa6[522];
+    Dust mDust;  // 0xcb0
+    Blood mBlood;  // 0xcf0
+    s16 mFrozen;  // 0xd4c
+    u8 _padd4e[2];
+    int mDoingATrick;  // 0xd50
+    int mCanStartNextTrick;  // 0xd54
+    u8 _padd58[80];
+    int mSkaterType;  // 0xda8
+    int mIndex;  // 0xdac
+    int mPlayTime;  // 0xdb0
+    struct SControl *mPad;  // 0xdb4
+    u8 _paddb8[56];
+    int mIsOnTaggedPoly;  // 0xdf0
+    int mStickToInvisible;  // 0xdf4
+    CVector mLastVel;  // 0xdf8
+    int mMaxKickSpeed;  // 0xe04
+    int mSpeedBoost;  // 0xe08
+    int mCess;  // 0xe0c
+    int mManual;  // 0xe10
+    int mManIsCrouched;  // 0xe14
+    int mManIsJumping;  // 0xe18
+    int mJumpPending;  // 0xe1c
+    int mAirTime;  // 0xe20
+    int mJumpStrength;  // 0xe24
+    int mLastJumpStrength;  // 0xe28
+    int mApplyJumpForce;  // 0xe2c
+    u8 _pade30[56];
+    int mRecentEvent1;  // 0xe68
+    int mRecentEvent2;  // 0xe6c
+    MATRIX mOldRotationMatrix;  // 0xe70
+    MATRIX mRotationMatrix;  // 0xe90
+    int mDoingSharpTurn;  // 0xeb0
+    int mTurning;  // 0xeb4
+    int mTapTurn;  // 0xeb8
+    int mPitchAngle;  // 0xebc
+    int mNumGrinds;  // 0xec0
+    int mRailType;  // 0xec4
+    int mOnRail;  // 0xec8
+    int mStickToRail;  // 0xecc
+    u8 _paded0[12];
+    int mResponseTimer;  // 0xedc
+    u8 _padee0[24];
+    int mDontStickTimer;  // 0xef8
+    int mSameRailTimer;  // 0xefc
+    int mDontStickRail;  // 0xf00
+    u8 _padf04[92];
+    int mKickLockout;  // 0xf60
+    int mJumpSpeed;  // 0xf64
+    int mJumpFrame;  // 0xf68
+    int mWallrideTime;  // 0xf6c
+    int mHandPlantTweaked;  // 0xf70
+    int mBailState;  // 0xf74
+    int mLimitBailVel;  // 0xf78
+    int mInBail;  // 0xf7c
+    int mHeadHit;  // 0xf80
+    int mMagicPoints;  // 0xf84
+    int mMagicTime;  // 0xf88
+    u8 _padf8c[136];
+    u8 mInputDelay;  // 0x1014
+    u8 _pad1015[19];
+    int mComboCounter;  // 0x1028
+    u8 _pad102c[8];
+    int mShadowY;  // 0x1034
+    u8 _pad1038[12];
+    u32 mSFXGrind;  // 0x1044
+    u32 mSFXGround;  // 0x1048
+    u32 mSFXAir;  // 0x104c
+    u32 mSFXPitch;  // 0x1050
+    u32 mSFXVol;  // 0x1054
+    int mTruckSqueak;  // 0x1058
+    int mFootSound;  // 0x105c
+    int mFootSFX;  // 0x1060
+    int mTerrain;  // 0x1064
+    int mTerrainSFX;  // 0x1068
+    int mPhysicsState;  // 0x106c
+    int mOldPhysicsState;  // 0x1070
+    MATRIX mTempRotationMatrix;  // 0x1074
+    CVector mTempPos;  // 0x1094
+    CVector mFront;  // 0x10a0
+    CVector mRight;  // 0x10ac
+    CVector mUp;  // 0x10b8
+    CVectorMechCtor mLastFallLine;  // 0x10c4
+    int mFallLineAdjustment;  // 0x10d0
+    SVECTOR mLastPolyNormal;  // 0x10d4
+    int mSameNormal;  // 0x10dc
+    VECTOR mOldNormal;  // 0x10e0
+    int mLeanAngle;  // 0x10f0
+    int mAnimLeanAngle;  // 0x10f4
+    u8 _pad10f8[36];
+    u8 mGlowR;  // 0x111c
+    u8 mGlowG;  // 0x111d
+    u8 mGlowB;  // 0x111e
+    u8 mTargetGlowR;  // 0x111f
+    u8 mTargetGlowG;  // 0x1120
+    u8 mTargetGlowB;  // 0x1121
+    u8 mGlowSpeed;  // 0x1122
+    u8 mGlowDownSpeed;  // 0x1123
+    int mBrightness;  // 0x1124
+    u8 _pad1128[12];
+    u8 mAnalogue;  // 0x1134
+    char mAX;  // 0x1135
+    char mAY;  // 0x1136
+    u8 _pad1137[13];
+    u16 mGroundCounter;  // 0x1144
+    u8 _pad1146[2];
+    int mHistoryPos;  // 0x1148
+    struct SHistory mHistory[100];  // 0x114c
 
+    CBruce();
+    virtual ~CBruce();
+    void Die();
+    void AI();
+    void DoLightingSetup();
+    int Hit(int Damage, const CVector &knock, int whathit);
+    void DeleteStuff();
+
+    /** Refresh the orientation basis vectors from the skater matrix. */
+    void FRUVectorsFromRotMatrix();
+    int History_Add(char *name, int spinAndStance);
+    void History_Reset();
+    int History_Find(char *name, int spinAndStance);
+    void InitItem(char *name);
+    void GetStats(int skaterSlot);
+    void CalculateDynamicLighting(unsigned int *face, Item *item);
+    int FlipToVelocity();
+    void BloodSplat(int bodyPart, int maxBloodBits);
+    void BoardOff();
+    void BoardOn();
+    void DoPhysics();
+    void DoShadowCheck();
+    void CollideWithObject(CBody *body);
+    void ReadAnalogueInput();
+    void GetHookPosition(CVector &position, u8 hook);
+    void HandleWater();
+    void GlowUpdate();
+};
+
+/**
+ * CSpark overlay: velocity inherited from CBit plus the spark's floor
+ * plane.  sizeof(CSpark) == 0x5C is the allocation size passed to
+ * CBit's operator new by BloodSplat.
+ */
+struct CSpark {
+    /** Construct one transient spark. */
+    CSpark(CVector &position, int velocity, int gravity, int life);
+
+    u8 _padToVel[36];
+    CVector mVel;                                     // 0x24 (CBit.mVel)
+    u8 _padToFloorY[88 - 48];
+    int mFloorY;                                      // 0x58
+};
+
+#include "SCHARACTERPROGRESS.h"
+
+/** SCareer prefix through the character-progress table used by MECH (MAIN.h only forward-declares it). */
+struct SCareer {
+    int Version;
+    int MaxTapes;
+    SCharacterProgress CharacterProgress[14];
+};
+
+/** Video recorder state needed to choose live, record, or playback input. */
+struct SVideoInfo {
+    int VideoMode;
+    u8 _opaque[188];
 };
 
 /** Camera field selected for the player camera during skater construction. */
@@ -507,79 +332,29 @@ struct CCamera {
     int InCompetitionIntro();
 };
 
+typedef char SFaceLightingMech_size_check[(sizeof(struct SFaceLightingMech) == 12) ? 1 : -1];
+typedef char CPanelData_size_check[(sizeof(struct CPanelData) == 2276) ? 1 : -1];
 typedef CCamera CCameraMechCtor;
-
-typedef char SFaceLightingMech_size_check[
-    (sizeof(struct SFaceLightingMech) == 12) ? 1 : -1];
-typedef char CPanelDataMech_size_check[
-    (sizeof(struct CPanelDataMech) == 2276) ? 1 : -1];
-typedef char CCameraMech_size_check[
-    (sizeof(CCamera) == 1668) ? 1 : -1];
+typedef char CCameraMech_size_check[(sizeof(CCamera) == 1668) ? 1 : -1];
 typedef char CBruce_mech_size_check[(sizeof(struct CBruce) == 5228) ? 1 : -1];
-typedef char CBruceVtableMech_size_check[
-    (sizeof(struct CBruceVtableMech) == 28) ? 1 : -1];
 typedef char CSpark_size_check[(sizeof(struct CSpark) == 0x5C) ? 1 : -1];
-typedef char SBoardMech_size_check[(sizeof(struct SBoardMech) == 32) ? 1 : -1];
-typedef char SStatsMech_size_check[(sizeof(struct SStatsMech) == 344) ? 1 : -1];
-typedef char Mech_SCharacterProgress_size_check[
-    (sizeof(struct SCharacterProgress) == 32) ? 1 : -1];
-typedef char CBruceBoardSlice_size_check[
-    (sizeof(struct CBruceBoardSlice) == 3500) ? 1 : -1];
-typedef char CBruceInputSlice_size_check[
-    (sizeof(struct CBruceInputSlice) == 4408) ? 1 : -1];
-typedef char CBruceHistorySlice_size_check[
-    (sizeof(struct CBruceHistorySlice) == 5228) ? 1 : -1];
-typedef char CBruceHistorySlice_history_pos_offset_check[
-    ((unsigned long)&(((CBruceHistorySlice *)0)->mHistoryPos) == 0x1148)
-        ? 1 : -1];
-typedef char CBruceHistorySlice_history_offset_check[
-    ((unsigned long)&(((CBruceHistorySlice *)0)->mHistory) == 0x114C)
-        ? 1 : -1];
-typedef char CBruceGlowSlice_size_check[
-    (sizeof(struct CBruceGlowSlice) == 4388) ? 1 : -1];
-typedef char SVideoInfo_size_check[
-    (sizeof(struct SVideoInfo) == 192) ? 1 : -1];
-typedef char CBruceAIBaseSlice_size_check[
-    (sizeof(struct CBruceAIBaseSlice) == 400) ? 1 : -1];
-typedef char CBruceAISlice_size_check[
-    (sizeof(struct CBruceAISlice) == 5228) ? 1 : -1];
-typedef char SDK_MATRIX_mech_size_check[
-    (sizeof(MATRIX) == 32) ? 1 : -1];
-typedef char CBruce_rotation_matrix_offset_check[
-    ((unsigned long)&(((CBruce *)0)->mRotationMatrix) == 0xE90) ? 1 : -1];
-typedef char CBruceCtor_old_rotation_matrix_offset_check[
-    ((unsigned long)&(((CBruceCtorSlice *)0)->mOldRotationMatrix) == 0xE70)
-        ? 1 : -1];
-typedef char CBruceCtor_rotation_matrix_offset_check[
-    ((unsigned long)&(((CBruceCtorSlice *)0)->mRotationMatrix) == 0xE90)
-        ? 1 : -1];
-typedef char CBruceCtor_temp_rotation_matrix_offset_check[
-    ((unsigned long)&(((CBruceCtorSlice *)0)->mTempRotationMatrix) == 0x1074)
-        ? 1 : -1];
-typedef char SDK_VECTOR_mech_size_check[
-    (sizeof(VECTOR) == 16) ? 1 : -1];
-typedef char CVectorMechCtor_size_check[
-    (sizeof(struct CVectorMechCtor) == 12) ? 1 : -1];
-typedef char SDK_SVECTOR_mech_size_check[
-    (sizeof(SVECTOR) == 8) ? 1 : -1];
-typedef char SDK_CVECTOR_mech_size_check[
-    (sizeof(CVECTOR) == 4) ? 1 : -1];
-typedef char CBruceCtorSlice_size_check[
-    (sizeof(struct CBruceCtorSlice) == 5228) ? 1 : -1];
-typedef char Mech_CFriction_size_check[
-    (sizeof(struct CFriction) == 3) ? 1 : -1];
-typedef char Mech_SLight_size_check[
-    (sizeof(SLight) == 52) ? 1 : -1];
+typedef char Mech_SCharacterProgress_size_check[(sizeof(struct SCharacterProgress) == 32) ? 1 : -1];
+typedef char SVideoInfo_size_check[(sizeof(struct SVideoInfo) == 192) ? 1 : -1];
+typedef char CBruce_rotation_matrix_offset_check[((unsigned long)&(((CBruce *)0)->mRotationMatrix) == 0xE90) ? 1 : -1];
+typedef char CBruce_old_rotation_matrix_offset_check[((unsigned long)&(((CBruce *)0)->mOldRotationMatrix) == 0xE70) ? 1 : -1];
+typedef char CBruce_temp_rotation_matrix_offset_check[((unsigned long)&(((CBruce *)0)->mTempRotationMatrix) == 0x1074) ? 1 : -1];
+typedef char CBruce_history_pos_offset_check[((unsigned long)&(((CBruce *)0)->mHistoryPos) == 0x1148) ? 1 : -1];
+typedef char CBruce_history_offset_check[((unsigned long)&(((CBruce *)0)->mHistory) == 0x114C) ? 1 : -1];
+typedef char SDK_MATRIX_mech_size_check[(sizeof(MATRIX) == 32) ? 1 : -1];
+typedef char SDK_VECTOR_mech_size_check[(sizeof(VECTOR) == 16) ? 1 : -1];
+typedef char CVectorMechCtor_size_check[(sizeof(struct CVectorMechCtor) == 12) ? 1 : -1];
+typedef char SDK_SVECTOR_mech_size_check[(sizeof(SVECTOR) == 8) ? 1 : -1];
+typedef char SDK_CVECTOR_mech_size_check[(sizeof(CVECTOR) == 4) ? 1 : -1];
+typedef char Mech_CFriction_size_check[(sizeof(struct CFriction) == 3) ? 1 : -1];
+typedef char Mech_SLight_size_check[(sizeof(SLight) == 52) ? 1 : -1];
 
-#include "OB.h"
-#include "CSUPER.h"
 #include "FONT.h"
 #include "UTILS.h"
-#define BIT_DUST_MANAGER_LAYOUT
-#define BIT_BLOOD_MANAGER_LAYOUT
-#include "BIT.h"
-#undef BIT_BLOOD_MANAGER_LAYOUT
-#undef BIT_DUST_MANAGER_LAYOUT
 #include "CFLATRIPPLE.h"
 typedef char CFlatRipple_size_check[
     (sizeof(CFlatRipple) == 0x74) ? 1 : -1];
@@ -587,16 +362,6 @@ typedef char CFlatRipple_size_check[
 // === External function declarations ===
 #include "VIDEO.h"
 #include "BIT.h"
-namespace MechConstructorABI
-{
-#define PANEL_DECLARE_DATA_CONSTRUCTOR_ABI
-#define PANEL_DATA_CONSTRUCTOR_RECEIVER CPanelDataMech
-#define PANEL_DATA_CONSTRUCTOR_PLAYER CBruceCtorSlice
-#include "PANEL.h"
-}
-#define CSUPER_DECLARE_DESTRUCTOR
-#define CSUPER_DESTRUCTOR_NAME CSuper_dtor
-#include "CSUPER.h"
 #include <STDIO.H>
 
 #include "GSKATER_STATE.h"
@@ -676,6 +441,14 @@ s16 HeadBloodAtFrame[14] __attribute__((section(".data"))) = {
 /** Board-stat bonuses filled for the active skaters at run setup. */
 BoardStats GBoardStats[2] __attribute__((section(".sdata"))) = {};
 
+/** Assign all three components of a short game-space vector. */
+static inline void MechSetSVector(CSVector *v, int x, int y, int z)
+{
+    v->vx = x;
+    v->vy = y;
+    v->vz = z;
+}
+
 /** Branch-free signed magnitude used by the original fixed-point helpers. */
 static inline int MechAbs(int value)
 {
@@ -684,25 +457,7 @@ static inline int MechAbs(int value)
 }
 
 // === Extern "C" forward declarations ===
-void CBruce_dtor(CBruce *, int) asm("_._6CBruce");
 #include "RCOSSIN.h"
-
-/**
- * Skater virtual dispatch table in its original read-only owner section.
- */
-int __vt_6CBruce[9]
-    __attribute__((section(".rdata"), aligned(8))) = {
-        0,
-        0,
-        (int)&CBruce_dtor,
-        (int)(void (*)(CBruce *))&CBruce::Die,
-        (int)(void (*)(CBruce *))&CBruce::AI,
-        (int)(void (*)(CBruce *))&CBody::EveryFrame,
-        (int)(void (*)(CBruce *))&CBruce::DoLightingSetup,
-        (int)(int (*)(CBruce *, int, const CVector &, int))&CBruce::Hit,
-        (int)(void (*)(CBruce *))&CBruce::DeleteStuff,
-};
-
 
 // === Function implementations (address order) ===
 
@@ -716,20 +471,7 @@ int __vt_6CBruce[9]
  */
 void CBruce::BoardOff()
 {
-    register SStats *stats asm("$5") = Stats;
-    int idx = this->mSkaterType;
-    stats += idx;
-    int bit = 1;
-    int b0 = stats->Board;
-    int b1 = stats->Wheel1;
-    int b2 = stats->Wheel2;
-    int flags = this->CSuper.mSubObjectDisplayMask;
-    int m0 = bit << b0;
-    int m1 = bit << b1;
-    m0 = m0 | m1;
-    int m2 = bit << b2;
-    m0 = m0 | m2;
-    this->CSuper.mSubObjectDisplayMask = flags | m0;
+    mSubObjectDisplayMask |= (1 << Stats[mSkaterType].Board) | (1 << Stats[mSkaterType].Wheel1) | (1 << Stats[mSkaterType].Wheel2);
 }
 
 /**
@@ -742,170 +484,47 @@ void CBruce::BoardOff()
  */
 void CBruce::BoardOn()
 {
-    int idx = this->mSkaterType;
-    register SStats *stats asm("$5") = Stats;
-    stats += idx;
-    int bit = 1;
-    int b0 = stats->Board;
-    int b1 = stats->Wheel1;
-    int b2 = stats->Wheel2;
-    int flags = this->CSuper.mSubObjectDisplayMask;
-    b0 = bit << b0;
-    b1 = bit << b1;
-    b0 = b0 | b1;
-    int m2 = bit << b2;
-    m2 = ~(b0 | m2);
-    this->CSuper.mSubObjectDisplayMask = flags & m2;
+    mSubObjectDisplayMask &= ~((1 << Stats[mSkaterType].Board) | (1 << Stats[mSkaterType].Wheel1) | (1 << Stats[mSkaterType].Wheel2));
 }
 
 /**
- * GetStats__6CBrucei - Fill one 4-byte stat display slot for the current skater.
- * In single-player career it chooses the highest unlocked stat tier for the
- * skater from GCareer progress, then writes the four displayed stat bytes into
- * the per-slot output buffer at 0x800D9B20 + slot * 5. In multiplayer it clears
- * that output slot instead.
+ * GetStats__6CBrucei - Fill one player's board-stat bonuses.
+ * In single-player career it picks the highest deck the skater has unlocked
+ * (by tapes collected in GCareer) and copies that deck's four stat bonuses
+ * into GBoardStats[Skater]. In multiplayer the bonuses are cleared instead.
  *
  * Address:   0x800429B4
  * Mangled:   GetStats__6CBrucei
  * Demangled: CBruce::GetStats(int)
  *
- * @param bruce  Skater instance whose stat display is being filled.
- * @param Skater  Output-panel slot to update.
+ * @param Skater  Player slot (0 or 1) whose GBoardStats entry is filled.
  */
 void CBruce::GetStats(int Skater)
 {
-    CBruce *bruce = this;
-    CBruce *selfReg = bruce;
-    register char *gp asm("$28");
-
-    // This target load embeds GNumberOfPlayers' address without a relocation.
-    if (*(int *)0x800D95E0 != 1)
-        goto clear_stats;
-
+    if (GNumberOfPlayers == 1)
     {
-        register int highest_board asm("$7") = 0;
-        register SStatsMech *stats asm("$9");
-        {
-            // The target object carries these absolute addresses as split
-            // constants rather than external-symbol relocations.
-            register int base asm("$3") = 0x800B0000;
-            asm volatile("" : "+r"(base));
-            stats = reinterpret_cast<SStatsMech *>(base + 0x5494);
-        }
-        register int careerBase asm("$3") = 0x800B0000;
-        int skater = selfReg->mSkaterType;
-        asm volatile("" : "+r"(careerBase));
-        careerBase += 0x7834;
-        register int calc asm("$2") = skater << 1;
-        calc += skater;
-        calc <<= 2;
-        calc -= skater;
-        calc <<= 2;
-        calc -= skater;
-        int statsOffset = calc << 3;
-        asm volatile("" : "+r"(statsOffset));
-        skater <<= 5;
-        skater += careerBase;
-        unsigned int progress =
-            reinterpret_cast<SCareerMech *>(skater)
-                ->CharacterProgress[0].NumTapes;
-        asm volatile("" : "+r"(highest_board));
-        int next = highest_board + 1;
+        int highest_board = 0;
 
-    tier_loop:
-        calc = next << 5;
-        calc += statsOffset;
-        calc += (int)stats;
-        unsigned int threshold =
-            ((SStatsMech *)calc)->Boards[0].TapesToUnlock;
-        if (progress < threshold)
-            goto tier_done;
-        highest_board = next;
-        if (next < 7)
+        // Highest deck this skater has unlocked with the tapes collected so far.
+        while (highest_board < 7)
         {
-            next = highest_board + 1;
-            goto tier_loop;
+            if (GCareer.CharacterProgress[mSkaterType].NumTapes <
+                Stats[mSkaterType].Boards[highest_board + 1].TapesToUnlock)
+                break;
+            highest_board++;
         }
 
-    tier_done:
-        int slotOffset = Skater << 2;
-        slotOffset += Skater;
-        register char *dst0 asm("$4") = gp + 0x1E80;
-        asm volatile("" : "+r"(dst0));
-        highest_board <<= 5;
-        calc = highest_board + statsOffset;
-        calc = (int)stats + calc;
-        int value0 = ((SStatsMech *)calc)->Boards[0].ollieByte;
-        dst0 = (char *)(slotOffset + (int)dst0);
-        *(u8 *)dst0 = value0;
-
-        register int skater2 asm("$3") = selfReg->mSkaterType;
-        register char *dst1 asm("$6") = gp + 0x1E81;
-        calc = skater2 << 1;
-        calc += skater2;
-        calc <<= 2;
-        calc -= skater2;
-        calc <<= 2;
-        calc -= skater2;
-        calc <<= 3;
-        calc = highest_board + calc;
-        calc = (int)stats + calc;
-        int value1 = ((SStatsMech *)calc)->Boards[0].speedByte;
-        dst1 = (char *)(slotOffset + (int)dst1);
-        *(volatile u8 *)dst1 = value1;
-
-        skater2 = selfReg->mSkaterType;
-        register char *dst2 asm("$5") = gp + 0x1E82;
-        calc = skater2 << 1;
-        calc += skater2;
-        calc <<= 2;
-        calc -= skater2;
-        calc <<= 2;
-        calc -= skater2;
-        calc <<= 3;
-        calc = highest_board + calc;
-        calc = (int)stats + calc;
-        int value2 = ((SStatsMech *)calc)->Boards[0].airByte;
-        dst2 = (char *)(slotOffset + (int)dst2);
-        *(volatile u8 *)dst2 = value2;
-
-        skater2 = selfReg->mSkaterType;
-        register int dst3 asm("$6") = (int)(gp + 0x1E83);
-        calc = skater2 << 1;
-        calc += skater2;
-        calc <<= 2;
-        calc -= skater2;
-        calc <<= 2;
-        calc -= skater2;
-        calc <<= 3;
-        highest_board += calc;
-        highest_board = (int)stats + highest_board;
-        skater2 =
-            ((SStatsMech *)highest_board)->Boards[0].balanceByte;
-        slotOffset = slotOffset + dst3;
-        *(u8 *)slotOffset = skater2;
-        return;
+        GBoardStats[Skater].ollie = Stats[mSkaterType].Boards[highest_board].ollie;
+        GBoardStats[Skater].speed = Stats[mSkaterType].Boards[highest_board].speed;
+        GBoardStats[Skater].air = Stats[mSkaterType].Boards[highest_board].air;
+        GBoardStats[Skater].balance = Stats[mSkaterType].Boards[highest_board].balance;
     }
-
-clear_stats:
+    else
     {
-        int slotOffset = Skater << 2;
-        slotOffset += Skater;
-        register char *dst0 asm("$2") = gp + 0x1E80;
-        dst0 = (char *)(slotOffset + (int)dst0);
-        asm volatile("" : "+r"(dst0));
-        register char *dst1 asm("$3") = gp + 0x1E81;
-        dst1 = (char *)(slotOffset + (int)dst1);
-        asm volatile("" : "+r"(dst1));
-        *(u8 *)dst0 = 0;
-        register char *dst2 asm("$2") = gp + 0x1E82;
-        dst2 = (char *)(slotOffset + (int)dst2);
-        asm volatile("" : "+r"(dst2));
-        *(u8 *)dst1 = 0;
-        register char *dst3 asm("$3") = gp + 0x1E83;
-        slotOffset = slotOffset + (int)dst3;
-        *(u8 *)dst2 = 0;
-        *(u8 *)slotOffset = 0;
+        GBoardStats[Skater].ollie = 0;
+        GBoardStats[Skater].speed = 0;
+        GBoardStats[Skater].air = 0;
+        GBoardStats[Skater].balance = 0;
     }
 }
 
@@ -920,36 +539,31 @@ clear_stats:
  * @param bruce Storage supplied for the new skater.
  * @return `bruce` (the GCC 2.x constructor return convention).
  */
-CBruceCtorSlice *CBruceConstructorABI::__6CBruce(CBruceCtorSlice *bruce)
+CBruce::CBruce() : mPanelData(this)
 {
     int maxKickSpeed;
 
-    ::new (reinterpret_cast<CSuper *>(&bruce->Inherited.CSuper)) CSuper();
-    bruce->Inherited.CSuper.CBody.CItem.vtable = (void *)__vt_6CBruce;
-    MechConstructorABI::__10CPanelDataP6CBruce(&bruce->mPanelData, bruce);
-    ::new ((Dust *)bruce->mDust) Dust;
-    ::new ((Blood *)bruce->mBlood) Blood;
 
-    bruce->mTrickGravity = 100;
-    bruce->Inherited.CSuper.mAnimSpeed = 0x10000;
-    bruce->mpBoardStats = (BoardStats *)-1;
+    mTrickGravity = 100;
+    mAnimSpeed = 0x10000;
+    mpBoardStats = (BoardStats *)-1;
 
     if (Levels[GLevel].isCompetition && GGame == 1)
-        bruce->mPlayTime = 3630;
+        mPlayTime = 3630;
     else if (GGame == 7)
-        bruce->mPlayTime = 630;
+        mPlayTime = 630;
     else
-        bruce->mPlayTime = 7230;
+        mPlayTime = 7230;
 
-    bruce->Inherited.CSuper.CBody.CItem.mFlags |= 0x200;
+    mFlags |= 0x200;
     int statsOverride = Cheat_StatsOverride;
-    bruce->Inherited.CSuper.CBody.CItem.mScale.Set(0x1000, 0x1000, 0x1000);
+    MechSetSVector(&mScale, 0x1000, 0x1000, 0x1000);
 
     if (!statsOverride)
     {
-        int statsSpeed = Stats[bruce->mSkaterType].Speed;
-        int boardSpeed = bruce->mpBoardStats->speed;
-        if (bruce->mMagicTime || Cheat_Fire)
+        int statsSpeed = Stats[mSkaterType].Speed;
+        int boardSpeed = mpBoardStats->speed;
+        if (mMagicTime || Cheat_Fire)
         {
             maxKickSpeed =
                 ((boardSpeed + statsSpeed + 20) << 12) * 45 / 28;
@@ -965,99 +579,97 @@ CBruceCtorSlice *CBruceConstructorABI::__6CBruce(CBruceCtorSlice *bruce)
         maxKickSpeed =
             ((statsOverride + 17) << 12) * 45 / 28;
     }
-    bruce->mMaxKickSpeed = maxKickSpeed;
+    mMaxKickSpeed = maxKickSpeed;
 
-    bruce->mOnRail = 0;
-    bruce->mStickToRail = 0;
-    bruce->mSameRailTimer = 0;
-    bruce->mDontStickTimer = 0;
-    bruce->mDontStickRail = -1;
-    bruce->mSFXGrind = 0;
-    bruce->mSFXGround = 0;
-    bruce->mTruckSqueak = 0;
-    bruce->mPhysicsState = 0;
-    bruce->mOldPhysicsState = 0;
-    bruce->mManIsCrouched = 0;
-    bruce->mManIsJumping = 0;
-    bruce->mJumpPending = 0;
-    bruce->mDoingATrick = 0;
-    bruce->mApplyJumpForce = 0;
-    bruce->mComboCounter = 0;
-    bruce->Inherited.CSuper.mExtraFlags |= 1;
+    mOnRail = 0;
+    mStickToRail = 0;
+    mSameRailTimer = 0;
+    mDontStickTimer = 0;
+    mDontStickRail = -1;
+    mSFXGrind = 0;
+    mSFXGround = 0;
+    mTruckSqueak = 0;
+    mPhysicsState = 0;
+    mOldPhysicsState = 0;
+    mManIsCrouched = 0;
+    mManIsJumping = 0;
+    mJumpPending = 0;
+    mDoingATrick = 0;
+    mApplyJumpForce = 0;
+    mComboCounter = 0;
+    mExtraFlags |= 1;
 
-    reinterpret_cast<CBruce *>(bruce)->History_Reset();
+    History_Reset();
 
-    bruce->mStickToInvisible = 0;
-    bruce->mIsOnTaggedPoly = 0;
-    bruce->mLastFallLine.Set(0, 0, 0);
-    bruce->mFallLineAdjustment = 0;
-    bruce->mLastPolyNormal.vx = 0;
-    bruce->mLastPolyNormal.vy = -0x1000;
-    bruce->mLastPolyNormal.vz = 0;
-    bruce->mPitchAngle = 0;
-    bruce->mLeanAngle = 0;
-    bruce->mAnimLeanAngle = 0;
-    bruce->mKickLockout = 0;
+    mStickToInvisible = 0;
+    mIsOnTaggedPoly = 0;
+    mLastFallLine.Set(0, 0, 0);
+    mFallLineAdjustment = 0;
+    mLastPolyNormal.vx = 0;
+    mLastPolyNormal.vy = -0x1000;
+    mLastPolyNormal.vz = 0;
+    mPitchAngle = 0;
+    mLeanAngle = 0;
+    mAnimLeanAngle = 0;
+    mKickLockout = 0;
 
-    bruce->mRotationMatrix.m[0][0] = -0x1000;
-    bruce->mRotationMatrix.m[1][0] = 0;
-    bruce->mRotationMatrix.m[2][0] = 0;
-    bruce->mRotationMatrix.m[0][1] = 0;
-    bruce->mRotationMatrix.m[1][1] = -0x1000;
-    bruce->mRotationMatrix.m[2][1] = 0;
-    bruce->mRotationMatrix.m[0][2] = 0;
-    bruce->mRotationMatrix.m[1][2] = 0;
-    bruce->mRotationMatrix.m[2][2] = -0x1000;
+    mRotationMatrix.m[0][0] = -0x1000;
+    mRotationMatrix.m[1][0] = 0;
+    mRotationMatrix.m[2][0] = 0;
+    mRotationMatrix.m[0][1] = 0;
+    mRotationMatrix.m[1][1] = -0x1000;
+    mRotationMatrix.m[2][1] = 0;
+    mRotationMatrix.m[0][2] = 0;
+    mRotationMatrix.m[1][2] = 0;
+    mRotationMatrix.m[2][2] = -0x1000;
 
-    reinterpret_cast<CBruce *>(bruce)->FRUVectorsFromRotMatrix();
-    bruce->mOldRotationMatrix = bruce->mRotationMatrix;
+    FRUVectorsFromRotMatrix();
+    mOldRotationMatrix = mRotationMatrix;
 
     {
-        int normX = bruce->mRotationMatrix.m[0][1];
-        int normY = bruce->mRotationMatrix.m[1][1];
-        int normZ = bruce->mRotationMatrix.m[2][1];
+        int normX = mRotationMatrix.m[0][1];
+        int normY = mRotationMatrix.m[1][1];
+        int normZ = mRotationMatrix.m[2][1];
 
-        bruce->mSameNormal = 0;
-        bruce->mOldNormal.vx = normX;
-        bruce->mOldNormal.vy = normY;
-        bruce->mOldNormal.vz = normZ;
-        bruce->Inherited.CSuper.CBody.mNormal.x = normX;
-        bruce->Inherited.CSuper.CBody.mNormal.y = normY;
-        bruce->Inherited.CSuper.CBody.mNormal.z = normZ;
+        mSameNormal = 0;
+        mOldNormal.vx = normX;
+        mOldNormal.vy = normY;
+        mOldNormal.vz = normZ;
+        mNormal.vx = normX;
+        mNormal.vy = normY;
+        mNormal.vz = normZ;
     }
 
-    reinterpret_cast<CBody *>(&bruce->Inherited.CSuper.CBody)->AttachTo(
-        reinterpret_cast<CBody **>(&MechList));
+    AttachTo(reinterpret_cast<CBody **>(&MechList));
     u16 bodyFlags =
-        bruce->Inherited.CSuper.CBody.mCBodyFlags & (u16)~2;
+        mCBodyFlags & (u16)~2;
     int numMechs = ++NumMechs;
-    bruce->Inherited.CSuper.CBody.mCBodyFlags = bodyFlags;
+    mCBodyFlags = bodyFlags;
     if (numMechs == 1)
-        bruce->mPad = &Pad[0];
+        mPad = &Pad[0];
     else
-        bruce->mPad = &Pad[1];
-    bruce->Inherited.CSuper.CBody.mAngFric.Set(5, 1, 5);
+        mPad = &Pad[1];
+    mAngFric.Set(5, 1, 5);
 
     if (GNumberOfPlayers == 1)
     {
-        bruce->Inherited.CSuper.mShadowLights = 1;
-        bruce->Inherited.CSuper.mpShadowSource =
+        mShadowLights = 1;
+        mpShadowSource =
             static_cast<SVECTOR *>(Mem_New(32, 0, 1));
-        bruce->Inherited.CSuper.mpShadowRGB =
+        mpShadowRGB =
             static_cast<CVECTOR *>(Mem_New(16, 0, 1));
 
-        bruce->Inherited.CSuper.mpShadowSource->vx = 0;
-        bruce->Inherited.CSuper.mpShadowSource->vy = -0x1000;
-        bruce->Inherited.CSuper.mpShadowSource->vz = 0;
-        bruce->Inherited.CSuper.mpShadowRGB->r = 0x80;
-        bruce->Inherited.CSuper.mpShadowRGB->g = 0x80;
-        bruce->Inherited.CSuper.mpShadowRGB->b = 0x80;
+        mpShadowSource->vx = 0;
+        mpShadowSource->vy = -0x1000;
+        mpShadowSource->vz = 0;
+        mpShadowRGB->r = 0x80;
+        mpShadowRGB->g = 0x80;
+        mpShadowRGB->b = 0x80;
     }
     else
     {
-        reinterpret_cast<CBody *>(&bruce->Inherited.CSuper.CBody)->ShadowOn();
-        reinterpret_cast<CBody *>(
-            &bruce->Inherited.CSuper.CBody)->UpdateShadow();
+        ShadowOn();
+        UpdateShadow();
     }
 
     SLight *defaultLight = &Skater_DefaultLight;
@@ -1065,12 +677,11 @@ CBruceCtorSlice *CBruceConstructorABI::__6CBruce(CBruceCtorSlice *bruce)
         reinterpret_cast<CCameraMechCtor *>(CameraList);
     void *generateLevel = GenerateLevel;
     camera->SetMode(1);
-    bruce->Inherited.CSuper.CBody.CItem.mpLight = defaultLight;
+    mpLight = defaultLight;
     if (!generateLevel)
-        bruce->Inherited.CSuper.CBody.CItem.mpLight =
+        mpLight =
             &Skater_MarsLight;
 
-    return bruce;
 }
 
 /**
@@ -1080,55 +691,36 @@ CBruceCtorSlice *CBruceConstructorABI::__6CBruce(CBruceCtorSlice *bruce)
  * Mangled:   _._6CBruce
  * Demangled: CBruce::~CBruce()
  *
- * @param bruce  Skater instance being destroyed.
- * @param __in_chrg  GCC 2.x in-charge flag (bit 0 also deletes `bruce`).
  */
-void CBruce_dtor(CBruce *bruce, int __in_chrg)
+CBruce::~CBruce()
 {
-    bruce->CSuper.CBody.CItem._vf = (void *)__vt_6CBruce;
-
-    if (bruce->mSFXGrind != 0)
+    if (mSFXGrind != 0)
     {
-        SFX_Stop(bruce->mSFXGrind);
-        bruce->mSFXGrind = 0;
+        SFX_Stop(mSFXGrind);
+        mSFXGrind = 0;
     }
 
-    if (bruce->mSFXGround != 0)
+    if (mSFXGround != 0)
     {
-        SFX_Stop(bruce->mSFXGround);
-        bruce->mSFXGround = 0;
+        SFX_Stop(mSFXGround);
+        mSFXGround = 0;
     }
 
-    if (bruce->CSuper.mpShadowSource != 0)
+    if (mpShadowSource != 0)
     {
-        Mem_Delete(bruce->CSuper.mpShadowSource);
+        Mem_Delete(mpShadowSource);
     }
 
-    if (bruce->CSuper.mpShadowRGB != 0)
+    if (mpShadowRGB != 0)
     {
-        Mem_Delete(bruce->CSuper.mpShadowRGB);
+        Mem_Delete(mpShadowRGB);
     }
 
-    reinterpret_cast<CBody *>(&bruce->CSuper.CBody)->DeleteFrom(
-        reinterpret_cast<CBody **>(&MechList));
+    DeleteFrom(reinterpret_cast<CBody **>(&MechList));
     NumMechs = NumMechs - 1;
-    bruce->DeleteStuff();
+    DeleteStuff();
 
-    ((Blood *)bruce->mBlood)->~Blood();
-    ((Dust *)bruce->mDust)->~Dust();
-    bruce->mPanelData.mOutOfBoundsText.~FallingTextEffect();
-    bruce->mPanelData.mTrickTextEffect.~TrickTextEffect();
-    bruce->mPanelData.mFallingTextEffect.~FallingTextEffect();
-    FontFromStorage(&bruce->mPanelData.mScoreFont)->~Font();
-    FontFromStorage(&bruce->mPanelData.mTrickFont)->~Font();
-    FontFromStorage(&bruce->mPanelData.mTimerFont)->~Font();
 
-    CSuper_dtor(&bruce->CSuper, 0);
-
-    if (__in_chrg & 1)
-    {
-        ::CItem::operator delete(bruce);
-    }
 }
 
 /**
@@ -1169,24 +761,16 @@ int History_Checksum(char *pName, int Spins)
  */
 int CBruce::History_Find(char *pName, int Spins)
 {
-    CBruceHistorySlice *bruce = reinterpret_cast<CBruceHistorySlice *>(this);
     int c = History_Checksum(pName, Spins);
-    int i = 0;
-    register int count asm("$4") = bruce->mHistoryPos;
-    if (count > 0)
+
+    for (int i = 0; i < mHistoryPos; i++)
     {
-        int limit = count;
-        SHistory *entry = bruce->mHistory;
-        do
+        if (mHistory[i].Checksum == c)
         {
-            if (entry->Checksum == c)
-            {
-                return i;
-            }
-            i++;
-            entry++;
-        } while (i < limit);
+            return i;
+        }
     }
+
     return -1;
 }
 
@@ -1200,7 +784,7 @@ int CBruce::History_Find(char *pName, int Spins)
  */
 void CBruce::History_Reset()
 {
-    reinterpret_cast<CBruceHistorySlice *>(this)->mHistoryPos = 0;
+    mHistoryPos = 0;
 }
 
 /**
@@ -1217,16 +801,15 @@ void CBruce::History_Reset()
  */
 int CBruce::History_Add(char *pName, int Spins)
 {
-    CBruceHistorySlice *bruce = reinterpret_cast<CBruceHistorySlice *>(this);
-    int i = reinterpret_cast<CBruce *>(bruce)->History_Find(pName, Spins);
+    int i = History_Find(pName, Spins);
     if (i != -1)
         goto done;
     {
-        int count = bruce->mHistoryPos;
+        int count = mHistoryPos;
         if (count < 100)
         {
             i = count;
-            bruce->mHistoryPos = i + 1;
+            mHistoryPos = i + 1;
         }
         else
         {
@@ -1234,16 +817,16 @@ int CBruce::History_Add(char *pName, int Spins)
         }
         {
             int checksum = History_Checksum(pName, Spins);
-            bruce->mHistory[i].Checksum = checksum;
-            bruce->mHistory[i].Count = 0;
+            mHistory[i].Checksum = checksum;
+            mHistory[i].Count = 0;
         }
     }
 done:
 {
-    int hitCount = bruce->mHistory[i].Count;
+    int hitCount = mHistory[i].Count;
     hitCount++;
-    bruce->mHistory[i].Count = hitCount;
-    return bruce->mHistory[i].Count;
+    mHistory[i].Count = hitCount;
+    return mHistory[i].Count;
 }
 }
 
@@ -1251,7 +834,7 @@ done:
  * GlowTowards(int current, int target, int step) — move current toward target by step
  *
  * Address: 0x800431EC
- *          PERFECT — asm volatile("+r") forces slt to read from $v1 not $v0
+ *          PERFECT
  * Mangled: GlowTowards__Fiii
  *
  * @param A  Current glow component.
@@ -1261,24 +844,17 @@ done:
  */
 int GlowTowards(int A, int B, int Speed)
 {
-    int newVal = A + Speed;
     if (A < B)
     {
-        register int result asm("$2") = newVal;
-        asm volatile("" : "+r"(newVal));
-        if (B < newVal)
-        {
-            result = B;
-        }
-        return result;
+        if (B < A + Speed)
+            return B;
+        return A + Speed;
     }
     else
     {
         A = A - Speed;
         if (A < B)
-        {
             return B;
-        }
         return A;
     }
 }
@@ -1294,44 +870,43 @@ int GlowTowards(int A, int B, int Speed)
  */
 void CBruce::GlowUpdate()
 {
-    CBruceGlowSlice *bruce = reinterpret_cast<CBruceGlowSlice *>(this);
-    int glow = GlowTowards(bruce->mGlowR, bruce->mTargetGlowR, bruce->mGlowSpeed);
-    bruce->mGlowR = glow;
-    glow = GlowTowards(bruce->mGlowG, bruce->mTargetGlowG, bruce->mGlowSpeed);
-    bruce->mGlowG = glow;
-    glow = GlowTowards(bruce->mGlowB, bruce->mTargetGlowB, bruce->mGlowSpeed);
-    bruce->mGlowB = glow;
-    if (bruce->mGlowR == bruce->mTargetGlowR)
+    int glow = GlowTowards(mGlowR, mTargetGlowR, mGlowSpeed);
+    mGlowR = glow;
+    glow = GlowTowards(mGlowG, mTargetGlowG, mGlowSpeed);
+    mGlowG = glow;
+    glow = GlowTowards(mGlowB, mTargetGlowB, mGlowSpeed);
+    mGlowB = glow;
+    if (mGlowR == mTargetGlowR)
     {
-        if (((bruce->PackedGlowWord() >> 8) & 0xFFFF) ==
-            bruce->PackedTargetGlowGB())
+        if ((((*(const u32 *)&mGlowR) >> 8) & 0xFFFF) ==
+            (*(const u16 *)&mTargetGlowG))
         {
-            u8 cycle = bruce->mGlowDownSpeed;
+            u8 cycle = mGlowDownSpeed;
             if (cycle != 0)
             {
-                bruce->mTargetGlowR = 0;
-                bruce->mTargetGlowG = 0;
-                bruce->mTargetGlowB = 0;
-                bruce->mGlowSpeed = cycle;
-                bruce->mGlowDownSpeed = 0;
+                mTargetGlowR = 0;
+                mTargetGlowG = 0;
+                mTargetGlowB = 0;
+                mGlowSpeed = cycle;
+                mGlowDownSpeed = 0;
             }
         }
     }
-    if ((bruce->mGlowR | bruce->mGlowG | bruce->mGlowB) != 0)
+    if ((mGlowR | mGlowG | mGlowB) != 0)
     {
-        bruce->CSuper.CBody.mEllipsoidScale = 0x2000;
-        u32 green = bruce->mGlowG;
-        bruce->CSuper.CBody.mEllipsoidOTPushback = 0xA;
-        u32 red = bruce->mGlowR;
-        u8 blue = bruce->mGlowB;
+        mEllipsoidScale = 0x2000;
+        u32 green = mGlowG;
+        mEllipsoidOTPushback = 0xA;
+        u32 red = mGlowR;
+        u8 blue = mGlowB;
         u32 color = (green << 8) | 0x02000000;
         u32 packed = red | color;
         packed |= (u32)blue << 16;
-        bruce->CSuper.CBody.mEllipsoidRGB = packed;
+        mEllipsoidRGB = packed;
     }
     else
     {
-        bruce->CSuper.CBody.mEllipsoidRGB = 0;
+        mEllipsoidRGB = 0;
     }
 }
 
@@ -1360,17 +935,15 @@ void CBruce::DoLightingSetup()
 void CBruce::CalculateDynamicLighting(
     unsigned int *p_face, Item *p_item)
 {
-    register CBruce *self asm("$10") = this;
-    register SFaceLightingMech *pFace asm("$11") =
+    SFaceLightingMech *pFace =
         (SFaceLightingMech *)p_face;
-    asm volatile("" : "+r"(self), "+r"(pFace));
     unsigned int flags = pFace->Flags;
 
     if ((flags & 0x800) != 0)
     {
         unsigned int *pColourTable = PSXRegion[p_item->Region].pColourTable;
         int vertices = 4;
-        self->mBrightness = 0;
+        mBrightness = 0;
         if ((flags & 0x10) != 0)
         {
             vertices = 3;
@@ -1379,38 +952,30 @@ void CBruce::CalculateDynamicLighting(
         {
             int i = 0;
             unsigned int mask = 0xffffff;
-            register unsigned char *bytePtr asm("$6") =
+            unsigned char *bytePtr =
                 pFace->Colour.ColourIndices;
             do
             {
                 unsigned int idx = *bytePtr;
                 bytePtr++;
                 i++;
-                register unsigned int rgb asm("$4") = pColourTable[idx];
-                int sum = self->mBrightness;
-                register unsigned int masked asm("$5") = rgb & mask;
-                sum += rgb & 0xff;
-                sum += (masked >> 8) & 0xff;
-                sum += masked >> 16;
-                self->mBrightness = sum;
+                unsigned int c = pColourTable[idx];
+                unsigned int rgb = c & mask;
+                mBrightness = mBrightness + (c & 0xff) + ((rgb >> 8) & 0xff) + (rgb >> 16);
             } while (i < vertices);
         }
-        self->mBrightness = self->mBrightness / (vertices * 3);
+        mBrightness = mBrightness / (vertices * 3);
     }
     else
     {
         unsigned int rgb = pFace->Colour.RGB;
         unsigned int masked = rgb & 0xffffff;
         int sum = (rgb & 0xff) + ((masked >> 8) & 0xff) + (masked >> 16);
-        self->mBrightness = sum / 3;
+        mBrightness = sum / 3;
     }
-    int b = self->mBrightness;
-    self->mBrightness = b * 3;
-    register CBruceVtableMech *vtbl asm("$6") =
-        (CBruceVtableMech *)self->CSuper.CBody.CItem.vtable;
-    register void (*method)(CBruce *) asm("$5") =
-        vtbl->DoLightingSetup;
-    method(self);
+    int b = mBrightness;
+    mBrightness = b * 3;
+    DoLightingSetup();
 }
 
 /**
@@ -1423,12 +988,11 @@ void CBruce::CalculateDynamicLighting(
  */
 void CBruce::ReadAnalogueInput()
 {
-    CBruceInputSlice *bruce = reinterpret_cast<CBruceInputSlice *>(this);
-    bruce->mAY =
-        *(u8 *)&bruce->mPad->AnalogueMoveForwardsBackwards;
-    bruce->mAX = *(u8 *)&bruce->mPad->AnalogueMoveLeftRight;
+    mAY =
+        *(u8 *)&mPad->AnalogueMoveForwardsBackwards;
+    mAX = *(u8 *)&mPad->AnalogueMoveLeftRight;
     if (Cheat_FlipScreen != 0)
-        bruce->mAX = -bruce->mAX;
+        mAX = -mAX;
 }
 
 /**
@@ -1445,7 +1009,7 @@ void CBruce::GetHookPosition(CVector &pos, u8 hook)
 {
     M3dUtils_GetHookPosition(
         reinterpret_cast<VECTOR *>(&pos),
-        reinterpret_cast< ::CSuper *>(this), hook);
+        this, hook);
 }
 
 /**
@@ -1456,10 +1020,10 @@ void CBruce::GetHookPosition(CVector &pos, u8 hook)
  */
 void CBruce::Die()
 {
-    if (!reinterpret_cast<const CBody *>(&this->CSuper.CBody)->IsDead())
+    if (!IsDead())
     {
-        this->CSuper.CBody.mCBodyFlags = this->CSuper.CBody.mCBodyFlags | 0x40;
-        this->CSuper.CBody.CItem.mFlags = this->CSuper.CBody.CItem.mFlags | 0x41;
+        mCBodyFlags = mCBodyFlags | 0x40;
+        mFlags = mFlags | 0x41;
     }
 }
 
@@ -1518,25 +1082,24 @@ void CBruce::CollideWithObject(CBody *pOb)
  */
 void CBruce::DoShadowCheck()
 {
-    CBruce *bruce = this;
     SLineInfo line_info;
 
-    bruce->FRUVectorsFromRotMatrix();
+    FRUVectorsFromRotMatrix();
 
     if (GNumberOfPlayers == 1)
     {
         line_info.StartCoords.vx =
-            bruce->CSuper.CBody.CItem.mPos.vx + bruce->mUp.vx * 50;
+            mPos.vx + mUp.vx * 50;
         line_info.StartCoords.vy =
-            bruce->CSuper.CBody.CItem.mPos.vy + bruce->mUp.vy * 50;
+            mPos.vy + mUp.vy * 50;
         line_info.StartCoords.vz =
-            bruce->CSuper.CBody.CItem.mPos.vz + bruce->mUp.vz * 50;
+            mPos.vz + mUp.vz * 50;
     }
     else
     {
-        line_info.StartCoords.vx = bruce->CSuper.CBody.CItem.mPos.vx;
-        line_info.StartCoords.vy = bruce->CSuper.CBody.CItem.mPos.vy;
-        line_info.StartCoords.vz = bruce->CSuper.CBody.CItem.mPos.vz;
+        line_info.StartCoords.vx = mPos.vx;
+        line_info.StartCoords.vy = mPos.vy;
+        line_info.StartCoords.vz = mPos.vz;
     }
 
     line_info.EndCoords.vx = line_info.StartCoords.vx;
@@ -1547,45 +1110,39 @@ void CBruce::DoShadowCheck()
 
     if (line_info.pItem &&
         line_info.Normal.vy < -1900 &&
-        bruce->mPhysicsState != 4 &&
-        bruce->mPhysicsState != 8)
+        mPhysicsState != 4 &&
+        mPhysicsState != 8)
     {
-        int normalY = line_info.Normal.vy;
-        register int normalX asm("$5") = line_info.Normal.vx;
-        int shadowX = line_info.Position.vx;
-        int shadowY = line_info.Position.vy;
-        int shadowZ = line_info.Position.vz;
-        int normalZ = line_info.Normal.vz;
-        asm volatile("" : "+r"(normalY), "+r"(normalX), "+r"(shadowX) : : "memory");
-        asm volatile("" : "+r"(shadowY), "+r"(shadowZ), "+r"(normalZ) : : "memory");
-
-        bruce->CSuper.CBody.mShadowNormal.vx = normalX;
         {
-            int players = GNumberOfPlayers;
-            bruce->CSuper.CBody.mShadowNormal.vy = normalY;
-            asm volatile("" : : : "memory");
-            bruce->CSuper.CBody.mShadowPos.vx = shadowX;
-            {
-                int one = 1;
-                bruce->CSuper.CBody.mShadowPos.vy = shadowY;
-                bruce->CSuper.CBody.mShadowPos.vz = shadowZ;
-                bruce->CSuper.CBody.mShadowNormal.vz = normalZ;
-
-                if (players == one)
-                {
-                    int shade = ((4300 - line_info.Distance) << 7) / 4000;
-                    CVECTOR *rgb = bruce->CSuper.mpShadowRGB;
-                    bruce->CSuper.mShadowLights = players;
-                    rgb->b = shade;
-                    rgb->g = shade;
-                    rgb->r = shade;
-                }
-            }
+            int _x = line_info.Position.vx;
+            int _y = line_info.Position.vy;
+            int _z = line_info.Position.vz;
+            mShadowPos.vx = _x;
+            mShadowPos.vy = _y;
+            mShadowPos.vz = _z;
+        }
+        {
+            int _x = line_info.Normal.vx;
+            int _y = line_info.Normal.vy;
+            int _z = line_info.Normal.vz;
+            mShadowNormal.vx = _x;
+            mShadowNormal.vy = _y;
+            mShadowNormal.vz = _z;
+        }
+        int players = GNumberOfPlayers;
+        if (players == 1)
+        {
+            int shade = ((4300 - line_info.Distance) << 7) / 4000;
+            CVECTOR *rgb = mpShadowRGB;
+            mShadowLights = players;
+            rgb->b = shade;
+            rgb->g = shade;
+            rgb->r = shade;
         }
     }
     else
     {
-        bruce->CSuper.mShadowLights = 0;
+        mShadowLights = 0;
     }
 }
 
@@ -1600,11 +1157,10 @@ void CBruce::DoShadowCheck()
  */
 void CBruce::InitItem(char *pName)
 {
-    CBruce *bruce = this;
-    reinterpret_cast<CItem *>(&bruce->CSuper.CBody.CItem)->InitItem(pName);
-    int idx = bruce->mSkaterType;
+    CItem::InitItem(pName);
+    int idx = mSkaterType;
     M3dUtils_ReadHooksPacket(
-        reinterpret_cast< ::CSuper *>(bruce), SkaterHooks[idx]);
+        this, SkaterHooks[idx]);
 }
 
 /**
@@ -1618,28 +1174,27 @@ void CBruce::InitItem(char *pName)
  */
 int CBruce::FlipToVelocity()
 {
-    CBruce *bruce = this;
-    if (bruce->CSuper.mAnim == 0x22)
+    if (mAnim == 0x22)
         return 0;
 
     if (Mips_CVecDotProd(
-            reinterpret_cast<CVector *>(&bruce->mFront),
+            reinterpret_cast<CVector *>(&mFront),
             reinterpret_cast<CVector *>(
-                &bruce->CSuper.CBody.mVel)) > 0x5000)
+                &mVel)) > 0x5000)
     {
-        bruce->mRotationMatrix.m[0][2] = -bruce->mFront.vx;
-        bruce->mFront.vx = bruce->mRotationMatrix.m[0][2];
-        bruce->mRotationMatrix.m[1][2] = -bruce->mFront.vy;
-        bruce->mFront.vy = bruce->mRotationMatrix.m[1][2];
-        bruce->mRotationMatrix.m[2][2] = -bruce->mFront.vz;
-        bruce->mFront.vz = bruce->mRotationMatrix.m[2][2];
-        bruce->mRotationMatrix.m[0][0] = -bruce->mRight.vx;
-        bruce->mRight.vx = bruce->mRotationMatrix.m[0][0];
-        bruce->mRotationMatrix.m[1][0] = -bruce->mRight.vy;
-        bruce->mRight.vy = bruce->mRotationMatrix.m[1][0];
-        bruce->mRotationMatrix.m[2][0] = -bruce->mRight.vz;
-        bruce->mRight.vz = bruce->mRotationMatrix.m[2][0];
-        bruce->CSuper.mExtraFlags ^= 2;
+        mRotationMatrix.m[0][2] = -mFront.vx;
+        mFront.vx = mRotationMatrix.m[0][2];
+        mRotationMatrix.m[1][2] = -mFront.vy;
+        mFront.vy = mRotationMatrix.m[1][2];
+        mRotationMatrix.m[2][2] = -mFront.vz;
+        mFront.vz = mRotationMatrix.m[2][2];
+        mRotationMatrix.m[0][0] = -mRight.vx;
+        mRight.vx = mRotationMatrix.m[0][0];
+        mRotationMatrix.m[1][0] = -mRight.vy;
+        mRight.vy = mRotationMatrix.m[1][0];
+        mRotationMatrix.m[2][0] = -mRight.vz;
+        mRight.vz = mRotationMatrix.m[2][0];
+        mExtraFlags ^= 2;
         return 1;
     }
 
@@ -1658,7 +1213,6 @@ int CBruce::FlipToVelocity()
  */
 void CBruce::BloodSplat(int BodyPart, int MaxBloodBits)
 {
-    CBruce *bruce = this;
     CSVector v;
     CVector Pos;
     CSVector Cone;
@@ -1667,7 +1221,7 @@ void CBruce::BloodSplat(int BodyPart, int MaxBloodBits)
     if (Cheat_Blood == 0)
         return;
 
-    Video_BloodSplat(bruce, BodyPart, MaxBloodBits);
+    Video_BloodSplat(this, BodyPart, MaxBloodBits);
 
     if (BitCount >= 200)
         return;
@@ -1694,7 +1248,7 @@ void CBruce::BloodSplat(int BodyPart, int MaxBloodBits)
     Bit_SetSparkTrajectoryCone(Cone);
     Bit_SetSparkRGB(0x48, 0, 0);
     Bit_SetSparkFadeRGB(0, 0, 0);
-    bruce->GetHookPosition(Pos, (u8)BodyPart);
+    GetHookPosition(Pos, (u8)BodyPart);
 
     SparkSemiTrans = reinterpret_cast<void *>(0);
     UseCacheForBits = 0;
@@ -1737,7 +1291,7 @@ void CBruce::BloodSplat(int BodyPart, int MaxBloodBits)
                     Pos, (i >> 2) + 0xE, gravity, (i & 7) + 0x32);
             reinterpret_cast<CVector &>(pSpark->mVel) +=
                 reinterpret_cast<const CVector &>(
-                    bruce->CSuper.CBody.mVel);
+                    mVel);
             pSpark->mFloorY = FloorY;
             i++;
             gravity += 0x100;
@@ -1758,29 +1312,28 @@ void CBruce::BloodSplat(int BodyPart, int MaxBloodBits)
  */
 void CBruce::AI()
 {
-    CBruceAISlice *bruce = reinterpret_cast<CBruceAISlice *>(this);
     if (GamePaused != 0)
         return;
 
     if (((CCamera *)CameraList)->InCompetitionIntro() != 0)
     {
-        bruce->mPlayTime = XFrames + 3630;
+        mPlayTime = XFrames + 3630;
         return;
     }
 
-    if (bruce->mRecentEvent1 != 0 &&
-        XFrames - bruce->mRecentEvent1 > 10)
+    if (mRecentEvent1 != 0 &&
+        XFrames - mRecentEvent1 > 10)
     {
-        bruce->mRecentEvent1 = 0;
+        mRecentEvent1 = 0;
     }
-    if (bruce->mRecentEvent2 != 0 &&
-        XFrames - bruce->mRecentEvent2 > 10)
+    if (mRecentEvent2 != 0 &&
+        XFrames - mRecentEvent2 > 10)
     {
-        bruce->mRecentEvent2 = 0;
+        mRecentEvent2 = 0;
     }
 
     SVideoInfo *VInfo;
-    if ((CBodyOwner *)&bruce->Inherited.Base == (CBodyOwner *)MechList)
+    if ((CBody *)this == MechList)
         VInfo = &GVInfo1;
     else
         VInfo = &GVInfo2;
@@ -1788,63 +1341,59 @@ void CBruce::AI()
     switch (VInfo->VideoMode)
     {
     case 1:
-        Video_Record((CBruce *)bruce);
+        Video_Record(this);
         break;
     case 2:
-        Video_Playback((CBruce *)bruce);
+        Video_Playback(this);
         return;
     }
 
-    bruce->mResponseTimer = 100;
-    bruce->Inherited.Base.RGB = 0x404040;
-    reinterpret_cast<CBruce *>(bruce)->ReadAnalogueInput();
-    reinterpret_cast<CBruce *>(bruce)->DoPhysics();
-    reinterpret_cast<CBruce *>(bruce)->HandleWater();
+    mResponseTimer = 100;
+    mRGB = 0x404040;
+    ReadAnalogueInput();
+    DoPhysics();
+    HandleWater();
 
-    if ((((bruce->Inherited.Base.AnimFlags >> 1) ^ 1) & 1) != 0)
-        ++bruce->mGroundCounter;
+    if ((((mCollision >> 1) ^ 1) & 1) != 0)
+        ++mGroundCounter;
     else
-        bruce->mGroundCounter = 0;
+        mGroundCounter = 0;
 
-    if (bruce->mInputDelay != 0)
-        --bruce->mInputDelay;
+    if (mInputDelay != 0)
+        --mInputDelay;
 
     CVector nearest;
     CBody *pOb = M3dColij_LineToSphere(
-        reinterpret_cast<const CVector &>(
-            bruce->Inherited.Base.OldPosition),
-        reinterpret_cast<const CVector &>(
-            bruce->Inherited.Base.Position),
+        mOldPos,
+        mPos,
         nearest, BaddyList, 0, 0x1000);
     if (pOb != 0)
-        reinterpret_cast<CBruce *>(bruce)->CollideWithObject(pOb);
+        CollideWithObject(pOb);
 
     pOb = M3dColij_LineToSphere(
-        reinterpret_cast<const CVector &>(
-            bruce->Inherited.Base.OldPosition),
-        reinterpret_cast<const CVector &>(
-            bruce->Inherited.Base.Position),
+        mOldPos,
+        mPos,
         nearest, PowerUpList, 0, 0x1000);
     if (pOb != 0)
-        reinterpret_cast<CPowerUp *>(pOb)->TakeEffect((CBruce *)bruce);
+        reinterpret_cast<CPowerUp *>(pOb)->TakeEffect(this);
 
-    if (bruce->mPhysicsState != 0 ||
-        MechAbs(bruce->Inherited.Base.Position.vy - bruce->mShadowY) >= 65)
+    if (mPhysicsState != 0 ||
+        MechAbs(mPos.vy - mShadowY) >= 65)
     {
-        bruce->mShadowY = bruce->Inherited.Base.Position.vy;
-        reinterpret_cast<CBruce *>(bruce)->DoShadowCheck();
+        mShadowY = mPos.vy;
+        DoShadowCheck();
     }
     else
     {
-        bruce->Inherited.Base.ShadowX = bruce->Inherited.Base.Position.vx;
-        bruce->Inherited.Base.ShadowZ = bruce->Inherited.Base.Position.vz;
+        mShadowPos.vx = mPos.vx;
+        mShadowPos.vz = mPos.vz;
     }
 
-    if (bruce->Inherited.Base.GroundAngle < 0)
-        bruce->Inherited.Base.GroundAngle = 0;
+    if (mHealth < 0)
+        mHealth = 0;
 
     if ((Cheat_FPS != 0 || Cheat_StatsOverride != 0) &&
-        bruce == reinterpret_cast<CBruceAISlice *>(GSkater[0]))
+        this == GSkater[0])
     {
         static char lm[30];
 
@@ -1853,32 +1402,32 @@ void CBruce::AI()
             Mech_StatsFormat,
             Cheat_StatsOverride != 0
                 ? Cheat_StatsOverride
-                : (Stats[bruce->mSkaterType].Toughness +
-                       ((bruce->mMagicTime != 0 || Cheat_Fire != 0)
+                : (Stats[mSkaterType].Toughness +
+                       ((mMagicTime != 0 || Cheat_Fire != 0)
                             ? 3
                             : 0)) +
-                      bruce->mpBoardStats->ollie,
+                      mpBoardStats->ollie,
             Cheat_StatsOverride != 0
                 ? Cheat_StatsOverride
-                : (Stats[bruce->mSkaterType].Speed +
-                       ((bruce->mMagicTime != 0 || Cheat_Fire != 0)
+                : (Stats[mSkaterType].Speed +
+                       ((mMagicTime != 0 || Cheat_Fire != 0)
                             ? 3
                             : 0)) +
-                      bruce->mpBoardStats->speed,
+                      mpBoardStats->speed,
             Cheat_StatsOverride != 0
                 ? Cheat_StatsOverride
-                : (Stats[bruce->mSkaterType].Air +
-                       ((bruce->mMagicTime != 0 || Cheat_Fire != 0)
+                : (Stats[mSkaterType].Air +
+                       ((mMagicTime != 0 || Cheat_Fire != 0)
                             ? 3
                             : 0)) +
-                      bruce->mpBoardStats->air,
+                      mpBoardStats->air,
             Cheat_StatsOverride != 0
                 ? Cheat_StatsOverride
-                : (Stats[bruce->mSkaterType].Balance +
-                       ((bruce->mMagicTime != 0 || Cheat_Fire != 0)
+                : (Stats[mSkaterType].Balance +
+                       ((mMagicTime != 0 || Cheat_Fire != 0)
                             ? 3
                             : 0)) +
-                      bruce->mpBoardStats->balance);
+                      mpBoardStats->balance);
         Font_String(
             0x1A4, 200, lm, 0x5A, 0x5A, 0x64, 0);
     }
@@ -1894,12 +1443,11 @@ void CBruce::AI()
  */
 void CBruce::HandleWater()
 {
-    CBruce *bruce = this;
     if (GNumberOfPlayers == 2)
         return;
 
     int WaterLevel;
-    if (&bruce->CSuper.CBody == MechList)
+    if (this == (CBruce *)MechList)
     {
         WaterLevel = CurrentWaterLevel;
     }
@@ -1908,28 +1456,28 @@ void CBruce::HandleWater()
         WaterLevel = CurrentWaterLevel2;
     }
 
-    int bottom = bruce->CSuper.CBody.CItem.mPos.vy + 0x19000;
+    int bottom = mPos.vy + 0x19000;
     if (WaterLevel < bottom)
     {
-        int flags = bruce->CSuper.CBody.CItem.mFlags;
+        int flags = mFlags;
         int splashSfx = 0x2B;
         if ((flags & 8) == 0)
         {
             SFX_PlayX(splashSfx, 0x2000, 0);
-            flags = bruce->CSuper.CBody.CItem.mFlags;
+            flags = mFlags;
         }
 
         flags = flags | 8;
 
         int timer = TTime;
         timer &= 3;
-        bruce->CSuper.CBody.CItem.mFlags = flags;
+        mFlags = flags;
         if (timer != 0)
             return;
 
         CVector p;
         p = reinterpret_cast<const CVector &>(
-            bruce->CSuper.CBody.CItem.mPos);
+            mPos);
         p.vy = WaterLevel;
 
         int offset = Rnd(24) + 16;
@@ -1953,8 +1501,8 @@ void CBruce::HandleWater()
     }
     else
     {
-        bruce->CSuper.CBody.CItem.mFlags =
-            bruce->CSuper.CBody.CItem.mFlags & ~8;
+        mFlags =
+            mFlags & ~8;
     }
 }
 

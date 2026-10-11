@@ -3,7 +3,7 @@
 // Functions: 19 reconstructed
 // Address range: 0x80094AB8 - 0x80097CD0
 //
-// Compiled with cc1plus (GCC 2.91.66-psx). Compiler auto-mangles symbol names.
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 #include <STDDEF.H>
 #include <LIBGTE.H>
@@ -361,10 +361,6 @@ static inline void copFunction_m3d(int op) {
     }
 }
 
-#define setCopControlWord(cop, reg, value) setCopControlWord_m3d((reg), (int)(value))
-#define setCopReg(cop, reg, value) setCopReg_m3d((reg), (int)(value))
-#define getCopReg(cop, reg) getCopReg_m3d((reg))
-#define copFunction(cop, op) copFunction_m3d((op))
 
 // === Free function declarations ===
 void M3d_Line(int x0, int y0, int x1, int y1, int Color, int z);
@@ -450,15 +446,16 @@ void M3d_Line(int x0, int y0, int x1, int y1, int Color, int z) {
     LINE_F2 *aline = (LINE_F2 *)pPoly;
     u8 *newppoly = (u8 *)(aline + 1);
     pPoly = (u32 *)newppoly;
-    aline->tag = 0x03000000;
     *(u32 *)&aline->r0 = 0x40000000 + Color;
+    SDoubleBufferLocal *db = reinterpret_cast<SDoubleBufferLocal *>(pDoubleBuffer);
+    aline->tag = 0x03000000;
 
     aline->x0 = x0;
     aline->y0 = y0;
     aline->x1 = x1;
     aline->y1 = y1;
 
-    addPrim(reinterpret_cast<SDoubleBufferLocal *>(pDoubleBuffer)->OrderingTable + ((z >> 2) & 0xFFF), aline);
+    addPrim(db->OrderingTable + ((z >> 2) & 0xFFF), aline);
 }
 
 /**
@@ -510,7 +507,7 @@ int Wireframe_ProcessPolys(unsigned int * pFaceX, int Num, int color) {
             int x3 = pVertices[pVertexIndex[3]].X;
             int y3 = pVertices[pVertexIndex[3]].Y;
             int z3 = pVertices[pVertexIndex[0]].z;
-            if (z3 != zmax) zmax = z3;
+            if (z3 > zmax) zmax = z3;
 
             int color2 = color;
             if (color2 == 0x800080) {
@@ -547,9 +544,10 @@ int Wireframe_ProcessPolys(unsigned int * pFaceX, int Num, int color) {
                 POLY_F4 *p_poly = (POLY_F4 *)pPoly;
                 pPoly = (u32 *)(p_poly + 1);
                 setPolyF4(p_poly);
-                setXY4(p_poly, x0, y0, x1, y1, x2, y2, x3, y3);
                 setRGB0(p_poly, FaceR, FaceG, FaceB);
-                addPrim(reinterpret_cast<SDoubleBufferLocal *>(pDoubleBuffer)->OrderingTable +
+                SDoubleBufferLocal *db = reinterpret_cast<SDoubleBufferLocal *>(pDoubleBuffer);
+                setXY4(p_poly, x0, y0, x1, y1, x2, y2, x3, y3);
+                addPrim(db->OrderingTable +
                             ((zmax >> 2) & 0xFFF),
                         p_poly);
             }
@@ -588,9 +586,10 @@ int Wireframe_ProcessPolys(unsigned int * pFaceX, int Num, int color) {
                 POLY_F3 *p_poly = (POLY_F3 *)pPoly;
                 pPoly = (u32 *)(p_poly + 1);
                 setPolyF3(p_poly);
-                setXY3(p_poly, x0, y0, x1, y1, x2, y2);
                 setRGB0(p_poly, FaceR, FaceG, FaceB);
-                addPrim(reinterpret_cast<SDoubleBufferLocal *>(pDoubleBuffer)->OrderingTable +
+                SDoubleBufferLocal *db = reinterpret_cast<SDoubleBufferLocal *>(pDoubleBuffer);
+                setXY3(p_poly, x0, y0, x1, y1, x2, y2);
+                addPrim(db->OrderingTable +
                             ((zmax >> 2) & 0xFFF),
                         p_poly);
             }

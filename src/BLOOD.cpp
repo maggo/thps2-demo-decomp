@@ -3,36 +3,48 @@
 // Functions: 4 reconstructed entries
 // Address range: 0x8006B56C - 0x8006B680
 //
-// Compiled with cc1plus (GCC 2.91.66-psx). Compiler auto-mangles symbol names.
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
-#define BIT_BLOOD_MANAGER_LAYOUT
+#include "CCLASS_POLY.h"
 #include "BIT.h"
-#undef BIT_BLOOD_MANAGER_LAYOUT
 
-// GCC 2.x emits a private copy of `CClass::~CClass` beside a private base
-// vtable in every owner that derives from CClass.  `MAIN.SYM` records 25 such
-// `_._6CClass` copies and names no base vtable, so both are file-local here.
-// The legal per-address identifier keeps the private target copy distinct.
-extern "C"
-{
-static void __DOT__6CClass_8006B690(CClass *self, int flags);
-}
+struct BloodBit;
+struct CBruce;
 
-// C++ forbids taking a destructor's address, so the public vtable slot uses an
-// addressable declaration of the symbol this owner already defines.
-void Blood_DestructorAbi(Blood *blood, int inCharge) asm("_._5Blood");
+/** Virtual prefix used when retiring a blood particle. */
+struct BloodBitVtable {
+    void (*reserved0)(void *object);
+    void (*reserved1)(void *object);
+    void (*destroy)(BloodBit *object, int flags);
+};
 
-// Consecutive eight-byte-aligned small-data words per vtable rather than
-// arrays, so -G8 still yields the target's `addiu $vX, $gp, off` form.
-int __vt_5Blood
-    __attribute__((section(".sdata"), aligned(8))) = 0;
-static int Blood_VTableIndex = 0;
-static int Blood_VTableDtor = (int)&Blood_DestructorAbi;
+/** Minimal named CBit layout needed for virtual destruction. */
+struct BloodBit {
+    unsigned char state[68];
+    BloodBitVtable *vtable;
+};
 
-static int Blood_BaseVTable
-    __attribute__((section(".sdata"), aligned(8))) = 0;
-static int Blood_BaseVTableIndex = 0;
-static int Blood_BaseVTableDtor = (int)&__DOT__6CClass_8006B690;
+/** Blood particle stack and lifetime state. */
+struct Blood : CClass {
+    enum { Capacity = 20, InitialAge = 128 };
+
+    /** Initialize an empty blood-particle manager. */
+    Blood();
+    virtual ~Blood();
+    /** Destroy all live blood particles and reset the manager state. */
+    void Reset();
+    /** Update blood particles for the active skater. */
+    void Update(CBruce *bruce);
+
+    struct BloodBit *mBloodStack[Capacity];
+    int mBloodCount;
+    int mAge;
+};
+
+typedef char blood_owner_size_must_be_92[
+    (sizeof(Blood) == 92) ? 1 : -1];
+typedef char blood_bit_size_must_be_72[
+    (sizeof(BloodBit) == 72) ? 1 : -1];
 
 // === Function implementations (address order) ===
 
@@ -45,7 +57,6 @@ static int Blood_BaseVTableDtor = (int)&__DOT__6CClass_8006B690;
  *
  */
 Blood::Blood() {
-    CClass.vtable = &__vt_5Blood;
     int i = 0;
     BloodBit **ptr = mBloodStack;
     do {
@@ -68,9 +79,7 @@ Blood::Blood() {
  *
  */
 Blood::~Blood() {
-    CClass.vtable = &__vt_5Blood;
     Reset();
-    CClass.vtable = &Blood_BaseVTable;
 }
 
 
@@ -126,19 +135,4 @@ void Blood::Update(CBruce *pBruce) {
     (void)hook;
     (void)reservedScratch;
     return;
-}
-
-/**
- * Destroy the owner-local CClass base and optionally release its storage.
- *
- * GCC emitted this private copy last in the owner's text, so it remains at
- * the end of the translation unit.
- */
-static void __DOT__6CClass_8006B690(CClass *self, int flags)
-{
-    self->vtable = &Blood_BaseVTable;
-    if (flags & 1)
-    {
-        CClass::operator delete(self);
-    }
 }

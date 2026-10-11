@@ -4,9 +4,9 @@ namespace SpoolerAddressViews
 {
 extern "C"
 {
-extern char DAT_800da698[];
-extern char DAT_800da69c[];
-extern char DAT_800da6a0[];
+extern char s_FileNameFormat[];
+extern char s_Ext_psx[];
+extern char s_Ext_PSX[];
 }
 }
 #undef SPOOLER_DECLARE_OWNER_ADDRESS_VIEWS
@@ -33,8 +33,14 @@ struct SpoolItem {
 #endif
 
 /** Manages the fixed 64-entry asynchronous file queue. */
-struct Spooler {
+struct Spooler
+#ifdef SPOOLER_POLYMORPHIC_LAYOUT
+    : CClass
+#endif
+{
+#ifndef SPOOLER_POLYMORPHIC_LAYOUT
     struct CClass CClass;
+#endif
     struct SpoolItem mItem[64];
     int mNumItems;
     int mCurrentItem;
@@ -46,6 +52,9 @@ struct Spooler {
     /** Initialize an empty spooler instance. */
     Spooler();
     /** Release every resource owned by this spooler. */
+#ifdef SPOOLER_POLYMORPHIC_LAYOUT
+    virtual
+#endif
     ~Spooler();
     /** Add one file request to the queue. */
     int AddFile(char *, int);

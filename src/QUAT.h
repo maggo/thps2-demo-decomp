@@ -1,5 +1,4 @@
-// Hand-maintained per-TU interface for QUAT.cpp.
-// tools/gen_tu_headers.py is retained for bootstrapping and does not reproduce it.
+// QUAT.h -- interface of QUAT.cpp
 #ifndef QUAT_INC_H
 #define QUAT_INC_H
 

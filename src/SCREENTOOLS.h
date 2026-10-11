@@ -2,6 +2,110 @@
 // This target-proven ABI/layout surface is hand-maintained; do not regenerate blindly.
 
 /*
+ * Natural polymorphic screen-element family (vt4).  A TU that defines
+ * SCREENTOOLS_POLYMORPHIC_LAYOUT before the first include gets the real class
+ * hierarchy derived from CCLASS_POLY.h's CClass, together with the polymorphic
+ * Font (FONTTOOLS.h), FrontPreLoader (FRONTPRE.h) and Image/Sprite2 (IMAGE.h)
+ * models it needs: GCC then emits the owner's dispatch tables and destructors
+ * itself.  Slot order from the target tables (__vt_13ScreenElement ...):
+ *   [0] ~  [1] update  [2] draw(int,int) (pure in ScreenElement)  [3] width  [4] refresh
+ * SCREENTOOLS.cpp owns ScreenElement, TextScreenElement, SpriteScreenElement and
+ * ScreenElementList (declared in that order: the exe has their tables in
+ * reverse declaration order, ScreenElementList first).
+ */
+#if defined(SCREENTOOLS_POLYMORPHIC_LAYOUT) && \
+    !defined(SCREENTOOLS_POLYMORPHIC_LAYOUT_EMITTED)
+#define SCREENTOOLS_POLYMORPHIC_LAYOUT_EMITTED
+#define SCREENTOOLS_AGGREGATE_LAYOUT_EMITTED /* the POD views are superseded */
+
+#include "CCLASS_POLY.h"
+#define FONTTOOLS_POLYMORPHIC_LAYOUT
+#include "FONTTOOLS.h"
+#define FRONTPRE_POLYMORPHIC_LAYOUT
+#include "FRONTPRE.h"
+#define IMAGE_POLYMORPHIC_LAYOUT
+#include "IMAGE.h"
+
+/** Base drawable of the front-end screen hierarchy. */
+struct ScreenElement : CClass {
+    int mHomeX;
+    int mHomeY;
+    int mDrawFirst;
+    int mHide;
+    int mDelay;
+    void *mAtHome;
+    int mScreenX;
+    int mScreenY;
+
+    ScreenElement(int homeX, int homeY, int screenX, int screenY);
+    virtual ~ScreenElement();
+    /** Advance this element toward its home position. */
+    virtual void update();
+    /** Draw this element at the supplied parent offset. */
+    virtual void draw(int x, int y) = 0;
+    /** Return this element's drawable width. */
+    virtual int width();
+    /** Notify this element that its displayed content changed. */
+    virtual void refresh();
+
+    /** Return the current screen-space X coordinate. */
+    int GetScreenX();
+    /** Return the current screen-space Y coordinate. */
+    int GetScreenY();
+    /** Move the screen-space X coordinate directly to its home position. */
+    void SnapToHomeX();
+};
+
+/** Text-bearing screen element. */
+struct TextScreenElement : ScreenElement {
+    char *mpString;
+    Font *mpFont;
+
+    TextScreenElement(char *text, Font *font, int homeX, int homeY,
+                      int screenX, int screenY);
+    virtual ~TextScreenElement();
+    /** Replace the owned display string with a copy of the supplied text. */
+    void setString(char *text);
+    void draw(int x, int y);
+    int width();
+};
+
+/** Sprite-bearing screen element. */
+struct SpriteScreenElement : ScreenElement {
+    Sprite2 *mSprite;
+
+    SpriteScreenElement(char *fileName, int homeX, int homeY, int screenX,
+                        int screenY, int justY, int justX);
+    virtual ~SpriteScreenElement();
+    void draw(int x, int y);
+    int width();
+};
+
+/** Fixed-capacity list of elements used by composite front-end screens. */
+struct ScreenElementList : ScreenElement {
+    ScreenElement *mpItem[16];
+    int mCount;
+
+    ScreenElementList(int homeX, int homeY, int screenX, int screenY);
+    virtual ~ScreenElementList();
+    void update();
+    void draw(int x, int y);
+    /** Add one element to the first unused list slot. */
+    void addItem(ScreenElement *element);
+};
+
+typedef char frontend_screen_element_size_must_be_36[
+    (sizeof(ScreenElement) == 36) ? 1 : -1];
+typedef char frontend_screen_element_list_size_must_be_104[
+    (sizeof(ScreenElementList) == 104) ? 1 : -1];
+typedef char frontend_text_screen_element_size_must_be_44[
+    (sizeof(TextScreenElement) == 44) ? 1 : -1];
+typedef char frontend_sprite_screen_element_size_must_be_40[
+    (sizeof(SpriteScreenElement) == 40) ? 1 : -1];
+
+#endif // SCREENTOOLS_POLYMORPHIC_LAYOUT
+
+/*
  * Target-proven aggregate ABI/storage views shared by the four menu owners.
  * These POD prefixes model embedding and field offsets only; SCREENTOOLS.cpp
  * retains the natural inherited class identities that own their methods and
@@ -99,25 +203,11 @@ extern "C" ScreenElement *__13ScreenElementiiii(
 #undef SCREENTOOLS_DECLARE_SCREEN_ELEMENT_CONSTRUCTOR
 #endif
 
-#if defined(SCREENTOOLS_DECLARE_SCREEN_ELEMENT_DESTRUCTOR)
-struct ScreenElement;
-void ScreenElement_DestroyAbi(ScreenElement *element, int inCharge)
-    asm("_._13ScreenElement");
-#undef SCREENTOOLS_DECLARE_SCREEN_ELEMENT_DESTRUCTOR
-#endif
-
 #if defined(SCREENTOOLS_DECLARE_SCREEN_ELEMENT_LIST_CONSTRUCTOR)
 struct ScreenElementList;
 extern "C" ScreenElementList *__17ScreenElementListiiii(
     ScreenElementList *list, int homeX, int homeY, int screenX, int screenY);
 #undef SCREENTOOLS_DECLARE_SCREEN_ELEMENT_LIST_CONSTRUCTOR
-#endif
-
-#if defined(SCREENTOOLS_DECLARE_SCREEN_ELEMENT_LIST_DESTRUCTOR)
-struct ScreenElementList;
-void ScreenElementList_DestroyAbi(ScreenElementList *list, int inCharge)
-    asm("_._17ScreenElementList");
-#undef SCREENTOOLS_DECLARE_SCREEN_ELEMENT_LIST_DESTRUCTOR
 #endif
 
 #if defined(SCREENTOOLS_DECLARE_TEXT_MENU_PROPERTIES_CONSTRUCTOR)
@@ -164,27 +254,12 @@ extern "C" TextScreenElement *__17TextScreenElementPcP4Fontiiii(
 #undef SCREENTOOLS_DECLARE_TEXT_SCREEN_ELEMENT_CONSTRUCTOR
 #endif
 
-#if defined(SCREENTOOLS_DECLARE_TEXT_SCREEN_ELEMENT_DESTRUCTOR)
-struct TextScreenElement;
-void TextScreenElement_DestroyAbi(TextScreenElement *element, int inCharge)
-    asm("_._17TextScreenElement");
-#undef SCREENTOOLS_DECLARE_TEXT_SCREEN_ELEMENT_DESTRUCTOR
-#endif
-
 #if defined(SCREENTOOLS_DECLARE_SPRITE_SCREEN_ELEMENT_CONSTRUCTOR)
 struct SpriteScreenElement;
 extern "C" SpriteScreenElement *__19SpriteScreenElementPciiiiii(
     SpriteScreenElement *element, char *fileName,
     int homeX, int homeY, int screenX, int screenY, int justY, int justX);
 #undef SCREENTOOLS_DECLARE_SPRITE_SCREEN_ELEMENT_CONSTRUCTOR
-#endif
-
-#if defined(SCREENTOOLS_DECLARE_SPRITE_SCREEN_ELEMENT_DESTRUCTOR)
-struct SpriteScreenElement;
-void SpriteScreenElement_destructor_slot(SpriteScreenElement *element,
-                                         int inCharge)
-    asm("_._19SpriteScreenElement");
-#undef SCREENTOOLS_DECLARE_SPRITE_SCREEN_ELEMENT_DESTRUCTOR
 #endif
 
 #ifndef SCREENTOOLS_AGGREGATE_LAYOUT_ONLY

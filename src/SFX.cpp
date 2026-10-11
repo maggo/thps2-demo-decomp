@@ -3,7 +3,7 @@
 // Functions: 33
 // Address range: 0x8004BF64 - 0x8004D4B0
 //
-// Compiled with cc1plus (GCC 2.91.66-psx). Compiler auto-mangles symbol names.
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 #define SFX_OWNER_DECLARATIONS
 #include "SFX.h"
@@ -191,8 +191,7 @@ copy_done:
     out[i++] = 'B';
     out[i] = '\0';
 
-    // Separating filename construction from the calls is load-bearing:
-    // removing this boundary produces 23 real mismatches in this function.
+    // FIXME(match): asm barrier — keeps the filename stores ahead of the call arg setup (without it a0/a1 setup is hoisted over the stores and i/out regs shift); tried: comma-expression args, i/out/filename declaration order: score 21.
     asm volatile("");
     LevelSpecificSFXVABId = SFX_OpenVABFile(filename,
                                             &pLevelSpecificSFXVABHeader);
@@ -1061,19 +1060,12 @@ static unsigned int playSFX(unsigned int sfx, unsigned char pitch, short vl, sho
                         // This source local is present in MAIN.SYM and affects
                         // the old compiler's register interference graph.
                         int pitch_byte_off = v * 2;
-                        // Both compiler boundaries below are match-critical.
-                        // The first forces the p_volume reload into this
-                        // preheader instead of the store site; the second
-                        // flips the caller-saved tie between `tones` ($t0)
-                        // and p_pitch ($t1).
+                        // FIXME(match): asm barrier — p_vol operand barrier forces the p_volume reload into this preheader (removing it costs 35 score); second barrier flips the tones $t0 / p_pitch $t1 tie; tried: reordering p_vol/p_pitch/voice_bit declarations: 14-56.
                         unsigned short *p_vol = p_volume;
-                        // Removing this operand changes 61 instructions and
-                        // two relocations in playSFX.
                         asm volatile("" : "+r"(p_vol));
                         unsigned short *p_pitch = voicePitch + v;
                         int voice_bit = 1 << v;
-                        // Removing this scheduling boundary produces 14 real
-                        // mismatches in playSFX.
+                        // FIXME(match): asm barrier — see the FIXME above (tones/p_pitch tie); tried: same levers, score 14 without it.
                         asm volatile("");
                         for (; t < 16; t++) {
                             if ((tones >> t) & 1) {
@@ -1151,21 +1143,12 @@ static unsigned int playSFX(unsigned int sfx, unsigned char pitch, short vl, sho
  * @return Index of a free voice, or -1 when every voice is occupied.
  */
 static int allocateVoice(void) {
-    // Keeping the loop index in $v1 is load-bearing: an ordinary local
-    // produces one real mismatch in this function.
-    register int i asm("$3") = 0;
-    int one = 1;
-    asm volatile("" : "+r"(i));
-    int vf = voicefree_flag;
-    int mask = one << i;
-loop_av:
-    if (vf & mask) {
-        return i;
-    }
-    i++;
-    if (i < SFX_VOICE_COUNT) {
-        mask = one << i;
-        goto loop_av;
+    int i;
+    for (i = 0; i < SFX_VOICE_COUNT; i++) {
+        int mask = 1 << i;
+        if (voicefree_flag & mask) {
+            return i;
+        }
     }
     return -1;
 }
@@ -1254,13 +1237,8 @@ void SFX_ParseSFXFile(char * p_name, unsigned int * array, unsigned short * alia
     char filename[20];
     unsigned char *p_block;
     int alias_index;
-    int msk = mask;
-    asm("" : "+r"(msk));
     int i = 0;
-    asm("" : "+r"(i) : "r"(msk));
-    unsigned int *arr = array;
-    unsigned short *als = aliasArray;
-    int max = maxEntries;
+    // FIXME(match): asm barrier — schedules the stack-arg `mask` load/save of $s1 first in the prologue (without it lw s1 comes after the arg moves); tried: i/out decl order and scoping, loopMask/mask copy hoisted to top, i assigned later: score 8.
     asm volatile("");
     char *out = filename;
 
@@ -1283,7 +1261,7 @@ copy_done:
     out[i++] = 'X';
     out[i] = '\0';
 
-    // Keeps filename construction separate from the following allocator call.
+    // FIXME(match): asm barrier — keeps the filename stores ahead of the Mem_New arg setup; tried: comma-expression arg forms: score 17 without it.
     asm volatile("");
     p_block = (unsigned char *)Mem_New(0x800, 0, 1);
     FileIO_Open(filename);
@@ -1297,15 +1275,15 @@ copy_done:
     p_parse++;
     if (val != 0xFFFFFFFF) {
         unsigned int fe = 0xFE;
-        unsigned int loopMask = msk | 0x80000000;
-        unsigned short *p_alias = als;
-        p_array = arr;
+        unsigned int loopMask = mask | 0x80000000;
+        unsigned short *p_alias = aliasArray;
+        p_array = array;
 
         do {
             if ((val & 0xFF) == fe) {
                 p_array[0] = loopMask;
             } else {
-                p_array[0] = msk;
+                p_array[0] = mask;
             }
 
             alias_index++;
@@ -1329,8 +1307,8 @@ copy_done:
         } while (val != 0xFFFFFFFF);
     }
 
-    if (alias_index < max) {
-        als[alias_index] = 0xFFFF;
+    if (alias_index < maxEntries) {
+        aliasArray[alias_index] = 0xFFFF;
     }
     Mem_Delete(p_block);
 }

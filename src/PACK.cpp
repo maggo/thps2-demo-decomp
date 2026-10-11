@@ -3,7 +3,7 @@
 // Functions: 14 reconstructed entries
 // Address range: 0x8004A288 - 0x8004B54C
 //
-// Compiled with cc1plus (GCC 2.91.66-psx). Compiler auto-mangles symbol names.
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 #define PACK_OWNER_DECLARATIONS
 #define PACK_TSPACK_LAYOUT

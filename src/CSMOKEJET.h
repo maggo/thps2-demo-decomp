@@ -1,6 +1,8 @@
 // Shared declaration of the textured smoke-jet effect.
 #ifndef CSMOKEJET_INC_H
 #define CSMOKEJET_INC_H
+// CBIT_VIRTUAL is already defined by whichever TU-wide header came first
+// (CCLASS_POLY.h in BIT2/SMOKE, CNONRENDEREDBIT.h/CSPECIALDISPLAY.h/CPOLYLINE.h elsewhere).
 
 /** One smoke-ribbon width target and the time remaining to reach it. */
 struct SWidthWobble {
@@ -27,11 +29,11 @@ struct CSmokeJet : CTexturedRibbon {
         const CVector &BasePos, const CSVector &Angles, int Length,
         unsigned short Duration, int Damage, int r, int g, int b,
         unsigned char ScrollSpeed, unsigned int Checksum);
-    ~CSmokeJet();
+    CBIT_VIRTUAL ~CSmokeJet();
     /** Reposition every point along the smoke jet. */
     void SetPos(const CVector &Pos);
     /** Advance the smoke jet and apply collision-driven damage. */
-    void Move();
+    CBIT_VIRTUAL void Move();
     /** Release smoke-jet storage through the CBit allocator. */
     static void operator delete(void *p) { CBit::operator delete(p); }
 };

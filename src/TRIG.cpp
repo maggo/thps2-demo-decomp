@@ -3,7 +3,7 @@
 // Functions: 34 (34 strict matches)
 // Address range: 0x80045704 - 0x80048330
 //
-// Compiled with cc1plus (GCC 2.91.66-psx). Compiler auto-mangles symbol names.
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 #include "globals.h"
 #include "CITEM.h"
@@ -1299,18 +1299,14 @@ void Trig_LoadTRG(char *Name)
             pTRG++;
         } while (i < NumNodes);
     }
-    register char *pStart asm("$5") =
-        (char *)OffsetList[NumNodes - 1];
+    char *pStart = (char *)OffsetList[NumNodes - 1];
     short lastType = *(short *)pStart;
     int v1Ff = 0xFF;
     if (lastType != v1Ff)
         return;
-    int mask = -4;
     int base = (int)TrigFile;
-    register int used asm("$16") = pStart - (char *)base;
-    register int used5 asm("$3") = used + 5;
-    asm("" : "+r"(used5));
-    int newsize = used5 & mask;
+    int newsize = pStart - (char *)base;
+    newsize = (newsize + 5) & -4;
     Mem_Shrink((void *)base, newsize);
     TrigFileSize = newsize;
 
@@ -1466,7 +1462,7 @@ case5:
         Type = *pInfo;
         pStuff = Trig_GetPosition(Pos, NodeIndex);
         pStuff++;
-        // Required to retain the target's source-order argument scheduling.
+        // FIXME(match): asm barrier — keeps `addiu $v0,$v0,2` (pStuff++) ahead of `addiu $a1,$sp,0x18` (&Pos arg); score 2 without; tried: `+ 1` fold, statement/declaration reorders, flags/LifeTime orders, comma in the Pos argument, inlined flags.
         asm volatile("");
         unsigned int flags = pStuff[0];
         LifeTime = pStuff[1];
@@ -2447,9 +2443,10 @@ static void ExecuteCommandList(unsigned short *pCommands, int Node, int WaitForS
             ang_vel.vy = *pCommands++;
             ang_vel.vz = *pCommands++;
             CBackground *pBackground =
-                new CBackground(checksum, ang_vel);
+                (CBackground *)CItem::operator new(sizeof(CBackground));
             if (pBackground == 0)
                 break;
+            ::new (pBackground) CBackground(checksum, ang_vel);
             break;
         }
 
@@ -3361,6 +3358,7 @@ unsigned short *Trig_GetPosition(CVector &pos, int node)
     {
         pNode += pNode[3] + 4;
         pFlags = (unsigned char *)pNode;
+        // FIXME(match): register pin ($a0 for flag) — with `t` below keeps pPos/flag in $a0 so `pos` is copied to $a3 and the join tail is shared; score 39 without; tried: declaration orders (mask/pPos/pLong), pre-initialised pPos, while-loop form.
         register uint flag asm("$4") = *pFlags;
         mask = 0xFF;
         if (flag != mask)
@@ -3392,6 +3390,7 @@ unsigned short *Trig_GetPosition(CVector &pos, int node)
     case 500:
     case 501:
     {
+        // FIXME(match): register pin + asm barrier — same $a0 pPos/$a3 pos split as `flag` above; tried: see `flag`.
         register ushort *t asm("$4") =
             (ushort *)((char *)pNode + 5);
         asm("" : "+r"(t));

@@ -3,7 +3,7 @@
 // Functions: 16 reconstructed entries
 // Address range: 0x80032890 - 0x800330EC
 //
-// Compiled with cc1plus (GCC 2.91.66-psx). Compiler auto-mangles symbol names.
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 #include "REDBOOK.h"
 #include "FILEIO.h"
@@ -219,24 +219,15 @@ void Redbook_XAInit(void) {
  * Address: 0x80032AE4
  */
 bool Redbook_XAPlayRandom(void) {
-    int selectedGroup;
-    int selectedChannel;
-    int track;
+    int group;
+    int channel;
     do {
-        track = Redbook_Rnd(8);
-        /*
-         * GCC 2.91 otherwise coalesces the quotient with group/channel and
-         * changes most of this small function.  Keep the measured register
-         * lifetimes, while expressing the table lookup with its real type.
-         */
-        register int quotient asm("$5") = track / 8;
-        asm volatile("" : "+r"(quotient));
-        register int group asm("$6") = quotient;
-        selectedGroup = group;
-        register int channel asm("$5") = track - (group << 3);
-        selectedChannel = channel;
-    } while (XAGroupSectorLengths[selectedGroup][selectedChannel] == -1);
-    return Redbook_XAPlay(selectedGroup, selectedChannel);
+        int track = Redbook_Rnd(8);
+        channel = track / 8;
+        group = channel;
+        channel = track - group * 8;
+    } while (XAGroupSectorLengths[group][channel] == -1);
+    return Redbook_XAPlay(group, channel);
 }
 
 
@@ -287,39 +278,14 @@ bool Redbook_XAPlay(int group, int channel) {
         return false;
     }
     Redbook_XAFadeScale = 255;
-    /*
-     * These scheduling anchors keep the target's early table loads ahead of
-     * the state stores.  Natural indexed variants were measured and change
-     * the legacy compiler's allocation/order, so the residual byte-offset
-     * form uses sizeof-derived offsets rather than numeric layout constants.
-     */
-    register unsigned int w asm("$4");
-    asm volatile("" : "=r"(w));
-    register int groupByteOffset asm("$2") = group * sizeof(int);
-    register const char *groupStartsBase asm("$6") =
-        reinterpret_cast<const char *>(XAGroupStartingSector);
-    int grpStart = *reinterpret_cast<const int *>(
-        groupStartsBase + groupByteOffset);
-    int startSec = Redbook_XAStartSector;
-    asm volatile("" : : "r"(w));
-    SONG_POS *songPos = &Paused_SongPos;
-    asm volatile("" : "+r"(songPos));
     Redbook_XAPaused = 0;
     Redbook_XAFading = 0;
     Redbook_XACurrentGroup = group;
     Redbook_XACurrentChannel = channel;
-    Redbook_XACurrentSector = startSec + grpStart * 8;
-    Redbook_XARemember(songPos);
-
-    {
-        register char *sectorLengthsBase asm("$6") =
-            reinterpret_cast<char *>(XAGroupSectorLengths);
-        int channelByteOffset = channel * sizeof(int);
-        int groupByteOffset = group * sizeof(XAGroupSectorLengths[0]);
-        Redbook_XAEndSector = Redbook_XACurrentSector +
-            *reinterpret_cast<int *>(sectorLengthsBase +
-                (channelByteOffset + groupByteOffset)) * 8 - 131;
-    }
+    Redbook_XACurrentSector = Redbook_XAStartSector + XAGroupStartingSector[group] * 8;
+    Redbook_XARemember(&Paused_SongPos);
+    Redbook_XAEndSector = Redbook_XACurrentSector +
+        XAGroupSectorLengths[group][channel] * 8 - 131;
 
     if (Loading != 0) {
         goto try_again;
@@ -344,14 +310,6 @@ bool Redbook_XAPlay(int group, int channel) {
     }
 
     {
-        /*
-         * The sole residue is target #75/#76: the original materializes 1
-         * before the `CdControlComeback` address, while GCC schedules those
-         * independent instructions in the opposite order.  The complete
-         * experiment ledger proves the earlier $a2 table-base bindings are
-         * load-bearing; unwinding them fixes this pair but damages the exact
-         * prologue.  Keep this plain SDK call shape.
-         */
         filter.file = 1;
         filter.chan = channel;
         CdControl(0x0d, reinterpret_cast<u8 *>(&filter), CdControlComeback);

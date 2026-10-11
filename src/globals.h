@@ -56,6 +56,11 @@ struct CVector  {
     int operator!=(const CVector &vector);
     /** Return the component-wise negation of this vector. */
     CVector operator-() const;
+#ifdef CVECTOR_COMPONENT_CTORS
+    /** Component constructor (used by OB.cpp's zero vectors). */
+    CVector() {}
+    CVector(int x, int y, int z) { vx = x; vy = y; vz = z; }
+#endif
     CVector &operator+=(const CVector &vector);
     CVector &operator-=(const CVector &vector);
     CVector &operator*=(const int &scale);
@@ -75,6 +80,10 @@ struct CSVector {
     CSVector &operator+=(const CSVector &vector);
     CSVector &operator/=(const int &divisor);
     CSVector &operator%=(const CFriction &friction);
+#ifdef CVECTOR_COMPONENT_CTORS
+    CSVector() {}
+    CSVector(short x, short y, short z) { vx = x; vy = y; vz = z; }
+#endif
 #endif
 };
 #include "CFRICTION.h"

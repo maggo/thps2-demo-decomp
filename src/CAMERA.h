@@ -1,23 +1,8 @@
-// Hand-maintained per-TU interface for CAMERA.cpp.
-// tools/gen_tu_headers.py is retained for bootstrapping and does not reproduce it.
+// CAMERA.h -- interface of CAMERA.cpp
 #ifndef CAMERA_INC_H
 #define CAMERA_INC_H
 
-#ifdef CAMERA_HEADER_EMISSION_LAYOUT
 
-#include "QUAT.h"
-
-/** CAMERA.H's instantiated quaternion animation parameter layout. */
-struct t9AnimParam1Z5CQuat {
-    struct CClass CClass;
-    unsigned int *mTimer;
-    struct CQuat mParam;
-};
-
-typedef char CameraH_AnimParamSizeIs28[
-    sizeof(t9AnimParam1Z5CQuat) == 28 ? 1 : -1];
-
-#else
 
     // Primitive types
     typedef unsigned char u8;
@@ -37,6 +22,7 @@ typedef char CameraH_AnimParamSizeIs28[
     typedef unsigned long ulong;
     typedef unsigned char undefined3[3];
 
+#ifndef SRC_GLOBALS_H
     // Game vector types
     struct CVector
     {
@@ -62,6 +48,8 @@ typedef char CameraH_AnimParamSizeIs28[
     };
 #include "CFRICTION.h"
 
+#endif
+
     // Forward declarations for large/opaque types
     struct CBody;
     struct CSuper;
@@ -78,7 +66,8 @@ typedef char CameraH_AnimParamSizeIs28[
     struct CamPos;
     struct CQuat;
     struct CClass;
-    struct t9AnimParam1Z5CQuat;
+    template<class T> struct AnimParam;
+    typedef AnimParam<CQuat> t9AnimParam1Z5CQuat;
 
     // Shared gameplay enums from MAIN_STRUCTS.h
     enum EPhysicsState
@@ -201,21 +190,13 @@ struct SPresetCamera {
 };
 
 // === Variables (gp-relative in this TU) ===
-extern CSVector BigShakeAmp;         // 0x800DC7D0
 extern int Camera_CamDist;           // 0x800DBA9C
 extern CVector Camera_CamOffset;     // 0x800DBAA0
 extern int Camera_CamPitch;          // 0x800DBA98
 #define CAMERASELECTION_GP_RELATIVE_DECLARATIONS
 #include "CAMERASELECTION.h"
 extern int Camera_Preset;            // 0x800DBA68
-extern CFriction LandShakeDecay;     // 0x800DC7B8
-extern CSVector LandShakeSpeed;      // 0x800DC7B0
-extern CSVector MediumShakeAmp;      // 0x800DC7C8
 extern int NumCameras;               // 0x800DBAAC
-extern int RandA;                    // 0x800DC8C0
-extern int RandB;                    // 0x800DC8C4
-extern int RandSeed;                 // 0x800DC8BC
-extern CSVector SmallShakeAmp;       // 0x800DC7C0
 #include "CAMERATUNING.h"
 extern int tpage;                    // 0x800DC788
 
@@ -226,14 +207,6 @@ extern int tpage;                    // 0x800DC788
 extern CQuat testquat;                                                   // 0x800C5AD8
 extern CQuat testquat2;                                                  // 0x800C5AEC
 extern CQuat testquat3;                                                  // 0x800C5B00
-
-#endif // CAMERA_HEADER_EMISSION_LAYOUT
-
-/** Destructor entries emitted by CAMERA_H.cpp and addressed by CAMERA.cpp. */
-extern "C" void __DOT__t9AnimParam1Z5CQuat(
-    t9AnimParam1Z5CQuat *parameter, int inCharge);
-extern "C" void __DOT__5CQuat_8007E81C(
-    CQuat *quaternion, int inCharge);
 
 #endif // CAMERA_INC_H
 
@@ -247,10 +220,4 @@ extern "C" void SetZoom__7CCameraUsUs(CCamera *camera, int zoom, int time);
 }
 
 #undef CAMERA_DECLARE_OWNER_ABI
-#endif
-
-#ifdef CAMERA_DECLARE_CAMPOS_VTABLE_ABI
-/** One-word GP-relative address view of CamPos's virtual table. */
-extern int __vt_6CamPos;
-#undef CAMERA_DECLARE_CAMPOS_VTABLE_ABI
 #endif

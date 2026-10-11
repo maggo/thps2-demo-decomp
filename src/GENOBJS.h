@@ -1,5 +1,4 @@
-// Hand-maintained per-TU interface for GENOBJS.cpp.
-// tools/gen_tu_headers.py is retained for bootstrapping and does not reproduce it.
+// GENOBJS.h -- interface of GENOBJS.cpp
 #if !defined(GENOBJS_ABI_SELECTORS_ONLY)
 
 #ifndef GENOBJS_INC_H
@@ -76,23 +75,6 @@ struct Item;
 
 // === Variables (absolute in this TU) ===
 #include "DOUBLEBUFFER.h"
-
-#ifdef GENOBJS_HEADER_EMISSION_LAYOUT
-/** Rail-point layout emitted by the original GENOBJS.H owner. */
-struct RailPoint
-{
-    CClass CClass;
-    SVector Pos;
-    RailPoint *Next;
-    int ModelIndex;
-    int Material;
-    void *IsDoubleLink;
-};
-
-typedef char GenObjsH_RailPoint_size_must_be_28[
-    (sizeof(RailPoint) == 28) ? 1 : -1];
-
-#endif
 
 #endif // GENOBJS_INC_H
 

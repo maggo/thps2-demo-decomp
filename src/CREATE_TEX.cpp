@@ -2,9 +2,11 @@
 // Original: CREATE_TEX.CPP
 // Functions: 9 reconstructed entries
 // Address range: 0x8006D0C0 - 0x8006D86C
-// Compiled with cc1plus (GCC 2.91.66-psx). Compiler auto-mangles symbol names.
+//
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
-#include "globals.h"
+#include "CCLASS_POLY.h"
+#define CREATE_TEX_POLYMORPHIC_LAYOUT
 
 #define CREATE_TEX_LIST_LAYOUT
 #define CREATE_TEX_LIST_LAYOUT_ONLY
@@ -20,19 +22,7 @@
 
 typedef char CreateTex_Spec_size_must_be_72[
     (sizeof(CCreateTexSpec) == 72) ? 1 : -1];
-// Natural placement construction advances GCC 2.x's TU-wide local-label allocator.
-// Keep this target-named owner-local entry until that compiler behavior is reproduced.
-namespace CreateTexSpecConstructorAbi
-{
-extern "C" CCreateTexSpec *__14CCreateTexSpecPcT1iP15_SCreateTexListN34(
-    CCreateTexSpec *, char *, char *, int, _SCreateTexList *,
-    _SCreateTexList *, _SCreateTexList *, _SCreateTexList *);
-}
-#define CCreateTexSpec_ctor \
-    CreateTexSpecConstructorAbi::__14CCreateTexSpecPcT1iP15_SCreateTexListN34
-
-/** Process-lifetime create-a-skater specification tables owned by this TU. */
-#define CREATETEXSPECS_OWNER_DECLARATION
+/** Shared declarations for the process-lifetime specification catalogs. */
 #include "CREATETEXSPECS.h"
 
 /*
@@ -51,10 +41,17 @@ namespace CreateTexAddressViewOwners
 {
 extern "C"
 {
-static char DAT_800dab74[]
+static char CreateTex_asianGuyLabel[]
     __attribute__((section(".sdata"), aligned(4))) = "Asian Guy";
 }
 }
+_SCreateTexList DefaultFace[3]
+    __attribute__((section(".data"))) = {
+        {CreateTex_faceSkin2, CreateTex_buzzCut},
+        {CreateTex_faceAsian3, CreateTexAddressViewOwners::CreateTex_asianGuyLabel},
+        {0, 0},
+    };
+
 static char CreateTex_faceShadow[]
     __attribute__((section(".sdata"), aligned(4))) = "fceshdw1";
 static char CreateTex_capOn[]
@@ -178,7 +175,7 @@ static char CreateTex_asianFaceTexture[]
     __attribute__((section(".sdata"), aligned(4))) = "fceasn_3";
 _SCreateTexList AsianFace
     __attribute__((section(".sdata"))) = {
-        CreateTex_asianFaceTexture, CreateTexAddressViewOwners::DAT_800dab74,
+        CreateTex_asianFaceTexture, CreateTexAddressViewOwners::CreateTex_asianGuyLabel,
     };
 static _SCreateTexList CreateTex_AsianFaceEnd
     __attribute__((section(".sdata"))) = {0, 0};
@@ -189,13 +186,13 @@ namespace CreateTexAddressViewOwners
 {
 extern "C"
 {
-static char DAT_800dad70[]
+static char CreateTex_slickLabel[]
     __attribute__((section(".sdata"), aligned(4))) = "Slick";
 }
 }
 _SCreateTexList SlickFace
     __attribute__((section(".sdata"))) = {
-        CreateTex_slickFaceTexture, CreateTexAddressViewOwners::DAT_800dad70,
+        CreateTex_slickFaceTexture, CreateTexAddressViewOwners::CreateTex_slickLabel,
     };
 static _SCreateTexList CreateTex_SlickFaceEnd
     __attribute__((section(".sdata"))) = {0, 0};
@@ -417,93 +414,93 @@ namespace CreateTexAddressViewOwners
 {
 extern "C"
 {
-static char DAT_800db0b0[]
+static char CreateTex_defaultKey[]
     __attribute__((section(".sdata"), aligned(4))) = "default";
-static char DAT_800db0b8[]
+static char CreateTex_defaultLabel[]
     __attribute__((section(".sdata"), aligned(4))) = "Default";
-static char DAT_800db0c0[]
+static char CreateTex_capHelmetKey[]
     __attribute__((section(".sdata"), aligned(4))) = "caphelmet";
-static char DAT_800db0cc[]
+static char CreateTex_helmetAltLabel[]
     __attribute__((section(".sdata"), aligned(4))) = "helmet";
-static char DAT_800db0d4[]
+static char CreateTex_capBackwardKey[]
     __attribute__((section(".sdata"), aligned(4))) = "capbackward";
-static char DAT_800db0e0[]
+static char CreateTex_capBackLabel[]
     __attribute__((section(".sdata"), aligned(4))) = "cap back";
-static char DAT_800db0ec[]
+static char CreateTex_capForwardKey[]
     __attribute__((section(".sdata"), aligned(4))) = "capforward";
-static char DAT_800db0f8[]
+static char CreateTex_capForwardLabel[]
     __attribute__((section(".sdata"), aligned(4))) = "cap forward";
-static char DAT_800db104[]
+static char CreateTex_capBeanieKey[]
     __attribute__((section(".sdata"), aligned(4))) = "capbeanie";
-static char DAT_800db110[]
+static char CreateTex_beanieAltLabel[]
     __attribute__((section(".sdata"), aligned(4))) = "beanie";
-static char DAT_800db118[]
+static char CreateTex_curlyHairKey[]
     __attribute__((section(".sdata"), aligned(4))) = "curlyhair";
-static char DAT_800db124[]
+static char CreateTex_curlyLabel[]
     __attribute__((section(".sdata"), aligned(4))) = "curly";
-static char DAT_800db12c[]
+static char CreateTex_afroKey[]
     __attribute__((section(".sdata"), aligned(4))) = "afro";
-static char DAT_800db134[]
+static char CreateTex_afroGuyLabel[]
     __attribute__((section(".sdata"), aligned(4))) = "afro guy";
-static char DAT_800db140[]
+static char CreateTex_dreadsKey[]
     __attribute__((section(".sdata"), aligned(4))) = "dreads";
-static char DAT_800db148[]
+static char CreateTex_rastaGuyLabel[]
     __attribute__((section(".sdata"), aligned(4))) = "rasta guy";
-static char DAT_800db154[]
+static char CreateTex_skinKey[]
     __attribute__((section(".sdata"), aligned(4))) = "skin";
-static char DAT_800db15c[]
+static char CreateTex_skinheadLabel[]
     __attribute__((section(".sdata"), aligned(4))) = "skinhead";
-static char DAT_800db168[]
+static char CreateTex_afroWhiteKey[]
     __attribute__((section(".sdata"), aligned(4))) = "afrowhite";
-static char DAT_800db174[]
+static char CreateTex_whiteFroAltLabel[]
     __attribute__((section(".sdata"), aligned(4))) = "whitefro";
-static char DAT_800db180[]
+static char CreateTex_gilliganKey[]
     __attribute__((section(".sdata"), aligned(4))) = "gilligan";
-static char DAT_800db18c[]
+static char CreateTex_heySkipperLabel[]
     __attribute__((section(".sdata"), aligned(4))) = "hey skipper";
-static char DAT_800db198[]
+static char CreateTex_baldBlackKey[]
     __attribute__((section(".sdata"), aligned(4))) = "baldblack";
-static char DAT_800db1a4[]
+static char CreateTex_blackBaldLabel[]
     __attribute__((section(".sdata"), aligned(4))) = "black bald";
-static char DAT_800db1b0[]
+static char CreateTex_slickKey[]
     __attribute__((section(".sdata"), aligned(4))) = "slick";
-static char DAT_800db1b8[]
+static char CreateTex_asianKey[]
     __attribute__((section(".sdata"), aligned(4))) = "asian";
-static char DAT_800db1c0[]
+static char CreateTex_emptyKey[]
     __attribute__((section(".sdata"), aligned(4))) = "";
-static char DAT_800db1c4[]
+static char CreateTex_normalLabel[]
     __attribute__((section(".sdata"), aligned(4))) = "normal";
-static char DAT_800db1cc[]
+static char CreateTex_longSleeveKey[]
     __attribute__((section(".sdata"), aligned(4))) = "longsleve";
-static char DAT_800db1d8[]
+static char CreateTex_jacketLabel[]
     __attribute__((section(".sdata"), aligned(4))) = "jacket";
-static char DAT_800db1e0[]
+static char CreateTex_noShirtKey[]
     __attribute__((section(".sdata"), aligned(4))) = "noshirt";
-static char DAT_800db1e8[]
+static char CreateTex_nudeLabel[]
     __attribute__((section(".sdata"), aligned(4))) = "nude";
-static char DAT_800db1f0[]
+static char CreateTex_hoodyKey[]
     __attribute__((section(".sdata"), aligned(4))) = "hoody";
-static char DAT_800db1f8[]
+static char CreateTex_hoodLabel[]
     __attribute__((section(".sdata"), aligned(4))) = "hood";
-static char DAT_800db200[]
+static char CreateTex_tankTopKey[]
     __attribute__((section(".sdata"), aligned(4))) = "tanktop";
-static char DAT_800db208[]
+static char CreateTex_tankLabel[]
     __attribute__((section(".sdata"), aligned(4))) = "tank";
-static char DAT_800db210[]
+static char CreateTex_elbowPadsKey[]
     __attribute__((section(".sdata"), aligned(4))) = "elbowpads";
-static char DAT_800db21c[]
+static char CreateTex_padsLabel[]
     __attribute__((section(".sdata"), aligned(4))) = "pads";
-static char DAT_800db224[]
+static char CreateTex_standardLabel[]
     __attribute__((section(".sdata"), aligned(4))) = "standard";
-static char DAT_800db230[]
+static char CreateTex_longPantsKey[]
     __attribute__((section(".sdata"), aligned(4))) = "longpants";
-static char DAT_800db23c[]
+static char CreateTex_slacksLabel[]
     __attribute__((section(".sdata"), aligned(4))) = "slacks";
-static char DAT_800db244[]
+static char CreateTex_kneePadKey[]
     __attribute__((section(".sdata"), aligned(4))) = "kneepad";
-static char DAT_800db24c[]
+static char CreateTex_baggyPantsKey[]
     __attribute__((section(".sdata"), aligned(4))) = "baggypants";
-static char DAT_800db258[8]
+static char CreateTex_baggyLabel[8]
     __attribute__((section(".sdata"), aligned(4))) = "baggy";
 }
 }
@@ -512,12 +509,7 @@ static char DAT_800db258[8]
  * The initialized texture-list catalogs precede the three mutable
  * CCreateTexSpec tables at 0x800C44A0-0x800C4588.
  */
-_SCreateTexList DefaultFace[3]
-    __attribute__((section(".data"))) = {
-        {CreateTex_faceSkin2, CreateTex_buzzCut},
-        {CreateTex_faceAsian3, CreateTexAddressViewOwners::DAT_800dab74},
-        {0, 0},
-    };
+
 _SCreateTexList BlackBald[3]
     __attribute__((section(".data"))) = {
         {CreateTex_faceBlackBald, CreateTex_bald},
@@ -569,51 +561,6 @@ _SCreateTexList BaggyPantsFullLeg[3]
         {0, 0},
     };
 
-typedef void (*CreateTexSpecDestructor)(CCreateTexSpec *, int);
-typedef void (*CreateTexSpecCClassDestructor)(CClass *, int);
-
-struct CCreateTexSpecVtable {
-    int reserved[2];
-    CreateTexSpecDestructor destroy;
-};
-
-/** Dispatch the compiler-emitted complete-object destructor slot. */
-static inline void DestroyCreateTexSpec(CCreateTexSpec *spec)
-{
-    CCreateTexSpecVtable *vtable =
-        (CCreateTexSpecVtable *)spec->CClass.vtable;
-    vtable->destroy(spec, 2);
-}
-
-static void CreateTexSpecDestructorBody(CCreateTexSpec *, int)
-    asm("_._14CCreateTexSpec");
-extern "C" {
-static void __DOT__6CClass_8006D83C(CClass *, int);
-}
-
-/**
- * Contiguous complete-object and base-object dispatch tables.
- *
- * The first table retains the established constructor anchor. The second is
- * addressed as its owner-local tail, so the split reconstruction's invented
- * `__vt_14CCreateTexSpec` export is no longer needed.
- */
-static int CCreateTexSpec_vtbl
-    __attribute__((section(".sdata"))) = 0;
-static CreateTexSpecDestructor CreateTexSpecCompleteVtableTail[3]
-    __attribute__((section(".sdata"))) = {
-        0,
-        CreateTexSpecDestructorBody,
-        0,
-    };
-static int CreateTexSpecBaseVtableAnchor
-    __attribute__((section(".sdata"))) = 0;
-static CreateTexSpecCClassDestructor CreateTexSpecBaseVtableTail[2]
-    __attribute__((section(".sdata"))) = {
-        0,
-        __DOT__6CClass_8006D83C,
-    };
-
 /*
  * The backing arrays above are known `.sdata` objects.  The target global
  * initializer nevertheless addresses these strings as ordinary externals,
@@ -624,52 +571,52 @@ static CreateTexSpecCClassDestructor CreateTexSpecBaseVtableTail[2]
  * CreateTex_GlobalInit.
  */
 /** Absolute address views of CREATE_TEX's GP-sized specification strings. */
-extern char DAT_800db0b0[];
-extern char DAT_800db0b8[];
-extern char DAT_800db0c0[];
-extern char DAT_800db0cc[];
-extern char DAT_800db0d4[];
-extern char DAT_800db0e0[];
-extern char DAT_800db0ec[];
-extern char DAT_800db0f8[];
-extern char DAT_800db104[];
-extern char DAT_800db110[];
-extern char DAT_800db118[];
-extern char DAT_800db124[];
-extern char DAT_800db12c[];
-extern char DAT_800db134[];
-extern char DAT_800db140[];
-extern char DAT_800db148[];
-extern char DAT_800db154[];
-extern char DAT_800db15c[];
-extern char DAT_800db168[];
-extern char DAT_800db174[];
-extern char DAT_800db180[];
-extern char DAT_800db18c[];
-extern char DAT_800db198[];
-extern char DAT_800db1a4[];
-extern char DAT_800db1b0[];
-extern char DAT_800dad70[];
-extern char DAT_800db1b8[];
-extern char DAT_800dab74[];
-extern char DAT_800db1c0[];
-extern char DAT_800db1c4[];
-extern char DAT_800db1cc[];
-extern char DAT_800db1d8[];
-extern char DAT_800db1e0[];
-extern char DAT_800db1e8[];
-extern char DAT_800db1f0[];
-extern char DAT_800db1f8[];
-extern char DAT_800db200[];
-extern char DAT_800db208[];
-extern char DAT_800db210[];
-extern char DAT_800db21c[];
-extern char DAT_800db224[];
-extern char DAT_800db230[];
-extern char DAT_800db23c[];
-extern char DAT_800db244[];
-extern char DAT_800db24c[];
-extern char DAT_800db258[];
+extern char CreateTex_defaultKey[];
+extern char CreateTex_defaultLabel[];
+extern char CreateTex_capHelmetKey[];
+extern char CreateTex_helmetAltLabel[];
+extern char CreateTex_capBackwardKey[];
+extern char CreateTex_capBackLabel[];
+extern char CreateTex_capForwardKey[];
+extern char CreateTex_capForwardLabel[];
+extern char CreateTex_capBeanieKey[];
+extern char CreateTex_beanieAltLabel[];
+extern char CreateTex_curlyHairKey[];
+extern char CreateTex_curlyLabel[];
+extern char CreateTex_afroKey[];
+extern char CreateTex_afroGuyLabel[];
+extern char CreateTex_dreadsKey[];
+extern char CreateTex_rastaGuyLabel[];
+extern char CreateTex_skinKey[];
+extern char CreateTex_skinheadLabel[];
+extern char CreateTex_afroWhiteKey[];
+extern char CreateTex_whiteFroAltLabel[];
+extern char CreateTex_gilliganKey[];
+extern char CreateTex_heySkipperLabel[];
+extern char CreateTex_baldBlackKey[];
+extern char CreateTex_blackBaldLabel[];
+extern char CreateTex_slickKey[];
+extern char CreateTex_slickLabel[];
+extern char CreateTex_asianKey[];
+extern char CreateTex_asianGuyLabel[];
+extern char CreateTex_emptyKey[];
+extern char CreateTex_normalLabel[];
+extern char CreateTex_longSleeveKey[];
+extern char CreateTex_jacketLabel[];
+extern char CreateTex_noShirtKey[];
+extern char CreateTex_nudeLabel[];
+extern char CreateTex_hoodyKey[];
+extern char CreateTex_hoodLabel[];
+extern char CreateTex_tankTopKey[];
+extern char CreateTex_tankLabel[];
+extern char CreateTex_elbowPadsKey[];
+extern char CreateTex_padsLabel[];
+extern char CreateTex_standardLabel[];
+extern char CreateTex_longPantsKey[];
+extern char CreateTex_slacksLabel[];
+extern char CreateTex_kneePadKey[];
+extern char CreateTex_baggyPantsKey[];
+extern char CreateTex_baggyLabel[];
 
 // === Function implementations (address order) ===
 
@@ -678,7 +625,6 @@ extern char DAT_800db258[];
 /**
  * Initialize a create-a-skater texture specification.
  *
- * @param self Object being initialized.
  * @param name Geometry name shown to the model builder.
  * @param frontEndName Label shown by the front end.
  * @param hue Default palette hue.
@@ -686,22 +632,19 @@ extern char DAT_800db258[];
  * @param list1 Second texture-list choice.
  * @param list2 Third texture-list choice.
  * @param list3 Fourth texture-list choice.
- * @return The initialized object.
  */
-CCreateTexSpec *CCreateTexSpec_ctor(
-    CCreateTexSpec *self, char *name, char *frontEndName, int hue,
+CCreateTexSpec::CCreateTexSpec(
+    char *name, char *frontEndName, int hue,
     _SCreateTexList *list0, _SCreateTexList *list1,
     _SCreateTexList *list2, _SCreateTexList *list3)
 {
-    self->CClass.vtable = &CCreateTexSpec_vtbl;
-    strcpy(self->mGeometryName, name);
-    strcpy(self->mFrontEndName, frontEndName);
-    self->mpTextureList[0] = list0;
-    self->mpTextureList[1] = list1;
-    self->mpTextureList[2] = list2;
-    self->mpTextureList[3] = list3;
-    self->mDefaultHue = hue;
-    return self;
+    strcpy(mGeometryName, name);
+    strcpy(mFrontEndName, frontEndName);
+    mpTextureList[0] = list0;
+    mpTextureList[1] = list1;
+    mpTextureList[2] = list2;
+    mpTextureList[3] = list3;
+    mDefaultHue = hue;
 }
 
 
@@ -747,233 +690,39 @@ int CCreateTexSpec::GetDefaultHue() {
 }
 
 
-/**
- * Destroy the three specification tables in reverse definition order.
- *
- * Address: 0x8006D18C
- */
-void CreateTex_GlobalDtor(void) asm("_GLOBAL_.D.DefaultFace");
+/** Geometry and texture catalogs constructed and destroyed by the C++ runtime. */
+CCreateTexSpec HeadSpec[15] = {
+    CCreateTexSpec(CreateTex_defaultKey, CreateTex_defaultLabel, 0, DefaultFace, 0, 0, 0),
+    CCreateTexSpec(CreateTex_capHelmetKey, CreateTex_helmetAltLabel, 0, &HelmetFace, &HelmetTop, 0, 0),
+    CCreateTexSpec(CreateTex_capBackwardKey, CreateTex_capBackLabel, 0, &ShadowedFace, CapTop, 0, 0),
+    CCreateTexSpec(CreateTex_capForwardKey, CreateTex_capForwardLabel, 0, &ShadowedFace, CapTop, 0, 0),
+    CCreateTexSpec(CreateTex_capBeanieKey, CreateTex_beanieAltLabel, 0, &ShadowedFace, &BeanieTop, 0, 0),
+    CCreateTexSpec(CreateTex_curlyHairKey, CreateTex_curlyLabel, 0, CurlyHair, 0, 0, 0),
+    CCreateTexSpec(CreateTex_afroKey, CreateTex_afroGuyLabel, 0, &AfroFace, 0, 0, 0),
+    CCreateTexSpec(CreateTex_dreadsKey, CreateTex_rastaGuyLabel, 0, &RastaFace, 0, 0, 0),
+    CCreateTexSpec(CreateTex_skinKey, CreateTex_skinheadLabel, 0, &SkinFace, 0, 0, 0),
+    CCreateTexSpec(CreateTex_afroWhiteKey, CreateTex_whiteFroAltLabel, 0, &WhiteAfroFace, 0, 0, 0),
+    CCreateTexSpec(CreateTex_gilliganKey, CreateTex_heySkipperLabel, 0, &ShadowedFace, &GilliganTop, 0, 0),
+    CCreateTexSpec(CreateTex_baldBlackKey, CreateTex_blackBaldLabel, 0, BlackBald, 0, 0, 0),
+    CCreateTexSpec(CreateTex_slickKey, CreateTex_slickLabel, 0, &SlickFace, 0, 0, 0),
+    CCreateTexSpec(CreateTex_asianKey, CreateTex_asianGuyLabel, 0, &AsianFace, 0, 0, 0),
+    CCreateTexSpec(CreateTex_emptyKey, CreateTex_emptyKey, 0, 0, 0, 0, 0),
+};
 
-void CreateTex_GlobalDtor(void)
-{
-    {
-        CCreateTexSpec *base = &LowerBodySpec[0];
-        if (base != 0)
-        {
-            CCreateTexSpec *current = base + 5;
-            if (current != base)
-            {
-                CCreateTexSpec *first = base;
-                do
-                {
-                    --current;
-                    DestroyCreateTexSpec(current);
-                } while (current != first);
-            }
-        }
-    }
+CCreateTexSpec UpperBodySpec[7] = {
+    CCreateTexSpec(CreateTex_defaultKey, CreateTex_normalLabel, 0, &DefaultChest, &DefaultBicep, &DefaultForearm, &GenericHand),
+    CCreateTexSpec(CreateTex_longSleeveKey, CreateTex_jacketLabel, 0, &LongSleeveChest, &LongSleeveFullArm, 0, &GenericHand),
+    CCreateTexSpec(CreateTex_noShirtKey, CreateTex_nudeLabel, 0, &NoShirtChest, &NoShirtFullArm, 0, &GenericHand),
+    CCreateTexSpec(CreateTex_hoodyKey, CreateTex_hoodLabel, 0, &HoodyChest, &HoodyFullArm, 0, &GenericHand),
+    CCreateTexSpec(CreateTex_tankTopKey, CreateTex_tankLabel, 0, &TanktopChest, &TanktopFullArm, 0, &GenericHand),
+    CCreateTexSpec(CreateTex_elbowPadsKey, CreateTex_padsLabel, 120, &ElbowPadsChest, &ElbowPadsBicep, &ElbowPadsForearm, &GenericHand),
+    CCreateTexSpec(CreateTex_emptyKey, CreateTex_emptyKey, 0, 0, 0, 0, 0),
+};
 
-    {
-        CCreateTexSpec *base = &UpperBodySpec[0];
-        if (base != 0)
-        {
-            CCreateTexSpec *current = base + 7;
-            if (current != base)
-            {
-                CCreateTexSpec *first = base;
-                do
-                {
-                    --current;
-                    DestroyCreateTexSpec(current);
-                } while (current != first);
-            }
-        }
-    }
-
-    {
-        CCreateTexSpec *base = &HeadSpec[0];
-        if (base != 0)
-        {
-            CCreateTexSpec *current = base + 15;
-            if (current != base)
-            {
-                CCreateTexSpec *first = base;
-                do
-                {
-                    --current;
-                    DestroyCreateTexSpec(current);
-                } while (current != first);
-            }
-        }
-    }
-}
-
-
-/**
- * Construct the head, upper-body, and lower-body specification catalogs used
- * by the create-a-skater menu.
- *
- * Address: 0x8006D270
- */
-void CreateTex_GlobalInit(void) asm("_GLOBAL_.I.DefaultFace");
-
-void CreateTex_GlobalInit(void)
-{
-    CCreateTexSpec *headSpecs = HeadSpec;
-
-#define CREATE_TEX_SPEC(table, index, geometry, front_end, hue, list0, list1, list2, list3) \
-    CCreateTexSpec_ctor(                                                       \
-        &table[index], geometry, front_end, hue,                               \
-        list0, list1, list2, list3)
-
-    CREATE_TEX_SPEC(
-        headSpecs, 0, DAT_800db0b0,
-        DAT_800db0b8, 0, DefaultFace, 0, 0, 0);
-    CREATE_TEX_SPEC(
-        headSpecs, 1, DAT_800db0c0,
-        DAT_800db0cc, 0,
-        &HelmetFace, &HelmetTop, 0, 0);
-    CREATE_TEX_SPEC(
-        headSpecs, 2, DAT_800db0d4,
-        DAT_800db0e0, 0,
-        &ShadowedFace, CapTop, 0, 0);
-    CREATE_TEX_SPEC(
-        headSpecs, 3, DAT_800db0ec,
-        DAT_800db0f8, 0,
-        &ShadowedFace, CapTop, 0, 0);
-    CREATE_TEX_SPEC(
-        headSpecs, 4, DAT_800db104,
-        DAT_800db110, 0,
-        &ShadowedFace, &BeanieTop, 0, 0);
-    CREATE_TEX_SPEC(
-        headSpecs, 5, DAT_800db118,
-        DAT_800db124, 0, CurlyHair, 0, 0, 0);
-    CREATE_TEX_SPEC(
-        headSpecs, 6, DAT_800db12c,
-        DAT_800db134, 0, &AfroFace, 0, 0, 0);
-    CREATE_TEX_SPEC(
-        headSpecs, 7, DAT_800db140,
-        DAT_800db148, 0, &RastaFace, 0, 0, 0);
-    CREATE_TEX_SPEC(
-        headSpecs, 8, DAT_800db154,
-        DAT_800db15c, 0, &SkinFace, 0, 0, 0);
-    CREATE_TEX_SPEC(
-        headSpecs, 9, DAT_800db168,
-        DAT_800db174, 0,
-        &WhiteAfroFace, 0, 0, 0);
-    CREATE_TEX_SPEC(
-        headSpecs, 10, DAT_800db180,
-        DAT_800db18c, 0,
-        &ShadowedFace, &GilliganTop, 0, 0);
-    CREATE_TEX_SPEC(
-        headSpecs, 11, DAT_800db198,
-        DAT_800db1a4, 0, BlackBald, 0, 0, 0);
-    CREATE_TEX_SPEC(
-        headSpecs, 12, DAT_800db1b0,
-        DAT_800dad70, 0, &SlickFace, 0, 0, 0);
-    CREATE_TEX_SPEC(
-        headSpecs, 13, DAT_800db1b8,
-        DAT_800dab74, 0, &AsianFace, 0, 0, 0);
-    CREATE_TEX_SPEC(
-        headSpecs, 14, DAT_800db1c0,
-        DAT_800db1c0, 0, 0, 0, 0, 0);
-
-    CREATE_TEX_SPEC(
-        UpperBodySpec, 0, DAT_800db0b0,
-        DAT_800db1c4, 0,
-        &DefaultChest, &DefaultBicep, &DefaultForearm, &GenericHand);
-    CREATE_TEX_SPEC(
-        UpperBodySpec, 1, DAT_800db1cc,
-        DAT_800db1d8, 0,
-        &LongSleeveChest, &LongSleeveFullArm, 0, &GenericHand);
-    CREATE_TEX_SPEC(
-        UpperBodySpec, 2, DAT_800db1e0,
-        DAT_800db1e8, 0,
-        &NoShirtChest, &NoShirtFullArm, 0, &GenericHand);
-    CREATE_TEX_SPEC(
-        UpperBodySpec, 3, DAT_800db1f0,
-        DAT_800db1f8, 0,
-        &HoodyChest, &HoodyFullArm, 0, &GenericHand);
-    CREATE_TEX_SPEC(
-        UpperBodySpec, 4, DAT_800db200,
-        DAT_800db208, 0,
-        &TanktopChest, &TanktopFullArm, 0, &GenericHand);
-    CREATE_TEX_SPEC(
-        UpperBodySpec, 5, DAT_800db210,
-        DAT_800db21c, 120,
-        &ElbowPadsChest, &ElbowPadsBicep, &ElbowPadsForearm, &GenericHand);
-    CREATE_TEX_SPEC(
-        UpperBodySpec, 6, DAT_800db1c0,
-        DAT_800db1c0, 0, 0, 0, 0, 0);
-
-    CREATE_TEX_SPEC(
-        LowerBodySpec, 0, DAT_800db0b0,
-        DAT_800db224, 248,
-        DefaultThigh, DefaultShin, &GenericShoe, 0);
-    CREATE_TEX_SPEC(
-        LowerBodySpec, 1, DAT_800db230,
-        DAT_800db23c, 210,
-        LongPantsFullLeg, 0, &GenericShoe, 0);
-    CREATE_TEX_SPEC(
-        LowerBodySpec, 2, DAT_800db244,
-        DAT_800db21c, 140,
-        &KneepadThigh, KneepadShin, &GenericShoe, 0);
-    CREATE_TEX_SPEC(
-        LowerBodySpec, 3, DAT_800db24c,
-        DAT_800db258, 160,
-        BaggyPantsFullLeg, 0, &GenericShoe, 0);
-    CREATE_TEX_SPEC(
-        LowerBodySpec, 4, DAT_800db1c0,
-        DAT_800db1c0, 0, 0, 0, 0, 0);
-
-#undef CREATE_TEX_SPEC
-}
-
-/**
- * `.ctors` table slot for this owner's hand-written global constructor.
- *
- * GCC emits this entry itself for a compiler-generated constructor, but this owner's
- * hook is written by hand, so the entry has to be declared explicitly. The
- * recovered application object order reproduces the target's table sequence.
- */
-static void (*CreateTex_GlobalCtorSlot)(void)
-    __attribute__((section(".ctors"))) = CreateTex_GlobalInit;
-
-/**
- * `.dtors` table slot for this owner's hand-written global destructor.
- *
- * GCC emits this entry itself for a compiler-generated destructor, but this owner's
- * hook is written by hand, so the entry has to be declared explicitly. The
- * recovered application object order reproduces the target's table sequence.
- */
-static void (*CreateTex_GlobalDtorSlot)(void)
-    __attribute__((section(".dtors"))) = CreateTex_GlobalDtor;
-
-/**
- * Destroy a create-a-skater texture specification and optionally free it.
- *
- * `MAIN.SYM` attributes this inline `CREATE_TEX.H` body to the enclosing
- * `create_tex.obj` FILE block, where it remains owner-local.
- *
- * Address: 0x8006D80C
- * Mangled: _._14CCreateTexSpec
- */
-static void CreateTexSpecDestructorBody(CCreateTexSpec *self, int flags)
-{
-    self->CClass.vtable = &CreateTexSpecBaseVtableAnchor;
-    if (flags & 1)
-        CClass::operator delete(self);
-}
-
-/**
- * Destroy the private `CClass` base instantiated by `create_tex.obj`.
- *
- * Address: 0x8006D83C
- * Mangled: _._6CClass
- */
-static void __DOT__6CClass_8006D83C(CClass *self, int flags)
-{
-    self->vtable = &CreateTexSpecBaseVtableAnchor;
-    if (flags & 1)
-        CClass::operator delete(self);
-}
+CCreateTexSpec LowerBodySpec[5] = {
+    CCreateTexSpec(CreateTex_defaultKey, CreateTex_standardLabel, 248, DefaultThigh, DefaultShin, &GenericShoe, 0),
+    CCreateTexSpec(CreateTex_longPantsKey, CreateTex_slacksLabel, 210, LongPantsFullLeg, 0, &GenericShoe, 0),
+    CCreateTexSpec(CreateTex_kneePadKey, CreateTex_padsLabel, 140, &KneepadThigh, KneepadShin, &GenericShoe, 0),
+    CCreateTexSpec(CreateTex_baggyPantsKey, CreateTex_baggyLabel, 160, BaggyPantsFullLeg, 0, &GenericShoe, 0),
+    CCreateTexSpec(CreateTex_emptyKey, CreateTex_emptyKey, 0, 0, 0, 0, 0),
+};

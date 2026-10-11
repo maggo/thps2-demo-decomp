@@ -3,7 +3,7 @@
 // Functions: 9 reconstructed entries
 // Address range: 0x80082A50 - 0x80082F10
 //
-// Compiled with cc1plus (GCC 2.91.66-psx). Compiler auto-mangles symbol names.
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 #define EDITORPIECES_OWNER_DECLARATIONS
 #include "EDITORPIECES.h"

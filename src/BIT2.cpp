@@ -3,8 +3,10 @@
 // Functions: 13 reconstructed entries
 // Address range: 0x80036848 - 0x80036FD8
 //
-// Compiled with cc1plus (GCC 2.91.66-psx). Compiler auto-mangles symbol names.
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#define CCLASS_POLY_BIT_FAMILY
+#include "CCLASS_POLY.h"
 #define BIT2_OWNER_DECLARATIONS
 #include "BIT2.h"
 #undef BIT2_OWNER_DECLARATIONS
@@ -15,36 +17,6 @@
 struct SAnimFrame;
 
 /** Base state shared by the line effects owned by BIT2. */
-struct CBit {
-    CBit *mPrevious;
-    CBit *mNext;
-    short mAge;
-    unsigned short mLifetime;
-    CVector mTweenPos;
-    CVector mPos;
-    CVector mVel;
-    CVector mAcc;
-    CFriction mFric;
-    unsigned char mDead;
-    unsigned short mFrigDeltaZ;
-    unsigned char mProtected;
-    unsigned char mType;
-    int *_vf;
-
-    CBit();
-    ~CBit();
-    void AttachTo(void *list);
-    void DeleteFrom(void *list);
-    /** Mark this bit for removal. */
-    void Die();
-    /** Advance this bit for one frame. */
-    void Move();
-    /** Allocate zero-initialized storage from the transient-bit heap. */
-    static void *operator new(unsigned int size);
-    /** Releases transient-bit storage through the owning allocator. */
-    static void operator delete(void *p);
-};
-
 #include "CNONRENDEREDBIT.h"
 
 /** Textured particle state shared with the motion-blur effect. */
@@ -75,6 +47,8 @@ struct CFlatBit : CFT4Bit {
     unsigned char mForcedPriority;
     unsigned char mSemiTransparencyRate;
     unsigned short mCLUT;
+
+    virtual ~CFlatBit();
 };
 
 #include "CMOTIONBLUR.h"
@@ -84,6 +58,22 @@ struct CFlatBit : CFT4Bit {
 #include "CPOLYLINE.h"
 
 #include "CGPOLYLINE.h"
+
+struct CSmokeGenerator : CNonRenderedBit {
+    int mPuffs;
+    unsigned char mR;
+    unsigned char mG;
+    unsigned char mB;
+    int mVBase;
+    int mVRandom;
+    int mScaleBase;
+    int mScaleRandom;
+
+    virtual ~CSmokeGenerator();
+    /** Releases bit-owned storage through the CBit allocator. */
+    static void operator delete(void *p) { CBit::operator delete(p); }
+    void Move();
+};
 
 #include "CGLINE.h"
 
@@ -144,7 +134,7 @@ struct CGrindSpark : CGLine {
     CBody *mpParent;
 
     CGrindSpark(CBody *pParent, CVector &pos, int vel, int gravity, int life);
-    ~CGrindSpark();
+    virtual ~CGrindSpark();
     /** Releases bit-owned storage through the CBit allocator. */
     static void operator delete(void *p) { CBit::operator delete(p); }
     void Move();
@@ -152,21 +142,6 @@ struct CGrindSpark : CGLine {
 
 
 /** Emits a configurable group of short-lived motion-blur particles. */
-struct CSmokeGenerator : CNonRenderedBit {
-    int mPuffs;
-    unsigned char mR;
-    unsigned char mG;
-    unsigned char mB;
-    int mVBase;
-    int mVRandom;
-    int mScaleBase;
-    int mScaleRandom;
-
-    ~CSmokeGenerator();
-    /** Releases bit-owned storage through the CBit allocator. */
-    static void operator delete(void *p) { CBit::operator delete(p); }
-    void Move();
-};
 
 typedef char Bit2_CGrindSpark_class_size_must_be_120[(sizeof(CGrindSpark) == 120) ? 1 : -1];
 typedef char Bit2_CSmokeGenerator_size_must_be_96[(sizeof(CSmokeGenerator) == 96) ? 1 : -1];
@@ -191,7 +166,7 @@ namespace Bit2AddressViewOwners
 {
 extern "C"
 {
-static char DAT_800d98b8[8]
+static char s_Smoke[8]
     __attribute__((section(".sdata"))) = "Smoke";
 }
 }
@@ -207,53 +182,6 @@ static char DAT_800d98b8[8]
  * instead of an absolute lui/addiu pair.
  */
 /** Addressable destructor entries used by this owner's five manual vtables. */
-void Bit2_GrindSparkDtorAbi(CGrindSpark *, int) asm("_._11CGrindSpark");
-void Bit2_GLineDtorAbi(CGLine *, int) asm("_._6CGLine");
-void Bit2_SmokeGeneratorDtorAbi(CSmokeGenerator *, int)
-    asm("_._15CSmokeGenerator");
-void Bit2_GPolyLineDtorAbi(CGPolyLine *, int) asm("_._10CGPolyLine");
-void Bit2_PolyLineDtorAbi(CPolyLine *, int) asm("_._9CPolyLine");
-
-int __vt_11CGrindSpark
-    __attribute__((section(".sdata"), aligned(8))) = 0;
-static int Bit2_GrindSparkVTableIndex = 0;
-static void (*Bit2_GrindSparkVTableDtor)(CGrindSpark *, int) =
-    &Bit2_GrindSparkDtorAbi;
-static void (*Bit2_GrindSparkVTableMove)(CGrindSpark *) =
-    (void (*)(CGrindSpark *))&CGrindSpark::Move;
-
-int __vt_6CGLine
-    __attribute__((section(".sdata"), aligned(8))) = 0;
-static int Bit2_GLineVTableIndex = 0;
-static void (*Bit2_GLineVTableDtor)(CGLine *, int) = &Bit2_GLineDtorAbi;
-static void (*Bit2_GLineVTableMove)(CBit *) =
-    (void (*)(CBit *))&CBit::Move;
-
-int __vt_15CSmokeGenerator
-    __attribute__((section(".sdata"), aligned(8))) = 0;
-static int Bit2_SmokeVTableIndex = 0;
-static void (*Bit2_SmokeVTableDtor)(CSmokeGenerator *, int) =
-    &Bit2_SmokeGeneratorDtorAbi;
-static void (*Bit2_SmokeVTableMove)(CSmokeGenerator *) =
-    (void (*)(CSmokeGenerator *))&CSmokeGenerator::Move;
-
-int __vt_10CGPolyLine
-    __attribute__((section(".sdata"), aligned(8))) = 0;
-static int Bit2_GPolyLineVTableIndex = 0;
-static void (*Bit2_GPolyLineVTableDtor)(CGPolyLine *, int) =
-    &Bit2_GPolyLineDtorAbi;
-static void (*Bit2_GPolyLineVTableMove)(CBit *) =
-    (void (*)(CBit *))&CBit::Move;
-
-int __vt_9CPolyLine
-    __attribute__((section(".sdata"), aligned(8))) = 0;
-static int Bit2_PolyLineVTableIndex = 0;
-static void (*Bit2_PolyLineVTableDtor)(CPolyLine *, int) =
-    &Bit2_PolyLineDtorAbi;
-static void (*Bit2_PolyLineVTableMove)(CBit *) =
-    (void (*)(CBit *))&CBit::Move;
-
-/** Sets the semitransparency bit on one packed line-segment command. */
 static inline void Bit2_SetSegmentSemiTransparent(
     int index, SLineSeg *segments)
 {
@@ -275,7 +203,6 @@ static inline void Bit2_SetSegmentSemiTransparent(
 CPolyLine::CPolyLine(int numsegs) {
     int blockSize;
     int i;
-    _vf = &__vt_9CPolyLine;
     mSegs = static_cast<SLineSeg *>(Mem_New(numsegs << 4, 0, 1));
     blockSize = Mem_GetBlockSize(mSegs);
     TotalBitUsage += 4 + blockSize;
@@ -302,7 +229,6 @@ CPolyLine::~CPolyLine() {
     int blockSize;
     int remainingUsage;
     SLineSeg *segmentsToFree;
-    _vf = &__vt_9CPolyLine;
     segments = mSegs;
     blockSize = Mem_GetBlockSize(segments);
     remainingUsage = TotalBitUsage;
@@ -345,7 +271,6 @@ void CPolyLine::SetSemiTransparent() {
 CGPolyLine::CGPolyLine(int numsegs) {
     int blockSize;
     int i;
-    _vf = &__vt_10CGPolyLine;
     mSegs = static_cast<SLineSeg *>(Mem_New(numsegs << 4, 0, 1));
     blockSize = Mem_GetBlockSize(mSegs);
     TotalBitUsage += 4 + blockSize;
@@ -376,7 +301,6 @@ CGPolyLine::~CGPolyLine() {
     int blockSize;
     int remainingUsage;
     SLineSeg *segmentsToFree;
-    _vf = &__vt_10CGPolyLine;
     segments = mSegs;
     blockSize = Mem_GetBlockSize(segments);
     remainingUsage = TotalBitUsage;
@@ -418,7 +342,6 @@ void CGPolyLine::SetSemiTransparent() {
  */
 CSmokeGenerator::~CSmokeGenerator()
 {
-    _vf = &__vt_15CSmokeGenerator;
 }
 
 
@@ -454,7 +377,7 @@ void CSmokeGenerator::Move()
                 int animLen = mScaleBase + r2;
                 foo = Bit2_ConstructMotionBlur(
                     foo, &mPos, &upvel,
-                    DAT_800d98b8, animLen, 0, 10);
+                    s_Smoke, animLen, 0, 10);
             }
             foo->mFrigDeltaZ = defaultAge;
             int randFrame = Rnd(0x1000);
@@ -491,15 +414,9 @@ void CSmokeGenerator::Move()
  */
 CGLine::CGLine() {
     mCodeBGR0 = 0x50808080;
-    {
-        register u32 color2 asm("$3") = 0x55808080;
-        int *vtable = &__vt_6CGLine;
-        _vf = vtable;
-        mPadBGR1 = color2;
-        AttachTo(&GLineList);
-    }
+    mPadBGR1 = 0x55808080;
+    AttachTo(&GLineList);
 }
-
 
 /**
  * CGLine::~CGLine()
@@ -511,7 +428,6 @@ CGLine::CGLine() {
  *
  */
 CGLine::~CGLine() {
-    _vf = &__vt_6CGLine;
     DeleteFrom(&GLineList);
 }
 
@@ -532,7 +448,6 @@ CGLine::~CGLine() {
  */
 CGrindSpark::CGrindSpark(CBody *pParent, CVector &pos, int vel, int gravity, int life)
 {
-    _vf = &__vt_11CGrindSpark;
 
     int vel2;
     if (vel < 0) {
@@ -570,7 +485,6 @@ CGrindSpark::CGrindSpark(CBody *pParent, CVector &pos, int vel, int gravity, int
  */
 CGrindSpark::~CGrindSpark()
 {
-    _vf = &__vt_11CGrindSpark;
 }
 
 
@@ -583,64 +497,47 @@ CGrindSpark::~CGrindSpark()
  */
 void CGrindSpark::Move()
 {
-    CGrindSpark *spark = this;
-    register int px asm("$7") = spark->mPos.vx;
-    register int py asm("$8") = spark->mPos.vy;
-    register int velX asm("$4") = spark->mVel.vx;
-    register int velY asm("$10") = spark->mVel.vy;
-    register int pz asm("$6") = spark->mPos.vz;
-    const CBodyPositionPrefix *parent =
-        reinterpret_cast<const CBodyPositionPrefix *>(spark->mpParent);
-    register int velZ asm("$9") = spark->mVel.vz;
-    unsigned short age = static_cast<unsigned short>(spark->mAge);
-    int accY = spark->mAcc.vy;
-    asm volatile("" : "+r"(px), "+r"(py), "+r"(velX), "+r"(velY),
-                      "+r"(pz));
-    register int nx asm("$17") = px + velX;
-    register int ny asm("$18") = py + velY;
-    register int nz asm("$25") = pz + velZ;
-    asm volatile("" : "+r"(nx), "+r"(ny), "+r"(nz));
-    int sx = parent->CItem.mPos.vx;
-    int sy = parent->CItem.mPos.vy;
-    int sz = parent->CItem.mPos.vz;
-    int accX = spark->mAcc.vx;
-    int newAge = static_cast<int>(age) + 1;
-    spark->mAge = static_cast<short>(newAge);
-    int ageShifted = newAge << 16;
-    spark->mOldPos.vx = px;
-    spark->mOldPos.vy = py;
-    spark->mOldPos.vz = pz;
-    spark->mPos.vx = nx;
-    spark->mPos.vy = ny;
-    spark->mPos.vz = nz;
-    register int startX asm("$16") = nx + sx;
-    register int newVelX asm("$17") = velX + accX;
-    register int startY asm("$12") = ny + sy;
-    register int newVelY asm("$18") = velY + accY;
-    register int startZ asm("$11") = nz + sz;
-    asm volatile("" : "+r"(startX), "+r"(newVelX), "+r"(startY),
-                      "+r"(newVelY), "+r"(startZ));
-    newVelX = newVelX - (newVelX >> 3);
-    newVelY = newVelY - (newVelY >> 3);
-    int endX = px + sx;
-    int endY = py + sy;
-    register int accZ asm("$4") = spark->mAcc.vz;
-    int endZ = pz + sz;
-    spark->mEnd.vx = endX;
-    spark->mEnd.vy = endY;
-    spark->mEnd.vz = endZ;
-    spark->mStart.vx = startX;
-    spark->mStart.vy = startY;
-    spark->mStart.vz = startZ;
-    spark->mVel.vx = newVelX;
-    spark->mVel.vy = newVelY;
-    register int newVelZ asm("$25") = velZ + accZ;
-    newVelZ = newVelZ - (newVelZ >> 3);
-    spark->mVel.vz = newVelZ;
-    asm volatile("" : "+r"(newVelZ));
-    unsigned short maxAge = spark->mLifetime;
-    int signedAge = ageShifted >> 16;
-    if (signedAge >= static_cast<int>(maxAge)) {
-        spark->Die();
+    int px = mPos.vx;
+    int py = mPos.vy;
+    int pz = mPos.vz;
+
+    int nx = px + mVel.vx;
+    int ny = py + mVel.vy;
+    int nz = pz + mVel.vz;
+
+    int sx = reinterpret_cast<const CBodyPositionPrefix *>(mpParent)->CItem.mPos.vx;
+    int sy = reinterpret_cast<const CBodyPositionPrefix *>(mpParent)->CItem.mPos.vy;
+    int sz = reinterpret_cast<const CBodyPositionPrefix *>(mpParent)->CItem.mPos.vz;
+
+    mOldPos.vx = px;
+    mOldPos.vy = py;
+    mOldPos.vz = pz;
+
+    mEnd.vx = px + sx;
+    mEnd.vy = py + sy;
+    mEnd.vz = pz + sz;
+
+    mPos.vx = nx;
+    mPos.vy = ny;
+    mPos.vz = nz;
+
+    mStart.vx = nx + sx;
+    mStart.vy = ny + sy;
+    mStart.vz = nz + sz;
+
+    nx = mVel.vx + mAcc.vx;
+    ny = mVel.vy + mAcc.vy;
+    nz = mVel.vz + mAcc.vz;
+
+    nx -= nx >> 3;
+    ny -= ny >> 3;
+    nz -= nz >> 3;
+
+    mVel.vx = nx;
+    mVel.vy = ny;
+    mVel.vz = nz;
+
+    if (++mAge >= mLifetime) {
+        Die();
     }
 }

@@ -1,4 +1,9 @@
-// Environmental explosion damage and expanding flat-ripple effects.
+// EXP.cpp -- Environmental explosion damage and expanding flat-ripple effects.
+// Original: EXP.CPP
+// Functions: 4
+// Address range: 0x8004FF60 - 0x80050414
+//
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 #include "EXP.h"
 
@@ -39,6 +44,9 @@ struct CBit {
 };
 
 #include "CFLATRIPPLE.h"
+#define RCOSSIN_DECL_TYPE int
+#define RCOSSIN_SCALAR_VIEW
+#include "RCOSSIN.h"
 
 /** One sine/cosine pair in the fixed PSX trigonometry table. */
 struct ExpTrigPair {
@@ -52,11 +60,6 @@ enum ExpRippleConstant {
     ExpFullTurn = 0x1000,
     ExpForceDamage = 0xFFFF
 };
-
-// Macros preserve the target compiler's signed literal treatment here; enum
-// constants change the address-folding path even though their values match.
-#define EXP_TRIG_TABLE_PAGE 0x800D0000
-#define EXP_TRIG_TABLE_PAGE_OFFSET 0x43C
 
 typedef char Exp_SDK_SVECTOR_size_must_be_8[
     (sizeof(SVECTOR) == 8) ? 1 : -1];
@@ -192,18 +195,8 @@ void CFlatRipple::Move()
 
     int intensity = ((mMaxRadius - mRadius) << 8) / mMaxRadius;
     int a = mAngle;
-    // Without this constraint cc1plus hoists the table-base load ahead of the
-    // target's angle load (2 of 140 instructions differ).
-    asm("" : "+r"(a));
-    int trigTableAddress = EXP_TRIG_TABLE_PAGE;
-    // Keeping the page opaque preserves the target's alias and loop schedule;
-    // exposing the complete absolute address changes 132 instructions and six
-    // relocations.
-    asm("" : "+r"(trigTableAddress));
-    trigTableAddress += EXP_TRIG_TABLE_PAGE_OFFSET;
-    // Ordinary allocation chooses v0 and changes five instructions. Three
-    // alternative source shapes still changed at least three instructions.
-    register int trigOffset asm("$3") = a & ExpAngleMask;
+    int trigTableAddress = reinterpret_cast<int>(&rcossin_tbl);
+    int trigOffset = a & ExpAngleMask;
     trigOffset <<= 2;
     ExpTrigPair *initialTrig = reinterpret_cast<ExpTrigPair *>(
         trigOffset + trigTableAddress);

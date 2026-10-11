@@ -2,6 +2,8 @@
 // Original: LIGHT.CPP
 // Functions: 3 reconstructed entries
 // Address range: 0x8002F7F0 - 0x8002F964
+//
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 #include "globals.h"
 

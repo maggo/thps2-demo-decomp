@@ -3,7 +3,7 @@
 // Functions: 44 reconstructed entries
 // Address range: 0x80082F4C - 0x80087600
 //
-// Compiled with cc1plus (GCC 2.91.66-psx). Compiler auto-mangles symbol names.
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 #define LEVELEDITOR_OWNER_DECLARATIONS
 #include "LEVELEDITOR.h"
@@ -106,9 +106,20 @@ struct EditorOutModel
 typedef char editor_out_model_size_must_be_128[
     (sizeof(EditorOutModel) == 128) ? 1 : -1];
 
+#define LEVELGEN_GRID_MAP_LAYOUT
+#define LEVELGEN_GRID_MAP_LAYOUT_ONLY
+#include "LEVELGEN.h"
+#undef LEVELGEN_GRID_MAP_LAYOUT_ONLY
+#undef LEVELGEN_GRID_MAP_LAYOUT
+
 /** Opaque LevelGenerator method surface used by the level editor. */
 struct LevelGenerator
 {
+    /** Shared editor grid dimensions and placement cells. */
+    static int GridCellHeight __attribute__((section(".data")));
+    static int GridCellWidth __attribute__((section(".data")));
+    static GridCell GridTab[24][24] __attribute__((section(".data")));
+
     /** Constructs a generator for editor or in-game output. */
     LevelGenerator(bool game_build);
     /** Initializes the shared editor grid and model tables. */
@@ -135,12 +146,6 @@ struct LevelGenerator
     int RemoveModelFromMap(
         int x, int z, int *noLowerThan, EditorInModel **removedModel);
 };
-
-#define LEVELGEN_GRID_MAP_LAYOUT
-#define LEVELGEN_GRID_MAP_LAYOUT_ONLY
-#include "LEVELGEN.h"
-#undef LEVELGEN_GRID_MAP_LAYOUT_ONLY
-#undef LEVELGEN_GRID_MAP_LAYOUT
 
 /** LevelGenerator slice through the placed-model occupancy map. */
 struct EditorLevelGeneratorView
@@ -510,8 +515,8 @@ extern int __vt_base_6Cursor;
 #include <STDIO.H>
 
 // SelectManager diagnostics retained by the original object.
-extern const char DAT_800B3C18[];
-extern const char s_not_available_in_demo_800b3c30[];
+extern const char s_DemoPiecesLeftFormat[];
+extern const char s_NotAvailableInDemo[];
 
 // Draw__11LevelEditor helpers
 #include "DB.h"
@@ -690,11 +695,10 @@ LevelEditor::~LevelEditor()
     }
 
     FontManager::UnloadFont("ingame1.fnt");
-    register int *vtbase asm("$3") = &__vt_11LevelEditor_base;
-    pCurrentViewport = (SViewport *)-1;
     M3d_OTPushback = 0;
     M3d_OTPushback2 = 0;
-    this->CClass.vtable = vtbase;
+    pCurrentViewport = (SViewport *)-1;
+    this->CClass.vtable = &__vt_11LevelEditor_base;
 }
 
 /**
@@ -1318,10 +1322,9 @@ update_menu:
         ((MenuUpdateFunction)wrapper->vtable[3])(wrapper);
     }
 
-    static const char demoPiecesLeft[] asm("DAT_800B3C18") =
+    static const char demoPiecesLeft[] =
         "demo pieces left: %d";
-    static const char notAvailableInDemo[]
-        asm("s_not_available_in_demo_800b3c30") =
+    static const char notAvailableInDemo[] =
         "not available in demo";
 
     /*
@@ -1622,7 +1625,7 @@ void SelectManager::Update()
     {
         char *pieceString = this->PieceString[2];
         this->OldPiecesRemaining = pieces;
-        sprintf(pieceString, (char *)DAT_800B3C18, pieces);
+        sprintf(pieceString, (char *)s_DemoPiecesLeftFormat, pieces);
         int width = FontFromStorage(&this->TheFont)->width(pieceString);
         int x = this->RightX - width - 6;
         this->PieceStringX[2] = x;
@@ -1691,7 +1694,7 @@ void SelectManager::SetPiece(int piece)
     }
 
     char *demoString = this->PieceString[3];
-    sprintf(demoString, (char *)s_not_available_in_demo_800b3c30);
+    sprintf(demoString, (char *)s_NotAvailableInDemo);
 
     width = font->width(demoString);
     this->PieceStringX[3] = 0x100 - (width >> 1);
@@ -1942,29 +1945,12 @@ EditorCamera::EditorCamera()
     }
     this->Camera = cam;
     reinterpret_cast<EditorRuntimeCameraView *>(cam)->mCameraMode = 2;
-    register int size2 asm("$4") = 0x108;
-    asm volatile("" : "+r"(size2));
-    register int yval asm("$2") = 0xff830000;
-    EditorRuntimeCameraView *c1 =
-        (EditorRuntimeCameraView *)this->Camera;
-    asm volatile("" : "+r"(c1));
-    bool one = true;
-    asm volatile("" : "+r"(one));
     this->Tripod.vx = 0;
-    this->Tripod.vy = yval;
+    this->Tripod.vy = 0xff830000;
     this->Tripod.vz = 0;
-    c1->mCalcTripod = false;
-    register int tx asm("$7") = this->Tripod.vx;
-    register int ty asm("$8") = this->Tripod.vy;
-    register int tz asm("$9") = this->Tripod.vz;
-    c1->mTripodPos.vx = tx;
-    c1->mTripodPos.vy = ty;
-    c1->mTripodPos.vz = tz;
-    asm volatile("");
-    c1->mTripod = 0;
-    c1->new_focus = one;
+    reinterpret_cast<EditorRuntimeCameraView *>(this->Camera)->SetTripodPosition(this->Tripod);
 
-    CBody *body2 = static_cast<CBody *>(::CItem::operator new(size2));
+    CBody *body2 = static_cast<CBody *>(::CItem::operator new(0x108));
     if (body2 != 0)
     {
         body2 = ::new (body2) CBody();
@@ -1978,14 +1964,8 @@ EditorCamera::EditorCamera()
         (EditorCameraBodyView *)this->Target;
     b2b->mPos.vz = 0;
 
-    EditorRuntimeCameraView *camPtr =
-        (EditorRuntimeCameraView *)this->Camera;
-    EditorCameraBodyView *focus =
-        (EditorCameraBodyView *)this->Target;
-    camPtr->mCalcFocus = one;
-    camPtr->mFocus = focus;
-    camPtr->new_focus = one;
-    this->Type = one;
+    reinterpret_cast<EditorRuntimeCameraView *>(this->Camera)->SetFocus((EditorCameraBodyView *)this->Target);
+    this->Type = 1;
     this->Rot = 0xc00;
     this->TargetRot = 0xc00;
     this->Change = 0;
@@ -2068,12 +2048,9 @@ void EditorCamera::SetTarget(int x, int y, int z)
  */
 void EditorCamera::SwitchType()
 {
-    register int type asm("$2") = this->Type;
-    type = type + 1;
+    int type = this->Type + 1;
     if (type >= 4)
-    {
         type = 0;
-    }
     this->Type = type;
 }
 
@@ -2175,7 +2152,7 @@ void EditorCamera::Update()
         break;
     }
 
-    wall = (GridSize * _14LevelGenerator_GridCellWidth) >> 1;
+    wall = (GridSize * LevelGenerator::GridCellWidth) >> 1;
     diffx = wall - (this->Tripod.vx >> 12);
     if ((unsigned int)diffx < 30)
     {
@@ -2248,99 +2225,29 @@ int EditorCamera::TranslatePress(int press)
 SVector EditorCamera::GetCameraTargetVector()
 {
     Vector temp;
-    EditorCameraBodyView *target;
     SVector vect;
-    int type = this->Type;
 
-    if (type == 1)
+    switch (this->Type)
     {
-        goto type_one;
+    case 1:
+        temp.vx = ((EditorCameraBodyView *)this->Target)->mPos.vx + EditorCosine(this->TargetRot + 0x154) * 2000;
+        temp.vy = ((EditorCameraBodyView *)this->Target)->mPos.vy + (int)0xFF93C000;
+        temp.vz = ((EditorCameraBodyView *)this->Target)->mPos.vz + EditorSine(this->TargetRot + 0x154) * 2000;
+        break;
+    case 2:
+        temp.vx = ((EditorCameraBodyView *)this->Target)->mPos.vx + EditorCosine(this->TargetRot) * 2000;
+        temp.vy = ((EditorCameraBodyView *)this->Target)->mPos.vy + (int)0xFF93C000;
+        temp.vz = ((EditorCameraBodyView *)this->Target)->mPos.vz + EditorSine(this->TargetRot) * 2000;
+        break;
+    default:
+        temp.vx = ((EditorCameraBodyView *)this->Target)->mPos.vx;
+        temp.vy = ((EditorCameraBodyView *)this->Target)->mPos.vy + (int)0xFF060000;
+        temp.vz = ((EditorCameraBodyView *)this->Target)->mPos.vz;
+        break;
     }
-    int defaultYOffset;
-    defaultYOffset = (int)0xFF060000;
-    if (type == 2)
-        goto type_two;
-    goto type_default;
-
-type_one:
-    {
-        int tableBase = (int)&rcossin_tbl;
-        register int yOffset asm("$8") = (int)0xFF930000;
-        asm volatile("" : "+r"(yOffset));
-        yOffset |= 0xC000;
-        int angle = this->TargetRot;
-        target = reinterpret_cast<EditorCameraBodyView *>(this->Target);
-        angle += 0x154;
-        angle &= 0xFFF;
-        angle <<= 2;
-        angle += tableBase;
-        int cosValue = reinterpret_cast<EditorSinCos *>(angle)->Cos;
-        register int targetPos asm("$3") = target->mPos.vx;
-        int product = cosValue * 2000;
-        targetPos += product;
-        temp.vx = targetPos;
-        int targetYPos = target->mPos.vy;
-        int sinValue = reinterpret_cast<EditorSinCos *>(angle)->Sin;
-        temp.vy = targetYPos + yOffset;
-        register int targetZPos asm("$3") = target->mPos.vz;
-        int zProduct = sinValue * 2000;
-        targetZPos += zProduct;
-        temp.vz = targetZPos;
-        goto make_vector;
-    }
-
-type_two:
-    {
-        int tableBase = (int)&rcossin_tbl;
-        register int yOffset asm("$8") = (int)0xFF930000;
-        asm volatile("" : "+r"(yOffset));
-        yOffset |= 0xC000;
-        int angle = this->TargetRot;
-        target = reinterpret_cast<EditorCameraBodyView *>(this->Target);
-        angle &= 0xFFF;
-        angle <<= 2;
-        angle += tableBase;
-        int cosValue = reinterpret_cast<EditorSinCos *>(angle)->Cos;
-        register int targetPos asm("$3") = target->mPos.vx;
-        int product = cosValue * 2000;
-        targetPos += product;
-        temp.vx = targetPos;
-        int targetYPos = target->mPos.vy;
-        int sinValue = reinterpret_cast<EditorSinCos *>(angle)->Sin;
-        temp.vy = targetYPos + yOffset;
-        register int targetZPos asm("$3") = target->mPos.vz;
-        int zProduct = sinValue * 2000;
-        targetZPos += zProduct;
-        temp.vz = targetZPos;
-        goto make_vector;
-    }
-
-type_default:
-    {
-        register EditorCameraBodyView *defaultTarget asm("$5") =
-            reinterpret_cast<EditorCameraBodyView *>(this->Target);
-        temp.vx = defaultTarget->mPos.vx;
-        register int defaultY asm("$2") = defaultTarget->mPos.vy;
-        defaultY += defaultYOffset;
-        temp.vy = defaultY;
-        int defaultZ = defaultTarget->mPos.vz;
-        temp.vz = defaultZ;
-    }
-
-make_vector:
-    {
-        EditorCameraBodyView *targetReg =
-            reinterpret_cast<EditorCameraBodyView *>(this->Target);
-        vect.vx = (short)((targetReg->mPos.vx - temp.vx) >> 12);
-        vect.vy = (short)((targetReg->mPos.vy - temp.vy) >> 12);
-        {
-            register int zValue asm("$2") = targetReg->mPos.vz;
-            int zPoint = temp.vz;
-            zValue = zValue - zPoint;
-            zValue = zValue >> 12;
-            vect.vz = (short)zValue;
-        }
-    }
+    vect.vx = (short)((((EditorCameraBodyView *)this->Target)->mPos.vx - temp.vx) >> 12);
+    vect.vy = (short)((((EditorCameraBodyView *)this->Target)->mPos.vy - temp.vy) >> 12);
+    vect.vz = (short)((((EditorCameraBodyView *)this->Target)->mPos.vz - temp.vz) >> 12);
     return vect;
 }
 
@@ -2765,12 +2672,12 @@ void Cursor::SetPosition()
         }
     }
 
-    int screen_x = ((-GridSize >> 1) + XRot) * _14LevelGenerator_GridCellWidth;
-    int screen_w = WRot * _14LevelGenerator_GridCellWidth;
-    int screen_z = ((GridSize >> 1) - ZRot) * _14LevelGenerator_GridCellWidth;
-    int screen_l = LRot * _14LevelGenerator_GridCellWidth;
-    int camera_x = ((-GridSize >> 1) + X) * _14LevelGenerator_GridCellWidth;
-    int camera_z = ((GridSize >> 1) - Z) * _14LevelGenerator_GridCellWidth;
+    int screen_x = ((-GridSize >> 1) + XRot) * LevelGenerator::GridCellWidth;
+    int screen_w = WRot * LevelGenerator::GridCellWidth;
+    int screen_z = ((GridSize >> 1) - ZRot) * LevelGenerator::GridCellWidth;
+    int screen_l = LRot * LevelGenerator::GridCellWidth;
+    int camera_x = ((-GridSize >> 1) + X) * LevelGenerator::GridCellWidth;
+    int camera_z = ((GridSize >> 1) - Z) * LevelGenerator::GridCellWidth;
 
     StartScreenX = ScreenX;
     StartScreenZ = ScreenZ;
@@ -2787,7 +2694,7 @@ void Cursor::SetPosition()
     TargetCameraX = camera_x << 12;
     TargetCameraZ = camera_z << 12;
 
-    ScreenY = (-H * _14LevelGenerator_GridCellHeight) >> 1;
+    ScreenY = (-H * LevelGenerator::GridCellHeight) >> 1;
     ScreenY <<= 12;
 
     lowest_slot = 0;
@@ -2796,7 +2703,7 @@ void Cursor::SetPosition()
         for (int i = 0; i < WRot; i++)
         {
             int temp =
-                _14LevelGenerator_GridTab[ZRot + j][XRot + i].numUsedSlots - 1;
+                LevelGenerator::GridTab[ZRot + j][XRot + i].numUsedSlots - 1;
             if (lowest_slot < temp)
             {
                 lowest_slot = temp;
@@ -2850,7 +2757,7 @@ void Cursor::SetPosition()
             Models[i].HRot = Models[i].H;
             Models[i].ScreenY =
                 (-lowest_slot - Models[i].YRot) *
-                _14LevelGenerator_GridCellHeight * 0x1000;
+                LevelGenerator::GridCellHeight * 0x1000;
             Models[i].item.Model = Models[i].index;
 
             if (last_model >= 0)
@@ -2912,12 +2819,12 @@ void Cursor::Update()
                 ScreenX +
                 (Models[i].X * EditorCosine(Angle) -
                  Models[i].Z * EditorSine(Angle)) *
-                    _14LevelGenerator_GridCellWidth;
+                    LevelGenerator::GridCellWidth;
             Models[i].ScreenZ =
                 ScreenZ +
                 (Models[i].X * EditorSine(Angle) +
                  Models[i].Z * EditorCosine(Angle)) *
-                    _14LevelGenerator_GridCellWidth;
+                    LevelGenerator::GridCellWidth;
 
             Models[i].item.Position.vx = Models[i].ScreenX;
             Models[i].item.Position.vy = Models[i].ScreenY;
@@ -3007,7 +2914,7 @@ int Cursor::Stamp()
         return 0;
     }
 
-    slot = _14LevelGenerator_GridTab[ZRot][XRot].numUsedSlots - 1;
+    slot = LevelGenerator::GridTab[ZRot][XRot].numUsedSlots - 1;
     if ((((EditorLevelGeneratorModelsView *)Ed)
              ->SourceModelTab[Models[0].index]
              .flags &
@@ -3029,7 +2936,7 @@ int Cursor::Stamp()
     {
         for (int x = XRot; x < XRot + WRot; x++)
         {
-            if (_14LevelGenerator_GridTab[z][x].numUsedSlots - 1 != slot)
+            if (LevelGenerator::GridTab[z][x].numUsedSlots - 1 != slot)
             {
                 return 0;
             }
@@ -3126,9 +3033,9 @@ int Cursor::Stamp()
 
     Ed->AddModel(XRot, ZRot, this_slot, Rot, Models[0].index);
 
-    if (_14LevelGenerator_GridTab[ZRot][XRot].numUsedSlots <= this_slot)
+    if (LevelGenerator::GridTab[ZRot][XRot].numUsedSlots <= this_slot)
     {
-        _14LevelGenerator_GridTab[ZRot][XRot].numUsedSlots =
+        LevelGenerator::GridTab[ZRot][XRot].numUsedSlots =
             Models[0].H + this_slot;
     }
 
@@ -3141,11 +3048,11 @@ int Cursor::Stamp()
         {
             for (int x = XRot; x < XRot + WRot; x++)
             {
-                _14LevelGenerator_GridTab[z][x].numUsedSlots =
+                LevelGenerator::GridTab[z][x].numUsedSlots =
                     Models[0].H + this_slot + 1;
                 for (int s = 1; s < Models[0].H + 1; s++)
                 {
-                    _14LevelGenerator_GridTab[z][x].modelIndex[this_slot + s] = -1;
+                    LevelGenerator::GridTab[z][x].modelIndex[this_slot + s] = -1;
                 }
             }
         }
@@ -3254,7 +3161,7 @@ void Cursor::WireframeCollidingPieces(bool wireframe_on)
     {
         for (int x = xleft; x < xright; x++)
         {
-            int cell_highest = _14LevelGenerator_GridTab[z][x].numUsedSlots - 1;
+            int cell_highest = LevelGenerator::GridTab[z][x].numUsedSlots - 1;
             if (highest_slot < cell_highest)
             {
                 highest_slot = cell_highest;

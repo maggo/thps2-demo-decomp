@@ -1,20 +1,3 @@
-struct CSuperOwner;
-
-/*
- * Re-entrant destructor ABI selector. Owner translation units retain their
- * existing source name while sharing CSuper's single target ABI label.
- */
-#if defined(CSUPER_DECLARE_DESTRUCTOR)
-#if !defined(CSUPER_DESTRUCTOR_NAME)
-#error CSUPER_DECLARE_DESTRUCTOR requires a source name
-#endif
-void CSUPER_DESTRUCTOR_NAME(CSuperOwner *super, int inCharge)
-    asm("_._6CSuper");
-#undef CSUPER_DESTRUCTOR_NAME
-#undef CSUPER_DECLARE_DESTRUCTOR
-#endif
-
-#ifndef CSUPER_ABI_ONLY
 #ifndef THPS2_CSUPER_H
 #define THPS2_CSUPER_H
 
@@ -37,4 +20,3 @@ struct CSuper {
 };
 
 #endif // THPS2_CSUPER_H
-#endif // !CSUPER_ABI_ONLY

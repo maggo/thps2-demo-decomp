@@ -1,4 +1,9 @@
-// Renderer initialization and loaded-model runtime fixups.
+// M3DINIT.cpp -- Renderer initialization and loaded-model runtime fixups.
+// Original: M3DINIT.CPP
+// Functions: 5
+// Address range: 0x8009376C - 0x80093FA8
+//
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 #define M3DINIT_OWNER_DECLARATIONS
 #include "M3DINIT.h"
@@ -104,6 +109,8 @@ static inline STexWibItemInfo *M3dInit_GetNextWibItem(
 /** Shared 1024-entry depth-scaled sine table. */
 #define WIBBLETABLES_CONSUMER_DECLARATION
 #include "WIBBLETABLES.h"
+#define RCOSSIN_DECL_TYPE int
+#define RCOSSIN_SCALAR_VIEW
 #include "RCOSSIN.h"
 #define M3DINIT_DECLARE_BOARD_WHEEL_PARTS
 #include "M3DINIT.h"
@@ -232,14 +239,9 @@ void M3dInit_InitAtStart(void) {
     {
         int Amp = 0;
         s16 *pHalfword = WibbleTables;
-        // This target loop keeps the table base in $t0.  An ordinary base,
-        // a direct rcossin_tbl cursor, and a resettable outer cursor regress
-        // by 2, 23, and 13 real instructions respectively (the last also
-        // changes one relocation), so the inherited fixed binding remains.
-        register s16 *sinBase asm("$8") = rcossin_tbl;
         do {
             int Angle = 0;
-            s16 *sinPtr = sinBase;
+            s16 *sinPtr = reinterpret_cast<s16 *>(&rcossin_tbl);
             do {
                 *pHalfword = static_cast<s16>((*sinPtr * Amp) >> 4);
                 sinPtr += 128;
@@ -350,16 +352,11 @@ void M3dInit_SetFoggingParams(int Dummy, int Min, unsigned int Range) {
 void M3dInit_ParsePSX(int Region) {
     Item *pItem;
     int NumItems;
-    u16 vtxType;
     int NumNormals; // Mesh normal count
     u32 *pFace;
-    s16 *vtxYPtr;  // Pointer to vertex Y field
     SVECTOR *pVertex;
     int NumVertices; // Mesh vertex count
-    // Individually unbinding vtxTypePtr, j, NumStitchVertices, and i changes
-    // ParsePSX by 48+1, 44+1, 44+1, and 16+0 real/relocation mismatches.
-    // Their ordinary typed forms were restored after those measured attempts.
-    register int j asm("$10");
+    int j;
     int NumFaces;  // Mesh face count
     Texture *pTex;
     u16 clut;
@@ -385,11 +382,11 @@ void M3dInit_ParsePSX(int Region) {
     }
 
     // The model count precedes ppModels; ppModels[0] starts the contiguous mesh data.
-    register int NumStitchVertices asm("$16") = 0;
+    int NumStitchVertices = 0;
     unsigned int Fastable = 1;
     int NumParts = 0;
     int NumModels = M3dInit_GetModelCount(PSXRegion[Region].ppModels);
-    register int i asm("$14") = 0;
+    register int i = 0;
     SModel *pModel = PSXRegion[Region].ppModels[0];
 
     if (0 < NumModels) {
@@ -413,52 +410,43 @@ void M3dInit_ParsePSX(int Region) {
             // VERTEX LOOP
             if (NumVertices != 0) {
                 int headUp = GHeadUp;
-                register u16 *vtxTypePtr asm("$8") =
-                    M3dInit_GetVertexType(pVertex);
-                vtxYPtr = &pVertex->vy;
                 do {
                     // Head-part enlargement for character-select screen.
                     if ((i == GHeadPart) &&
-                        ((*vtxTypePtr & (M3DINIT_VERTEX_STITCHED |
+                        ((static_cast<u16>(pVertex->pad) & (M3DINIT_VERTEX_STITCHED |
                             M3DINIT_VERTEX_SPRITE)) == 0)) {
                         pVertex->vx = pVertex->vx * 3;
                         {
-                            int y2 = *vtxYPtr * 2;
-                            int z3 = vtxYPtr[1] * 3;
-                            *vtxYPtr = y2;                               // y = y*2
+                            int y2 = pVertex->vy * 2;
+                            int z3 = pVertex->vz * 3;
+                            pVertex->vy = y2;                               // y = y*2
                             y2 = y2 + headUp * 16;
-                            vtxYPtr[1] = z3;                             // z = z*3
-                            *vtxYPtr = y2;                               // y = y*2 + headUp*16
+                            pVertex->vz = z3;                             // z = z*3
+                            pVertex->vy = y2;                               // y = y*2 + headUp*16
                             if (headUp < 0) {
-                                vtxYPtr[1] = z3 - 240;
+                                pVertex->vz = z3 - 240;
                             }
                         }
                     }
 
-                    vtxType = *vtxTypePtr;
-
                     // Type bit1 (0x02): stitched — X = Y<<3 (byte offset), Y = 0.
-                    if ((vtxType & M3DINIT_VERTEX_STITCHED) != 0) {
-                        pVertex->vx = *vtxYPtr << 3;
-                        *vtxYPtr = 0;
-                        vtxType = *vtxTypePtr;
+                    if ((pVertex->pad & M3DINIT_VERTEX_STITCHED) != 0) {
+                        pVertex->vx = pVertex->vy << 3;
+                        pVertex->vy = 0;
                     }
 
                     // Type bit4 (0x10): sprite — flag the mesh.
-                    if ((vtxType & M3DINIT_VERTEX_SPRITE) != 0) {
+                    if ((pVertex->pad & M3DINIT_VERTEX_SPRITE) != 0) {
                         pModel->Flags =
                             pModel->Flags | M3DINIT_MODEL_HAS_SPRITES;
-                        vtxType = *vtxTypePtr;
                     }
 
                     // Type bit0 (0x01): stitch source — count for fast-path threshold.
-                    if ((vtxType & M3DINIT_VERTEX_STITCH_SOURCE) != 0) {
+                    if ((pVertex->pad & M3DINIT_VERTEX_STITCH_SOURCE) != 0) {
                         NumStitchVertices = NumStitchVertices + 1;
                     }
 
                     j = j + 1;
-                    vtxYPtr = vtxYPtr + 4;
-                    vtxTypePtr = vtxTypePtr + 4;
                     pVertex++;
                 } while (j < NumVertices);
             }

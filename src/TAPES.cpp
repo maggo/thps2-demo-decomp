@@ -1,9 +1,16 @@
-// Tape pickup ownership, progression messaging, hover physics, and creation.
+// TAPES.cpp -- Tape pickup ownership, progression messaging, hover physics, and creation.
+// Original: TAPES.CPP
+// Functions: 10
+// Address range: 0x80074008 - 0x80074DC4
+//
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#define CCLASS_POLY_ITEM_FAMILY
+#include "CCLASS_POLY.h"
+#include "CFRICTION.h"
 #include "TAPES.h"
 #include "MAIN.h"
 #include "OB.h"
-#include "CBODY.h"
 #include "POWERUP.h"
 #include "TRIG.h"
 #include "CAREER.h"
@@ -13,7 +20,6 @@
 #include <INLINE_C.H>
 #include "gte_extensions.h"
 #include "globals.h"
-#include "CITEM.h"
 #include "UTILS.h"
 
 /** Return caller-provided storage for construction. */
@@ -37,25 +43,6 @@ struct STapeMessage
     char *Line1;
     char *Line2;
     char *Line3;
-};
-
-typedef void (*CTapeDestroyMethod)(CTape *, int);
-typedef void (*CTapeBodyMethod)(CBody *);
-typedef int (*CTapeHitMethod)(CBody *, int, const CVector &, int);
-typedef void (*CTapeDeleteStuffMethod)(CTape *);
-
-/** Typed dispatch table owned by CTape. */
-struct CTapeVTable
-{
-    int Reserved0;
-    int Reserved1;
-    CTapeDestroyMethod Destroy;
-    CTapeBodyMethod Die;
-    CTapeBodyMethod AI;
-    CTapeBodyMethod EveryFrame;
-    CTapeBodyMethod DoLightingSetup;
-    CTapeHitMethod Hit;
-    CTapeDeleteStuffMethod DeleteStuff;
 };
 
 typedef void (*CTapeGlowDeleteMethod)(CTapeGlowLayout *, int);
@@ -95,55 +82,8 @@ struct CTapeGlowLayout
     CTapeBitLayout CBit;
 };
 
-/** CItem fields used directly by tape physics and creation. */
-struct CTapeItemLayout
-{
-    u16 mFlags;                     // 0x00
-    u16 mInquiry;                   // 0x02
-    CVector mPos;                   // 0x04
-    CSVector mAngles;               // 0x10
-    u16 mModel;                     // 0x16
-    char mDummyFrame;               // 0x18
-    u8 mTintIndex;                  // 0x19
-    u8 mDummyAnim;                  // 0x1a
-    u8 mRegion;                     // 0x1b
-    CTapeItemLayout *mNextItem;     // 0x1c
-    u32 mRGB;                       // 0x20
-    CSVector mScale;                // 0x24
-    u8 _pad2a[2];                   // 0x2a
-    u32 mTRN;                       // 0x2c
-    CTapeItemLayout *mPreviousItem; // 0x30
-    u32 mStoredRGB;                 // 0x34
-    u8 mPredatorEffectType;         // 0x38
-    u8 mPredatorEffectFade;         // 0x39
-    u16 mType;                      // 0x3a
-    SLight *mpLight;                // 0x3c
-    u16 mFlashTimer;                // 0x40
-    s16 mFlash_dR;                  // 0x42
-    s16 mFlash_dG;                  // 0x44
-    s16 mFlash_dB;                  // 0x46
-    CTapeVTable *_vf;               // 0x48
-};
-
-/** CBody slice preserving the original 264-byte base-class extent. */
-struct CTapeBodyLayout
-{
-    CTapeItemLayout CItem;          // 0x00
-    CTapeBodyLayout **mppOriginalList; // 0x4c
-    u16 mInputFlags;                // 0x50
-    u16 mCBodyFlags;                // 0x52
-    CVector mVel;                   // 0x54
-    CVector mAcc;                   // 0x60
-    CFriction mFric;                // 0x6c
-    u8 _pad6f;                      // 0x6f
-    CSVector mAngVel;               // 0x70
-    u8 _unused76[62];               // 0x76..0xb3
-    u16 mRMinor;                    // 0xb4
-    u8 _unusedb6[82];               // 0xb6..0x107
-};
-
 /** Tape pickup layout recovered from original/MAIN_STRUCTS.h. */
-struct CTape
+struct CTape : CBody
 {
     static int mOkayToDisplayContinueButton;
     static int mOkayToDisplayTitle;
@@ -158,7 +98,7 @@ struct CTape
         return ::CItem::operator new(size);
     }
     /** Destroys this tape and its owned glow state. */
-    ~CTape();
+    virtual ~CTape();
     /** Releases tape storage through the original CItem allocator. */
     static void operator delete(void *p) { ::CItem::operator delete(p); }
     /** Reports whether the tape title may be drawn this frame. */
@@ -176,7 +116,6 @@ struct CTape
     /** Advances this tape's hover rotation and wobble. */
     void DoPhysics();
 
-    CTapeBodyLayout CBody;          // 0x000
     CTapeGlowLayout *mpGlow;        // 0x108
     u16 mGlowRadiusOrg;             // 0x10c
     u16 mGlowRadiusAmp;             // 0x10e
@@ -206,16 +145,10 @@ struct CTape
     u32 mTimer;                     // 0x16c
 };
 
-typedef char tapes_item_size_must_be_76[
-    (sizeof(CTapeItemLayout) == 0x4c) ? 1 : -1];
-typedef char tapes_body_size_must_be_264[
-    (sizeof(CTapeBodyLayout) == 0x108) ? 1 : -1];
 typedef char tapes_bit_size_must_be_72[
     (sizeof(CTapeBitLayout) == 0x48) ? 1 : -1];
 typedef char tapes_owner_size_must_be_368[
     (sizeof(CTape) == 0x170) ? 1 : -1];
-typedef char tapes_vtable_size_must_be_36[
-    (sizeof(CTapeVTable) == 36) ? 1 : -1];
 typedef char tapes_glow_vtable_prefix_size_must_be_12[
     (sizeof(CTapeGlowVTable) == 12) ? 1 : -1];
 
@@ -248,12 +181,6 @@ enum TapeConstant
 #include "ZEROVECTOR.h"
 
 // === External function declarations ===
-#define CBODY_ABI_ONLY
-#define CBODY_DECLARE_DESTRUCTOR
-#define CBODY_DESTRUCTOR_NAME Tape_DestroyBody
-#define CBODY_DESTRUCTOR_RECEIVER CTapeBodyLayout
-#include "CBODY.h"
-#undef CBODY_ABI_ONLY
 #include "CVECTOROPS.h"
 #include "MESS.h"
 
@@ -265,9 +192,6 @@ enum TapeConstant
 // === External globals (absolute via incomplete array) ===
 #include "RCOSSIN.h"
 
-
-// === ABI-labelled forward declarations ===
-void Tape_DestructorAbi(CTape *, int) asm("_._5CTape");
 
 /**
  * Career-progression messages displayed after collecting level tapes.
@@ -312,22 +236,6 @@ STapeMessage TapeMessage[30] = {
     {1, "You're busted!", "OFFICER DICK has arrived!", 0},
 };
 
-/**
- * Tape virtual dispatch table in its original read-only owner section.
- */
-CTapeVTable __vt_5CTape
-    __attribute__((section(".rdata"), aligned(8))) = {
-        0,
-        0,
-        Tape_DestructorAbi,
-        (void (*)(CBody *))&CBody::Die,
-        (void (*)(CBody *))&CBody::AI,
-        (void (*)(CBody *))&CBody::EveryFrame,
-        (void (*)(CBody *))&CBody::DoLightingSetup,
-        (int (*)(CBody *, int, const CVector &, int))&CBody::Hit,
-        (void (*)(CTape *))&CTape::DeleteStuff,
-};
-
 // === Function implementations (address order) ===
 
 /**
@@ -369,8 +277,6 @@ CTape::CTape(
 {
     (void)Flags;
 
-    ::new (reinterpret_cast< ::CBody *>(&CBody)) ::CBody;
-    CBody.CItem._vf = &__vt_5CTape;
 
     mSize = Size1;
     mSize1 = Size1;
@@ -378,64 +284,64 @@ CTape::CTape(
     mSize2 = Size2;
     mVec1 = Pos;
     mVec2 = Pos2;
-    CSVector *scale = &CBody.CItem.mScale;
+    CSVector *scale = &mScale;
     scale->vx = Scale;
     scale->vy = Scale;
     scale->vz = Scale;
     mTimer = 0;
-    CBody.CItem.mType = PowerupType;
+    mType = PowerupType;
     mLifetime = Lifetime;
     mTapeNum = 0;
     mSessionTapeNum = 0;
     mOrgPos = Pos;
-    CBody.CItem.mPos = Pos;
-    CBody.mVel = Vel;
-    CBody.mFric.Set(5, 5, 5);
-    CBody.mAngVel.vy = 100;
-    CBody.mAcc.vy = 8 << TapeFixedFractionBits;
+    mPos = Pos;
+    mVel = Vel;
+    mFric.Set(5, 5, 5);
+    mAngVel.vy = 100;
+    mAcc.vy = 8 << TapeFixedFractionBits;
     mWobbleSpeed = Rnd(20) + 90;
     mMaxWobbleAmplitude = 50;
     mWobbleAmplitude = 50;
-    CBody.mRMinor = 300;
+    mRMinor = 300;
 
-    reinterpret_cast<CItem *>(&CBody.CItem)->InitItem("items");
+    InitItem("items");
 
-    switch (CBody.CItem.mType)
+    switch (mType)
     {
     case TapePowerUpMedalA:
-        reinterpret_cast<CItem *>(&CBody.CItem)->InitItem("skmedals");
+        InitItem("skmedals");
         mIs3d = 1;
-        CBody.CItem.mModel =
+        mModel =
             Spool_GetModel(0x54636518, CurrentMedalsFileRegion);
         break;
 
     case TapePowerUpMedalB:
-        reinterpret_cast<CItem *>(&CBody.CItem)->InitItem("skmedals");
+        InitItem("skmedals");
         mIs3d = 1;
-        CBody.CItem.mModel =
+        mModel =
             Spool_GetModel(0xba6d0434, CurrentMedalsFileRegion);
         break;
 
     case TapePowerUpMedalC:
-        reinterpret_cast<CItem *>(&CBody.CItem)->InitItem("skmedals");
+        InitItem("skmedals");
         mIs3d = 1;
-        CBody.CItem.mModel =
+        mModel =
             Spool_GetModel(0x2364558e, CurrentMedalsFileRegion);
         break;
 
     case TapePowerUpSecretTape:
     case TapePowerUpSpecial18:
         mMessageTable = TapeMessage;
-        CBody.mAngVel.vy = 150;
+        mAngVel.vy = 150;
         mIs3d = 1;
-        CBody.CItem.mModel =
+        mModel =
             Spool_GetModel(0x7c1b2c4a, CurrentItemsFileRegion);
         break;
     }
 
     if (GGame != 1)
     {
-        switch (CBody.CItem.mType)
+        switch (mType)
         {
         case TapePowerUpLetterK:
         case TapePowerUpLetterS:
@@ -449,7 +355,7 @@ CTape::CTape(
     }
     else
     {
-        switch (CBody.CItem.mType)
+        switch (mType)
         {
         case TapePowerUpLetterK:
         case TapePowerUpLetterS:
@@ -467,7 +373,7 @@ CTape::CTape(
         }
     }
 
-    reinterpret_cast< ::CBody *>(&CBody)->AttachTo(&PowerUpList);
+    AttachTo(&PowerUpList);
     if (mIs3d == 0)
         DontDisplay();
 }
@@ -478,10 +384,8 @@ CTape::CTape(
  */
 CTape::~CTape()
 {
-    CBody.CItem._vf = &__vt_5CTape;
-    reinterpret_cast< ::CBody *>(&CBody)->DeleteFrom(&PowerUpList);
+    DeleteFrom(&PowerUpList);
     DeleteStuff();
-    Tape_DestroyBody(&CBody, 0);
 }
 
 /**
@@ -490,10 +394,10 @@ CTape::~CTape()
  */
 void CTape::DontDisplay()
 {
-    u16 flags = CBody.CItem.mFlags;
+    u16 flags = mFlags;
     flags |= TapeUnavailableToEveryone;
-    CBody.CItem.mFlags = flags;
-    CBody.CItem._vf->DeleteStuff(this);
+    mFlags = flags;
+    DeleteStuff();
 }
 
 /**
@@ -524,10 +428,10 @@ void CTape::DeleteStuff()
  */
 void CTape::DoPhysics()
 {
-    CBody.CItem.mAngles += CBody.mAngVel;
-    CBody.CItem.mAngles.Mask();
+    mAngles += mAngVel;
+    mAngles.Mask();
     short *table = rcossin_tbl;
-    CBody.CItem.mPos = mOrgPos;
+    mPos = mOrgPos;
     u16 angle = mT;
     u16 speed = mWobbleAmplitude;
     short sinVal =
@@ -537,9 +441,9 @@ void CTape::DoPhysics()
         product += TapeTrigAngleMask;
     int yDelta =
         (product >> TapeFixedFractionBits) << TapeFixedFractionBits;
-    int curY = CBody.CItem.mPos.vy;
+    int curY = mPos.vy;
     u16 angleStep = mWobbleSpeed;
-    CBody.CItem.mPos.vy = curY + yDelta;
+    mPos.vy = curY + yDelta;
     mT = angle + angleStep;
 }
 
@@ -595,7 +499,7 @@ void CTape::AI(int tape_no)
     messages[4] = 0;
 
     short Scale = static_cast<short>(mSize);
-    CSVector &scale = CBody.CItem.mScale;
+    CSVector &scale = mScale;
     scale.vx = Scale;
     scale.vy = Scale;
     scale.vz = Scale;
@@ -840,6 +744,6 @@ CTape *Tape_Create(int x, int y, int z, int Size, int x2, int y2, int z2, int Si
     Tape->mWobbleAmplitude = 10;
     Tape->mMaxWobbleAmplitude = 10;
     Tape->mWobbleSpeed = 80;
-    Tape->CBody.CItem.mFlags |= 0x200;
+    Tape->mFlags |= 0x200;
     return Tape;
 }

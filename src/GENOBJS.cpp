@@ -3,21 +3,24 @@
 // Functions: 37 reconstructed bodies
 // Address range: 0x80052D70 - 0x80056020
 //
-// Compiled with cc1plus (GCC 2.91.66-psx). Compiler auto-mangles symbol names.
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
-#define __SKIP_RAILSTRING_EXTERNS__
-
-#define __SKIP_EDITOROUTMODEL_EXTERNS__
-
-#define __SKIP_RAILPOINT_EXTERNS__
-
+#include "CCLASS_POLY.h"
+#define CClass CClassData
 #include "GENOBJS.h"
-#include "RAILINFO.h"
+#undef CClass
 #include "EDITORPIECES.h"
 #include "FACEREMOVAL.h"
 #include <STDDEF.H>
 #include <LIBGTE.H>
 #include "SMODEL.h"
+
+/** Shared generator state used when sizing generated models. */
+struct LevelGenerator
+{
+    static int GridCellHeight __attribute__((section(".data")));
+    static int GridCellWidth __attribute__((section(".data")));
+};
 
 /** Return caller-provided storage for an owner constructor. */
 inline void *operator new(unsigned int, void *address)
@@ -83,7 +86,7 @@ typedef char GenObjs_OutputFaceHeader_size_must_be_4[
 /** Owner-local layout of a point in a generated rail string. */
 struct GenObjsRailPoint
 {
-    CClass CClass;
+    CClassData CClass;
     SVector Pos;
     GenObjsRailPoint *Next;
     int ModelIndex;
@@ -94,7 +97,7 @@ struct GenObjsRailPoint
 /** Owner-local layout of a generated rail string. */
 struct GenObjsRailString
 {
-    CClass CClass;
+    CClassData CClass;
     SVector BoundsMin;
     SVector BoundsMax;
     GenObjsRailPoint *PointList;
@@ -106,7 +109,7 @@ struct GenObjsRailString
 /** Owner-local layout of the generated rail list. */
 struct GenObjsRailInfo
 {
-    CClass CClass;
+    CClassData CClass;
     GenObjsRailString *StringList;
     GenObjsRailString *CurrentString;
 };
@@ -114,7 +117,7 @@ struct GenObjsRailInfo
 /** Owner-local slice of EditorInModel used while restoring shared faces. */
 struct GenObjsEditorInModel
 {
-    CClass CClass;
+    CClassData CClass;
     ModelFace *Faces;
     SModel *mModel;
     u8 mIndex;
@@ -136,7 +139,7 @@ struct GenObjsEditorInModel
 /** Owner-local slice of EditorOutModel used while restoring shared faces. */
 struct GenObjsEditorOutModel
 {
-    CClass CClass;
+    CClassData CClass;
     void *DeleteModelRequest;
     u8 FaceRemovalRequest;
     void *RestoreFacesRequest;
@@ -184,12 +187,6 @@ static inline int GenObjsPolyBufferSize(void)
     return *(int *)0x800DA328;
 }
 
-/** Typed imports used by the generated-model owner. */
-#define GENOBJS_DECLARE_EDITOR_IN_MODEL_CONSTRUCTOR_ABI
-#define GENOBJS_EDITOR_IN_MODEL_CONSTRUCTOR_TYPE GenObjsEditorInModel
-#include "GENOBJS.h"
-#define ConstructEditorInModel __13EditorInModel
-
 #include "MEM.h"
 #include <STDIO.H>
 #include <INLINE_C.H>
@@ -200,7 +197,7 @@ static inline int GenObjsPolyBufferSize(void)
  */
 static inline void DestroyCClass(void *obj)
 {
-    int *vtable = ((CClass *)obj)->vtable;
+    int *vtable = ((CClassData *)obj)->vtable;
     typedef void (*dtor_fn)(void *, int);
     ((dtor_fn)vtable[2])(obj, 3);
 }
@@ -208,6 +205,59 @@ static inline void DestroyCClass(void *obj)
 // === Forward type declarations ===
 
 struct GenObjsAssignableRailString;
+
+/**
+ * Display-buffer slice needed by the editor's polygon-pool initializer.
+ *
+ * `MAIN_STRUCTS.h` proves `Polys` at offset 0xA8; the rest of the display
+ * buffer remains deliberately opaque to this owner.
+ */
+struct GenObjsDoubleBufferView
+{
+    unsigned char _padToPolys[0xA8];
+    unsigned char *Polys;
+};
+
+// === Class declarations ===
+class EditorInModel : public CClass
+{
+public:
+    static int GameBuild;
+    static ModelFace *pMaxBufEntry;
+    static ModelFace *pPolyBufEntry;
+    static void InitPolyBuf(bool game_build);
+    static ModelFace *NewModelFace(void);
+    EditorInModel();
+    virtual ~EditorInModel();
+    void KillModelInfo(void);
+    void SetData(SModel *pModel, int model_index);
+    void SetTransparency(bool on);
+};
+
+class EditorOutModel : public CClass
+{
+public:
+    static unsigned char *MixLookup;
+    static unsigned char *IntensityLookup;
+    static int FallOff;
+    static int LightIntensity;
+    static int DaMix;
+    static int CurrentFace;
+    static ModelFace2 *FaceBuf;
+    static Vector LightVect[4];
+    static Vector LightLoc[4];
+    static void Init(void);
+    void Cleanup(void);
+    static ModelFace2 *NewFace(void);
+    EditorOutModel(EditorInModel *source, int id);
+    virtual ~EditorOutModel();
+    void RestoreFaces(void);
+    void RemoveSomeHiddenFaces(EditorOutModel *neighbor, int orientation);
+    void RemoveAllHiddenFaces(void);
+    int SetModelDataSize(bool game_build);
+    int CreateModelData(char *pData, bool game_build);
+    void UnhideSharedFaces(bool unhide, EditorOutModel *wire_model, unsigned char against);
+};
 
 /** One point in a generated rail string with its original CClass base. */
 class RailPoint : public CClass
@@ -220,7 +270,7 @@ public:
     void *IsDoubleLink;
 
     RailPoint();
-    ~RailPoint();
+    virtual ~RailPoint() {}
     bool Compare(RailPoint *point);
 };
 
@@ -245,66 +295,13 @@ public:
     RailString *SplitString(void);
     int CountPoints(void);
     RailString();
-    ~RailString();
+    virtual ~RailString();
 };
 
 typedef char GenObjs_RailString_size_must_be_32[
     (sizeof(RailString) == 32) ? 1 : -1];
 
-/**
- * Display-buffer slice needed by the editor's polygon-pool initializer.
- *
- * `MAIN_STRUCTS.h` proves `Polys` at offset 0xA8; the rest of the display
- * buffer remains deliberately opaque to this owner.
- */
-struct GenObjsDoubleBufferView
-{
-    unsigned char _padToPolys[0xA8];
-    unsigned char *Polys;
-};
-
-// === Class declarations ===
-class EditorInModel
-{
-public:
-    static int GameBuild;
-    static ModelFace *pMaxBufEntry;
-    static ModelFace *pPolyBufEntry;
-    static void InitPolyBuf(bool game_build);
-    static ModelFace *NewModelFace(void);
-    ~EditorInModel();
-    static void operator delete(void *p) {
-        ::CClass::operator delete(p);
-    }
-    void KillModelInfo(void);
-    void SetData(SModel *pModel, int model_index);
-    void SetTransparency(bool on);
-};
-
-class EditorOutModel
-{
-public:
-    static unsigned char *MixLookup;
-    static unsigned char *IntensityLookup;
-    static int FallOff;
-    static int LightIntensity;
-    static int DaMix;
-    static int CurrentFace;
-    static ModelFace2 *FaceBuf;
-    static Vector LightVect[4];
-    static Vector LightLoc[4];
-    static void Init(void);
-    void Cleanup(void);
-    static ModelFace2 *NewFace(void);
-    EditorOutModel(EditorInModel *source, int id);
-    ~EditorOutModel();
-    void RestoreFaces(void);
-    void RemoveSomeHiddenFaces(EditorOutModel *neighbor, int orientation);
-    void RemoveAllHiddenFaces(void);
-    int SetModelDataSize(bool game_build);
-    int CreateModelData(char *pData, bool game_build);
-    void UnhideSharedFaces(bool unhide, EditorOutModel *wire_model, unsigned char against);
-};
+#include "RAILINFO.h"
 
 /** World-space directions for the editor's four static model lights. */
 Vector EditorOutModel::LightVect[4]
@@ -315,118 +312,18 @@ Vector EditorOutModel::LightLoc[4]
     __attribute__((section(".data"))) = {};
 
 /** Rail-merge diagnostics recovered from the original small-data block. */
-static char s_From_empty_800da584[12]
-    __attribute__((section(".sdata"))) = "From empty\n";
-static char s_To_empty_800da590[12]
-    __attribute__((section(".sdata"))) = "To empty\n";
-static char s_from_not_loop_800da59c[16]
-    __attribute__((section(".sdata"))) = "from not loop\n";
-static char s_To_not_loop_800da5ac[16]
-    __attribute__((section(".sdata"))) = "To not loop\n";
+static char s_From_empty[];
+static char s_To_empty[];
+static char s_from_not_loop[];
+static char s_To_not_loop[];
 
 /** Editor merge diagnostics in their original small-data order. */
-static char s_Added_string_800da5bc[16]
-    __attribute__((section(".sdata"))) = " Added string\n";
-static char s_Merged_string_800da5cc[16]
-    __attribute__((section(".sdata"))) = " Merged string\n";
-
-/** EditorOutModel's target-owned small-data state, in address order. */
-unsigned char *EditorOutModel::MixLookup
-    __attribute__((section(".sdata"))) = 0;
-unsigned char *EditorOutModel::IntensityLookup
-    __attribute__((section(".sdata"))) = 0;
-int EditorOutModel::FallOff __attribute__((section(".sdata"))) = 0;
-int EditorOutModel::LightIntensity __attribute__((section(".sdata"))) = 0;
-int EditorOutModel::DaMix __attribute__((section(".sdata"))) = 0;
-int EditorOutModel::CurrentFace __attribute__((section(".sdata"))) = 0;
-ModelFace2 *EditorOutModel::FaceBuf
-    __attribute__((section(".sdata"))) = 0;
-
-/** EditorInModel's target-owned polygon-buffer state, in address order. */
-int EditorInModel::GameBuild __attribute__((section(".sdata"))) = 0;
-ModelFace *EditorInModel::pMaxBufEntry
-    __attribute__((section(".sdata"))) = 0;
-ModelFace *EditorInModel::pPolyBufEntry
-    __attribute__((section(".sdata"))) = 0;
+static char s_Added_string[];
+static char s_Merged_string[];
 
 /** Successful-merge prefix emitted before the merged rail contents. */
-static char s_Heigh_ho_Did_Merge_800b28f0[28]
+static char s_Heigh_ho_Did_Merge[28]
     __attribute__((section(".rdata"))) = "\nHeigh ho -- Did Merge: ";
-
-// === Owner vtables and their narrow destructor-address views ===
-#define RAILINFO_DECLARE_DESTRUCTOR
-#define RAILINFO_DESTRUCTOR_NAME RailInfoDestructor
-#define RAILINFO_DESTRUCTOR_RECEIVER GenObjsRailInfo
-#include "RAILINFO.h"
-
-/** Addressable destructor entries used by this owner's manual vtables. */
-void GenObjs_DestroyRailString(RailString *, int) asm("_._10RailString");
-static void GenObjs_DestroyRailPoint(RailPoint *, int)
-    asm("_._9RailPoint");
-void GenObjs_DestroyEditorOutModel(EditorOutModel *, int)
-    asm("_._14EditorOutModel");
-void GenObjs_DestroyEditorInModel(EditorInModel *, int)
-    asm("_._13EditorInModel");
-
-extern "C" {
-static void __DOT__6CClass_80055FF0(CClass *, int);
-}
-
-/** RailInfo's public three-word table and its target alignment word. */
-int __vt_8RailInfo __attribute__((section(".sdata"), aligned(4))) = 0;
-static int GenObjs_RailInfoVTableIndex
-    __attribute__((section(".sdata"))) = 0;
-static void (*GenObjs_RailInfoVTableDtor)(GenObjsRailInfo *, int)
-    __attribute__((section(".sdata"))) = &RailInfoDestructor;
-static int GenObjs_RailInfoVTablePadding
-    __attribute__((section(".sdata"))) = 0;
-
-/** RailString's public three-word table and its target alignment word. */
-int __vt_10RailString __attribute__((section(".sdata"), aligned(4))) = 0;
-static int GenObjs_RailStringVTableIndex
-    __attribute__((section(".sdata"))) = 0;
-static void (*GenObjs_RailStringVTableDtor)(RailString *, int)
-    __attribute__((section(".sdata"))) = &GenObjs_DestroyRailString;
-static int GenObjs_RailStringVTablePadding
-    __attribute__((section(".sdata"))) = 0;
-
-/** RailPoint's private three-word table and its target alignment word. */
-static int GenObjs_RailPointVTable
-    __attribute__((section(".sdata"), aligned(4))) = 0;
-static int GenObjs_RailPointVTableIndex
-    __attribute__((section(".sdata"))) = 0;
-static void (*GenObjs_RailPointVTableDtor)(RailPoint *, int)
-    __attribute__((section(".sdata"))) = &GenObjs_DestroyRailPoint;
-static int GenObjs_RailPointVTablePadding
-    __attribute__((section(".sdata"))) = 0;
-
-/** EditorOutModel's public three-word table and its target alignment word. */
-int __vt_14EditorOutModel
-    __attribute__((section(".sdata"), aligned(4))) = 0;
-static int GenObjs_EditorOutVTableIndex
-    __attribute__((section(".sdata"))) = 0;
-static void (*GenObjs_EditorOutVTableDtor)(EditorOutModel *, int)
-    __attribute__((section(".sdata"))) = &GenObjs_DestroyEditorOutModel;
-static int GenObjs_EditorOutVTablePadding
-    __attribute__((section(".sdata"))) = 0;
-
-/** EditorInModel's public three-word table and its target alignment word. */
-int __vt_13EditorInModel
-    __attribute__((section(".sdata"), aligned(4))) = 0;
-static int GenObjs_EditorInVTableIndex
-    __attribute__((section(".sdata"))) = 0;
-static void (*GenObjs_EditorInVTableDtor)(EditorInModel *, int)
-    __attribute__((section(".sdata"))) = &GenObjs_DestroyEditorInModel;
-static int GenObjs_EditorInVTablePadding
-    __attribute__((section(".sdata"))) = 0;
-
-/** Private CClass table emitted at the end of GenObjs.obj's small data. */
-static int GenObjs_BaseVTable
-    __attribute__((section(".sdata"), aligned(4))) = 0;
-static int GenObjs_BaseVTableIndex
-    __attribute__((section(".sdata"))) = 0;
-static void (*GenObjs_BaseVTableDtor)(CClass *, int)
-    __attribute__((section(".sdata"))) = &__DOT__6CClass_80055FF0;
 
 // === Function implementations (address order) ===
 
@@ -490,12 +387,7 @@ ModelFace *EditorInModel::NewModelFace(void)
  * @param self  Constructor receiver, represented by the proven owner-local layout.
  * @return `this` pointer (GCC 2.x ctor convention).
  */
-GenObjsEditorInModel *ConstructEditorInModel(
-    GenObjsEditorInModel *self)
-{
-    self->CClass.vtable = (int *)&__vt_13EditorInModel;
-    return self;
-}
+EditorInModel::EditorInModel() {}
 
 /**
  *
@@ -506,9 +398,9 @@ GenObjsEditorInModel *ConstructEditorInModel(
 EditorInModel::~EditorInModel()
 {
     GenObjsEditorInModel *model = (GenObjsEditorInModel *)this;
-    model->CClass.vtable = (int *)&__vt_13EditorInModel;
+
     KillModelInfo();
-    model->CClass.vtable = &__vt_13EditorInModel + 4;
+
 }
 
 /**
@@ -576,7 +468,7 @@ void EditorInModel::SetData(SModel *pModel, int model_index)
     s16 xmax = ((ModelBounds *)&pModel->Box)->xmax;
     s16 xmin = ((ModelBounds *)&pModel->Box)->xmin;
     {
-        int cellsize = _14LevelGenerator_GridCellWidth;
+        int cellsize = LevelGenerator::GridCellWidth;
         int cells = (xmax - xmin) / cellsize;
         int diff = (xmax - xmin) % cellsize;
         modelInfo->w = cells;
@@ -589,7 +481,7 @@ void EditorInModel::SetData(SModel *pModel, int model_index)
     s16 ymax = ((ModelBounds *)&modelInfo->mModel->Box)->ymax;
     s16 ymin = ((ModelBounds *)&modelInfo->mModel->Box)->ymin;
     {
-        int cellsize = _14LevelGenerator_GridCellHeight;
+        int cellsize = LevelGenerator::GridCellHeight;
         int cells = (ymax - ymin) / cellsize;
         int diff = (ymax - ymin) % cellsize;
         modelInfo->h = cells;
@@ -602,7 +494,7 @@ void EditorInModel::SetData(SModel *pModel, int model_index)
     s16 zmax = ((ModelBounds *)&modelInfo->mModel->Box)->zmax;
     s16 zmin = ((ModelBounds *)&modelInfo->mModel->Box)->zmin;
     {
-        int cellsize = _14LevelGenerator_GridCellWidth;
+        int cellsize = LevelGenerator::GridCellWidth;
         int cells = (zmax - zmin) / cellsize;
         int diff = (zmax - zmin) % cellsize;
         modelInfo->l = cells;
@@ -764,8 +656,7 @@ void EditorInModel::SetData(SModel *pModel, int model_index)
         (GenObjsRailInfo *)CClass::operator new(sizeof(GenObjsRailInfo));
     if (railInfo != 0)
     {
-        railInfo = reinterpret_cast<GenObjsRailInfo *>(
-            RailInfo_ctor(reinterpret_cast<RailInfo *>(railInfo)));
+        railInfo = reinterpret_cast<GenObjsRailInfo *>(::new (railInfo) RailInfo());
     }
     modelInfo->railInfo = railInfo;
 }
@@ -943,35 +834,17 @@ void EditorOutModel::Cleanup(void)
  */
 ModelFace2 *EditorOutModel::NewFace(void)
 {
-    int count = 2000;
-    ModelFace2 *faceBuf = EditorOutModel::FaceBuf;
-    int sentinel = -9999;
-    int nextIdx;
     ModelFace2 *face;
-
-    do
+    int count = 2000;
+    for (; count != 0; count--)
     {
-        register int cf asm("$4") = EditorOutModel::CurrentFace;
-        nextIdx = cf + 1;
-        if (faceBuf[cf].area == sentinel)
-        {
-            goto found;
-        }
-        EditorOutModel::CurrentFace = nextIdx;
-        if (nextIdx > 1999)
-        {
+        if (EditorOutModel::FaceBuf[EditorOutModel::CurrentFace].area == -9999)
+            break;
+        EditorOutModel::CurrentFace++;
+        if (EditorOutModel::CurrentFace > 1999)
             EditorOutModel::CurrentFace = 0;
-        }
-        count--;
-    } while (count != 0);
-
-found:
-{
-    int cf = EditorOutModel::CurrentFace;
-    face = &EditorOutModel::FaceBuf[cf];
-    cf = cf + 1;
-    EditorOutModel::CurrentFace = cf;
-}
+    }
+    face = &EditorOutModel::FaceBuf[EditorOutModel::CurrentFace++];
     face->alive = (void *)1;
     face->orientation = -1;
     face->area = -8888;
@@ -998,7 +871,6 @@ EditorOutModel::EditorOutModel(EditorInModel *source, int id)
     ModelFace2 *last_face;
     int i;
 
-    model->CClass.vtable = (int *)&__vt_14EditorOutModel;
     model->SourceModel = inModel;
 
     model->NumVertices = inModel->mModel->NumVertices;
@@ -1061,7 +933,7 @@ EditorOutModel::~EditorOutModel()
 {
     GenObjsEditorOutModel *model = (GenObjsEditorOutModel *)this;
     ModelFace2 *faceInit = model->Faces;
-    model->CClass.vtable = (int *)&__vt_14EditorOutModel;
+
     if (faceInit != 0)
     {
         int sentinel = -9999;
@@ -1073,7 +945,7 @@ EditorOutModel::~EditorOutModel()
             model->Faces = face;
         } while (face != 0);
     }
-    model->CClass.vtable = (int *)&GenObjs_BaseVTable;
+
 }
 
 /**
@@ -1118,7 +990,6 @@ void EditorOutModel::RestoreFaces(void)
  * Address:   0x800538E4, Size: 2672 bytes (668 instructions)
  * Mangled:   RemoveSomeHiddenFaces__14EditorOutModelP14EditorOutModeli
  * Demangled: EditorOutModel::RemoveSomeHiddenFaces(EditorOutModel *, int)
- * Match:     PERFECT (668/668 instructions, 0 real and 0 relocation mismatches)
  *
  * @param neighbor  Adjacent model whose faces are tested against this one's.
  * @param orientation  Side-orientation mask selected by RemoveAllHiddenFaces.
@@ -1407,7 +1278,6 @@ void EditorOutModel::RemoveSomeHiddenFaces(EditorOutModel *neighbor, int orienta
  * Address:   0x80054354, Size: 360 bytes (90 instructions)
  * Mangled:   RemoveAllHiddenFaces__14EditorOutModel
  * Demangled: void EditorOutModel::RemoveAllHiddenFaces(void)
- * Match:     PERFECT (90/90 instructions, 0 real and 0 relocation mismatches)
  */
 
 void EditorOutModel::RemoveAllHiddenFaces(void)
@@ -1415,7 +1285,6 @@ void EditorOutModel::RemoveAllHiddenFaces(void)
     auto model_ = this;
     GenObjsEditorOutModel *model = (GenObjsEditorOutModel *)model_;
     int i;
-    GenObjsEditorOutModel **neighborSlot;
 
     // Skip transparent/special models (info flags bit 0)
     if ((model->SourceModel->flags & 1) != 0)
@@ -1430,17 +1299,12 @@ void EditorOutModel::RemoveAllHiddenFaces(void)
     {
         do
         {
-            register int neighbor_offset asm("$4") = (u32)i << 2;
-            register int neighbor_base asm("$2") = (int)model->Neighbors;
-            neighborSlot =
-                (GenObjsEditorOutModel **)(neighbor_base + neighbor_offset);
-
             // Check neighbor eligibility: not flagged, not a floor piece,
             // and at least one of the pair has hidden faces
-            if ((((*neighborSlot)->SourceModel->flags & 1) == 0) &&
-                (IsAFloorPiece((*neighborSlot)->SourceModel->mIndex) == 0) &&
+            if (((model->Neighbors[i]->SourceModel->flags & 1) == 0) &&
+                (IsAFloorPiece(model->Neighbors[i]->SourceModel->mIndex) == 0) &&
                 ((model->FaceRemovalRequest != 0 ||
-                  (*neighborSlot)->FaceRemovalRequest != 0)))
+                  model->Neighbors[i]->FaceRemovalRequest != 0)))
             {
 
                 // Select removal mode based on flags bit 3 and neighbor index
@@ -1449,11 +1313,11 @@ void EditorOutModel::RemoveAllHiddenFaces(void)
                     // Mode pair 2/3 (bit 3 set)
                     if (i < (int)(u32)model->mFirstEasternNeighbor)
                     {
-                        RemoveSomeHiddenFaces((EditorOutModel *)*neighborSlot, 3);
+                        RemoveSomeHiddenFaces((EditorOutModel *)model->Neighbors[i], 3);
                     }
                     else
                     {
-                        RemoveSomeHiddenFaces((EditorOutModel *)*neighborSlot, 2);
+                        RemoveSomeHiddenFaces((EditorOutModel *)model->Neighbors[i], 2);
                     }
                 }
                 else
@@ -1461,11 +1325,11 @@ void EditorOutModel::RemoveAllHiddenFaces(void)
                     // Mode pair 0/1 (bit 3 clear)
                     if (i < (int)(u32)model->mFirstEasternNeighbor)
                     {
-                        RemoveSomeHiddenFaces((EditorOutModel *)*neighborSlot, 1);
+                        RemoveSomeHiddenFaces((EditorOutModel *)model->Neighbors[i], 1);
                     }
                     else
                     {
-                        RemoveSomeHiddenFaces((EditorOutModel *)*neighborSlot, 0);
+                        RemoveSomeHiddenFaces((EditorOutModel *)model->Neighbors[i], 0);
                     }
                 }
             }
@@ -1578,7 +1442,7 @@ done:
  *               if false, hidden faces are copied with visibility bits cleared
  * Returns: Size — the output model's 16-bit identifier / flags
  * External globals — lighting system
- * DAT_800c044c
+ * EditorOutModel::LightLoc
  *
  * Address:   0x80054550, Size: 1224 bytes (306 instructions)
  * Mangled:   CreateModelData__14EditorOutModelPcb
@@ -1831,9 +1695,6 @@ int EditorOutModel::CreateModelData(char *pData, bool game_build)
                         add_color =
                             (EditorOutModel::LightIntensity << 8) / r_squared;
                     }
-                    /* Preserve the target branch label at ASPSX's mandatory
-                     * divide-result delay instruction. */
-                    __asm__ __volatile__("nop");
                     if (0x3ff < add_color)
                     {
                         add_color = 0x3ff;
@@ -1877,7 +1738,6 @@ int EditorOutModel::CreateModelData(char *pData, bool game_build)
  * Mangled:   UnhideSharedFaces__14EditorOutModelbP14EditorOutModelUc
  * Demangled: EditorOutModel::UnhideSharedFaces(bool, EditorOutModel *, unsigned char)
  *
- * Match: PERFECT (87/87 instructions, 0 real and 0 relocation mismatches).
  *
  * @param unhide  False clears hidden flags; true reapplies them selectively.
  * @param wire_model  Original API argument; unused by this implementation.
@@ -1959,7 +1819,7 @@ void EditorOutModel::UnhideSharedFaces(
  */
 RailPoint::RailPoint()
 {
-    vtable = (int *)&GenObjs_RailPointVTable;
+
     Next = 0;
     ModelIndex = -1;
     Material = 0;
@@ -2008,7 +1868,7 @@ done:
  */
 RailString::RailString()
 {
-    vtable = (int *)&__vt_10RailString;
+
     PointList = 0;
     Next = 0;
     IsLoop = 0;
@@ -2025,7 +1885,7 @@ RailString::RailString()
 RailString::~RailString()
 {
     int i = 0;
-    vtable = (int *)&__vt_10RailString;
+
     GenObjsRailPoint *point = PointList;
     int count = NumPoints;
     if (count > 0)
@@ -2042,7 +1902,7 @@ RailString::~RailString()
             point = next_point;
         } while (i < count);
     }
-    vtable = (int *)&GenObjs_BaseVTable;
+
 }
 
 /**
@@ -2074,8 +1934,7 @@ void RailString::AddPoint(RailPoint *new_point_, bool is_loop)
         new_point->Next = 0;
     }
 
-    register GenObjsRailPoint *head asm("$2") = self->PointList;
-    GenObjsRailPoint *point = head;
+    GenObjsRailPoint *head = self->PointList;
     if (head == 0)
     {
         self->PointList = new_point;
@@ -2083,6 +1942,7 @@ void RailString::AddPoint(RailPoint *new_point_, bool is_loop)
         return;
     }
 
+    GenObjsRailPoint *point = head;
     GenObjsRailPoint *next = point->Next;
     if (next != 0)
     {
@@ -2106,7 +1966,6 @@ void RailString::AddPoint(RailPoint *new_point_, bool is_loop)
  * Mangled:   MakeCCW__10RailString
  * Demangled: RailString::MakeCCW(void)
  *
- * Match: PERFECT (70/70 instructions, 0 real and 0 relocation mismatches).
  *
  * Operates on this rail string's circular point list.
  */
@@ -2357,13 +2216,13 @@ bool RailString::MergeString(
     if (debugify)
     {
         if (from == 0)
-            printf(s_From_empty_800da584);
+            printf(s_From_empty);
         if (to == 0)
-            printf(s_To_empty_800da590);
+            printf(s_To_empty);
         if (string_from->IsLoop == 0)
-            printf(s_from_not_loop_800da59c);
+            printf(s_from_not_loop);
         if (IsLoop == 0)
-            printf(s_To_not_loop_800da5ac);
+            printf(s_To_not_loop);
     }
 
     if (from == 0 || to == 0)
@@ -2629,7 +2488,7 @@ bool RailString::MergeString(
     CountPoints();
 
     if (debugify)
-        printf(s_Heigh_ho_Did_Merge_800b28f0);
+        printf(s_Heigh_ho_Did_Merge);
     return 1;
 }
 
@@ -2642,7 +2501,6 @@ bool RailString::MergeString(
  * Mangled:   SplitString__10RailString
  * Demangled: RailString::SplitString(void)
  *
- * Match: PERFECT (224/224 instructions, 0 real and 0 relocation mismatches).
  *
  * @return Newly allocated second loop, or null when no valid split is found.
  */
@@ -2794,7 +2652,6 @@ RailString *RailString::SplitString(void)
  * Mangled:   CountPoints__10RailString
  * Demangled: RailString::CountPoints(void)
  *
- * Match: PERFECT (72/72 instructions, 0 real and 0 relocation mismatches).
  *
  * @return Number of points encountered before the list ends or wraps to its head.
  */
@@ -2846,12 +2703,9 @@ int RailString::CountPoints(void)
  * @param self  Constructor receiver represented by the owner-local layout.
  * @return `this` pointer (GCC 2.x ctor convention).
  */
-RailInfo *RailInfoConstructorABI::__8RailInfo(RailInfo *rails)
+RailInfo::RailInfo()
 {
-    GenObjsRailInfo *self = reinterpret_cast<GenObjsRailInfo *>(rails);
-    self->CClass.vtable = (int *)&__vt_8RailInfo;
-    self->StringList = 0;
-    return rails;
+    StringList = 0;
 }
 
 /**
@@ -2864,15 +2718,9 @@ RailInfo *RailInfoConstructorABI::__8RailInfo(RailInfo *rails)
  * @param self  Rail collection being destroyed.
  * @param flag  GCC 2.x in-charge flag (bit 0 → also invoke `operator delete` on `this`).
  */
-void RailInfoDestructor(GenObjsRailInfo *self, int flag)
+RailInfo::~RailInfo()
 {
-    self->CClass.vtable = (int *)&__vt_8RailInfo;
-    reinterpret_cast<RailInfo *>(self)->Clear();
-    self->CClass.vtable = (int *)&GenObjs_BaseVTable;
-    if (flag & 1)
-    {
-        CClass::operator delete(self);
-    }
+    Clear();
 }
 
 /**
@@ -2889,44 +2737,20 @@ void RailInfoDestructor(GenObjsRailInfo *self, int flag)
  */
 RailString *RailInfo::NewString()
 {
-    GenObjsRailInfo *self = reinterpret_cast<GenObjsRailInfo *>(this);
-    GenObjsRailString *string;
-
-    // Allocate and construct
-    string = (GenObjsRailString *)CClass::operator new(
-        sizeof(GenObjsRailString));
-    if (string != 0)
+    RailString *created = static_cast<RailString *>(
+        CClass::operator new(sizeof(RailString)));
+    if (created != 0)
+        created = ::new (created) RailString();
+    CurrentString = created;
+    if (StringList == 0)
     {
-        string = (GenObjsRailString *)::new (string) RailString();
+        StringList = created;
+        return created;
     }
-
-    {
-        register GenObjsRailString *next asm("$3") = self->StringList;
-        self->CurrentString = string;
-
-        if (next == 0)
-        {
-            self->StringList = string;
-        }
-        else
-        {
-            GenObjsRailString *node = next;
-            next = node->Next;
-            if (next != 0)
-            {
-                do
-                {
-                    node = next;
-                    string = node->Next;
-                    next = string;
-                } while (string != 0);
-            }
-            next = self->CurrentString;
-            node->Next = next;
-            string = next;
-        }
-    }
-    return reinterpret_cast<RailString *>(string);
+    RailString *string = StringList;
+    while (string->Next != 0)
+        string = string->Next;
+    return (string->Next = CurrentString);
 }
 
 /**
@@ -3036,7 +2860,7 @@ void RailInfo::MergeAdd(RailString *string_to_merge, bool debugify)
             if (head == 0)
             {
                 if (debugify)
-                    printf(s_Added_string_800da5bc);
+                    printf(s_Added_string);
                 railInfo->StringList = merge_list;
                 merge_list->Next = 0;
                 break;
@@ -3051,7 +2875,7 @@ void RailInfo::MergeAdd(RailString *string_to_merge, bool debugify)
                             (RailString *)string, debugify) != 0)
                     {
                         if (debugify)
-                            printf(s_Merged_string_800da5cc);
+                            printf(s_Merged_string);
                         if (prev != 0)
                             prev->Next = string->Next;
                         else
@@ -3073,7 +2897,7 @@ void RailInfo::MergeAdd(RailString *string_to_merge, bool debugify)
                     if (string->Next == 0)
                     {
                         if (debugify)
-                            printf(s_Added_string_800da5bc);
+                            printf(s_Added_string);
                         repeat_merge = false;
                         string->Next = merge_list;
                         merge_list->Next = 0;
@@ -3088,47 +2912,34 @@ void RailInfo::MergeAdd(RailString *string_to_merge, bool debugify)
 }
 
 
-/**
- * Destroy a generated rail point and optionally release its storage.
- *
- * Address:   0x80055FC0
- * Mangled:   _._9RailPoint
- * Demangled: RailPoint::~RailPoint()
- *
- * This target destructor is local even though the constructor and Compare
- * method are exported.  A natural out-of-line destructor makes GCC export the
- * symbol, so this addressable ABI implementation preserves the proven local
- * binding used by the private vtable.
- *
- * @param self Rail point being destroyed.
- * @param in_charge GCC 2.x in-charge flag; bit 0 releases the object.
- */
-static void GenObjs_DestroyRailPoint(RailPoint *self, int in_charge)
-{
-    self->vtable = &GenObjs_BaseVTable;
-    if (in_charge & 1)
-    {
-        CClass::operator delete(self);
-    }
-}
+static char s_From_empty[12]
+    __attribute__((section(".sdata"))) = "From empty\n";
+static char s_To_empty[12]
+    __attribute__((section(".sdata"))) = "To empty\n";
+static char s_from_not_loop[16]
+    __attribute__((section(".sdata"))) = "from not loop\n";
+static char s_To_not_loop[16]
+    __attribute__((section(".sdata"))) = "To not loop\n";
+static char s_Added_string[16]
+    __attribute__((section(".sdata"))) = " Added string\n";
+static char s_Merged_string[16]
+    __attribute__((section(".sdata"))) = " Merged string\n";
 
+/** EditorOutModel's target-owned small-data state, in address order. */
+unsigned char *EditorOutModel::MixLookup
+    __attribute__((section(".sdata"))) = 0;
+unsigned char *EditorOutModel::IntensityLookup
+    __attribute__((section(".sdata"))) = 0;
+int EditorOutModel::FallOff __attribute__((section(".sdata"))) = 0;
+int EditorOutModel::LightIntensity __attribute__((section(".sdata"))) = 0;
+int EditorOutModel::DaMix __attribute__((section(".sdata"))) = 0;
+int EditorOutModel::CurrentFace __attribute__((section(".sdata"))) = 0;
+ModelFace2 *EditorOutModel::FaceBuf
+    __attribute__((section(".sdata"))) = 0;
 
-/**
- * Destroy GenObjs.obj's private CClass base and optionally release storage.
- *
- * Address:   0x80055FF0
- * Mangled:   _._6CClass
- *
- * @param self Base object being destroyed.
- * @param in_charge GCC 2.x in-charge flag; bit 0 releases the object.
- */
-extern "C" {
-static void __DOT__6CClass_80055FF0(CClass *self, int in_charge)
-{
-    self->vtable = &GenObjs_BaseVTable;
-    if (in_charge & 1)
-    {
-        CClass::operator delete(self);
-    }
-}
-}
+/** EditorInModel's target-owned polygon-buffer state, in address order. */
+int EditorInModel::GameBuild __attribute__((section(".sdata"))) = 0;
+ModelFace *EditorInModel::pMaxBufEntry
+    __attribute__((section(".sdata"))) = 0;
+ModelFace *EditorInModel::pPolyBufEntry
+    __attribute__((section(".sdata"))) = 0;

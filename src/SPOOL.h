@@ -86,10 +86,10 @@ namespace SpoolAddressViews
 {
 extern "C"
 {
-extern char DAT_800daa08[];
-extern char s__s_psh_800daa14[];
+extern char s_LowerPsxExt[];
+extern char s_PshFileFormat[];
 #include "SPOOLPARTPREFIX.h"
-extern char s_Shrinking_animation_800b2bb0[];
+extern char s_ShrinkingAnimation[];
 }
 }
 #undef SPOOL_DECLARE_OWNER_ADDRESS_VIEWS

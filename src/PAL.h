@@ -18,12 +18,7 @@ extern int Pal16Y PAL_COORDINATE_DECL_ATTR; // 0x800DA380
 #undef PAL_COORDINATE_DECL_ATTR
 #endif // PAL_SHARED_STATE_DECLARATIONS_EMITTED
 
-#if defined(PAL_ENTRY_LAYOUT_ONLY) && !defined(PAL_ENTRY_LAYOUT)
-#error PAL_ENTRY_LAYOUT_ONLY requires PAL_ENTRY_LAYOUT
-#endif
-
-#if !defined(PAL_OWNER_LAYOUT) && !defined(PAL_ENTRY_LAYOUT_ONLY) && \
-    !defined(PAL_INC_H)
+#if !defined(PAL_OWNER_LAYOUT) && !defined(PAL_INC_H)
 #define PAL_INC_H
 
 /** Initialize the palette allocator and its VRAM slot tables. */
@@ -103,8 +98,7 @@ typedef char tag_S_Pal_pPrevious_offset_must_be_16[
 #undef PAL_OWNER_IMPLIED_ENTRY_LAYOUT
 #endif
 
-#if defined(PAL_OWNER_LAYOUT) && !defined(PAL_ENTRY_LAYOUT_ONLY) && \
-    !defined(PAL_OWNER_LAYOUT_EMITTED)
+#if defined(PAL_OWNER_LAYOUT) && !defined(PAL_OWNER_LAYOUT_EMITTED)
 #define PAL_OWNER_LAYOUT_EMITTED
 
 /** Palette capacities, record flags, and allocator accounting constants. */

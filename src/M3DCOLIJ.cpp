@@ -3,7 +3,7 @@
 // Functions: 12
 // Address range: 0x8008FFC0 - 0x800927E4
 //
-// Compiled with cc1plus (GCC 2.91.66-psx). Compiler auto-mangles symbol names.
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 #define M3DCOLIJ_OWNER_DECLARATIONS
 #include "M3DCOLIJ.h"
@@ -320,6 +320,7 @@ void M3dColij_LineToThisItemCached(Item *pItem, SLineInfo *pInfo, SColCache *pCo
     u32 *pFace;
     int tNear;
     int CollidedTriggerModel;
+    SHit *pHit;
 
     XMin = pInfo->MinCoords.vx;
     YMin = pInfo->MinCoords.vy;
@@ -338,6 +339,7 @@ void M3dColij_LineToThisItemCached(Item *pItem, SLineInfo *pInfo, SColCache *pCo
     pFaceCache = &FaceCache[pColCache->FirstFace];
     Faces = pColCache->Faces;
     pModel = PSXRegion[pItem->Region].ppModels[pItem->Model];
+    pHit = &NearestHit;
     NumNormals = pModel->NumNormals;
     pVerts = pModel->Vertices;
     Normals = pModel->Vertices + pModel->NumVertices;
@@ -345,271 +347,278 @@ void M3dColij_LineToThisItemCached(Item *pItem, SLineInfo *pInfo, SColCache *pCo
     tNear = pInfo->tNear;
     CollidedTriggerModel = -1;
 
-    for (int i = 0; i < Faces;
-         ++i,
-         ++pFaceCache,
-         pFace = (u32 *)((u8 *)pFace + (((u16 *)pFace)[1] & 0xfffc)))
+    int i = 0;
+    if (Faces > 0)
     {
-        if (pFaceCache->YMin <= YMax &&
-            pFaceCache->YMax >= YMin &&
-            pFaceCache->XMin <= XMax &&
-            pFaceCache->XMax >= XMin &&
-            pFaceCache->ZMin <= ZMax &&
-            pFaceCache->ZMax >= ZMin)
+        // Dead test on the first cache entry: flow deletes the store and jump2 the
+        // compare, but its $v0 temporary in the loop preheader keeps pFaceCache in $v1.
+        if (pFaceCache->XMin < 0)
+            pModel = 0;
+
+        do
         {
-            u32 faceHeader = pFace[3];
-
-            if (!(faceHeader & M3dColij_OneMask) &&
-                ~(faceHeader | M3dColij_ZeroMask) == 0 &&
-                (((faceHeader >> 16) & 3) ^ 1) != 0)
+            if (pFaceCache->YMin <= YMax &&
+                pFaceCache->YMax >= YMin &&
+                pFaceCache->XMin <= XMax &&
+                pFaceCache->XMax >= XMin &&
+                pFaceCache->ZMin <= ZMax &&
+                pFaceCache->ZMax >= ZMin)
             {
-                u16 FaceFlags;
-                u8 *pVertexIndex;
-                int Nx;
-                int Ny;
-                int Nz;
-                int x0;
-                int y0;
-                int z0;
-                int L0x;
-                int L0y;
-                int L0z;
-                int L1x;
-                int L1y;
-                int L1z;
-                int LineLen;
-                int s0;
-                int s1;
-                int x1;
-                int y1;
-                int z1;
-                int x2;
-                int y2;
-                int z2;
-                int x3;
-                int y3;
-                int z3;
-                long long Dx;
-                long long Dy;
-                long long Dz;
-                int V0x;
-                int V0y;
-                int V0z;
-                int V1x;
-                int V1y;
-                int V1z;
-                int V2x;
-                int V2y;
-                int V2z;
-                int V3x;
-                int V3y;
-                int V3z;
-                long long S0;
-                long long S1;
-                long long S2;
-                long long S3;
-                int contained;
-
-                FaceFlags = *(u16 *)pFace;
-                pVertexIndex = (u8 *)pFace + 4;
-                Nx = ((SVECTOR *)((u8 *)Normals +
-                    (((u16 *)pFace)[6] & 0xfff8)))->vx;
-                Ny = ((SVECTOR *)((u8 *)Normals +
-                    (((u16 *)pFace)[6] & 0xfff8)))->vy;
-                Nz = ((SVECTOR *)((u8 *)Normals +
-                    (((u16 *)pFace)[6] & 0xfff8)))->vz;
-
-                x0 = pVerts[pVertexIndex[0]].vx;
-                y0 = pVerts[pVertexIndex[0]].vy;
-                z0 = pVerts[pVertexIndex[0]].vz;
-
-                L0x = (pInfo->StartCoords.vx >> 12) -
-                      (pItem->Position.vx >> 12);
-                L0y = (pInfo->StartCoords.vy >> 12) -
-                      (pItem->Position.vy >> 12);
-                L0z = (pInfo->StartCoords.vz >> 12) -
-                      (pItem->Position.vz >> 12);
-                L1x = (pInfo->EndCoords.vx >> 12) -
-                      (pItem->Position.vx >> 12);
-                L1y = (pInfo->EndCoords.vy >> 12) -
-                      (pItem->Position.vy >> 12);
-                L1z = (pInfo->EndCoords.vz >> 12) -
-                      (pItem->Position.vz >> 12);
-
-                LineLen = pInfo->Length;
-                s0 = Nx * (L0x - x0) +
-                     Ny * (L0y - y0) +
-                     Nz * (L0z - z0);
-                s1 = Nx * (L1x - x0) +
-                     Ny * (L1y - y0) +
-                     Nz * (L1z - z0);
-
-                if (s0 >= 0 && s1 <= 0 && (s0 || s1))
+                if (!(pFace[3] & M3dColij_OneMask) &&
+                    ~(pFace[3] | M3dColij_ZeroMask) == 0 &&
+                    (((pFace[3] >> 16) & 3) ^ 1) != 0)
                 {
-                    x1 = pVerts[pVertexIndex[1]].vx;
-                    y1 = pVerts[pVertexIndex[1]].vy;
-                    z1 = pVerts[pVertexIndex[1]].vz;
-                    x2 = pVerts[pVertexIndex[2]].vx;
-                    y2 = pVerts[pVertexIndex[2]].vy;
-                    z2 = pVerts[pVertexIndex[2]].vz;
+                    u16 FaceFlags;
+                    u8 *pVertexIndex;
+                    int Nx;
+                    int Ny;
+                    int Nz;
+                    int x0;
+                    int y0;
+                    int z0;
+                    int L0x;
+                    int L0y;
+                    int L0z;
+                    int L1x;
+                    int L1y;
+                    int L1z;
+                    int LineLen;
+                    int s0;
+                    int s1;
+                    int x1;
+                    int y1;
+                    int z1;
+                    int x2;
+                    int y2;
+                    int z2;
+                    int x3;
+                    int y3;
+                    int z3;
+                    long long Dx;
+                    long long Dy;
+                    long long Dz;
+                    int V0x;
+                    int V0y;
+                    int V0z;
+                    int V1x;
+                    int V1y;
+                    int V1z;
+                    int V2x;
+                    int V2y;
+                    int V2z;
+                    int V3x;
+                    int V3y;
+                    int V3z;
+                    long long S0;
+                    long long S1;
+                    long long S2;
+                    long long S3;
+                    int contained;
 
-                    if (!(FaceFlags & 0x10))
+                    FaceFlags = *(u16 *)pFace;
+                    pVertexIndex = (u8 *)pFace + 4;
+                    Nx = Normals[((u16 *)pFace)[6] >> 3].vx;
+                    Ny = Normals[((u16 *)pFace)[6] >> 3].vy;
+                    Nz = Normals[((u16 *)pFace)[6] >> 3].vz;
+
+                    x0 = pVerts[pVertexIndex[0]].vx;
+                    y0 = pVerts[pVertexIndex[0]].vy;
+                    z0 = pVerts[pVertexIndex[0]].vz;
+
+                    L0x = (pInfo->StartCoords.vx >> 12) -
+                          (pItem->Position.vx >> 12);
+                    L0y = (pInfo->StartCoords.vy >> 12) -
+                          (pItem->Position.vy >> 12);
+                    L0z = (pInfo->StartCoords.vz >> 12) -
+                          (pItem->Position.vz >> 12);
+                    L1x = (pInfo->EndCoords.vx >> 12) -
+                          (pItem->Position.vx >> 12);
+                    L1y = (pInfo->EndCoords.vy >> 12) -
+                          (pItem->Position.vy >> 12);
+                    L1z = (pInfo->EndCoords.vz >> 12) -
+                          (pItem->Position.vz >> 12);
+
+                    LineLen = pInfo->Length;
+                    s0 = Nx * (L0x - x0) +
+                         Ny * (L0y - y0) +
+                         Nz * (L0z - z0);
+                    s1 = Nx * (L1x - x0) +
+                         Ny * (L1y - y0) +
+                         Nz * (L1z - z0);
+
+                    if (s0 >= 0 && s1 <= 0 && (s0 || s1))
                     {
-                        x3 = pVerts[pVertexIndex[3]].vx;
-                        y3 = pVerts[pVertexIndex[3]].vy;
-                        z3 = pVerts[pVertexIndex[3]].vz;
-                    }
+                        x1 = pVerts[pVertexIndex[1]].vx;
+                        y1 = pVerts[pVertexIndex[1]].vy;
+                        z1 = pVerts[pVertexIndex[1]].vz;
+                        x2 = pVerts[pVertexIndex[2]].vx;
+                        y2 = pVerts[pVertexIndex[2]].vy;
+                        z2 = pVerts[pVertexIndex[2]].vz;
 
-                    Dx = L1x - L0x;
-                    Dy = L1y - L0y;
-                    Dz = L1z - L0z;
-
-                    V0x = x0 - L0x,
-                    V0y = y0 - L0y,
-                    V0z = z0 - L0z;
-                    V1x = x1 - L0x,
-                    V1y = y1 - L0y,
-                    V1z = z1 - L0z;
-                    V2x = x2 - L0x,
-                    V2y = y2 - L0y,
-                    V2z = z2 - L0z;
-
-                    V3z = z3 - L0z,
-                    V3y = y3 - L0y,
-                    V3x = x3 - L0x;
-
-                    contained = 0;
-
-                    if (FaceFlags & 0x10)
-                    {
-                        S0 =
-                            Dx * (V2y * V0z - V2z * V0y) +
-                            Dy * (V2z * V0x - V2x * V0z) +
-                            Dz * (V2x * V0y - V2y * V0x);
-                        S1 =
-                            Dx * (V0y * V1z - V0z * V1y) +
-                            Dy * (V0z * V1x - V0x * V1z) +
-                            Dz * (V0x * V1y - V0y * V1x);
-                        S2 =
-                            Dx * (V1y * V2z - V1z * V2y) +
-                            Dy * (V1z * V2x - V1x * V2z) +
-                            Dz * (V1x * V2y - V1y * V2x);
-
-                        if (S0 >= 0 && S1 >= 0 && S2 >= 0)
-                            contained = 1;
-                    }
-                    else
-                    {
-                        S0 =
-                            Dx * (V2y * V0z - V2z * V0y) +
-                            Dy * (V2z * V0x - V2x * V0z) +
-                            Dz * (V2x * V0y - V2y * V0x);
-                        S1 =
-                            Dx * (V0y * V1z - V0z * V1y) +
-                            Dy * (V0z * V1x - V0x * V1z) +
-                            Dz * (V0x * V1y - V0y * V1x);
-                        S2 =
-                            Dx * (V1y * V3z - V1z * V3y) +
-                            Dy * (V1z * V3x - V1x * V3z) +
-                            Dz * (V1x * V3y - V1y * V3x);
-                        S3 =
-                            Dx * (V3y * V2z - V3z * V2y) +
-                            Dy * (V3z * V2x - V3x * V2z) +
-                            Dz * (V3x * V2y - V3y * V2x);
-
-                        if (S0 >= 0 && S1 >= 0 &&
-                            S2 >= 0 && S3 >= 0)
-                            contained = 1;
-                    }
-
-                    if (contained)
-                    {
-                        int Qx;
-                        int Qy;
-                        int Qz;
-                        int t;
-                        int xd;
-                        int yd;
-                        int zd;
-                        int sxd;
-                        int syd;
-                        int szd;
-                        int xd1;
-                        int yd1;
-                        int zd1;
-
-                        pInfo->Model = pItem->Model;
-
-                        if (((u16 *)pFace)[7] & 2)
+                        if (!(FaceFlags & 0x10))
                         {
-                            if (pInfo->RecordTriggerZoneHits)
-                                CollidedTriggerModel = pItem->Model;
+                            x3 = pVerts[pVertexIndex[3]].vx;
+                            y3 = pVerts[pVertexIndex[3]].vy;
+                            z3 = pVerts[pVertexIndex[3]].vz;
+                        }
+
+                        Dx = L1x - L0x;
+                        Dy = L1y - L0y;
+                        Dz = L1z - L0z;
+
+                        V0x = x0 - L0x,
+                        V0y = y0 - L0y,
+                        V0z = z0 - L0z;
+                        V1x = x1 - L0x,
+                        V1y = y1 - L0y,
+                        V1z = z1 - L0z;
+                        V2x = x2 - L0x,
+                        V2y = y2 - L0y,
+                        V2z = z2 - L0z;
+
+                        V3x = x3 - L0x,
+                        V3y = y3 - L0y,
+                        V3z = z3 - L0z;
+
+                        contained = 0;
+
+                        if (FaceFlags & 0x10)
+                        {
+                            S0 =
+                                Dx * (V2y * V0z - V2z * V0y) +
+                                Dy * (V2z * V0x - V2x * V0z) +
+                                Dz * (V2x * V0y - V2y * V0x);
+                            S1 =
+                                Dx * (V0y * V1z - V0z * V1y) +
+                                Dy * (V0z * V1x - V0x * V1z) +
+                                Dz * (V0x * V1y - V0y * V1x);
+                            S2 =
+                                Dx * (V1y * V2z - V1z * V2y) +
+                                Dy * (V1z * V2x - V1x * V2z) +
+                                Dz * (V1x * V2y - V1y * V2x);
+
+                            if (S0 >= 0 && S1 >= 0 && S2 >= 0)
+                                contained = 1;
                         }
                         else
                         {
-                            t = M3dMaths_MulDiv64(
-                                s0, 0x4000, s0 - s1);
+                            S0 =
+                                Dx * (V2y * V0z - V2z * V0y) +
+                                Dy * (V2z * V0x - V2x * V0z) +
+                                Dz * (V2x * V0y - V2y * V0x);
+                            S1 =
+                                Dx * (V0y * V1z - V0z * V1y) +
+                                Dy * (V0z * V1x - V0x * V1z) +
+                                Dz * (V0x * V1y - V0y * V1x);
+                            S2 =
+                                Dx * (V1y * V3z - V1z * V3y) +
+                                Dy * (V1z * V3x - V1x * V3z) +
+                                Dz * (V1x * V3y - V1y * V3x);
+                            S3 =
+                                Dx * (V3y * V2z - V3z * V2y) +
+                                Dy * (V3z * V2x - V3x * V2z) +
+                                Dz * (V3x * V2y - V3y * V2x);
 
-                            if (t < tNear)
+                            if (S0 >= 0 && S1 >= 0 &&
+                                S2 >= 0 && S3 >= 0)
+                                contained = 1;
+                        }
+
+                        if (contained)
+                        {
+                            int Qx;
+                            int Qy;
+                            int Qz;
+                            int t;
+                            int xd;
+                            int yd;
+                            int zd;
+                            int sxd;
+                            int syd;
+                            int szd;
+                            int xd1;
+                            int yd1;
+                            int zd1;
+
+                            pInfo->Model = pItem->Model;
+
+                            if (((u16 *)pFace)[7] & 2)
                             {
-                                Qx = pInfo->EndCoords.vx -
-                                     pInfo->StartCoords.vx;
-                                Qy = pInfo->EndCoords.vy -
-                                     pInfo->StartCoords.vy;
-                                Qz = pInfo->EndCoords.vz -
-                                     pInfo->StartCoords.vz;
+                                if (pInfo->RecordTriggerZoneHits)
+                                    CollidedTriggerModel = pItem->Model;
+                            }
+                            else
+                            {
+                                t = M3dMaths_MulDiv64(
+                                    s0, 0x4000, s0 - s1);
 
-                                sxd = Qx < 0 ? -1 : 1;
-                                xd = (Qx ^ (Qx >> 31)) - (Qx >> 31);
+                                if (t < tNear)
+                                {
+                                    Qx = pInfo->EndCoords.vx -
+                                         pInfo->StartCoords.vx;
+                                    xd = Qx;
+                                    Qy = pInfo->EndCoords.vy -
+                                         pInfo->StartCoords.vy;
+                                    yd = Qy;
+                                    Qz = pInfo->EndCoords.vz -
+                                         pInfo->StartCoords.vz;
+                                    zd = Qz;
 
-                                syd = Qy < 0 ? -1 : 1;
-                                yd = (Qy ^ (Qy >> 31)) - (Qy >> 31);
+                                    sxd = xd < 0 ? -1 : 1;
+                                    xd = (xd ^ (xd >> 31)) - (xd >> 31);
 
-                                szd = Qz < 0 ? -1 : 1;
-                                zd = (Qz ^ (Qz >> 31)) - (Qz >> 31);
+                                    syd = yd < 0 ? -1 : 1;
+                                    yd = (yd ^ (yd >> 31)) - (yd >> 31);
 
-                                xd1 = sxd *
-                                      M3dMaths_MulDiv64(xd, t, 0x4000);
-                                yd1 = syd *
-                                      M3dMaths_MulDiv64(yd, t, 0x4000);
-                                zd1 = szd *
-                                      M3dMaths_MulDiv64(zd, t, 0x4000);
+                                    szd = zd < 0 ? -1 : 1;
+                                    zd = (zd ^ (zd >> 31)) - (zd >> 31);
 
-                                xd1 += pInfo->StartCoords.vx;
-                                yd1 += pInfo->StartCoords.vy;
-                                zd1 += pInfo->StartCoords.vz;
+                                    xd1 = sxd *
+                                          M3dMaths_MulDiv64(xd, t, 0x4000);
+                                    yd1 = syd *
+                                          M3dMaths_MulDiv64(yd, t, 0x4000);
+                                    zd1 = szd *
+                                          M3dMaths_MulDiv64(zd, t, 0x4000);
 
-                                tNear = t;
-                                pInfo->tNear = t;
-                                pInfo->Position.vx = xd1;
-                                pInfo->Position.vy = yd1;
-                                pInfo->Position.vz = zd1;
-                                pInfo->pItem = pItem;
-                                pInfo->pFace = pFace;
-                                pInfo->Model = pItem->Model;
-                                pInfo->Distance =
-                                    Mips_FixMul(LineLen, t) >> 2;
+                                    tNear = t;
+                                    pInfo->tNear = t;
+                                    pInfo->Position.vx =
+                                        pInfo->StartCoords.vx + xd1;
+                                    pInfo->Position.vy =
+                                        pInfo->StartCoords.vy + yd1;
+                                    pInfo->Position.vz =
+                                        pInfo->StartCoords.vz + zd1;
+                                    pInfo->pItem = pItem;
+                                    pInfo->pFace = pFace;
+                                    pInfo->Model = pItem->Model;
+                                    pInfo->Distance =
+                                        Mips_FixMul(LineLen, t) >> 2;
 
-                                NearestHit.pFace = pFace;
-                                *(SVECTOR **)&NearestHit.Normal =
-                                    (SVECTOR *)((u8 *)Normals +
-                                    (((u16 *)pFace)[6] & 0xfff8));
+                                    *(SVECTOR **)&NearestHit.Normal =
+                                        (SVECTOR *)((u8 *)Normals +
+                                        (((u16 *)pFace)[6] & 0xfff8));
+                                    pHit->pFace = pFace;
+                                }
                             }
                         }
                     }
                 }
             }
-        }
 
+            ++i;
+            ++pFaceCache;
+            pFace = (u32 *)((u8 *)pFace + (((u16 *)pFace)[1] & 0xfffc));
+        } while (i < Faces);
     }
 
     if (CollidedTriggerModel != -1)
     {
         int i = Spool_GetEnvIndex(pItem->Region);
+
         OtherEnvIndex = i ^ 1;
+
         TriggerCollisionCheck = 0;
-        Trig_TriggerCommandPoint(
-            EnvModelChecksums[i][CollidedTriggerModel], true);
+        Trig_TriggerCommandPoint(EnvModelChecksums[i][CollidedTriggerModel], true);
     }
 }
 
@@ -965,10 +974,11 @@ void M3dColij_LineToThisItem(Item *pItem, SLineInfo *pInfo)
     if (CollidedTriggerModel != -1)
     {
         int i = Spool_GetEnvIndex(pItem->Region);
+
         OtherEnvIndex = i ^ 1;
+
         TriggerCollisionCheck = 0;
-        Trig_TriggerCommandPoint(
-            EnvModelChecksums[i][CollidedTriggerModel], true);
+        Trig_TriggerCommandPoint(EnvModelChecksums[i][CollidedTriggerModel], true);
     }
 }
 

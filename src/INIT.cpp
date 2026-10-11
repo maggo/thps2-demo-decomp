@@ -2,7 +2,8 @@
 // Original: INIT.CPP
 // Functions: 8 reconstructed entries
 // Address range: 0x8006AAE0 - 0x8006AF38
-// Compiled with cc1plus (GCC 2.91.66-psx). Compiler auto-mangles symbol names.
+//
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 #include "BIT.h"
 #include "MESS.h"
@@ -211,7 +212,7 @@ namespace InitAddressViewOwners
 {
 extern "C"
 {
-static RECT DAT_800daaa4
+static RECT StartupClearRect
     __attribute__((section(".sdata"))) = {0, 0, 1024, 512};
 }
 }
@@ -461,7 +462,7 @@ void Init_AtStart(void) {
 
     // Clear the boot draw area using the startup RECT copied from data.
     {
-        RECT screen = DAT_800daaa4[0];
+        RECT screen = StartupClearRect[0];
         ClearImage(&screen, 0, 0, 0);
     }
 

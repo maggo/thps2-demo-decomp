@@ -3,7 +3,7 @@
 // Functions: 41 reconstructed entries
 // Address range: 0x80064400 - 0x800674B0
 //
-// Compiled with cc1plus (GCC 2.91.66-psx). Compiler auto-mangles symbol names.
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 // PANEL-owned generated declarations and layouts. This was the only live
 // consumer of the former PANEL.h reconstruction boundary.
@@ -1229,18 +1229,14 @@ void DisplayScore(CBruce *pBruce, unsigned short xpos, unsigned short ypos)
  */
 void DisplaySwitchness(CBruce *pBruce, unsigned short xpos, unsigned short ypos)
 {
-    register int masked_xpos asm("$5") = xpos;
-    masked_xpos &= 0xffff;
-    register SStats *table asm("$7") = Stats;
     unsigned int Flipped = PanelBruce(pBruce)->mExtraFlags;
     int skaterType = PanelBruce(pBruce)->mSkaterType;
-    Flipped = (Flipped >> 1) & 1;
-    int isZero = table[skaterType].Ability[11] < 1;
-    if (Flipped != isZero)
+    Flipped >>= 1;
+    int isZero = Stats[skaterType].Ability[11] < 1;
+    if ((Flipped & 1) != isZero)
     {
-        register Sprite2 *sprite asm("$2") = CPanelData::mpSwitchSprite;
-        PanelSpriteDispatch(sprite)->Draw(sprite, masked_xpos,
-                                          static_cast<int>(ypos), 0);
+        Sprite2 *sprite = CPanelData::mpSwitchSprite;
+        PanelSpriteDispatch(sprite)->Draw(sprite, xpos, ypos, 0);
     }
 }
 
@@ -1380,7 +1376,7 @@ void DisplayTime(CBruce *pBruce, unsigned short xpos, unsigned short ypos)
     int mins;
     int secs;
     SVideoInfo *VInfo;
-    static int Urgent asm("Urgent.214");
+    static int Urgent;
     int sub;
     PanelBruceScoreView *timer = PanelBruce(pBruce);
     if (GGame != 2 && (GGame != 7 || timer->mPlayTime != 0))
@@ -2150,7 +2146,7 @@ CPanelData *__10CPanelDataP6CBruce(CPanelData *self,
     ::new (&self->mTrickFont) Font();
     ::new (&self->mScoreFont) Font();
     ::new (&self->mFallingTextEffect) FallingTextEffect();
-    TrickTextEffect_ConstructAbi(&self->mTrickTextEffect);
+    ::new (&self->mTrickTextEffect) TrickTextEffect();
     ::new (&self->mOutOfBoundsText) FallingTextEffect();
 
     int i = 0;

@@ -49,12 +49,12 @@ int Card_FormatCard(int cnct, int slot);
 
 #ifdef CARD_DECLARE_READ_PATH_ADDRESS_VIEW
 /** Absolute address view of CARD's GP-sized named-save path format. */
-extern char DAT_800d8ba4[];
+extern char s_CardFileNameFmt[];
 #undef CARD_DECLARE_READ_PATH_ADDRESS_VIEW
 #endif
 
 #ifdef CARD_DECLARE_DIRECTORY_FILE_TYPE_VIEW
-/** Independent address view used while scanning memory-card directory rows. */
+// FIXME(match): asm alias — second SYMBOL_REF for FileType so cse does not share its HIGH between the directory clear loop and the later fileType store (target emits lui/addiu twice); tried: plain FileType, &FileType[0], FileType + (i - i): score 7.
 extern EFileType CardDirectoryFileType[] asm("FileType");
 #undef CARD_DECLARE_DIRECTORY_FILE_TYPE_VIEW
 #endif

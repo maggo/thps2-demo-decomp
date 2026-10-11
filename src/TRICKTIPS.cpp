@@ -3,7 +3,7 @@
 // Functions: 7
 // Address range: 0x80073274 - 0x80074008
 //
-// Compiled with cc1plus (GCC 2.91.66-psx). Compiler auto-mangles symbol names.
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 #include "TRICKTIPS.h"
 #include "MAIN.h"

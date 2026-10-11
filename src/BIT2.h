@@ -30,6 +30,6 @@ extern "C" CGrindSpark *__11CGrindSparkP5CBodyR7CVectoriii(
 
 #ifdef BIT2_DECLARE_MOTION_BLUR_ANIMATION_VIEW
 /** Absolute-address view of BIT2's owner-local motion-blur animation name. */
-extern char DAT_800d98b8[];
+extern char s_Smoke[];
 #undef BIT2_DECLARE_MOTION_BLUR_ANIMATION_VIEW
 #endif

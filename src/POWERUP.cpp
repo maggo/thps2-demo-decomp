@@ -3,16 +3,15 @@
 // Functions: 13 reconstructed
 // Address range: 0x8002FB00 - 0x80030F28
 //
-// Compiled with cc1plus (GCC 2.91.66-psx). Compiler auto-mangles symbol names.
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
-#define __SKIP_CPOWERUP_EXTERNS__
-
+#define CCLASS_POLY_ITEM_FAMILY
+#include "CCLASS_POLY.h"
 #define POWERUP_OWNER_DECLARATIONS
 #include "POWERUP.h"
 #undef POWERUP_OWNER_DECLARATIONS
 #include "MAIN.h"
 #include "globals.h"
-#include "CITEM.h"
 
 /** Return caller-provided storage for an owner constructor. */
 inline void *operator new(unsigned int, void *address)
@@ -30,20 +29,6 @@ struct PowerUpBitVtable {
     void (*Reserved0)(CBit *bit);
     void (*Reserved1)(CBit *bit);
     void (*destroy)(CBit *bit, int flags);
-};
-
-/** Runtime interface slots exercised by the power-up owner. */
-struct PowerUpItemVtable {
-    void (*Reserved0)(PowerUpCItemOwner *item);
-    void (*Reserved1)(PowerUpCItemOwner *item);
-    void (*destroy)(PowerUpCItemOwner *item, int flags);
-    void (*die)(PowerUpCItemOwner *item);
-    void (*ai)(PowerUpCItemOwner *item);
-    void (*everyFrame)(PowerUpCItemOwner *item);
-    void (*doLightingSetup)(PowerUpCItemOwner *item);
-    int (*hit)(PowerUpCItemOwner *item, int, const CVector &, int);
-    void (*deleteStuff)(PowerUpCItemOwner *item);
-    void (*Reserved9)(PowerUpCItemOwner *item);
 };
 
 /** Particle-base storage embedded at the start of CGlow. */
@@ -74,94 +59,8 @@ struct CBit {
 
 #include "LOCALTXT.h"
 
-/** Composition-only item storage used by the power-up owner. */
-struct PowerUpCItemOwner {
-    unsigned short mFlags;
-    unsigned short mInquiry;
-    CVector mPos;
-    CSVector mAngles;
-    unsigned short mModel;
-    char mDummyFrame;
-    unsigned char mTintIndex;
-    unsigned char mDummyAnim;
-    unsigned char mRegion;
-    PowerUpCItemOwner *mNextItem;
-    unsigned int mRGB;
-    CSVector mScale;
-    unsigned int mTRN;
-    PowerUpCItemOwner *mPreviousItem;
-    unsigned int mStoredRGB;
-    unsigned char mPredatorEffectType;
-    unsigned char mPredatorEffectFade;
-    unsigned short mType;
-    SLight *mpLight;
-    unsigned short mFlashTimer;
-    short mFlash_dR;
-    short mFlash_dG;
-    short mFlash_dB;
-    const PowerUpItemVtable *_vf;
-};
-
-/** Complete 264-byte CBody base embedded by CPowerUp. */
-struct CBody {
-    PowerUpCItemOwner CItem;
-    CBody **mppOriginalList;
-    unsigned short mInputFlags;
-    unsigned short mCBodyFlags;
-    CVector mVel;
-    CVector mAcc;
-    CFriction mFric;
-    CSVector mAngVel;
-    CSVector mAngAcc;
-    CFriction mAngFric;
-    CSVector mNormal;
-    unsigned char mEventFlags;
-    unsigned int mEllipsoidRGB;
-    unsigned short mEllipsoidScale;
-    short mEllipsoidOTPushback;
-    CVector mShadowPos;
-    CSVector mShadowNormal;
-    CQuadBit *mpShadow;
-    unsigned short mShadowScale;
-    short mShadowDist;
-    short mShadowThreshold;
-    int mPushVal;
-    unsigned short mRMinor;
-    unsigned short mNode;
-    unsigned short mCollision;
-    short mHealth;
-    unsigned int mPlayerDist;
-    unsigned char mAIFrequency;
-    unsigned char mAICount;
-    CVector mOldPos;
-    CVector mTweenPos;
-    CVector mNewPos;
-    CVector mDPos;
-    CSVector mOldAngles;
-    CSVector mNewAngles;
-    CSVector mDAngles;
-
-    CBody();
-    /** Run this body's per-frame behavior. */
-    void EveryFrame();
-    /** Configure this body's lighting state. */
-    void DoLightingSetup();
-    /** Handle a collision hit against this body. */
-    int Hit(int damage, const CVector &knock, int whatHit);
-    /** Insert this body at the head of a linked body list. */
-    void AttachTo(CBody **list);
-    /** Remove this body from a linked body list. */
-    void DeleteFrom(CBody **list);
-    /** Enable shadow rendering for this body. */
-    void ShadowOn();
-    /** Destroy this body's shadow and clear its shadow flag. */
-    void KillShadow();
-    /** Return whether this body has been marked dead. */
-    int IsDead() const;
-};
-
 /** Proven CBruce slices needed when awarding a pickup. */
-struct CBruce {
+struct CBruce : CBody {
     /** Start a new airborne trick sequence. */
     void Trick_TakeOff();
     /** Adds one named trick to the active scoring sequence. */
@@ -169,7 +68,6 @@ struct CBruce {
     /** Finalize the current trick sequence after landing. */
     void Trick_Land();
 
-    CBody CBody;
     unsigned char mStorageBeforeInBail[3964 - sizeof(CBody)];
     int mInBail;
     unsigned char mStorageBeforePhysicsState[236];
@@ -177,8 +75,7 @@ struct CBruce {
 };
 
 /** Power-up body and its owner-specific state. */
-struct CPowerUp {
-    CBody CBody;
+struct CPowerUp : CBody {
     CGlow *mpGlow;
     unsigned short mGlowRadiusOrg;
     unsigned short mGlowRadiusAmp;
@@ -199,9 +96,7 @@ struct CPowerUp {
 
     CPowerUp(unsigned short PowerupType, const CVector &Pos, const CVector &Vel,
              unsigned int Flags, int Lifetime);
-    ~CPowerUp();
-    /** Releases power-up storage through CItem's allocator. */
-    static void operator delete(void *p);
+    virtual ~CPowerUp();
     void AI();
     void CheckAge();
     void CreateBit();
@@ -217,14 +112,9 @@ struct CPowerUp {
 typedef char powerup_cbit_size_must_be_72[(sizeof(CBit) == 72) ? 1 : -1];
 typedef char powerup_bit_vtable_size_must_be_12[
     (sizeof(PowerUpBitVtable) == 12) ? 1 : -1];
-typedef char powerup_item_vtable_size_must_be_40[
-    (sizeof(PowerUpItemVtable) == 40) ? 1 : -1];
 typedef char powerup_cglow_size_must_be_104[(sizeof(CGlow) == 104) ? 1 : -1];
 typedef char powerup_local_text_size_must_be_652[
     (sizeof(LocalText) == 652) ? 1 : -1];
-typedef char powerup_citem_size_must_be_76[
-    (sizeof(PowerUpCItemOwner) == 76) ? 1 : -1];
-typedef char powerup_cbody_size_must_be_264[(sizeof(CBody) == 264) ? 1 : -1];
 typedef char powerup_cbruce_slice_size_must_be_4208[(sizeof(CBruce) == 4208) ? 1 : -1];
 typedef char powerup_cpowerup_size_must_be_312[(sizeof(CPowerUp) == 312) ? 1 : -1];
 
@@ -236,12 +126,6 @@ typedef char powerup_cpowerup_size_must_be_312[(sizeof(CPowerUp) == 312) ? 1 : -
 #include "SPOOL.h"
 #include "TRIG.h"
 #include "UTILS.h"
-
-/** Release power-up storage through the inherited CItem allocator. */
-inline void CPowerUp::operator delete(void *p)
-{
-    ::CItem::operator delete(p);
-}
 
 /** Target-proven power-up type values used by this owner. */
 enum PowerUpType {
@@ -300,56 +184,8 @@ enum PowerUpConstant {
 // === External globals (absolute via incomplete array) ===
 #include "MECHLIST.h"
 
-// === ABI-labelled forward declarations ===
-#define CBODY_ABI_ONLY
-#define CBODY_DECLARE_DESTRUCTOR
-#define CBODY_DESTRUCTOR_NAME CBody_dtor
-#define CBODY_DESTRUCTOR_RECEIVER CBody
-#include "CBODY.h"
-#undef CBODY_ABI_ONLY
-void CPowerUp_DestructorAbi(CPowerUp *, int) asm("_._8CPowerUp");
-
 // === DoPhysics support declarations ===
 #include "RCOSSIN.h"
-/**
- * Bonus descriptions retained in POWERUP's read-only data contribution.
- *
- * With the owner's recovered `-G16` threshold, shorter pickup descriptions
- * stay in `.sdata`; these five longer descriptions precede the power-up
- * vtable in `.rdata`, as they do in the original object.
- */
-static char PowerUpBonusRich[] __attribute__((section(".rdata"))) =
-    "100 Bucks! You're rich!";
-static char PowerUpBonusHead[] __attribute__((section(".rdata"))) =
-    "You got head - excellent";
-static char PowerUpBonusShoes[] __attribute__((section(".rdata"))) =
-    "Gotta be the shoes";
-static char PowerUpBonusFly[] __attribute__((section(".rdata"))) =
-    "You'll look fly in this";
-static char PowerUpBonusPants[] __attribute__((section(".rdata"))) =
-    "Change yo pants!";
-
-/**
- * Virtual dispatch table emitted by the power-up owner.
- */
-#define POWERUP_DECLARE_OWNER_VTABLE
-#include "POWERUP.h"
-
-PowerUpItemVtable const __vt_8CPowerUp
-    __attribute__((aligned(8))) = {
-    0,
-    0,
-    (void (*)(PowerUpCItemOwner *, int))CPowerUp_DestructorAbi,
-    (void (*)(PowerUpCItemOwner *))&CPowerUp::Die,
-    (void (*)(PowerUpCItemOwner *))&CPowerUp::AI,
-    (void (*)(PowerUpCItemOwner *))&CBody::EveryFrame,
-    (void (*)(PowerUpCItemOwner *))&CBody::DoLightingSetup,
-    (int (*)(PowerUpCItemOwner *, int, const CVector &, int))&CBody::Hit,
-    (void (*)(PowerUpCItemOwner *))&CPowerUp::DeleteStuff,
-    0,
-};
-
-
 // === Function implementations (address order) ===
 
 /**
@@ -364,22 +200,21 @@ PowerUpItemVtable const __vt_8CPowerUp
 CPowerUp::CPowerUp(unsigned short PowerupType, const CVector &Pos, const CVector &Vel,
                    unsigned int Flags, int Lifetime)
 {
-    CBody.CItem._vf = &__vt_8CPowerUp;
     mTimer = 0;
-    CBody.CItem.mType = PowerupType;
+    mType = PowerupType;
     mHoverHeight = 0;
     mLifetime = Lifetime;
     mOrgPos = Pos;
-    CBody.CItem.mPos = Pos;
+    mPos = Pos;
 
     if (Flags & PowerUpUseDropVelocity)
-        CBody.mVel.vy = -(60 << 12);
+        mVel.vy = -(60 << 12);
     else
-        CBody.mVel = Vel;
+        mVel = Vel;
 
-    CBody.mFric.Set(5, 5, 5);
-    CBody.mAngVel.vy = 100;
-    CBody.mAcc.vy = 8 << 12;
+    mFric.Set(5, 5, 5);
+    mAngVel.vy = 100;
+    mAcc.vy = 8 << 12;
 
     mWobbleSpeed = Rnd(20) + 90;
     mMaxWobbleAmplitude = 50;
@@ -396,119 +231,119 @@ CPowerUp::CPowerUp(unsigned short PowerupType, const CVector &Pos, const CVector
         mGroundY = Utils_GetGroundHeight(mOrgPos, 0, PowerUpDisplayDistance);
     }
 
-    CBody.mRMinor = 300;
-    CBody.ShadowOn();
-    CBody.mShadowThreshold = 300;
-    reinterpret_cast<CItem *>(&CBody.CItem)->InitItem("items");
+    mRMinor = 300;
+    ShadowOn();
+    mShadowThreshold = 300;
+    InitItem("items");
 
-    switch (CBody.CItem.mType)
+    switch (mType)
     {
     case PowerUpMedalA:
-        reinterpret_cast<CItem *>(&CBody.CItem)->InitItem("skmedals");
+        InitItem("skmedals");
         mIs3d = 1;
-        CBody.CItem.mModel = Spool_GetModel(0x54636518, CurrentMedalsFileRegion);
+        mModel = Spool_GetModel(0x54636518, CurrentMedalsFileRegion);
         break;
     case PowerUpMedalB:
-        reinterpret_cast<CItem *>(&CBody.CItem)->InitItem("skmedals");
+        InitItem("skmedals");
         mIs3d = 1;
-        CBody.CItem.mModel = Spool_GetModel(0xBA6D0434, CurrentMedalsFileRegion);
+        mModel = Spool_GetModel(0xBA6D0434, CurrentMedalsFileRegion);
         break;
     case PowerUpMedalC:
-        reinterpret_cast<CItem *>(&CBody.CItem)->InitItem("skmedals");
+        InitItem("skmedals");
         mIs3d = 1;
-        CBody.CItem.mModel = Spool_GetModel(0x2364558E, CurrentMedalsFileRegion);
+        mModel = Spool_GetModel(0x2364558E, CurrentMedalsFileRegion);
         break;
     case PowerUpLetterS:
         mIs3d = 1;
-        CBody.CItem.mModel = Spool_GetModel(0x311D55D4, CurrentItemsFileRegion);
+        mModel = Spool_GetModel(0x311D55D4, CurrentItemsFileRegion);
         break;
     case PowerUpLetterK:
         mIs3d = 1;
-        CBody.CItem.mModel = Spool_GetModel(0x2328A71C, CurrentItemsFileRegion);
+        mModel = Spool_GetModel(0x2328A71C, CurrentItemsFileRegion);
         break;
     case PowerUpLetterA:
         mIs3d = 1;
-        CBody.CItem.mModel = Spool_GetModel(0x2EBF22CA, CurrentItemsFileRegion);
+        mModel = Spool_GetModel(0x2EBF22CA, CurrentItemsFileRegion);
         break;
     case PowerUpLetterT:
         mIs3d = 1;
-        CBody.CItem.mModel = Spool_GetModel(0x34524351, CurrentItemsFileRegion);
+        mModel = Spool_GetModel(0x34524351, CurrentItemsFileRegion);
         break;
     case PowerUpLetterE:
         mIs3d = 1;
-        CBody.CItem.mModel = Spool_GetModel(0x29B68A16, CurrentItemsFileRegion);
+        mModel = Spool_GetModel(0x29B68A16, CurrentItemsFileRegion);
         break;
     case PowerUpSecretTape:
     case PowerUpSpecial18:
-        CBody.mAngVel.vy = 150;
+        mAngVel.vy = 150;
         mIs3d = 1;
-        CBody.CItem.mModel = Spool_GetModel(0x7C1B2C4A, CurrentItemsFileRegion);
+        mModel = Spool_GetModel(0x7C1B2C4A, CurrentItemsFileRegion);
         break;
     case PowerUpTypeBonus100:
-        CBody.mAngVel.vy = 200;
+        mAngVel.vy = 200;
         mIs3d = 1;
-        CBody.CItem.mModel = Spool_GetModel(0x6F0F6B9F, CurrentItemsFileRegion);
+        mModel = Spool_GetModel(0x6F0F6B9F, CurrentItemsFileRegion);
         break;
     case PowerUpTypeBonus200:
-        CBody.mAngVel.vy = 200;
+        mAngVel.vy = 200;
         mIs3d = 1;
-        CBody.CItem.mModel = Spool_GetModel(0xF6063A25, CurrentItemsFileRegion);
+        mModel = Spool_GetModel(0xF6063A25, CurrentItemsFileRegion);
         break;
     case PowerUpTypeBonus500:
-        CBody.mAngVel.vy = 200;
+        mAngVel.vy = 200;
         mIs3d = 1;
-        CBody.CItem.mModel = Spool_GetModel(0x81010AB3, CurrentItemsFileRegion);
+        mModel = Spool_GetModel(0x81010AB3, CurrentItemsFileRegion);
         break;
     case PowerUpTypeBonus20Spot:
-        CBody.mAngVel.vy = 200;
+        mAngVel.vy = 200;
         mIs3d = 1;
-        CBody.CItem.mModel = Spool_GetModel(0x694ED947, CurrentItemsFileRegion);
+        mModel = Spool_GetModel(0x694ED947, CurrentItemsFileRegion);
         break;
     case PowerUpTypeBonusFifty:
-        CBody.mAngVel.vy = 200;
+        mAngVel.vy = 200;
         mIs3d = 1;
-        CBody.CItem.mModel = Spool_GetModel(0x260F4F80, CurrentItemsFileRegion);
+        mModel = Spool_GetModel(0x260F4F80, CurrentItemsFileRegion);
         break;
     case PowerUpTypeBonusRich:
-        CBody.mAngVel.vy = 200;
+        mAngVel.vy = 200;
         mIs3d = 1;
-        CBody.CItem.mModel = Spool_GetModel(0xCC4E141F, CurrentItemsFileRegion);
+        mModel = Spool_GetModel(0xCC4E141F, CurrentItemsFileRegion);
         break;
     case PowerUpTypeBonusRollAgain:
-        CBody.mAngVel.vy = 200;
+        mAngVel.vy = 200;
         mIs3d = 1;
-        CBody.CItem.mModel = Spool_GetModel(0x483701E6, CurrentItemsFileRegion);
+        mModel = Spool_GetModel(0x483701E6, CurrentItemsFileRegion);
         break;
     case PowerUpTypeBonusHead:
-        CBody.mAngVel.vy = 200;
+        mAngVel.vy = 200;
         mIs3d = 1;
-        CBody.CItem.mModel = Spool_GetModel(0x608E06C7, CurrentItemsFileRegion);
+        mModel = Spool_GetModel(0x608E06C7, CurrentItemsFileRegion);
         break;
     case PowerUpTypeBonusShoes:
-        CBody.mAngVel.vy = 200;
+        mAngVel.vy = 200;
         mIs3d = 1;
-        CBody.CItem.mModel = Spool_GetModel(0x10122D2A, CurrentItemsFileRegion);
+        mModel = Spool_GetModel(0x10122D2A, CurrentItemsFileRegion);
         break;
     case PowerUpTypeBonusFly:
-        CBody.mAngVel.vy = 200;
+        mAngVel.vy = 200;
         mIs3d = 1;
-        CBody.CItem.mModel = Spool_GetModel(0xC12ED64B, CurrentItemsFileRegion);
+        mModel = Spool_GetModel(0xC12ED64B, CurrentItemsFileRegion);
         break;
     case PowerUpTypeBonusPants:
-        CBody.mAngVel.vy = 200;
+        mAngVel.vy = 200;
         mIs3d = 1;
-        CBody.CItem.mModel = Spool_GetModel(0x22908B06, CurrentItemsFileRegion);
+        mModel = Spool_GetModel(0x22908B06, CurrentItemsFileRegion);
         break;
     case PowerUpTypeBonusBoard:
-        CBody.mAngVel.vy = 200;
+        mAngVel.vy = 200;
         mIs3d = 1;
-        CBody.CItem.mModel = Spool_GetModel(0x56891A69, CurrentItemsFileRegion);
+        mModel = Spool_GetModel(0x56891A69, CurrentItemsFileRegion);
         break;
     }
 
     if (GGame != 1)
     {
-        switch (CBody.CItem.mType)
+        switch (mType)
         {
         case PowerUpLetterK:
         case PowerUpLetterS:
@@ -522,7 +357,7 @@ CPowerUp::CPowerUp(unsigned short PowerupType, const CVector &Pos, const CVector
     }
     else
     {
-        switch (CBody.CItem.mType)
+        switch (mType)
         {
         case PowerUpLetterS:     GPowS = this; break;
         case PowerUpLetterK:     GPowK = this; break;
@@ -533,7 +368,7 @@ CPowerUp::CPowerUp(unsigned short PowerupType, const CVector &Pos, const CVector
         }
     }
 
-    CBody.AttachTo(&PowerUpList);
+    AttachTo(&PowerUpList);
     if (mIs3d == 0)
         DontDisplay();
 
@@ -549,10 +384,8 @@ CPowerUp::CPowerUp(unsigned short PowerupType, const CVector &Pos, const CVector
  */
 CPowerUp::~CPowerUp()
 {
-    CBody.CItem._vf = &__vt_8CPowerUp;
-    CBody.DeleteFrom(&PowerUpList);
+    DeleteFrom(&PowerUpList);
     DeleteStuff();
-    CBody_dtor(&CBody, 0);
 }
 
 /**
@@ -565,10 +398,10 @@ CPowerUp::~CPowerUp()
  */
 void CPowerUp::DontDisplay()
 {
-    u16 flags = CBody.CItem.mFlags;
+    u16 flags = mFlags;
     flags |= PowerUpUnavailableToEveryone;
-    CBody.CItem.mFlags = flags;
-    CBody.CItem._vf->deleteStuff(&CBody.CItem);
+    mFlags = flags;
+    DeleteStuff();
 }
 
 /**
@@ -583,8 +416,8 @@ void CPowerUp::DontDisplay()
  */
 void CPowerUp::SetGravity(int g, int fric)
 {
-    this->CBody.mAcc.vy = g;
-    this->CBody.mFric.vy = fric;
+    this->mAcc.vy = g;
+    this->mFric.vy = fric;
 }
 
 /**
@@ -610,7 +443,7 @@ void CPowerUp::CreateBit()
  */
 void CPowerUp::DeleteStuff()
 {
-    CBody.KillShadow();
+    KillShadow();
     CGlow *glow = mpGlow;
     if (glow != 0)
     {
@@ -644,11 +477,11 @@ void CPowerUp::SetNode(int NodeIndex)
  */
 void CPowerUp::Die()
 {
-    if (CBody.IsDead() == 0)
+    if (IsDead() == 0)
     {
-        u16 flags = this->CBody.mCBodyFlags;
+        u16 flags = this->mCBodyFlags;
         flags |= PowerUpBodyDead;
-        this->CBody.mCBodyFlags = flags;
+        this->mCBodyFlags = flags;
         this->DontDisplay();
     }
 }
@@ -665,8 +498,8 @@ void CPowerUp::Die()
  */
 void CPowerUp::DoPhysics()
 {
-    this->CBody.CItem.mAngles += this->CBody.mAngVel;
-    this->CBody.CItem.mAngles.Mask();
+    this->mAngles += this->mAngVel;
+    this->mAngles.Mask();
 
     if (this->mDropping != 0) {
         if (this->mDropForever == 0 && this->mGroundY < 0 && this->mGroundY > -5) {
@@ -682,13 +515,13 @@ void CPowerUp::DoPhysics()
             }
         }
         else {
-            CVector *vel = &this->CBody.mVel;
+            CVector *vel = &this->mVel;
             this->mOrgPos += *vel;
-            this->CBody.mVel.vy += this->CBody.mAcc.vy;
-            this->CBody.mVel.vy -= this->CBody.mVel.vy >> this->CBody.mFric.vy;
+            this->mVel.vy += this->mAcc.vy;
+            this->mVel.vy -= this->mVel.vy >> this->mFric.vy;
             if (this->mDropForever == 0) {
                 if (this->mGroundY - (this->mHoverHeight << 12) < this->mOrgPos.vy &&
-                    this->CBody.mVel.vy > 0) {
+                    this->mVel.vy > 0) {
                     this->mOrgPos.vy = this->mGroundY - (this->mHoverHeight << 12);
                     vel->vx = 0;
                     vel->vy = 0;
@@ -696,23 +529,23 @@ void CPowerUp::DoPhysics()
                     this->mDropping = 0;
                 }
             }
-            this->CBody.CItem.mPos = this->mOrgPos;
+            this->mPos = this->mOrgPos;
         }
     }
     else {
-        this->CBody.CItem.mPos = this->mOrgPos;
-        this->CBody.CItem.mPos.vy +=
+        this->mPos = this->mOrgPos;
+        this->mPos.vy +=
             ((this->mWobbleAmplitude * rcossin_tbl[(this->mT & 0xFFF) * 2]) / 4096) << 12;
         this->mT += this->mWobbleSpeed;
     }
 
-    this->CBody.mShadowPos = this->mOrgPos;
-    this->CBody.mShadowPos.vy = this->mGroundY;
-    this->CBody.mShadowDist = (this->mGroundY - this->CBody.CItem.mPos.vy) >> 12;
-    if (this->CBody.mShadowDist != 0) {
-        this->CBody.mShadowScale = 140 - this->CBody.mShadowDist * 60 / 128;
+    this->mShadowPos = this->mOrgPos;
+    this->mShadowPos.vy = this->mGroundY;
+    this->mShadowDist = (this->mGroundY - this->mPos.vy) >> 12;
+    if (this->mShadowDist != 0) {
+        this->mShadowScale = 140 - this->mShadowDist * 60 / 128;
     } else {
-        this->CBody.mShadowScale = 0;
+        this->mShadowScale = 0;
     }
 }
 
@@ -740,7 +573,7 @@ void CPowerUp::CheckAge()
     if (mLifetime > 30 && mLifetime < 60)
     {
         if (TTime & 2)
-            CBody.CItem.mFlags &= ~PowerUpUnavailable;
+            mFlags &= ~PowerUpUnavailable;
         else
             DontDisplay();
     }
@@ -748,14 +581,14 @@ void CPowerUp::CheckAge()
     if (mLifetime < 31)
     {
         if (TTime & 1)
-            CBody.CItem.mFlags &= ~PowerUpUnavailable;
+            mFlags &= ~PowerUpUnavailable;
         else
             DontDisplay();
     }
 
     if (mLifetime == 0)
     {
-        CBody.CItem._vf->die(&CBody.CItem);
+        Die();
     }
 }
 
@@ -772,17 +605,17 @@ void CPowerUp::CheckAge()
 void CPowerUp::TakeEffect(CBruce *pMech)
 {
     unsigned short unavailable;
-    if (GNumberOfPlayers != 1 && &pMech->CBody == MechList)
-        unavailable = CBody.CItem.mFlags & PowerUpUnavailableToSecondPlayer;
+    if (GNumberOfPlayers != 1 && pMech == MechList)
+        unavailable = mFlags & PowerUpUnavailableToSecondPlayer;
     else
-        unavailable = CBody.CItem.mFlags & PowerUpUnavailable;
+        unavailable = mFlags & PowerUpUnavailable;
 
     int HadEffect = 0;
     if (unavailable)
         return;
 
     int sound = 0;
-    switch (CBody.CItem.mType)
+    switch (mType)
     {
     case PowerUpLetterK:
     case PowerUpLetterS:
@@ -796,7 +629,7 @@ void CPowerUp::TakeEffect(CBruce *pMech)
         Mess_DeleteAll();
 
         char *pMess = 0;
-        switch (CBody.CItem.mType)
+        switch (mType)
         {
         case PowerUpLetterS:
             SFX_PlayX(PowerUpLetterSound, PowerUpPickupVolume, 0);
@@ -855,7 +688,7 @@ void CPowerUp::TakeEffect(CBruce *pMech)
             pMech->Trick_TakeOff();
 
         int Pong = SFX_PlayX(PowerUpBonusSound, PowerUpPickupVolume, 0);
-        switch (CBody.CItem.mType)
+        switch (mType)
         {
         case PowerUpTypeBonus100:
             pMech->Trick_Trick("Bonus 100", -100, 2);
@@ -878,7 +711,7 @@ void CPowerUp::TakeEffect(CBruce *pMech)
             SFX_SetVoicePitch(Pong, 1114);
             break;
         case PowerUpTypeBonusRich:
-            pMech->Trick_Trick(PowerUpBonusRich, -500, 2);
+            pMech->Trick_Trick("100 Bucks! You're rich!", -500, 2);
             SFX_SetVoicePitch(Pong, 1500);
             break;
         case PowerUpTypeBonusRollAgain:
@@ -886,19 +719,19 @@ void CPowerUp::TakeEffect(CBruce *pMech)
             SFX_SetVoicePitch(Pong, 1114);
             break;
         case PowerUpTypeBonusHead:
-            pMech->Trick_Trick(PowerUpBonusHead, -200, 2);
+            pMech->Trick_Trick("You got head - excellent", -200, 2);
             SFX_SetVoicePitch(Pong, 1114);
             break;
         case PowerUpTypeBonusShoes:
-            pMech->Trick_Trick(PowerUpBonusShoes, -200, 2);
+            pMech->Trick_Trick("Gotta be the shoes", -200, 2);
             SFX_SetVoicePitch(Pong, 1114);
             break;
         case PowerUpTypeBonusFly:
-            pMech->Trick_Trick(PowerUpBonusFly, -200, 2);
+            pMech->Trick_Trick("You'll look fly in this", -200, 2);
             SFX_SetVoicePitch(Pong, 1114);
             break;
         case PowerUpTypeBonusPants:
-            pMech->Trick_Trick(PowerUpBonusPants, -200, 2);
+            pMech->Trick_Trick("Change yo pants!", -200, 2);
             SFX_SetVoicePitch(Pong, 1114);
             break;
         case PowerUpTypeBonusBoard:
@@ -918,7 +751,7 @@ void CPowerUp::TakeEffect(CBruce *pMech)
 
     if (HadEffect)
     {
-        CBody.CItem._vf->die(&CBody.CItem);
+        Die();
 
         if (sound)
             SFX_PlayX(0, PowerUpPickupVolume, 0);
@@ -941,26 +774,26 @@ void CPowerUp::AI()
 
     if (GNumberOfPlayers == 1)
     {
-        if (CBody.CItem.mFlags & PowerUpUnavailable)
+        if (mFlags & PowerUpUnavailable)
             return;
-        if (CBody.mPlayerDist > PowerUpDisplayDistance)
+        if (mPlayerDist > PowerUpDisplayDistance)
         {
-            CBody.CItem._vf->deleteStuff(&CBody.CItem);
+            DeleteStuff();
             return;
         }
     }
     else
     {
-        if ((CBody.CItem.mFlags & PowerUpUnavailableToEveryone) ==
+        if ((mFlags & PowerUpUnavailableToEveryone) ==
             PowerUpUnavailableToEveryone)
             return;
 
-        if (CBody.mPlayerDist > PowerUpDisplayDistance &&
+        if (mPlayerDist > PowerUpDisplayDistance &&
             Utils_CrapDist(
-                MechList->CItem.mNextItem->mPos,
-                CBody.CItem.mPos) > PowerUpDisplayDistance)
+                MechList->mNextItem->mPos,
+                mPos) > PowerUpDisplayDistance)
         {
-            CBody.CItem._vf->deleteStuff(&CBody.CItem);
+            DeleteStuff();
             return;
         }
     }
@@ -985,7 +818,7 @@ void CPowerUp::AI()
         mpGlow->SetRadius(0);
         mpGlow->mProtected = 1;
 
-        switch (CBody.CItem.mType)
+        switch (mType)
         {
         case PowerUpSpecial18:
             for (int i = 0; i < mpGlow->mNumSections; i++)
@@ -1061,7 +894,7 @@ void CPowerUp::AI()
         }
     }
 
-    static_cast<CBit *>(mpGlow)->SetPos(CBody.CItem.mPos);
+    static_cast<CBit *>(mpGlow)->SetPos(mPos);
     int m = TTime * 150;
     int width = mGlowRadiusOrg +
                 mGlowRadiusAmp * rcossin_tbl[(m & 0xFFF) * 2] / 4096;

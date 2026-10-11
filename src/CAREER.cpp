@@ -1,4 +1,9 @@
-// Career progression, persistent preferences, and controller remapping.
+// CAREER.cpp -- Career progression, persistent preferences, and controller remapping.
+// Original: CAREER.CPP
+// Functions: 9
+// Address range: 0x8002017C - 0x80020AAC
+//
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 #define CAREER_LAYOUT_DECLARATIONS
 #include "CAREER.h"

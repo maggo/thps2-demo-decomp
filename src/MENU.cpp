@@ -3,18 +3,18 @@
 // Functions: 56 reconstructed entries
 // Address range: 0x80087A98 - 0x80089824
 //
-// Compiled with cc1plus (GCC 2.91.66-psx). Compiler auto-mangles symbol names.
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
-
-#define __SKIP_MENUITEM_EXTERNS__
-#define __SKIP_BASICMENU_EXTERNS__
 
 #include "MENU.h"
-#include "globals.h"
 
 struct Slice;
 
+// Image's composed CClass holder (the natural polymorphic CClass is taken by
+// MENU's own classes; SlicedImage2 keeps the bare-vtable layout of IMAGE).
+#define CClass CClassData
 #include "IMAGEBASE.h"
+#undef CClass
 
 /** Sliced image used for the optional menu arrows. */
 struct SlicedImage2 : Image {
@@ -47,226 +47,15 @@ inline void *operator new(unsigned int, void *p) {
     return p;
 }
 
-/** Polymorphic base view matching the original CClass subobject. */
-class MenuAssignableCClass {
-public:
-    virtual void FontTypeAnchor();
-};
-
-/** Polymorphic view used to invoke Font's original vtable-preserving assignment. */
-class MenuAssignableFont : public MenuAssignableCClass {
-public:
-    int state[19];
-};
-
-typedef char menu_assignable_font_size_must_be_80[
-    (sizeof(MenuAssignableFont) == 80) ? 1 : -1];
-
-static inline void SetMenuItemHighlight(VMenuItem *item, int highlighted) {
-    ((void (*)(VMenuItem *, int))item->vtable[5])(item, highlighted);
-}
-
-static inline void PassMenuItemPress(VMenuItem *item, int press) {
-    ((void (*)(VMenuItem *, int))item->vtable[7])(item, press);
-}
-
-static inline void SetMenuItemXY(VMenuItem *item, int x, int y) {
-    ((void (*)(VMenuItem *, int, int))item->vtable[3])(item, x, y);
-}
-
-// === Named ABI call views ===
 #include <STDIO.H>
 #include <STRINGS.H>
-#define MENU_DECLARE_ITEM_CONSTRUCTOR_ABI
-#include "MENU.h"
-#define VMenuItem_ctor MenuConstructorAbi::__9VMenuItemi
+#define CClass CClassData
 #include "IMAGE.h"
+#undef CClass
 
-/** Font name whose menu-specific scale is selected below. */
-static char s_ingame1_fnt_800dc1b0[12]
-    __attribute__((section(".sdata"), aligned(4))) = "ingame1.fnt";
-
-// MENU.H's private small-data tables belong to the original menu.obj.  Keep
-// them after the owner's font-name contribution in the target section order.
-#define MENU_DECLARE_OWNER_SMALL_DATA_DESTRUCTOR_ABI
-#include "MENU.h"
-
-static int Menu_TextPropsVTable
-    __attribute__((section(".sdata"), aligned(8))) = 0;
-static int Menu_TextPropsVTableIndex __attribute__((section(".sdata"))) = 0;
-static void (*Menu_TextPropsVTableDtor)(TextMenuProperties *, int)
-    __attribute__((section(".sdata"))) = Menu_DestroyTextMenuPropertiesAbi;
-
-static int Menu_BaseVTable
-    __attribute__((section(".sdata"), aligned(8))) = 0;
-static int Menu_BaseVTableIndex __attribute__((section(".sdata"))) = 0;
-static void (*Menu_BaseVTableDtor)(CClass *, int)
-    __attribute__((section(".sdata"))) = __DOT__6CClass_800897F4;
-
-// === Named ABI owner and address views ===
-#define SCREENTOOLS_DECLARE_VERTICAL_MENU2_CONSTRUCTOR
-#define SCREENTOOLS_AGGREGATE_LAYOUT_ONLY
-#include "SCREENTOOLS.h"
-#undef SCREENTOOLS_AGGREGATE_LAYOUT_ONLY
-#define VerticalMenu2_ctor \
-    VerticalMenu2ConstructorABI::__13VerticalMenu2iiiiiii
-#define MENU_DECLARE_CONTAINER_OWNER_ABI_HEAD
-#define MENU_DECLARE_TEXT_WRAPPER_CONSTRUCTOR_ABI
-#define MENU_TEXT_WRAPPER_CONSTRUCTOR_RECEIVER TextMenuWrapper
-#define MENU_DECLARE_CONTAINER_OWNER_ABI_TAIL
-#include "MENU.h"
-
-// === MENU.H-emitted method bindings owned by menu.obj ===
-#define MENU_DECLARE_ITEM_OWNER_DESTRUCTOR_ABI
-#include "MENU.h"
-
-typedef void (*MenuVirtualFunction)(void);
-
-#define MENU_DECLARE_OWNER_VTABLES
-#include "MENU.h"
-
-// GCC 2.x destructors cannot be named by a C++ address expression, so the two
-// natural destructor owners below retain erased ABI views for their tables.
-#define MENU_DECLARE_ERASED_BASE_DESTRUCTOR_ABI
-#include "MENU.h"
-
-/**
- * MENU diagnostic text and virtual dispatch tables in original read-only
- * section order.
- */
+/** MENU diagnostic text (read-only data, ahead of the compiler's vtables). */
 static char processPress_fmt[24] __attribute__((section(".rdata"), aligned(4))) =
     "Highlighted is %d\n";
-
-MenuVirtualFunction const __vt_15TextMenuWrapper[]
-    __attribute__((section(".rdata"), aligned(4))) = {
-    0,
-    0,
-    (MenuVirtualFunction)&Menu_TextMenuWrapper_dtor,
-    (MenuVirtualFunction)&TextMenuWrapper::HandleInput,
-    (MenuVirtualFunction)&TextMenuWrapper::TestComplete,
-    (MenuVirtualFunction)&MenuWrapper::GetHighlightedId,
-};
-
-MenuVirtualFunction const __vt_11MenuWrapper[]
-    __attribute__((section(".rdata"), aligned(4))) = {
-    0,
-    0,
-    MenuV_DtorMenuWrapper,
-    (MenuVirtualFunction)&MenuWrapper::HandleInput,
-    (MenuVirtualFunction)&MenuWrapper::TestComplete,
-    (MenuVirtualFunction)&MenuWrapper::GetHighlightedId,
-};
-
-MenuVirtualFunction const __vt_14ScrollingMenu2[]
-    __attribute__((section(".rdata"), aligned(4))) = {
-    0,
-    0,
-    (MenuVirtualFunction)&Menu_ScrollingMenu2_dtor,
-    (MenuVirtualFunction)&BasicMenu::setArrows,
-    (MenuVirtualFunction)&MenuScrollingMenu2ABI::activate__14ScrollingMenu2,
-    (MenuVirtualFunction)&ScrollingMenu2::draw,
-    (MenuVirtualFunction)&MenuScrollingMenu2ABI::update__14ScrollingMenu2,
-    (MenuVirtualFunction)&ScrollingMenu2::processPress,
-    (MenuVirtualFunction)&ScrollingMenu2::addItem,
-    0,
-};
-
-MenuVirtualFunction const __vt_13VerticalMenu2[]
-    __attribute__((section(".rdata"), aligned(4))) = {
-    0,
-    0,
-    (MenuVirtualFunction)&Menu_VerticalMenu2_dtor,
-    (MenuVirtualFunction)&BasicMenu::setArrows,
-    (MenuVirtualFunction)&VerticalMenu2::activate,
-    (MenuVirtualFunction)&VerticalMenu2::draw,
-    (MenuVirtualFunction)&VerticalMenu2::update,
-    (MenuVirtualFunction)&VerticalMenu2::processPress,
-    (MenuVirtualFunction)&VerticalMenu2::addItem,
-    0,
-};
-
-MenuVirtualFunction const __vt_14SelectMenuItem[]
-    __attribute__((section(".rdata"), aligned(4))) = {
-    0,
-    0,
-    (MenuVirtualFunction)&Menu_DestroySelectMenuItemAbi,
-    (MenuVirtualFunction)&SelectMenuItem::setXY,
-    (MenuVirtualFunction)&SelectMenuItem::draw,
-    (MenuVirtualFunction)&MenuItem::setHighlightState,
-    (MenuVirtualFunction)&MenuItem::setItemState,
-    (MenuVirtualFunction)&SelectMenuItem::processPress,
-    (MenuVirtualFunction)&MenuItem::update,
-    0,
-};
-
-MenuVirtualFunction const __vt_13TitleMenuItem[]
-    __attribute__((section(".rdata"), aligned(4))) = {
-    0,
-    0,
-    (MenuVirtualFunction)&Menu_DestroyTitleMenuItemAbi,
-    (MenuVirtualFunction)&TextMenuItem::setXY,
-    (MenuVirtualFunction)&TitleMenuItem::draw,
-    (MenuVirtualFunction)&MenuItem::setHighlightState,
-    (MenuVirtualFunction)&MenuItem::setItemState,
-    (MenuVirtualFunction)&MenuItem::processPress,
-    (MenuVirtualFunction)&MenuItem::update,
-    0,
-};
-
-MenuVirtualFunction const __vt_12TextMenuItem[]
-    __attribute__((section(".rdata"), aligned(4))) = {
-    0,
-    0,
-    (MenuVirtualFunction)&Menu_DestroyTextMenuItemAbi,
-    (MenuVirtualFunction)&TextMenuItem::setXY,
-    (MenuVirtualFunction)&TextMenuItem::draw,
-    (MenuVirtualFunction)&MenuItem::setHighlightState,
-    (MenuVirtualFunction)&MenuItem::setItemState,
-    (MenuVirtualFunction)&MenuItem::processPress,
-    (MenuVirtualFunction)&MenuItem::update,
-    0,
-};
-
-MenuVirtualFunction const __vt_9BasicMenu[]
-    __attribute__((section(".rdata"), aligned(4))) = {
-    0,
-    0,
-    MenuV_DtorBasicMenu,
-    (MenuVirtualFunction)&BasicMenu::setArrows,
-    (MenuVirtualFunction)&BasicMenu::activate,
-    (MenuVirtualFunction)&BasicMenu::draw,
-    (MenuVirtualFunction)&BasicMenu::update,
-    (MenuVirtualFunction)&BasicMenu::processPress,
-    (MenuVirtualFunction)&BasicMenu::addItem,
-    0,
-};
-
-static MenuVirtualFunction __vt_9VMenuItem[]
-    __attribute__((section(".rdata"), aligned(4))) = {
-    0,
-    0,
-    (MenuVirtualFunction)&Menu_DestroyVMenuItemAbi,
-    (MenuVirtualFunction)&MenuItem::setXY,
-    (MenuVirtualFunction)&MenuItem::draw,
-    (MenuVirtualFunction)&MenuItem::setHighlightState,
-    (MenuVirtualFunction)&MenuItem::setItemState,
-    (MenuVirtualFunction)&MenuItem::processPress,
-    (MenuVirtualFunction)&MenuItem::update,
-    0,
-};
-
-MenuVirtualFunction const __vt_8MenuItem[]
-    __attribute__((section(".rdata"), aligned(4))) = {
-    0,
-    0,
-    (MenuVirtualFunction)&MenuItem_dtor,
-    (MenuVirtualFunction)&MenuItem::setXY,
-    (MenuVirtualFunction)&MenuItem::draw,
-    (MenuVirtualFunction)&MenuItem::setHighlightState,
-    (MenuVirtualFunction)&MenuItem::setItemState,
-    (MenuVirtualFunction)&MenuItem::processPress,
-    (MenuVirtualFunction)&MenuItem::update,
-};
 
 // === Function implementations (address order) ===
 
@@ -315,7 +104,6 @@ done:
  * @param id  Identifier.
  */
 MenuItem::MenuItem(int id) {
-    this->vtable = (int *)&__vt_8MenuItem[0];
     this->ID = id;
 }
 
@@ -327,7 +115,6 @@ MenuItem::MenuItem(int id) {
  * Demangled: MenuItem::~MenuItem()
  */
 MenuItem::~MenuItem() {
-    this->vtable = &Menu_BaseVTable;
 }
 
 
@@ -388,7 +175,6 @@ void MenuItem::update() {
  *
  */
 VMenuItem::VMenuItem(int id) : MenuItem(id) {
-    this->vtable = (int *)&__vt_9VMenuItem[0];
 }
 
 
@@ -412,8 +198,6 @@ int MenuWrapper::GetHighlightedId() {
  * Demangled: TextMenuProperties::TextMenuProperties(void)
  */
 TextMenuProperties::TextMenuProperties() {
-    this->vtable = &Menu_TextPropsVTable;
-    ::new (&this->TheFont) Font();
     this->BigScale = 0x1324;
     this->NormalScale = 0x1000;
     this->SelectedR = 0xB6;
@@ -433,29 +217,24 @@ TextMenuProperties::TextMenuProperties() {
  * Address:   0x80087C58
  * Mangled:   __12TextMenuItemiPCcR18TextMenuProperties
  * Demangled: TextMenuItem::TextMenuItem(int, const char *, TextMenuProperties &)
- *            Note: kept as a named ABI owner because natural C++ base construction generates cleanup paths
  *
- * @param self  Implicit object pointer.
  * @param id  Identifier.
  * @param text  Label displayed by the item.
  * @param properties  Shared font and styling properties.
- * @return `this` pointer (GCC 2.x ctor convention).
  */
-TextMenuItem *__12TextMenuItemiPCcR18TextMenuProperties(
-    TextMenuItem *self, int id, const char *text, TextMenuProperties *properties) {
-    VMenuItem_ctor(self, id);
-    self->vtable = (int *)__vt_12TextMenuItem;
-    strcpy(self->Text, text);
-    self->ID = id;
-    self->TheProperties = properties;
-    self->Selectable = 1;
-    self->Choosable = 1;
-    properties->TheFont.Scale = properties->BigScale;
-    int w = FontFromStorage(&self->TheProperties->TheFont)->width(self->Text);
-    self->W = w;
-    int h = FontFromStorage(&self->TheProperties->TheFont)->height(self->Text);
-    self->H = h;
-    return self;
+TextMenuItem::TextMenuItem(int id, const char *text,
+                           TextMenuProperties &properties)
+    : VMenuItem(id) {
+    strcpy(Text, text);
+    ID = id;
+    TheProperties = &properties;
+    Selectable = 1;
+    Choosable = 1;
+    properties.TheFont.Scale = properties.BigScale;
+    int w = TheProperties->TheFont.width(Text);
+    W = w;
+    int h = TheProperties->TheFont.height(Text);
+    H = h;
 }
 
 
@@ -464,18 +243,8 @@ TextMenuItem *__12TextMenuItemiPCcR18TextMenuProperties(
  * Address:   0x80087D10
  * Mangled:   _._12TextMenuItem
  * Demangled: TextMenuItem::~TextMenuItem()
- *            Note: kept as a named ABI owner because natural C++ destruction changes the in-charge flag
- *
- * @param self  Implicit object pointer.
- * @param flag  GCC 2.x in-charge flag (bit 0 → also invoke `operator delete` on `this`).
  */
-void Menu_DestroyTextMenuItemAbi(
-    TextMenuItem *self, int __in_chrg) {
-    self->vtable = (int *)__vt_12TextMenuItem;
-    MenuItem_dtor(self, 0);
-    if (__in_chrg & 1) {
-        ::CClass::operator delete(self);
-    }
+TextMenuItem::~TextMenuItem() {
 }
 
 
@@ -534,10 +303,10 @@ void TextMenuItem::draw() {
         p4->TheFont.B = p4->SelectedB;
     }
     if (TheProperties->TheFont.JustX == 1) {
-        FontFromStorage(&TheProperties->TheFont)->draw(
+        TheProperties->TheFont.draw(
             X + (W >> 1), Y + (H >> 1), Text, 0);
     } else {
-        FontFromStorage(&TheProperties->TheFont)->draw(
+        TheProperties->TheFont.draw(
             X, Y + (H >> 1), Text, 0);
     }
 }
@@ -548,23 +317,18 @@ void TextMenuItem::draw() {
  * Address:   0x80087F0C
  * Mangled:   __13TitleMenuItemiPCcR18TextMenuProperties
  * Demangled: TitleMenuItem::TitleMenuItem(int, const char *, TextMenuProperties &)
- *            Note: kept as a named ABI owner because natural C++ base construction generates cleanup paths
  *
- * @param self  Implicit object pointer.
  * @param id  Identifier.
  * @param text  Label displayed by the title.
  * @param properties  Shared font and styling properties.
- * @return `this` pointer (GCC 2.x ctor convention).
  */
-TitleMenuItem *__13TitleMenuItemiPCcR18TextMenuProperties(
-    TitleMenuItem *self, int id, const char *text, TextMenuProperties *properties) {
-    __12TextMenuItemiPCcR18TextMenuProperties(self, id, text, properties);
-    self->vtable = (int *)&__vt_13TitleMenuItem[0];
-    self->Selectable = 0;
-    int h = self->H;
+TitleMenuItem::TitleMenuItem(int id, const char *text,
+                             TextMenuProperties &properties)
+    : TextMenuItem(id, text, properties) {
+    Selectable = 0;
+    int h = H;
     h = h + (h >> 1);
-    self->H = h;
-    return self;
+    H = h;
 }
 
 
@@ -590,10 +354,10 @@ void TitleMenuItem::draw() {
     TextMenuProperties *p4 = TheProperties;
     p4->TheFont.B = p4->SelectedB;
     if (TheProperties->TheFont.JustX == 1) {
-        FontFromStorage(&TheProperties->TheFont)->draw(
+        TheProperties->TheFont.draw(
             X + (W >> 1), Y + (H >> 1), Text, 0);
     } else {
-        FontFromStorage(&TheProperties->TheFont)->draw(
+        TheProperties->TheFont.draw(
             X, Y + (H >> 1), Text, 0);
     }
 }
@@ -604,17 +368,8 @@ void TitleMenuItem::draw() {
  * Address:   0x80088044
  * Mangled:   _._14SelectMenuItem
  * Demangled: SelectMenuItem::~SelectMenuItem()
- *
- * @param self  Implicit object pointer.
- * @param flag  GCC 2.x in-charge flag (bit 0 → also invoke `operator delete` on `this`).
  */
-void Menu_DestroySelectMenuItemAbi(
-    SelectMenuItem *self, int __in_chrg) {
-    self->vtable = (int *)__vt_14SelectMenuItem;
-    MenuItem_dtor(self, 0);
-    if (__in_chrg & 1) {
-        ::CClass::operator delete(self);
-    }
+SelectMenuItem::~SelectMenuItem() {
 }
 
 
@@ -696,10 +451,10 @@ void SelectMenuItem::draw(void) {
             TextMenuProperties *fnt = TheProperties;
             int h = H;
             int y = Y;
-            FontFromStorage(&fnt->TheFont)->draw(x, y + (h >> 1), str, 0);
+            fnt->TheFont.draw(x, y + (h >> 1), str, 0);
             i++;
             TextMenuProperties *fnt2 = TheProperties;
-            x += FontFromStorage(&fnt2->TheFont)->width(str);
+            x += fnt2->TheFont.width(str);
             str += 0x20;
         } while (i < NumOptions);
     }
@@ -809,7 +564,7 @@ int BasicMenu::getHighlighted(void) {
  */
 void BasicMenu::setHighlighted(int id) {
     VMenuItem *item = Item[Selected];
-    ((void (*)(VMenuItem *, int))item->vtable[5])(item, 0);
+    item->setHighlightState(0);
     Selected = 0;
     while (1) {
         int selected = Selected;
@@ -820,7 +575,7 @@ void BasicMenu::setHighlighted(int id) {
         if (next >= 0x10) break;
     }
     item = Item[Selected];
-    ((void (*)(VMenuItem *, int))item->vtable[5])(item, 1);
+    item->setHighlightState(1);
 }
 
 
@@ -841,30 +596,27 @@ void BasicMenu::setHighlighted(int id) {
  * @param spacing  Vertical gap between items.
  * @return `this` pointer (GCC 2.x ctor convention).
  */
-VerticalMenu2 *VerticalMenu2_ctor(
-    VerticalMenu2 *self, int x, int y, int w, int h, int just_x, int just_y,
-    int spacing) {
+VerticalMenu2::VerticalMenu2(int x, int y, int w, int h, int just_x,
+                             int just_y, int spacing) {
     int i = 0;
-    VMenuItem **ptr = self->Item;
-    self->vtable = (int *)&__vt_13VerticalMenu2[0];
+    VMenuItem **ptr = Item;
     do {
         *ptr = 0;
         i++;
         ptr++;
     } while (i < 16);
-    self->H = h;
-    self->JustX = just_x;
-    self->HighestSlot = 0;
-    self->X = x;
-    self->Y = y;
-    self->W = w;
-    self->RightArrow = 0;
-    self->LeftArrow = 0;
-    self->ArrowSpace = 0;
-    self->Selected = 0;
-    self->JustY = just_y;
-    self->Spacing = spacing;
-    return self;
+    H = h;
+    JustX = just_x;
+    HighestSlot = 0;
+    X = x;
+    Y = y;
+    W = w;
+    RightArrow = 0;
+    LeftArrow = 0;
+    ArrowSpace = 0;
+    Selected = 0;
+    JustY = just_y;
+    Spacing = spacing;
 }
 
 
@@ -878,11 +630,7 @@ VerticalMenu2 *VerticalMenu2_ctor(
  * @param self  Implicit object pointer.
  * @param flag  GCC 2.x in-charge flag (bit 0 → also invoke `operator delete` on `this`).
  */
-void Menu_VerticalMenu2_dtor(VerticalMenu2 *self, int flag) {
-    self->vtable = &Menu_BaseVTable;
-    if (flag & 1) {
-        ::CClass::operator delete(self);
-    }
+VerticalMenu2::~VerticalMenu2() {
 }
 
 
@@ -941,12 +689,10 @@ void VerticalMenu2::activate() {
                     int centerX = X + halfW;
                     VMenuItem *item = *ptr;
                     int itemHalfW = item->W >> 1;
-                    ((void (*)(VMenuItem *, int, int))item->vtable[3])(
-                        item, centerX - itemHalfW, y);
+                    item->setXY(centerX - itemHalfW, y);
                 } else {
                     VMenuItem *item = *ptr;
-                    ((void (*)(VMenuItem *, int, int))item->vtable[3])(
-                        item, X + arrow_x, y);
+                    item->setXY(X + arrow_x, y);
                 }
                 int h = (*ptr)->H;
                 ptr++;
@@ -971,7 +717,7 @@ void VerticalMenu2::activate() {
             count = HighestSlot;
         }
     }
-    SetMenuItemHighlight(Item[Selected], 1);
+    Item[Selected]->setHighlightState(1);
 }
 
 
@@ -989,7 +735,7 @@ void VerticalMenu2::draw() {
         VMenuItem *item = Item[Selected];
         int x = item->X - ArrowSpace;
         int y = item->Y + (item->H >> 1);
-        int *vt = upArrow->CClass.vtable;
+        int *vt = upArrow->CClassData.vtable;
         ((void (*)(SlicedImage2 *, int, int, int))vt[5])(
             upArrow, x, y + (Spacing >> 1), 0);
     }
@@ -1003,7 +749,7 @@ void VerticalMenu2::draw() {
         VMenuItem *item = *itemSlot;
         int x = item->X + item->W + ArrowSpace;
         int y = item->Y + (item->H >> 1);
-        int *vt = downArrow->CClass.vtable;
+        int *vt = downArrow->CClassData.vtable;
         ((void (*)(SlicedImage2 *, int, int, int))vt[5])(
             downArrow, x, y + (Spacing >> 1), 0);
     }
@@ -1012,7 +758,7 @@ void VerticalMenu2::draw() {
     do {
         VMenuItem *item = *ptr;
         if (item != 0) {
-            ((void (*)(VMenuItem *))item->vtable[4])(item);
+            item->draw();
         }
         i--;
         ptr--;
@@ -1036,8 +782,7 @@ void VerticalMenu2::update(void) {
         VMenuItem **ptr = Item;
         do {
             VMenuItem *item = *ptr;
-            int *vtable = item->vtable;
-            ((void (*)(VMenuItem *))vtable[8])(item);
+            item->update();
             ptr++;
             count = HighestSlot;
             i++;
@@ -1057,10 +802,10 @@ void VerticalMenu2::update(void) {
  * @param press  Button press code.
  */
 void VerticalMenu2::processPress(int press) {
-    SetMenuItemHighlight(Item[Selected], 0);
+    Item[Selected]->setHighlightState(0);
 
     if ((unsigned int)press < 2) {
-        PassMenuItemPress(Item[Selected], press);
+        Item[Selected]->processPress(press);
     }
 
     if (press == 2) {
@@ -1081,7 +826,7 @@ void VerticalMenu2::processPress(int press) {
         } while (Item[Selected]->Selectable == 0);
     }
 
-    SetMenuItemHighlight(Item[Selected], 1);
+    Item[Selected]->setHighlightState(1);
 }
 
 
@@ -1116,31 +861,28 @@ void VerticalMenu2::addItem(VMenuItem *item) {
  * @param slide_amount  Distance moved during each scrolling step.
  * @return `this` pointer (GCC 2.x ctor convention).
  */
-ScrollingMenu2 *__14ScrollingMenu2iiiiii(
-    ScrollingMenu2 *self, int x, int y, int w, int h, int just_x,
-    int slide_amount) {
+ScrollingMenu2::ScrollingMenu2(int x, int y, int w, int h, int just_x,
+                               int slide_amount) {
     int i = 0;
-    VMenuItem **ptr = self->Item;
-    self->vtable = (int *)&__vt_14ScrollingMenu2[0];
+    VMenuItem **ptr = Item;
     do {
         *ptr = 0;
         i++;
         ptr++;
     } while (i < 16);
-    self->HighestSlot = 0;
-    self->X = x;
-    self->Y = y;
-    self->W = w;
-    self->H = h;
-    self->RightArrow = 0;
-    self->LeftArrow = 0;
-    self->ArrowSpace = 0;
-    self->Top = 0;
-    self->Bottom = h;
-    self->Selected = 0;
-    self->JustX = just_x;
-    self->ArrowSlide = slide_amount;
-    return self;
+    HighestSlot = 0;
+    X = x;
+    Y = y;
+    W = w;
+    H = h;
+    RightArrow = 0;
+    LeftArrow = 0;
+    ArrowSpace = 0;
+    Top = 0;
+    Bottom = h;
+    Selected = 0;
+    JustX = just_x;
+    ArrowSlide = slide_amount;
 }
 
 
@@ -1154,11 +896,7 @@ ScrollingMenu2 *__14ScrollingMenu2iiiiii(
  * @param self  Implicit object pointer.
  * @param flag  GCC 2.x in-charge flag (bit 0 → also invoke `operator delete` on `this`).
  */
-void Menu_ScrollingMenu2_dtor(ScrollingMenu2 *self, int flag) {
-    self->vtable = &Menu_BaseVTable;
-    if (flag & 1) {
-        ::CClass::operator delete(self);
-    }
+ScrollingMenu2::~ScrollingMenu2() {
 }
 
 
@@ -1171,44 +909,40 @@ void Menu_ScrollingMenu2_dtor(ScrollingMenu2 *self, int flag) {
  *
  * @param self  Implicit object pointer.
  */
-void MenuScrollingMenu2ABI::activate__14ScrollingMenu2(ScrollingMenu2 *self) {
-    int arrow_x = self->ArrowSpace;
-    SlicedImage2 *upArrow = self->LeftArrow;
+void ScrollingMenu2::activate() {
+    int arrow_x = ArrowSpace;
+    SlicedImage2 *upArrow = LeftArrow;
     if (upArrow != 0) {
         int h = upArrow->W;
         h = h << 1;
         arrow_x += h;
     }
     int j = 0;
-    VMenuItem **items = self->Item;
-    int y = self->Y - self->Top;
-    if (self->HighestSlot > 0) {
+    VMenuItem **items = Item;
+    int y = Y - Top;
+    if (HighestSlot > 0) {
         VMenuItem **ptr = items;
         do {
-            (*ptr)->JustX = self->JustX;
-            int alignment = self->JustX;
+            (*ptr)->JustX = JustX;
+            int alignment = JustX;
             if (alignment == 1) {
-                int halfW = self->W >> 1;
-                int centerX = self->X + halfW;
+                int halfW = W >> 1;
+                int centerX = X + halfW;
                 VMenuItem *item = *ptr;
                 int itemHalfW = item->W >> 1;
-                int *vt = item->vtable;
-                ((void (*)(VMenuItem *, int, int))vt[3])(
-                    item, centerX - itemHalfW, y);
+                item->setXY(centerX - itemHalfW, y);
             } else {
                 VMenuItem *item = *ptr;
-                int *vt = item->vtable;
-                ((void (*)(VMenuItem *, int, int))vt[3])(
-                    item, self->X + arrow_x, y);
+                item->setXY(X + arrow_x, y);
             }
             int h = (*ptr)->H;
             ptr++;
             j++;
             y += h;
-        } while (j < self->HighestSlot);
+        } while (j < HighestSlot);
     }
-    int count = self->HighestSlot;
-    ScrollingMenu2 *menu = self;
+    int count = HighestSlot;
+    ScrollingMenu2 *menu = this;
     for (int i = 0; i < count; i++) {
         if (menu->Item[menu->Selected]->Selectable == 0) {
             menu->Selected++;
@@ -1217,10 +951,10 @@ void MenuScrollingMenu2ABI::activate__14ScrollingMenu2(ScrollingMenu2 *self) {
             }
             break;
         }
-        count = self->HighestSlot;
+        count = HighestSlot;
     }
 
-    SetMenuItemHighlight(menu->Item[menu->Selected], 1);
+    menu->Item[menu->Selected]->setHighlightState(1);
 }
 
 
@@ -1257,7 +991,7 @@ void ScrollingMenu2::draw(void) {
         itemAddress += curIdx * sizeof(*items_base);
         VMenuItem **itemSlot = (VMenuItem **)itemAddress;
         VMenuItem *curItem = *itemSlot;
-        int *vt = upArrow->CClass.vtable;
+        int *vt = upArrow->CClassData.vtable;
         int x = curItem->X - ArrowSpace;
         ((void (*)(SlicedImage2 *, int, int, int))vt[5])(
             upArrow, x, y, 0);
@@ -1270,7 +1004,7 @@ void ScrollingMenu2::draw(void) {
         VMenuItem **itemSlot = (VMenuItem **)itemAddress;
         VMenuItem *curItem = *itemSlot;
         int x = curItem->X + curItem->W + ArrowSpace;
-        int *vt = downArrow->CClass.vtable;
+        int *vt = downArrow->CClassData.vtable;
         ((void (*)(SlicedImage2 *, int, int, int))vt[5])(
             downArrow, x, y, 0);
     }
@@ -1280,8 +1014,7 @@ void ScrollingMenu2::draw(void) {
     do {
         VMenuItem *it = *ptr;
         if (it != 0) {
-            int *vt = it->vtable;
-            ((void (*)(VMenuItem *))vt[4])(it);
+            it->draw();
         }
         i--;
         ptr--;
@@ -1299,61 +1032,57 @@ void ScrollingMenu2::draw(void) {
  *
  * @param self  Implicit object pointer.
  */
-void MenuScrollingMenu2ABI::update__14ScrollingMenu2(ScrollingMenu2 *self) {
-    int *offsets = self->RY;
-    int idx = self->Selected;
+void ScrollingMenu2::update() {
+    int *offsets = RY;
+    int idx = Selected;
     int idxOff = idx << 2;
     int *offsetPtr = (int *)((char *)offsets + idxOff);
     int curOffset = *offsetPtr;
-    int scrollPos = self->Top;
+    int scrollPos = Top;
     if (curOffset < scrollPos) {
-        int speed = self->ArrowSlide;
+        int speed = ArrowSlide;
         int newPos = scrollPos - speed;
-        int newBottom = self->Bottom - speed;
-        self->Top = newPos;
-        self->Bottom = newBottom;
+        int newBottom = Bottom - speed;
+        Top = newPos;
+        Bottom = newBottom;
         int ofs = *offsetPtr;
         if (newPos < ofs) {
-            self->Top = ofs;
-            self->Bottom = ofs + self->H;
+            Top = ofs;
+            Bottom = ofs + H;
         }
     } else {
-        VMenuItem **itemsBase = self->Item;
+        VMenuItem **itemsBase = Item;
         VMenuItem **itemSlot = (VMenuItem **)((char *)itemsBase + idxOff);
         VMenuItem *item = *itemSlot;
         int itemH = item->H;
         int bottom = curOffset + itemH;
-        int viewBottom = self->Bottom;
+        int viewBottom = Bottom;
         if (viewBottom < bottom) {
-            int speed = self->ArrowSlide;
+            int speed = ArrowSlide;
             int newPos = scrollPos + speed;
             int newBottom = viewBottom + speed;
-            self->Top = newPos;
-            self->Bottom = newBottom;
+            Top = newPos;
+            Bottom = newBottom;
             VMenuItem *item2 = *itemSlot;
             int ofs2 = *offsetPtr;
             int itemH2 = item2->H;
             int top = ofs2 + itemH2;
             if (top < newBottom) {
-                self->Bottom = top;
-                self->Top = top - self->H;
+                Bottom = top;
+                Top = top - H;
             }
         }
     }
-    {
-        int *vt = self->vtable;
-        ((void (*)(ScrollingMenu2 *))vt[4])(self);
-    }
-    int count = self->HighestSlot;
+    activate();
+    int count = HighestSlot;
     if (count > 0) {
         int i = 0;
-        VMenuItem **ptr = self->Item;
+        VMenuItem **ptr = Item;
         do {
             VMenuItem *item = *ptr;
-            int *vt = item->vtable;
-            ((void (*)(VMenuItem *))vt[8])(item);
+            item->update();
             ptr++;
-            count = self->HighestSlot;
+            count = HighestSlot;
             i++;
         } while (i < count);
     }
@@ -1378,9 +1107,9 @@ void ScrollingMenu2::processPress(int press) {
      */
     int self = (int)this;
     int *items = (int *)(self + 0x10);
-    SetMenuItemHighlight(Item[Selected], 0);
+    Item[Selected]->setHighlightState(0);
     if ((unsigned int)press < 2) {
-        PassMenuItemPress(Item[Selected], press);
+        Item[Selected]->processPress(press);
     }
     if (press == 2) {
         int target = *(int *)(self + 0x54) - 1;
@@ -1415,7 +1144,7 @@ void ScrollingMenu2::processPress(int press) {
             }
         }
     }
-    SetMenuItemHighlight(Item[Selected], 1);
+    Item[Selected]->setHighlightState(1);
 }
 
 
@@ -1430,37 +1159,13 @@ void ScrollingMenu2::processPress(int press) {
  * @param item  Menu item to append.
  */
 void ScrollingMenu2::addItem(VMenuItem *item) {
-    int count = HighestSlot;
-    VMenuItem **items = Item;
-    VMenuItem **itemSlot =
-        (VMenuItem **)((char *)items + (count << 2));
-    *itemSlot = item;
-    count = HighestSlot;
-    register int idx asm("$8") = count << 2;
-    if (count != 0) {
-        goto nonzero;
-    }
-    {
+    Item[HighestSlot] = item;
+    if (HighestSlot == 0) {
         RY[0] = 0;
-        goto done_offsets;
+    } else {
+        RY[HighestSlot] = RY[HighestSlot - 1] + Item[HighestSlot - 1]->H;
     }
-nonzero:
-    {
-        int *offsets = RY;
-        int prevIdx = (count - 1) << 2;
-        register int *prevOffPtr =
-            (int *)((char *)offsets + prevIdx);
-        VMenuItem **prevItemPtr =
-            (VMenuItem **)((char *)items + prevIdx);
-        VMenuItem *prevItem = *prevItemPtr;
-        int prevOff = *prevOffPtr;
-        int height = prevItem->H;
-        int *offsetSlot = (int *)((char *)offsets + idx);
-        *offsetSlot = prevOff + height;
-    }
-done_offsets:
-    count = HighestSlot;
-    HighestSlot = count + 1;
+    ++HighestSlot;
 }
 
 
@@ -1479,96 +1184,60 @@ done_offsets:
  * @param use_scrolling_menu  Selects the scrolling rather than vertical layout.
  * @return `this` pointer (GCC 2.x ctor convention).
  */
-TextMenuWrapper *__15TextMenuWrapperPCPcPiiPcb(
-    TextMenuWrapper *self, const char **string_list, int *id_list,
-    int num_items, const char *font_name, bool use_scrolling_menu)
+TextMenuWrapper::TextMenuWrapper(
+    char *const *string_list, int *id_list, int num_items, char *font_name,
+    bool use_scrolling_menu)
 {
-    TextMenuProperties *properties = &self->Props;
-    self->vtable = (int *)__vt_15TextMenuWrapper;
-    new (properties) TextMenuProperties();
-
+    TextMenuProperties *properties = &Props;
     if (use_scrolling_menu)
     {
-        ScrollingMenu2 *menu = (ScrollingMenu2 *)::CClass::operator new(sizeof(ScrollingMenu2));
-        if (menu != 0)
-            menu = __14ScrollingMenu2iiiiii(
-                menu, 0, 0x50, 0x200, 0x50, 1, 4);
-        self->Menu = menu;
+        Menu = new ScrollingMenu2(0, 0x50, 0x200, 0x50, 1, 4);
     }
     else
     {
-        VerticalMenu2 *menu = (VerticalMenu2 *)::CClass::operator new(sizeof(VerticalMenu2));
-        if (menu != 0)
-            menu = VerticalMenu2_ctor(
-                menu, 0, 0, 0x200, 0x100, 1, 1, 4);
-        self->Menu = menu;
+        Menu = new VerticalMenu2(0, 0, 0x200, 0x100, 1, 1, 4);
     }
-
-    MenuAssignableFont *font = reinterpret_cast<MenuAssignableFont *>(
-        FontManager::GetFont(const_cast<char *>(font_name)));
-    *(MenuAssignableFont *)&self->Props.TheFont = *font;
-
-    if (strcmp(font_name, s_ingame1_fnt_800dc1b0) == 0)
+    Props.TheFont = *FontManager::GetFont(font_name);
+    if (strcmp(font_name, "ingame1.fnt") == 0)
     {
-        self->Props.BigScale = 0x1324;
-        self->Props.NormalScale = 0x1000;
+        Props.BigScale = 0x1324;
+        Props.NormalScale = 0x1000;
     }
     else
     {
-        self->Props.BigScale = 0xe5b;
-        self->Props.NormalScale = 0xc00;
+        Props.BigScale = 0xe5b;
+        Props.NormalScale = 0xc00;
     }
-
     {
         int i = 0;
-
-        self->Props.TheFont.ShadowDx = 2;
-        self->Props.TheFont.ShadowDy = 2;
-        self->NumItems = num_items;
+        Props.TheFont.ShadowDx = 2;
+        Props.TheFont.ShadowDy = 2;
+        NumItems = num_items;
         if (num_items > 0)
         {
             int titleId = -1;
-            VMenuItem **itemsPtr = self->ItemList;
-            const char **strPtr = string_list;
+            VMenuItem **itemsPtr = ItemList;
+            char *const *strPtr = string_list;
             int *idsPtr = id_list;
-
             do
             {
                 if (*idsPtr == titleId)
                 {
-                    TitleMenuItem *menuItem =
-                        (TitleMenuItem *)::CClass::operator new(sizeof(TitleMenuItem));
-                    if (menuItem != 0)
-                        menuItem = __13TitleMenuItemiPCcR18TextMenuProperties(
-                            menuItem, *idsPtr, *strPtr, properties);
-                    *itemsPtr = menuItem;
+                    *itemsPtr = new TitleMenuItem(*idsPtr, *strPtr, *properties);
                 }
                 else
                 {
-                    TextMenuItem *menuItem =
-                        (TextMenuItem *)::CClass::operator new(sizeof(TextMenuItem));
-                    if (menuItem != 0)
-                        menuItem = __12TextMenuItemiPCcR18TextMenuProperties(
-                            menuItem, *idsPtr, *strPtr, properties);
-                    *itemsPtr = menuItem;
+                    *itemsPtr = new TextMenuItem(*idsPtr, *strPtr, *properties);
                 }
-
-                ((void (*)(BasicMenu *, VMenuItem *))self->Menu->vtable[8])(
-                    self->Menu, *itemsPtr);
+                Menu->addItem(*itemsPtr);
                 itemsPtr++;
                 strPtr++;
                 idsPtr++;
                 i++;
-            } while (i < self->NumItems);
+            } while (i < NumItems);
         }
     }
-
-    {
-        BasicMenu *menu = self->Menu;
-        int *vtable = menu->vtable;
-        ((void (*)(BasicMenu *))vtable[4])(menu);
-    }
-    return self;
+    Menu->activate();
 }
 
 
@@ -1582,33 +1251,24 @@ TextMenuWrapper *__15TextMenuWrapperPCPcPiiPcb(
  * @param self  Implicit object pointer.
  * @param flag  GCC 2.x in-charge flag (bit 0 → also invoke `operator delete` on `this`).
  */
-void Menu_TextMenuWrapper_dtor(TextMenuWrapper *self, int flag) {
+TextMenuWrapper::~TextMenuWrapper() {
     int i = 0;
-    self->vtable = (int *)__vt_15TextMenuWrapper;
-    int count = self->NumItems;
+    int count = NumItems;
     if (count > 0) {
-        VMenuItem **ptr = self->ItemList;
+        VMenuItem **ptr = ItemList;
         do {
             VMenuItem *item = *ptr;
             if (item != 0) {
-                int *vt = item->vtable;
-                ((void (*)(VMenuItem *, int))vt[2])(item, 3);
-                count = self->NumItems;
+                delete item;
+                count = NumItems;
             }
             i++;
             ptr++;
         } while (i < count);
     }
-    BasicMenu *menu = self->Menu;
+    BasicMenu *menu = Menu;
     if (menu != 0) {
-        int *vt = menu->vtable;
-        ((void (*)(BasicMenu *, int))vt[2])(menu, 3);
-    }
-    FontFromStorage(&self->Props.TheFont)->~Font();
-    self->Props.vtable = &Menu_BaseVTable;
-    self->vtable = &Menu_BaseVTable;
-    if (flag & 1) {
-        ::CClass::operator delete(self);
+        delete menu;
     }
 }
 
@@ -1626,18 +1286,8 @@ void TextMenuWrapper::HandleInput(void) {
     if ((unsigned int)(press - 2) < 2) {
         SFX_PlayX(0x90, 0x2000, 0);
     }
-    {
-        BasicMenu *menu = Menu;
-        int *vt = menu->vtable;
-        int fn = vt[7];
-        ((void (*)(BasicMenu *, int))fn)(menu, press);
-    }
-    {
-        BasicMenu *menu = Menu;
-        int *vt = menu->vtable;
-        int fn = vt[6];
-        ((void (*)(BasicMenu *))fn)(menu);
-    }
+    Menu->processPress(press);
+    Menu->update();
 }
 
 
@@ -1652,29 +1302,21 @@ void TextMenuWrapper::HandleInput(void) {
  */
 int TextMenuWrapper::TestComplete(void) {
     SControl *pad = &Pad[0];
-    VMenuItem **ptr;
     VMenuItem *item;
     int i;
-    register int count asm("$6");
     if (pad->Start.Triggered != 0) goto do_work;
     if (pad->X.Triggered == 0) goto check_pad1;
 do_work:
     i = 0;
     pad->Start.Triggered = 0;
     pad->X.Triggered = 0;
-    {
-        register int tmp_count asm("$3") = NumItems;
-        HighlightedId = -1;
-        if (tmp_count <= 0) goto sfx_91;
-        count = tmp_count;
-    }
-    ptr = ItemList;
+    HighlightedId = -1;
+    if (NumItems <= 0) goto sfx_91;
     do {
-        item = *ptr;
+        item = ItemList[i];
         if (item->Highlighted != 0) goto loop_break;
         i++;
-        ptr++;
-    } while (i < count);
+    } while (i < NumItems);
 sfx_91:
     SFX_PlayX(0x91, 0x2000, 0);
     return 1;
@@ -1693,104 +1335,4 @@ check_pad1:
     }
 ret_zero:
     return 0;
-}
-
-
-// === MENU.H-emitted function implementations (address order) ===
-
-/** Default completion hook for a menu wrapper. */
-int MenuWrapper::TestComplete() {
-}
-
-
-/** Default input hook for a menu wrapper. */
-void MenuWrapper::HandleInput() {
-}
-
-
-/** Restore MenuWrapper's base dispatch table and optionally free it. */
-MenuWrapper::~MenuWrapper() {
-    this->vtable = &Menu_BaseVTable;
-}
-
-
-/** Destroy a title's TextMenuItem base and optionally free the title. */
-void Menu_DestroyTitleMenuItemAbi(
-    TitleMenuItem *_this, int __in_chrg) {
-    Menu_DestroyTextMenuItemAbi(_this, 0);
-    if (__in_chrg & 1) {
-        ::CClass::operator delete(_this);
-    }
-}
-
-
-/** Destroy the embedded font, restore base dispatch, and optionally free. */
-static void Menu_DestroyTextMenuPropertiesAbi(
-    TextMenuProperties *_this, int __in_chrg) {
-    FontFromStorage(&_this->TheFont)->~Font();
-    _this->vtable = &Menu_BaseVTable;
-    if (__in_chrg & 1) {
-        ::CClass::operator delete(_this);
-    }
-}
-
-
-/** Default no-op item insertion hook for BasicMenu. */
-void BasicMenu::addItem(VMenuItem *item) {
-}
-
-
-/** Default no-op press hook for BasicMenu. */
-void BasicMenu::processPress(int press) {
-}
-
-
-/** Default no-op update hook for BasicMenu. */
-void BasicMenu::update() {
-}
-
-
-/** Default no-op draw hook for BasicMenu. */
-void BasicMenu::draw() {
-}
-
-
-/** Default no-op activation hook for BasicMenu. */
-void BasicMenu::activate() {
-}
-
-
-/** Restore BasicMenu's base dispatch table and optionally free it. */
-BasicMenu::~BasicMenu() {
-    this->vtable = &Menu_BaseVTable;
-}
-
-
-/** Destroy the MenuItem base and optionally free the vertical item. */
-static void Menu_DestroyVMenuItemAbi(
-    VMenuItem *_this, int __in_chrg) {
-    MenuItem_dtor(_this, 0);
-    if (__in_chrg & 1) {
-        ::CClass::operator delete(_this);
-    }
-}
-
-
-/** Default no-op draw hook for MenuItem. */
-void MenuItem::draw() {
-}
-
-
-/** Default no-op positioning hook for MenuItem. */
-void MenuItem::setXY(int x, int y) {
-}
-
-
-// GCC emitted this private `CClass::~CClass` copy last in the owner's text,
-// so it stays at the end of the translation unit.
-static void __DOT__6CClass_800897F4(CClass *_this, int __in_chrg) {
-    _this->vtable = &Menu_BaseVTable;
-    if (__in_chrg & 1) {
-        ::CClass::operator delete(_this);
-    }
 }

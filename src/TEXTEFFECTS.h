@@ -17,6 +17,72 @@ struct myTextEffectInfo {
     short bloodRotation;
 };
 
+#ifdef TEXTEFFECT_POLYMORPHIC_LAYOUT
+/** Falling-character text animation and its shared blood sprite. */
+struct FallingTextEffect : TextEffect {
+    enum {
+        CharacterCount = 32,
+        CharacterMask = CharacterCount - 1,
+        FixedPointShift = 12
+    };
+
+    myTextEffectInfo mTextEffectInfo[CharacterCount];
+    int mOffscreenY;
+    int mCharCount;
+    int mScale;
+    int mFallingCount;
+    int mBloody;
+    int mFrameSize;
+
+    static Sprite2 *mpBloodSprite;
+
+    FallingTextEffect();
+    virtual ~FallingTextEffect();
+
+    static void FreeSprite();
+    static void InitSprite();
+
+    virtual void PostEffect(int oldX, int oldY, int screenX, int screenY);
+    void SetBloodiness(int bloody);
+    virtual void bind(Font *pFont);
+    void drawBloodyFrame(int x, int y, int width);
+    virtual void getColor(unsigned char *pR, unsigned char *pG,
+                          unsigned char *pB);
+    virtual void getScreenPos(int *pX, int *pY);
+    virtual int handleComplete();
+    virtual void init();
+    void setScale(int scale);
+    virtual void update();
+};
+
+/** Scale and color animation used for trick and bail text. */
+struct TrickTextEffect : TextEffect {
+    enum State {
+        Idle = 0,
+        Growing,
+        Settling,
+        Holding,
+        Shrinking,
+        Bailing,
+        BailComplete,
+        Complete
+    };
+
+    int mTrickState;
+    int mTrickTime;
+    int mScale;
+    int mBailStartSize;
+
+    TrickTextEffect();
+    virtual ~TrickTextEffect();
+    void Bail();
+    virtual void bind(Font *);
+    virtual void getColor(unsigned char * pR, unsigned char * pG, unsigned char * pB);
+    virtual int handleComplete();
+    virtual void init();
+    virtual void update();
+};
+#else
 /** Falling-character text animation and its shared blood sprite. */
 struct FallingTextEffect {
     enum {
@@ -84,14 +150,7 @@ struct TrickTextEffect {
     void update();
 };
 
-/**
- * Typed entry points for owners that must spell GCC 2.x lifecycle flags.
- * Ordinary objects should use normal construction and destructor syntax.
- */
-extern "C" FallingTextEffect *FallingTextEffect_ConstructAbi(
-    FallingTextEffect *effect) asm("__17FallingTextEffect");
-extern "C" TrickTextEffect *TrickTextEffect_ConstructAbi(
-    TrickTextEffect *effect) asm("__15TrickTextEffect");
+#endif // TEXTEFFECT_POLYMORPHIC_LAYOUT
 
 typedef char TextEffect_size_must_be_8[
     (sizeof(TextEffect) == 8) ? 1 : -1];
@@ -101,19 +160,3 @@ typedef char FallingTextEffect_size_must_be_288[
     (sizeof(FallingTextEffect) == 288) ? 1 : -1];
 
 #endif // TEXTEFFECTS_INC_H
-
-#ifdef TEXTEFFECTS_DECLARE_BASE_DESTRUCTOR_ABI
-#if !defined(TEXTEFFECTS_BASE_LIFECYCLE_TYPE) || \
-    !defined(TEXTEFFECTS_BASE_DESTRUCTOR_NAME)
-#error "Select the TextEffect base destructor receiver and source name"
-#endif
-
-/** Destroy the embedded TextEffect base with an explicit in-charge flag. */
-void TEXTEFFECTS_BASE_DESTRUCTOR_NAME(
-    TEXTEFFECTS_BASE_LIFECYCLE_TYPE *effect, int inCharge)
-    asm("_._10TextEffect");
-
-#undef TEXTEFFECTS_BASE_DESTRUCTOR_NAME
-#undef TEXTEFFECTS_BASE_LIFECYCLE_TYPE
-#undef TEXTEFFECTS_DECLARE_BASE_DESTRUCTOR_ABI
-#endif

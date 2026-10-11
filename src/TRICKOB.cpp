@@ -1,36 +1,19 @@
-// Trick-object triggers, completion state, and environment-item tint updates.
-// Target text range: 0x80050414 - 0x8005086C.
+// TRICKOB.cpp -- Trick-object triggers, completion state, and environment-item tint updates.
+// Original: TRICKOB.CPP
+// Functions: 7
+// Address range: 0x80050414 - 0x8005086C
+//
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
+#define TRICKOB_POLYMORPHIC_LAYOUT
 #define TRICKOB_OWNER_DECLARATIONS
 #include "TRICKOB.h"
 #undef TRICKOB_OWNER_DECLARATIONS
 #include "MAIN.h"
 #include "UTILS.h"
 
-/** Virtual prefix shared by active trick-object instances. */
-struct TrickObVtable
-{
-    void (*reserved0)(void *object);
-    void (*reserved1)(void *object);
-    void (*destroy)(CTrickOb *object, int flags);
-};
-
-/** Dispatch destruction through the named CTrickOb vtable slot. */
-static inline void TrickOb_Destroy(CTrickOb *object)
-{
-    TrickObVtable *vtable =
-        reinterpret_cast<TrickObVtable *>(object->CClass.vtable);
-    vtable->destroy(object, 3);
-}
-
 typedef char trickob_owner_size_must_be_24[
     (sizeof(CTrickOb) == 24) ? 1 : -1];
-/** Load-bearing vtable alias used by the constructor's original store order. */
-static inline int *&TrickOb_VtableAlias(CTrickOb *object)
-{
-    return *reinterpret_cast<int **>(object);
-}
-
 #include "SPOOL.h"
 
 // === Owner-local $gp-relative globals ===
@@ -43,36 +26,6 @@ static int MapY __attribute__((section(".sdata"))) = 220;
 static int MapScale __attribute__((section(".sdata"))) = 128;
 int Missed
     __attribute__((section(".sdata"))) = 0;
-
-// GCC 2.x emits a private copy of `CClass::~CClass` beside a private base
-// vtable in every owner that derives from CClass.  `MAIN.SYM` records 25 such
-// `_._6CClass` copies and no vtable name at all, so both belong to this owner
-// and neither is an XDEF.  The legal per-address identifier keeps this private
-// target copy distinct.
-extern "C"
-{
-static void __DOT__6CClass_8005083C(CClass *self, int flags);
-}
-
-// C++ forbids taking a destructor's address, so the vtable slot goes through an
-// addressable declaration of the same symbol this owner already defines.
-void TrickOb_DestructorAbi(CTrickOb *object, int inCharge)
-    asm("_._8CTrickOb");
-
-// Both vtables are three consecutive eight-byte-aligned small-data words rather
-// than arrays, so -G8 still yields the target's `addiu $vX, $gp, off` form.
-int __vt_8CTrickOb
-    __attribute__((section(".sdata"), aligned(8))) = 0;
-static int TrickOb_VTableIndex __attribute__((section(".sdata"))) = 0;
-static void (*TrickOb_VTableDtor)(CTrickOb *, int)
-    __attribute__((section(".sdata"))) = &TrickOb_DestructorAbi;
-
-static int __vt_8CTrickOb_base
-    __attribute__((section(".sdata"), aligned(8))) = 0;
-static int TrickOb_BaseVTableIndex __attribute__((section(".sdata"))) = 0;
-static void (*TrickOb_BaseVTableDtor)(CClass *, int)
-    __attribute__((section(".sdata"))) = &__DOT__6CClass_8005083C;
-
 
 // === Function implementations (address order) ===
 
@@ -87,7 +40,7 @@ void TrickOb_Init(void)
 {
     while (TrickObList != 0)
     {
-        TrickOb_Destroy(TrickObList);
+        delete TrickObList;
     }
 }
 
@@ -109,7 +62,7 @@ void TrickOb_DeleteAll(void)
             CTrickOb *pNext = pTrickOb->mpNext;
             if (pTrickOb != 0)
             {
-                TrickOb_Destroy(pTrickOb);
+                delete pTrickOb;
             }
             pTrickOb = pNext;
         } while (pTrickOb != 0);
@@ -130,14 +83,10 @@ void TrickOb_DeleteAll(void)
 CTrickOb::CTrickOb(unsigned short Node, unsigned short DelayLevel)
 {
     CTrickOb *oldHead = TrickObList;
-    // GCC 2.91 hoists the Node mask in each unpinned form, reordering eight
-    // target instructions, so this inherited register variable remains.
-    register int *vtable asm("$2") = &__vt_8CTrickOb;
     TrickObList = this;
     mState = 0;
     short **offsets = OffsetList;
     mNode = Node;
-    TrickOb_VtableAlias(this) = vtable;
     mpItem = 0;
     mpNext = oldHead;
     short *pNode = offsets[Node];
@@ -161,7 +110,6 @@ CTrickOb::~CTrickOb()
 {
     CTrickOb *pLast = 0;
     CTrickOb *pTrickOb = TrickObList;
-    CClass.vtable = &__vt_8CTrickOb;
     if (pTrickOb == this)
         goto found;
     do
@@ -178,7 +126,6 @@ found:
     {
         TrickObList = mpNext;
     }
-    CClass.vtable = &__vt_8CTrickOb_base;
 }
 
 /**
@@ -334,19 +281,4 @@ void TrickOb_Update(void)
         pTrickOb = pTrickOb->mpNext;
     } while (pTrickOb != 0);
 
-}
-
-/**
- * Destroy the owner-local CClass base and optionally release its storage.
- *
- * GCC emitted this private copy last in the owner's text, so it remains at
- * the end of the translation unit.
- */
-static void __DOT__6CClass_8005083C(CClass *self, int flags)
-{
-    self->vtable = &__vt_8CTrickOb_base;
-    if (flags & 1)
-    {
-        CClass::operator delete(self);
-    }
 }

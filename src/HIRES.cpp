@@ -3,7 +3,7 @@
 // Functions: 5 reconstructed entries
 // Address range: 0x800632BC - 0x800633B8
 //
-// Compiled with cc1plus (GCC 2.91.66-psx). Compiler auto-mangles symbol names.
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 #include "HIRES.h"
 #include <STDDEF.H>

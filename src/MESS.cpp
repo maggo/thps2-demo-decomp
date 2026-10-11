@@ -3,8 +3,7 @@
 // Functions: 30 reconstructed
 // Address range: 0x8002D6A8 - 0x8002F4E0
 //
-// Hand-maintained clean-room reconstruction compiled with cc1plus
-// (GCC 2.91.66-psx), which emits the original C++ symbol spellings.
+// Compiled with egcs 1.1.1 (GCC 2.91.60). Compiler auto-mangles symbol names.
 
 // MESS.cpp is the sole consumer of these legacy font and runtime records.
 // Keep the recovered layouts with their owner instead of a generated TU header.
@@ -142,7 +141,7 @@ void Mess_SetNewFont(unsigned char which);
     }
 
 /** Standard zoom-in, hold, and zoom-out message animation. */
-SMessageProg Messprog_Zoom[5] __attribute__((section(".data"))) = {
+SMessageProg Messprog_Zoom[5] = {
     MESSAGE_PROGRAM(5, 0, 0x180, 0, 1),
     MESSAGE_PROGRAM(1, 0x180, 0x180, 0, 1),
     MESSAGE_PROGRAM(4, 0x180, 0x100, 0, 1),
@@ -151,7 +150,7 @@ SMessageProg Messprog_Zoom[5] __attribute__((section(".data"))) = {
 };
 
 /** Goal/tape notification variant with color cycling enabled. */
-SMessageProg Messprog_Goal[5] __attribute__((section(".data"))) = {
+SMessageProg Messprog_Goal[5] = {
     MESSAGE_PROGRAM(5, 0, 0x180, 1, 1),
     MESSAGE_PROGRAM(1, 0x180, 0x180, 1, 1),
     MESSAGE_PROGRAM(4, 0x180, 0x100, 1, 1),
@@ -160,8 +159,7 @@ SMessageProg Messprog_Goal[5] __attribute__((section(".data"))) = {
 };
 
 /** Runtime font descriptors populated by Mess_LoadFont. */
-FontInfo Font_table[10]
-    __attribute__((section(".data"))) = {{0}};
+FontInfo Font_table[10] = {{0}};
 
 #undef MESSAGE_PROGRAM
 
@@ -656,9 +654,7 @@ void Mess_Display(void)
                 Mess_SetScale(scaleVal & 0xFFFF);
 
                 int t = pMess->T;
-                // Clean expression variants either swapped the red/green
-                // temporaries or changed load order, so retain this one
-                // target-proven assignment.
+                // FIXME(match): register pin — rDiff in $a1 forces EndR to load before StartR and avoids the rDiff/gDiff register swap (unpinned: single-expression r gives 1 insn load-order diff, split rDiff gives 13); tried: nested expression, r1/r0 temps, copy-then-accumulate, r/g/b computed late.
                 register int rDiff asm("$5") =
                     (pProg->EndR - pProg->StartR) * t / Dur;
                 int r = (pProg->StartR + rDiff) & 0xFF;
@@ -987,11 +983,10 @@ int GetCharIndex(char ch)
     case '+':
         return 0x2B;
     case '\'':
-    {
         if (Font_table[Current_font].mNum_chars >= 0x2D)
             return 0x2C;
+    case '?':
         return 0x24;
-    }
     case '#':
         return 0x2D;
     case '"':
@@ -1000,7 +995,6 @@ int GetCharIndex(char ch)
         return 0x2F;
     case '@':
         return 0x30;
-    case '?':
     default:
         return 0x24;
     }

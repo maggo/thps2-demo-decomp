@@ -1,6 +1,8 @@
 // Shared declaration for Gouraud-colour polyline effects.
 #ifndef CGPOLYLINE_INC_H
 #define CGPOLYLINE_INC_H
+// CBIT_VIRTUAL is already defined by whichever TU-wide header came first
+// (CCLASS_POLY.h in BIT2/SMOKE, CNONRENDEREDBIT.h/CSPECIALDISPLAY.h/CPOLYLINE.h elsewhere).
 
 /** Gouraud-colour line segments carried by the transient-bit system. */
 struct CGPolyLine : CBit {
@@ -16,7 +18,7 @@ struct CGPolyLine : CBit {
     /** Allocate and initialize a Gouraud line-segment array. */
     CGPolyLine(int numSegments);
     /** Release the line-segment array and detach this effect. */
-    ~CGPolyLine();
+    CBIT_VIRTUAL ~CGPolyLine();
     /** Enable semitransparency on all segments and the starting colour. */
     void SetSemiTransparent();
     /** Release polyline storage through the CBit allocator. */
