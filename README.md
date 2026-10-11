@@ -1,43 +1,50 @@
 # THPS2 Demo Decompilation
 
-Source-only work-in-progress reconstruction of the PlayStation THPS2 demo.
-
-This minimal public snapshot contains the recovered C/C++ under `src/` and the
-scripts needed to compile-check every translation unit. It is an unofficial
-research project and is not affiliated with or endorsed by Tony Hawk,
-Neversoft, Activision, Sony, or any other rights holder.
+Matching C/C++ reconstruction of the PlayStation THPS2 demo. This is an
+unofficial research project, unaffiliated with the original rights holders.
 
 ## Status
 
-**1,635 of 1,646 functions reproduce the original object code exactly
-(99.33%).** "Exactly" means every instruction agrees, relocations included —
-not merely equivalent behaviour.
+**All 1,646 tracked functions match the original instructions after relocation
+normalization (100%).** The committed progress report covers every function
+range recorded in `MAIN.SYM`, including distinct copies of inline functions.
 
-The eleven remaining are `StartGrind`, `DoInAirPhysics` and
-`DoWallRidePhysics` (PHYSICS), `Front_Display` (FRONT), `Redbook_XAPlay`
-(REDBOOK), `Bit_Display` (BIT), `CreateZonePacket` (LEVELGEN), `setData`
-(IMAGE), `ReactToCollision` (CAMERA), `M3dColij_LineToThisItemCached`
-(M3DCOLIJ) and `Wireframe_ProcessPolys` (M3D).
+A fresh local full executable rebuild also reproduces all **882,688 bytes** of
+`SLUS_900.86` and places **2,329/2,329 global symbols** at the original addresses.
+That rebuild retains original handwritten assembly, SDK objects and 76,154 bytes
+of original blobs. It does not mean all SDK and assembly code has been
+reconstructed as C/C++.
 
-The measurement itself is not reproducible from this repository: verifying it
-requires the target disassembly and debug symbols, which are target-derived and
-deliberately excluded. What is published is the source those results were
-produced from.
+Known matching workarounds remain. The sources still contain 23 register pins
+(`register T x asm("$n")`), 25 empty `asm("")` scheduling constraints and 2
+asm-name aliases, in 28 of the 1,646 functions. Each is marked with a
+`FIXME(match)` comment that says what it forces and which natural rewrites were
+tried; `grep -rn 'FIXME(match)' src` lists them. No hand-written instruction
+sequences remain outside the Sony-style GTE macros. Cleanup changes preserve
+both the tracked function matches and the executable rebuild.
+All 88 bytes of constructor/destructor registration tables are now generated
+from source. `verify.py` translates the stock compiler's Sony lifecycle records
+into the relocated ELF table words that GNU as needs.
+The native/WebAssembly port is a separate effort.
 
 ### Progress reporting
 
-`build/report.json` is a [decomp.dev](https://decomp.dev) progress report in
-objdiff's report schema, uploaded by `.github/workflows/progress.yml` as the
-`SLUS_900.86_report` artifact.
+`build/report.json` uses objdiff's progress-report schema. The
+`.github/workflows/progress.yml` workflow checks its totals and publishes the
+`SLUS_900.86_report` artifact. CI validates the committed report; it cannot
+repeat binary matching without the user-supplied executable, symbols and SDK.
 
-It is committed rather than built in CI, because this repository deliberately
-cannot build: producing either the target or the base objects needs the
-original executable, the Sony PSY-Q SDK headers and ASPSX/PSYLINK, none of
-which is redistributable. The report is generated from the project's canonical
-measurement gate — which refuses to publish against stale or incomplete
-artifacts — and is refreshed in the same commit as the source it describes. CI
-validates its schema, internal consistency and unit totals before publishing
-it.
+Refresh the report only from a complete successful canonical verification:
+
+```bash
+python3 verify.py --exe original/SLUS_900.86 --sym original/MAIN.SYM \
+  --report build/report.json
+```
+
+The verifier rebuilds every translation unit, requires the pinned compiler,
+checks every function, and derives unique addresses and sizes from `MAIN.SYM`.
+A build failure, missing function or mismatch returns a failing exit status;
+partial and unchecked-compiler runs cannot overwrite the report.
 
 ## Not included
 
@@ -52,46 +59,60 @@ This repository intentionally excludes:
 
 Use only external inputs that you are legally authorized to possess.
 
-## Compile check
+## Build and verify
 
-The supported environment is Linux or WSL with Bash, Python 3, GNU `cpp`,
-`wget`, and `tar`. Supply your licensed Psy-Q 4.6 (DTL-S2360) SDK headers at:
+Use Linux (or WSL) with Bash, Python 3, `pyelftools`, Git, GNU `cpp`, MIPS GNU
+binutils and Docker. The compiler runs as a Linux i386 executable; use an x86
+Linux environment or suitable emulation.
 
-```text
-toolchain/psyq-4.6-sdk/INCLUDE/
-```
-
-Then run:
+Supply your Psy-Q 4.6 headers at `toolchain/psyq-4.6-sdk/INCLUDE/`, and put your
+own executable and debug symbols in `original/SLUS_900.86` and
+`original/MAIN.SYM`. These inputs are ignored by Git.
 
 ```bash
-bash setup_toolchain.sh
-bash test_all_tu.sh
+python3 -m pip install pyelftools
+bash setup.sh
+python3 verify.py --exe original/SLUS_900.86 --sym original/MAIN.SYM
 ```
 
-`setup_toolchain.sh` validates the user-supplied SDK headers and downloads the
-separately distributed GCC compiler. It does not download Sony software or
-game files.
+`setup.sh` validates the SDK header set, builds the pinned egcs 1.1.1 compiler,
+and installs a pinned maspsx revision plus the checked-in ASPSX compatibility
+patch. `verify.py` compiles every translation unit with the recovered
+per-translation-unit flags (`tools/tu_compiler_flags.sh`) and compares every
+function.
 
-`test_all_tu.sh` compiles every recovered translation unit as a
-source-integrity check. It does not link a game executable or perform binary
-matching; those workflows require proprietary and target-derived inputs that
-are deliberately outside this repository.
+Existing tool installations can be selected explicitly:
 
-`build.sh` is included for reference only. It drives the full assemble, link
-and match pipeline and depends on tooling and target data this snapshot
-excludes, so it will not run here.
+```bash
+python3 verify.py --exe /path/to/SLUS_900.86 --sym /path/to/MAIN.SYM \
+  --cc-dir /path/to/egcs-1.1.1 --maspsx /path/to/maspsx \
+  --include /path/to/psyq/include --out /path/to/scratch
+```
 
-### The compiler is stock, and checked
+The reported 1,646-function result was reproduced with this explicit-input
+command and the pinned compiler. Six headers in the measured local include set
+(`KERNEL.H`, `LIBCD.H`, `LIBDS.H`, `LIBGTE.H`, `LIBSPU.H`, `MCGUI.H`) differ from
+the default SDK manifest. The default SDK validation remains strict; matching
+with a manifest-identical SDK has not been verified. `--include` selects a
+user-supplied header set directly.
 
-Canonical builds use the unmodified egcs 1.1.2 `cc1` and `cc1plus` that
-`setup_toolchain.sh` downloads. `toolchain/verify_egcs_1_1_2.py` checks both
-against their stock SHA-256 identities, and `setup_toolchain.sh` and
-`test_all_tu.sh` run that check and fail closed, so a modified or unknown
-compiler is rejected rather than quietly producing different code.
+`--func Bit_Display__Fv` prints one function's instruction comparison.
+`src/SQRTTAB.inc` is generated: `python3 tools/generate_sqrttab.py --check`
+confirms it matches the documented formula.
+`--skip-cc-hash` permits diagnostic compiler experiments, clearly marks them
+noncanonical and disables report generation.
 
-Compiler patches are out of bounds for this project by policy: a patched or
-hybrid compiler is a noncanonical experiment and may not publish matcher
-artifacts or milestone counts.
+### Pinned compiler
+
+Canonical verification uses egcs **1.1.1 (GCC 2.91.60)**, built from the pinned
+GNU release using the established decompals/old-gcc PSX target recipe in
+`toolchain/egcs-1.1.1/Dockerfile`. The recipe includes the existing PSX target
+and build compatibility patches. No experimental code-generation patch is
+used to obtain matches.
+
+`toolchain/verify_egcs_1_1_1.py` checks both compiler binaries against pinned
+SHA-256 identities. Setup and canonical verification reject modified or
+unknown compiler binaries.
 
 ## Evidence and rights
 
