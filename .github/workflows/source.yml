@@ -1,0 +1,24 @@
+name: Source checks
+
+# Checks that need no disc files: the generated SqrtTable initializer, the
+# FIXME(match) marker on every matching workaround, and the workaround counts
+# stated in README.md. Binary matching is verified locally with verify.py.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Check sources
+        run: python3 tools/check_source.py

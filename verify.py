@@ -3,7 +3,7 @@
 
     python3 verify.py --exe SLUS_900.86 --sym MAIN.SYM [--include PSYQ_INCLUDE_DIR]
 
-Pipeline per TU (flags from tools/tu_compiler_flags.sh):
+Pipeline per TU (flags from tools/tu_flags.json):
     cpp -nostdinc -> egcs 1.1.1 cc1plus/cc1 -> DMPSX GTE rewrite
     -> maspsx (ASPSX 2.86) -> mips-linux-gnu-as
 
@@ -11,7 +11,7 @@ A function matches when its instructions equal the original's, ignoring the
 bits a linker would fill in (relocated fields). Function boundaries come from
 MAIN.SYM. Neither disc file is part of this repository.
 """
-import argparse, bisect, functools, os, re, struct, subprocess, sys
+import argparse, bisect, functools, json, os, re, struct, subprocess, sys
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
@@ -30,29 +30,18 @@ from verify_egcs_1_1_1 import VerificationError, verify_directory
 
 
 # ---------------------------------------------------------------- per-TU flags
-def load_tu_settings():
-    """Parse tools/tu_compiler_flags.sh -> {function: {tu: value}}, plus defaults."""
-    text = (ROOT / 'tools' / 'tu_compiler_flags.sh').read_text()
-    out = {}
-    for fn, body in re.findall(r'^(thps2_\w+)\(\) \{(.*?)^\}', text, re.S | re.M):
-        table = {}
-        for key, val in re.findall(r'^\s+(\w+|\*)\) echo "(.*?)" ;;', body, re.M):
-            table[key] = val
-        out[fn] = table
-    return out
-
-
 class Settings:
+    """Per-TU compiler settings from tools/tu_flags.json."""
     def __init__(self):
-        t = load_tu_settings()
-        self.flags, self.gp, self.cc_gp = (t['thps2_tu_compiler_flags'], t['thps2_tu_gp_size'],
-                                           t['thps2_tu_cc_gp_size'])
+        t = json.loads((ROOT / 'tools' / 'tu_flags.json').read_text())
+        self.default, self.units = t['default'], t['units']
 
     def get(self, tu):
-        flags = self.flags.get(tu, self.flags['*'])
-        gp = self.gp.get(tu, self.gp['*'])
-        cc_gp = self.cc_gp.get(tu, gp)
-        return flags, gp, cc_gp
+        unit = self.units.get(tu, {})
+        flags = unit.get('flags', self.default['flags'])
+        gp = unit.get('gp', self.default['gp'])
+        cc_gp = unit.get('cc_gp', gp)
+        return flags, str(gp), str(cc_gp)
 
 
 # ------------------------------------------------------------------- DMPSX GTE
@@ -362,7 +351,6 @@ def main():
 
 def refresh_report(path, funcs, matched):
     """Publish only a fully rebuilt, fully matching set with the template's exact coverage."""
-    import json
     from collections import Counter, defaultdict
     report = json.loads(path.read_text())
     expected = {(f['name'], f['start']) for f in funcs}

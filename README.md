@@ -78,7 +78,7 @@ python3 verify.py --exe original/SLUS_900.86 --sym original/MAIN.SYM
 `setup.sh` validates the SDK header set, builds the pinned egcs 1.1.1 compiler,
 and installs a pinned maspsx revision plus the checked-in ASPSX compatibility
 patch. `verify.py` compiles every translation unit with the recovered
-per-translation-unit flags (`tools/tu_compiler_flags.sh`) and compares every
+per-translation-unit flags (`tools/tu_flags.json`) and compares every
 function.
 
 Existing tool installations can be selected explicitly:
@@ -113,6 +113,11 @@ used to obtain matches.
 `toolchain/verify_egcs_1_1_1.py` checks both compiler binaries against pinned
 SHA-256 identities. Setup and canonical verification reject modified or
 unknown compiler binaries.
+
+## Contributing
+
+See [`CONTRIBUTING.md`](CONTRIBUTING.md) for the matching rules, source
+conventions and how to help remove the remaining `FIXME(match)` workarounds.
 
 ## Evidence and rights
 
