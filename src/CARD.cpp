@@ -682,7 +682,7 @@ int Card_Load(EFileType FileType, unsigned long *pBuf_, unsigned long *pBuf2_)
     }
 
 load_failed:
-    // FIXME(match): asm barrier — stops jump2 cross-jumping the shared `return 1` block forward; target keeps it right after the SyncToGoodState test; tried: direct return, structured forms (see results/fx_card.md).
+    // FIXME(match): asm barrier — stops jump2 cross-jumping the shared `return 1` block forward; target keeps it right after the SyncToGoodState test; tried: direct return, structured if/else and early-return forms.
     asm volatile("");
     return 1;
 

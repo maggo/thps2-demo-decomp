@@ -30,7 +30,7 @@ scan:
     return 0;
 found:
     {
-        // FIXME(match): register pin — pH must be $a3 (MAIN.SYM) but unpinned it swaps with the character temp ($a2/$a3, score 6); tried: declaration order, char temps declared up front, return-pointer local, for/while forms, cperm.
+        // FIXME(match): register pin — pH must be $a3 (MAIN.SYM) but unpinned it swaps with the character temp ($a2/$a3, score 6); tried: declaration order, char temps declared up front, return-pointer local, for/while forms, decomp-permuter.
         register char *pH asm("$7") = pHay;
         char *pN = pNeedle;
     inner:

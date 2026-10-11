@@ -4,8 +4,7 @@
 // functions in MAIN.SYM's debug symbol table). Houses the universally-
 // used base types: CClass (vtable holder), the distinct game-space vector
 // classes, and the plain scene-value records shared by level/gameplay code.
-//
-// Phase F1.3 of the source-tree split. See docs/f1_split_plan.md.
+
 
 #if !defined(GLOBALS_SCENE_VALUES_ONLY)
 #ifndef SRC_GLOBALS_H

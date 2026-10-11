@@ -420,9 +420,8 @@ struct EditorRuntimeCameraView
 typedef char editor_runtime_camera_mode_offset_must_be_0x558
     [(sizeof(EditorRuntimeCameraView) == 0x55c) ? 1 : -1];
 
-// Cursor — level-editor cursor (originally a real C++ class, retired from
-// `extern "C"` mangled-name shims in Phase F1.6).  Layout matches
-// the direct `MAIN.SYM` layout cache's `struct Cursor`.
+// Cursor — the level-editor cursor class. Layout matches MAIN.SYM's
+// `struct Cursor`.
 struct Cursor : CClass
 {
     struct CursorModel Models[4];
@@ -508,7 +507,7 @@ extern const char s_NotAvailableInDemo[];
 #include "DB.h"
 
 // === Extern "C" forward declarations ===
-// Cursor methods are declared as members on `struct Cursor` above (Phase F1.6).
+// Cursor methods are declared as members of `struct Cursor` above.
 #include "PDOUBLEBUFFER.h"
 #define MENU_ABI_DECLARATIONS_ONLY
 #define MENU_DECLARE_TEXT_WRAPPER_CONSTRUCTOR_ABI

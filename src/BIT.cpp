@@ -3233,7 +3233,7 @@ void Bit_Display(void)
         unsigned int *ptr;
         unsigned char Flipped;
         int OffX;
-        // FIXME(match): register pin — OffY in $t4 steers the whole Bit_Display allocation (unpinned: score 738); tried: unpin all five pins+barriers together (score 46), statement-order variants, fable_bitdisplay1-6.
+        // FIXME(match): register pin — OffY in $t4 steers the whole Bit_Display allocation (unpinned: score 738); tried: unpin all five pins+barriers together (score 46), statement-order variants, several full rewrites of the projection block.
         register int OffY asm("$12");
         unsigned int Width;
         unsigned int Height;

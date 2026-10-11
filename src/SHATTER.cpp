@@ -99,7 +99,7 @@ typedef char Shatter_smoke_trail_size_must_be_100[(sizeof(CSmokeTrail) == 100) ?
 typedef char Shatter_bit_size_must_be_72[(sizeof(CBit) == 72) ? 1 : -1];
 typedef char Shatter_chunk_bit_size_must_be_192[(sizeof(CChunkBit) == 192) ? 1 : -1];
 
-// CShatterBit — Phase F1.6: retired from `extern "C"` mangled-name shims.
+// CShatterBit — a shatter fragment: a CChunkBit with angular velocity and a smoke trail.
 struct CShatterBit : public CChunkBit
 {
     struct CSVector mAngVel;
