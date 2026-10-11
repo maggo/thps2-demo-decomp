@@ -61,9 +61,10 @@ Use only external inputs that you are legally authorized to possess.
 
 ## Build and verify
 
-Use Linux (or WSL) with Bash, Python 3, `pyelftools`, Git, GNU `cpp`, MIPS GNU
-binutils and Docker. The compiler runs as a Linux i386 executable; use an x86
-Linux environment or suitable emulation.
+Use Linux (or WSL) with Bash, Python 3, `pyelftools`, Git, GNU `cpp` and MIPS
+GNU binutils, plus Docker while old-gcc has no release of the compiler yet. The
+compiler runs as a Linux i386 executable; use an x86 Linux environment or
+suitable emulation.
 
 Supply your Psy-Q 4.6 headers at `toolchain/psyq-4.6-sdk/INCLUDE/`, and put your
 own executable and debug symbols in `original/SLUS_900.86` and
@@ -75,7 +76,7 @@ bash setup.sh
 python3 verify.py --exe original/SLUS_900.86 --sym original/MAIN.SYM
 ```
 
-`setup.sh` validates the SDK header set, builds the pinned egcs 1.1.1 compiler,
+`setup.sh` validates the SDK header set, installs the pinned egcs 1.1.1 compiler,
 and installs a pinned maspsx revision plus the checked-in ASPSX compatibility
 patch. `verify.py` compiles every translation unit with the recovered
 per-translation-unit flags (`tools/tu_flags.json`) and compares every
@@ -104,11 +105,12 @@ noncanonical and disables report generation.
 
 ### Pinned compiler
 
-Canonical verification uses egcs **1.1.1 (GCC 2.91.60)**, built from the pinned
-GNU release using the established decompals/old-gcc PSX target recipe in
-`toolchain/egcs-1.1.1/Dockerfile`. The recipe includes the existing PSX target
-and build compatibility patches. No experimental code-generation patch is
-used to obtain matches.
+Canonical verification uses egcs **1.1.1 (GCC 2.91.60)** from
+[decompals/old-gcc](https://github.com/decompals/old-gcc) (`gcc-2.91.60-psx`,
+the stock GNU release with old-gcc's PSX target and build patches; no
+code-generation patches). `tools/get_compiler.sh` downloads old-gcc's release
+archive, or builds old-gcc's recipe with Docker until that compiler is
+released ([decompals/old-gcc#37](https://github.com/decompals/old-gcc/pull/37)).
 
 `toolchain/verify_egcs_1_1_1.py` checks both compiler binaries against pinned
 SHA-256 identities. Setup and canonical verification reject modified or

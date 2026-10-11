@@ -2,21 +2,9 @@
 original/
 out/
 
-# The toolchain is user-supplied or built locally, except for what this
-# repository authors: verify_egcs_1_1_1.py (checks the built compiler against its
-# stock SHA-256 identities) and the egcs-1.1.1 build recipe (Dockerfile plus the
-# unmodified decompals/old-gcc PSX patches and smoke tests it applies).
+# The toolchain is downloaded or built locally; only the compiler verifier is ours.
 toolchain/*
 !toolchain/verify_egcs_1_1_1.py
-!toolchain/egcs-1.1.1/
-toolchain/egcs-1.1.1/*
-!toolchain/egcs-1.1.1/Dockerfile
-!toolchain/egcs-1.1.1/patches/
-toolchain/egcs-1.1.1/patches/*
-!toolchain/egcs-1.1.1/patches/*.patch
-!toolchain/egcs-1.1.1/tests/
-toolchain/egcs-1.1.1/tests/*
-!toolchain/egcs-1.1.1/tests/*.c
 
 # Archives and binary build products
 .recovery/

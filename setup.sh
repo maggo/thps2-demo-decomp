@@ -1,6 +1,6 @@
 #!/bin/bash
 # One-time setup for verify.py: checks host tools, validates your Psy-Q 4.6 headers,
-# builds the pinned egcs 1.1.1 (GCC 2.91.60) compiler in Docker, and installs maspsx
+# installs the pinned egcs 1.1.1 (GCC 2.91.60) compiler from decompals/old-gcc, and installs maspsx
 # at a pinned commit plus tools/maspsx.patch. Safe to re-run.
 set -euo pipefail
 
@@ -13,7 +13,6 @@ MASPSX_PATCH="$ROOT/tools/maspsx.patch"
 PSYQ_SDK_DIR="$TOOLCHAIN_DIR/psyq-4.6-sdk"
 PSYQ_SDK_HEADER_HELPER="$ROOT/tools/psyq_sdk_headers.py"
 EGCS_COMPILER_VERIFIER="$TOOLCHAIN_DIR/verify_egcs_1_1_1.py"
-EGCS_BUILD_DIR="$TOOLCHAIN_DIR/egcs-1.1.1"
 
 fail() { echo "setup: $*" >&2; exit 1; }
 
@@ -32,22 +31,14 @@ echo "[2/4] Validating Psy-Q 4.6 SDK headers..."
     || fail "put the unmodified Psy-Q 4.6 (DTL-S2360) SDK at $PSYQ_SDK_DIR (INCLUDE/ inside it)"
 python3 "$PSYQ_SDK_HEADER_HELPER" --prepare
 
-# 3. Compiler: stock egcs-1.1.1 source (SHA-256 pinned in the Dockerfile), decompals/old-gcc
-# PSX recipe, built as linux/amd64 (i386) binaries. Installed only if it matches the pinned
-# hashes in verify_egcs_1_1_1.py, so a partial or modified install is replaced, never used.
-echo "[3/4] Building GCC 2.91.60-psx (egcs 1.1.1)..."
+# 3. Compiler: egcs 1.1.1 (GCC 2.91.60-psx) from decompals/old-gcc, either its release
+# archive or a local Docker build of its recipe; installed only if it matches the hashes
+# pinned in toolchain/verify_egcs_1_1_1.py, so a partial or modified install is replaced.
+echo "[3/4] Installing GCC 2.91.60-psx (egcs 1.1.1)..."
 if python3 "$EGCS_COMPILER_VERIFIER" --check "$COMPILER_DIR" >/dev/null 2>&1; then
-    echo "  Already built."
+    echo "  Already installed."
 else
-    command -v docker >/dev/null 2>&1 || fail "install Docker to build the pinned egcs 1.1.1 compiler"
-    STAGE="$(mktemp -d "$TOOLCHAIN_DIR/.gcc-2.91.60-psx.XXXXXXXX")"
-    trap 'rm -rf -- "$STAGE"' EXIT
-    docker build --platform linux/amd64 --output "type=local,dest=$STAGE/compiler" "$EGCS_BUILD_DIR"
-    chmod +x "$STAGE/compiler"/*
-    python3 "$EGCS_COMPILER_VERIFIER" --check "$STAGE/compiler" >/dev/null
-    rm -rf -- "$COMPILER_DIR"
-    mv "$STAGE/compiler" "$COMPILER_DIR"
-    echo "  Installed: cc1, cc1plus, cpp, gcc, g++"
+    bash "$ROOT/tools/get_compiler.sh" "$COMPILER_DIR"
 fi
 python3 "$EGCS_COMPILER_VERIFIER" --check "$COMPILER_DIR"
 
