@@ -3,7 +3,8 @@
 
 - src/SQRTTAB.inc is what tools/generate_sqrttab.py produces;
 - every matching workaround (register pin, empty asm barrier, asm-name alias)
-  carries a FIXME(match) comment on its line or just above it;
+  carries a FIXME(match) comment on its line or just above it, and every such
+  comment still has a workaround below it;
 - the counts stated in README.md equal the counts in the source.
 
     python3 tools/check_source.py
@@ -22,7 +23,7 @@ MARKER_WINDOW = 6   # lines above a workaround that may hold its FIXME(match)
 
 def workarounds():
     counts = {'pins': 0, 'barriers': 0, 'aliases': 0}
-    unmarked = []
+    unmarked, orphans = [], []
     for path in sorted((ROOT / 'src').glob('*.*')):
         lines = path.read_text(errors='ignore').split('\n')
         for i, line in enumerate(lines):
@@ -32,7 +33,10 @@ def workarounds():
                 counts[k] += len({'pins': PIN, 'barriers': BARRIER, 'aliases': ALIAS}[k].findall(line))
             if kinds and not any('FIXME(match)' in x for x in lines[max(0, i - MARKER_WINDOW):i + 1]):
                 unmarked.append(f'src/{path.name}:{i + 1}')
-    return counts, unmarked
+            if 'FIXME(match)' in line and not any(rx.search(x) for x in lines[i:i + MARKER_WINDOW + 1]
+                                                  for rx in (PIN, BARRIER, ALIAS)):
+                orphans.append(f'src/{path.name}:{i + 1}')
+    return counts, unmarked, orphans
 
 
 def readme_counts():
@@ -48,9 +52,11 @@ def main():
                        capture_output=True, text=True)
     if r.returncode:
         failures.append(r.stderr.strip() or r.stdout.strip())
-    counts, unmarked = workarounds()
+    counts, unmarked, orphans = workarounds()
     if unmarked:
         failures.append('workarounds without a FIXME(match) comment: ' + ', '.join(unmarked))
+    if orphans:
+        failures.append('FIXME(match) comments without a workaround below them: ' + ', '.join(orphans))
     stated = readme_counts()
     if stated != counts:
         failures.append(f'README.md states {stated}, source has {counts}')
