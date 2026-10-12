@@ -623,33 +623,18 @@ void Mess_Display(void)
             {
                 TextJustification = pProg->Justify;
                 unsigned short Dur = pProg->Duration;
-                int scaleEnd = pProg->EndScale;
-                int scaleStart = pProg->StartScale;
-                int timer = pMess->T;
-                int scaleVal = scaleStart + (scaleEnd - scaleStart) * timer / Dur;
-                Scale = scaleVal;
-                Mess_SetScale(scaleVal & 0xFFFF);
+                Scale = pProg->StartScale + (pProg->EndScale - pProg->StartScale) * pMess->T / Dur;
+                Mess_SetScale(Scale);
 
-                int t = pMess->T;
-                // FIXME(match): register pin — rDiff in $a1 forces EndR to load before StartR and avoids the rDiff/gDiff register swap (unpinned: single-expression r gives 1 insn load-order diff, split rDiff gives 13); tried: nested expression, r1/r0 temps, copy-then-accumulate, r/g/b computed late.
-                register int rDiff asm("$5") = (pProg->EndR - pProg->StartR) * t / Dur;
-                int r = (pProg->StartR + rDiff) & 0xFF;
+                unsigned char r = pProg->StartR + (pProg->EndR - pProg->StartR) * pMess->T / Dur;
+                unsigned char g = pProg->StartG + (pProg->EndG - pProg->StartG) * pMess->T / Dur;
+                unsigned char b = pProg->StartB + (pProg->EndB - pProg->StartB) * pMess->T / Dur;
+                FlagsBGR = (b << 16) | (g << 8) | r;
 
-                int g1 = pProg->EndG;
-                int g0 = pProg->StartG;
-                int gDiff = (g1 - g0) * t / Dur;
-
-                int b0 = pProg->StartB;
-                int b1 = pProg->EndB;
-                int bDiff = (b1 - b0) * t / Dur;
-
-                int g = (g0 + gDiff) & 0xFF;
-                int b = (b0 + bDiff) & 0xFF;
-                int bgr = (b << 16) | (g << 8) | r;
-                FlagsBGR = bgr;
-
-                int semi = pProg->Semitrans;
-                FlagsBGR = bgr | (semi ? 0x2E000000 : 0x2C000000);
+                if (pProg->Semitrans)
+                    FlagsBGR |= 0x2E000000;
+                else
+                    FlagsBGR |= 0x2C000000;
 
                 if (pProg->ColorCycle)
                 {

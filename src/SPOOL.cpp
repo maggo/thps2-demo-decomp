@@ -769,8 +769,7 @@ void Spool_RemoveUnusedTextures(void)
 
 void ProcessNewPSX(int region)
 {
-    // FIXME(match): register pin (pPSX $s3, pPacket $s0) — without both, NumItems lands in $a0 not $v1 and the NumItems*9*4 temps in $v1 not $v0 (score 6); tried: permuter best_2 decl/statement order (2, but loses a nop slot), pPSX/NumItems order, NumItems type/decl order.
-    register u32 *pPSX asm("$19");
+    u32 *pPSX;
     SModel **ppModels;
     u32 NumModels;
     int NumItems;
@@ -780,8 +779,7 @@ void ProcessNewPSX(int region)
     u32 *pPaletteInfo;
     u32 Num16CPalettes;
     u32 Num256CPalettes;
-    // FIXME(match): register pin — pPacket $s0, paired with the pPSX pin above.
-    register u32 *pPacket asm("$16");
+    u32 *pPacket;
     int AnimPacketFound;
     int PacketType;
 
@@ -791,7 +789,7 @@ void ProcessNewPSX(int region)
         NumItems = PSXRegion[region].pPSX[2];
         pPSX = PSXRegion[region].pPSX;
         ppModels = (SModel **)(NumItems * 9 * 4 + (int)pPSX + 16);
-        NumModels = (u32) * (SModel **)((char *)ppModels - 4);
+        NumModels = (u32)ppModels[-1];
         pCurrentTexWibPacket = 0;
         if (NumModels != 0)
         {

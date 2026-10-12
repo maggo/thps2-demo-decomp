@@ -224,16 +224,12 @@ Font::Font(unsigned char *buf)
     crap = static_cast<unsigned char *>(Mem_New(crap_size, 1, 1));
     {
         int i = 0;
-        if (crap_size > 0)
+        int moreBytes = (crap_size > 0);
+        while (moreBytes)
         {
-            // FIXME(match): register pin — moreBytes in $v0 shares the address/loop-condition reg so the byte store is not sunk into the delay slot and i lands in $v1 (unpinned: i in $a0, 9 insns off); tried: do/while, while, for, i++ inside index, fill-byte local, unpinned moreBytes.
-            register int moreBytes asm("$2");
-            do
-            {
-                crap[i] = 0x12;
-                i++;
-                moreBytes = (i < crap_size);
-            } while (moreBytes);
+            crap[i] = 0x12;
+            i++;
+            moreBytes = (i < crap_size);
         }
     }
 
