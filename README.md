@@ -15,7 +15,7 @@ That rebuild retains original handwritten assembly, SDK objects and 76,154 bytes
 of original blobs. It does not mean all SDK and assembly code has been
 reconstructed as C/C++.
 
-Known matching workarounds remain. The sources still contain 18 register pins
+Known matching workarounds remain. The sources still contain 17 register pins
 (`register T x asm("$n")`), 24 empty `asm("")` scheduling constraints and 2
 asm-name aliases, in 25 of the 1,646 functions. Each is marked with a
 `FIXME(match)` comment that says what it forces and which natural rewrites were

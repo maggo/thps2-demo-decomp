@@ -2712,8 +2712,7 @@ void Spool_StripAnimFile(char *pPSX)
     int i;
     int j;
     {
-        // FIXME(match): register pin — $16 for dataOffset so the load lands in $s0 with `addu s0,s2,s0` operand order (unpinned: temp goes to $v0, score 8; single-pseudo pDest form gives swapped addu operands, score 3); tried: pDest as single pseudo, add reorderings/casts, moving the statement, scoped temp.
-        register u32 dataOffset asm("$16") = ((PlayerSelectAnimFileHeader *)pPSX)->DataOffset;
+        u32 dataOffset = ((PlayerSelectAnimFileHeader *)pPSX)->DataOffset;
         pAnim = pPSX + dataOffset;
     }
 
