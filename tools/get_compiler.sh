@@ -11,9 +11,9 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 DEST="$1"
 VERIFIER="$ROOT/toolchain/verify_egcs_1_1_1.py"
 RELEASE_URL=https://github.com/decompals/old-gcc/releases/latest/download/gcc-2.91.60-psx.tar.gz
-# decompals/old-gcc#37 (adds gcc-2.91.60 and gcc-2.91.60-psx); used until it is released upstream.
-RECIPE_REPO=https://github.com/maggo/old-gcc.git
-RECIPE_COMMIT=721536527a459e45de0a0b9bff09fcae665bceaf
+# old-gcc commit that added gcc-2.91.60-psx (decompals/old-gcc#37); built locally until a release ships it.
+RECIPE_REPO=https://github.com/decompals/old-gcc.git
+RECIPE_COMMIT=cf70ec58bce58128732062bc9930045c82904cbb
 
 fail() { echo "get_compiler: $*" >&2; exit 1; }
 

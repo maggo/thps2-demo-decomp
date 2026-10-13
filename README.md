@@ -112,8 +112,8 @@ Canonical verification uses egcs **1.1.1 (GCC 2.91.60)** from
 [decompals/old-gcc](https://github.com/decompals/old-gcc) (`gcc-2.91.60-psx`,
 the stock GNU release with old-gcc's PSX target and build patches; no
 code-generation patches). `tools/get_compiler.sh` downloads old-gcc's release
-archive, or builds old-gcc's recipe with Docker until that compiler is
-released ([decompals/old-gcc#37](https://github.com/decompals/old-gcc/pull/37)).
+archive, or builds old-gcc's recipe with Docker until a release includes it
+(the recipe was added in [decompals/old-gcc#37](https://github.com/decompals/old-gcc/pull/37)).
 
 `toolchain/verify_egcs_1_1_1.py` checks both compiler binaries against pinned
 SHA-256 identities. Setup and canonical verification reject modified or
